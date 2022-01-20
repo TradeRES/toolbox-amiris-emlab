@@ -1,11 +1,99 @@
 {
     "project": {
-        "version": 6,
-        "name": "toolbox-project-template",
-        "description": "This is a template for Spine Toolbox projects",
-        "specifications": {},
-        "connections": [],
+        "version": 7,
+        "name": "Spine-EMLab-Amiris",
+        "description": "",
+        "specifications": {
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": false,
+                    "path": "C:/Users/isanchezjimene/.spinetoolbox/plugins/SpineOpt/specifications/Tool/load_template.json"
+                }
+            ],
+            "Importer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
+                }
+            ]
+        },
+        "connections": [
+            {
+                "from": [
+                    "combine results",
+                    "right"
+                ],
+                "to": [
+                    "amiris importer",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "amiris importer",
+                    "right"
+                ],
+                "to": [
+                    "Amiris DB",
+                    "left"
+                ]
+            }
+        ],
         "jumps": []
     },
-    "items": {}
+    "items": {
+        "Amiris DB": {
+            "type": "Data Store",
+            "description": "",
+            "x": 182.2599008858953,
+            "y": 20.25497311123069,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/amiris_db/Amiris DB.sqlite"
+                }
+            }
+        },
+        "combine results": {
+            "type": "Tool",
+            "description": "importAmiris",
+            "x": -151.75990088589532,
+            "y": -7.754973111230704,
+            "specification": "Load template",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "literal",
+                    "arg": "AMIRIS.2022-01-17_11-27-12.pb"
+                }
+            ]
+        },
+        "amiris importer": {
+            "type": "Importer",
+            "description": "",
+            "x": 20.17286451852707,
+            "y": 1.0086432259263536,
+            "specification": "Amiris importer",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "combined_results.csv",
+                    true
+                ]
+            ]
+        }
+    }
 }
