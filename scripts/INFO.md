@@ -1,0 +1,1 @@
+This folder can be used to store processing scripts and tool specifications used in the project.

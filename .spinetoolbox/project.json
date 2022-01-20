@@ -1,0 +1,11 @@
+{
+    "project": {
+        "version": 6,
+        "name": "toolbox-project-template",
+        "description": "This is a template for Spine Toolbox projects",
+        "specifications": {},
+        "connections": [],
+        "jumps": []
+    },
+    "items": {}
+}
