@@ -16,11 +16,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
                 }
             ]
         },
@@ -53,7 +48,7 @@
             "type": "Data Store",
             "description": "",
             "x": 182.2599008858953,
-            "y": 20.25497311123069,
+            "y": 19.25497311123069,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -69,7 +64,7 @@
             "type": "Tool",
             "description": "importAmiris",
             "x": -151.75990088589532,
-            "y": -7.754973111230704,
+            "y": -8.754973111230704,
             "specification": "Load template",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -83,7 +78,7 @@
             "type": "Importer",
             "description": "",
             "x": 20.17286451852707,
-            "y": 1.0086432259263536,
+            "y": 0.008643225926353582,
             "specification": "Amiris importer",
             "cancel_on_error": false,
             "purge_before_writing": false,

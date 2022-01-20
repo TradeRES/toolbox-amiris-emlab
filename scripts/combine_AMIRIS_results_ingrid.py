@@ -36,7 +36,7 @@ def process_file(filepath: str) -> pd.DataFrame:
 # Get input file from cmd line arguments
 input_pb_file = sys.argv[1]
 parent = os.path.basename(os.getcwd())
-complete = os.path.join(Path(os.getcwd()).parent.parent, "resources","data", input_pb_file)
+complete = os.path.join(Path(os.getcwd()).parent, "data", input_pb_file)
 # Convert Proto Buffer file to csv's
 convert_results(complete, CONFIG)
 
