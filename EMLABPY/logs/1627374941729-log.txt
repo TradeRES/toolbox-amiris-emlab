@@ -1,0 +1,24 @@
+INFO:root:Starting EM-Lab Run
+INFO:root:Selected modules: ['http://127.0.0.1:58833', 'run_co2_market']
+INFO:root:Selected database: http://127.0.0.1:58832
+INFO:root:Selected simulation parameter database: http://127.0.0.1:58833
+INFO:root:SpineDBRW: Start Read Repository
+INFO:root:Current tick: 0
+INFO:root:Object Class not defined: SystemClockTicks
+INFO:root:SpineDBRW: End Read Repository
+INFO:root:Start Initialization Modules
+INFO:root:Initializing Module: EM-Lab Capacity Market: Submit Bids
+INFO:root:Initializing Module: EM-Lab Capacity Market: Clear Market
+INFO:root:Initializing Module: CO2 Market: Determine CO2 Price
+INFO:root:Initializing Module: Payment Module: CO2 Payments and Banking
+INFO:root:Initializing Module: Payment Module: Use CO2 Allowances and Subtract From Banked
+INFO:root:Initializing Module: Market Stability Reserve: Determine Flows
+INFO:root:End Initialization Modules
+INFO:root:Commit Initialization Modules
+INFO:root:Start Run Modules
+INFO:root:Start Run CO2 Market
+WARNING:root:Nothing to commit.
+WARNING:root:Nothing to commit.
+INFO:root:End Run CO2 Market
+INFO:root:End Run Modules
+INFO:root:Closing database connections...

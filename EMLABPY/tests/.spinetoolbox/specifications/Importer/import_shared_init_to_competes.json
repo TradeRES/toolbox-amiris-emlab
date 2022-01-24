@@ -1,0 +1,1151 @@
+{
+    "name": "Import Shared Init to COMPETES",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "BusCountry": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "BusCountry"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Country": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Country"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Economic Lifetime": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Economic Lifetime"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "table_name",
+                                "value": "Economic Lifetime"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "FuelGen": [
+                {
+                    "Mapping 2": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "FuelGen",
+                                "skip_columns": [
+                                    2,
+                                    3,
+                                    4,
+                                    5
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "FuelMap": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "FuelMap"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "table_name",
+                                "value": "FuelMap"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "FuelpriceTrends": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "FuelpriceTrends"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Fueltype": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Fueltype"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Hourly Demand": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Hourly Demand"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "Hourly Demand"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 4
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "NL Installed Capacity (+heat)": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "NL Installed Capacity (+heat)"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 8
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "NL Installed Capacity-RES (+he": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "NL Installed Capacity-RES (+heat)"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 8
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Technologies": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Technologies",
+                                "skip_columns": [
+                                    9,
+                                    10,
+                                    11,
+                                    12,
+                                    13
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 4
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "table_name",
+                                "value": "Technologies"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Mapping 2": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "INIT Technologies"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 4
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "INIT Technologies"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Techtype": [
+                {
+                    "Mapping 2": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Techtype"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "VRE Technologies": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "VRE Technologies",
+                                "skip_columns": [
+                                    6,
+                                    7,
+                                    8,
+                                    9,
+                                    10,
+                                    11
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "table_name",
+                                "value": "VRE Technologies"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Mapping 2": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "INIT VRE Technologies",
+                                "skip_columns": [
+                                    6,
+                                    7,
+                                    8,
+                                    9,
+                                    10,
+                                    11
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "INIT VRE Technologies"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "VRE Capacities": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "VRE Capacities",
+                                "skip_columns": [
+                                    8,
+                                    7
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 5
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "table_name",
+                                "value": "VRE Capacities"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 4
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "NL Installed Capacity Decentral": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "NL Installed Capacity Decentralized (+heat)"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 8
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "table_options": {
+            "BusCountry": {},
+            "Country": {},
+            "Economic Lifetime": {},
+            "FuelGen": {},
+            "FuelMap": {},
+            "FuelpriceTrends": {},
+            "Fueltype": {},
+            "Hourly Demand": {},
+            "NL Installed Capacity (+heat)": {},
+            "NL Installed Capacity-RES (+he": {},
+            "Technologies": {
+                "header": false
+            },
+            "Techtype": {},
+            "VRE Technologies": {},
+            "VRE Capacities": {},
+            "NL Installed Capacity Decentral": {}
+        },
+        "table_types": {
+            "BusCountry": {
+                "0": "string",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float"
+            },
+            "Country": {
+                "0": "string",
+                "1": "float",
+                "2": "string"
+            },
+            "Economic Lifetime": {
+                "0": "string",
+                "1": "float",
+                "2": "string"
+            },
+            "FuelGen": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "string"
+            },
+            "FuelMap": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "float"
+            },
+            "FuelpriceTrends": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "string"
+            },
+            "Fueltype": {
+                "0": "string",
+                "1": "float"
+            },
+            "Hourly Demand": {
+                "0": "string",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "string",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float",
+                "11": "float",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float",
+                "24": "float",
+                "25": "float"
+            },
+            "NL Installed Capacity (+heat)": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "float",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "float",
+                "10": "string",
+                "11": "string",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "string",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float",
+                "24": "float",
+                "25": "float"
+            },
+            "NL Installed Capacity-RES (+he": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "float",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "float",
+                "10": "string",
+                "11": "string",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float"
+            },
+            "Technologies": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "string",
+                "4": "string",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float",
+                "11": "string",
+                "12": "float",
+                "13": "float"
+            },
+            "Techtype": {
+                "0": "string",
+                "1": "float"
+            },
+            "VRE Technologies": {
+                "0": "string",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "string",
+                "9": "float",
+                "10": "float",
+                "11": "string"
+            },
+            "VRE Capacities": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "float",
+                "7": "string",
+                "8": "string"
+            },
+            "NL Installed Capacity Decentral": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "float",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "float",
+                "10": "string",
+                "11": "string",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float"
+            }
+        },
+        "table_row_types": {
+            "BusCountry": {
+                "0": "string"
+            },
+            "Country": {
+                "0": "string"
+            },
+            "Economic Lifetime": {
+                "0": "string"
+            },
+            "FuelGen": {
+                "1": "string",
+                "0": "string"
+            },
+            "FuelMap": {
+                "0": "string"
+            },
+            "FuelpriceTrends": {
+                "0": "string"
+            },
+            "Fueltype": {
+                "0": "string"
+            },
+            "Hourly Demand": {
+                "0": "string"
+            },
+            "NL Installed Capacity (+heat)": {
+                "0": "string"
+            },
+            "NL Installed Capacity-RES (+he": {
+                "0": "string"
+            },
+            "Techtype": {
+                "0": "string"
+            },
+            "VRE Technologies": {
+                "0": "string"
+            },
+            "Technologies": {
+                "0": "string"
+            },
+            "VRE Capacities": {
+                "0": "string"
+            }
+        },
+        "selected_tables": [
+            "Select All",
+            "BusCountry",
+            "Country",
+            "Economic Lifetime",
+            "FuelGen",
+            "FuelMap",
+            "FuelpriceTrends",
+            "Fueltype",
+            "Hourly Demand",
+            "Technologies",
+            "Techtype",
+            "VRE Technologies",
+            "VRE Capacities",
+            "NL Installed Capacity (+heat)",
+            "NL Installed Capacity-RES (+he",
+            "NL Installed Capacity Decentral"
+        ],
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

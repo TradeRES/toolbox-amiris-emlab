@@ -1,0 +1,61 @@
+{
+    "name": "Import Coupling Config",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Coupling Parameters": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "value"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 1
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "table_options": {
+            "Coupling Parameters": {}
+        },
+        "table_types": {
+            "Coupling Parameters": {
+                "0": "string",
+                "1": "float"
+            }
+        },
+        "table_row_types": {},
+        "selected_tables": [
+            "Coupling Parameters"
+        ],
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

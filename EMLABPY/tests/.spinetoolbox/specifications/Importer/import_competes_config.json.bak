@@ -1,0 +1,295 @@
+{
+    "name": "Import COMPETES Config",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Object Type 1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Object Type 2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "table_name",
+                                "value": "Object Type 2"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "array"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "header"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Relationship Type 1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Relationship Type 2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "PP Object Type 1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "PP Object Type 2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "PP Relationship Type 1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "PP Relationship Type 2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "COMPETES Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "table_options": {
+            "Object Type 1": {},
+            "Object Type 2": {
+                "header": true
+            },
+            "Relationship Type 1": {},
+            "Relationship Type 2": {},
+            "PP Object Type 1": {},
+            "PP Object Type 2": {},
+            "PP Relationship Type 1": {},
+            "PP Relationship Type 2": {}
+        },
+        "table_types": {
+            "Object Type 1": {
+                "0": "string",
+                "1": "string"
+            },
+            "Object Type 2": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string"
+            },
+            "Relationship Type 1": {
+                "0": "string",
+                "1": "string",
+                "2": "string"
+            },
+            "Relationship Type 2": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string"
+            },
+            "PP Object Type 1": {
+                "0": "string",
+                "1": "string"
+            },
+            "PP Object Type 2": {
+                "0": "string",
+                "1": "string",
+                "2": "string"
+            },
+            "PP Relationship Type 1": {
+                "0": "string",
+                "1": "string",
+                "2": "string"
+            },
+            "PP Relationship Type 2": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string"
+            }
+        },
+        "table_row_types": {
+            "Object Type 2": {
+                "0": "string"
+            }
+        },
+        "selected_tables": [
+            "Object Type 1",
+            "Object Type 2",
+            "Relationship Type 1",
+            "Relationship Type 2",
+            "PP Object Type 1",
+            "PP Object Type 2",
+            "PP Relationship Type 1",
+            "PP Relationship Type 2"
+        ],
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

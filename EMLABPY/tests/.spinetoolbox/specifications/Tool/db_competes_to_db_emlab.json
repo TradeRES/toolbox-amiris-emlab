@@ -1,0 +1,20 @@
+{
+    "name": "DB COMPETES to DB EMLAB",
+    "tooltype": "python",
+    "includes": [
+        "competes_to_emlab.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../resources/scripts",
+    "execution_settings": {
+        "kernel_spec_name": "jupyter_kernel",
+        "env": "",
+        "use_jupyter_console": true,
+        "executable": ""
+    }
+}

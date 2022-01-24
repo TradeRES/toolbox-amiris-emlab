@@ -1,0 +1,49 @@
+{
+    "name": "Import COMPETES to COMPETES DB",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Sheet1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "table_options": {
+            "Sheet1": {}
+        },
+        "table_types": {
+            "Sheet1": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
+            }
+        },
+        "table_row_types": {},
+        "selected_tables": [
+            "Sheet1"
+        ],
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

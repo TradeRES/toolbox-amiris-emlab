@@ -1,0 +1,1218 @@
+{
+    "project": {
+        "version": 2,
+        "name": "Spine_EMLab_COMPETES",
+        "description": "",
+        "specifications": {
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "competes/competes.json"
+                }
+            ]
+        },
+        "connections": [
+            {
+                "from": [
+                    "DB",
+                    "right"
+                ],
+                "to": [
+                    "COMPETES Dummy",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import Init Data to DB",
+                    "right"
+                ],
+                "to": [
+                    "DB",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Load Init File",
+                    "right"
+                ],
+                "to": [
+                    "Import Init Data to DB",
+                    "left"
+                ]
+            }
+        ]
+    },
+    "items": {
+        "DB": {
+            "type": "Data Store",
+            "description": "",
+            "x": -124.0,
+            "y": -43.0,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/db/DB.sqlite"
+                }
+            }
+        },
+        "Load Init File": {
+            "type": "Data Connection",
+            "description": "Loads all initialization values",
+            "x": -483.0,
+            "y": -43.0,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/data/init_ScenarioNLIntermittent.xlsx"
+                }
+            ]
+        },
+        "COMPETES Dummy": {
+            "type": "Tool",
+            "description": "",
+            "x": 39.0,
+            "y": -43.0,
+            "specification": "COMPETES",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "Import Init Data to DB": {
+            "type": "Importer",
+            "description": "",
+            "x": -306.0,
+            "y": -43.0,
+            "mappings": [
+                [
+                    {
+                        "type": "path",
+                        "relative": true,
+                        "path": "resources/data/init_ScenarioNLIntermittent.xlsx"
+                    },
+                    {
+                        "table_mappings": {
+                            "dutchPlants2015": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "dutchPlants2015"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": -1
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping"
+                                }
+                            ],
+                            "ldcNLDE-hourly": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "ldcNLDE-hourly"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "constant",
+                                            "reference": "Idc"
+                                        },
+                                        "parameter_type": "time pattern",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        },
+                                        "extra_dimensions": [
+                                            {
+                                                "map_type": "column",
+                                                "reference": 0
+                                            }
+                                        ]
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "row",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "renewablesNinja2015Profiles": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "renewablesNinja2015Profiles"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "constant",
+                                            "reference": "supply"
+                                        },
+                                        "parameter_type": "time series",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        },
+                                        "extra_dimensions": [
+                                            {
+                                                "map_type": "column",
+                                                "reference": 0
+                                            }
+                                        ],
+                                        "options": {
+                                            "repeat": false,
+                                            "ignore_year": false,
+                                            "fixed_resolution": false
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "row",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "emlabModel": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "emlabModel"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "column",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "column",
+                                            "reference": 1
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "table_name",
+                                        "reference": "emlabModel"
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "TriangularTrends": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "TriangularTrends"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "Substances": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "Substances"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "Zones": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "Zones"
+                                    },
+                                    "parameters": {
+                                        "map_type": "None"
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "PowerGridNodes": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "PowerGridNodes"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "IntermittentResourceProfiles": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "IntermittentResourceProfiles"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "Interconnectors": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "Interconnectors"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "InterconnectorNodes": [
+                                {
+                                    "map_type": "RelationshipClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "InterconnectorNodes"
+                                    },
+                                    "parameters": {
+                                        "map_type": "None"
+                                    },
+                                    "import_objects": false,
+                                    "objects": [
+                                        {
+                                            "map_type": "column",
+                                            "reference": 0
+                                        },
+                                        {
+                                            "map_type": "column",
+                                            "reference": 1
+                                        }
+                                    ],
+                                    "object_classes": [
+                                        {
+                                            "map_type": "constant",
+                                            "reference": "Interconnectors"
+                                        },
+                                        {
+                                            "map_type": "constant",
+                                            "reference": "PowerGridNodes"
+                                        }
+                                    ],
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "LoadDurationCurves": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "LoadDurationCurves"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "ElectricitySpotMarkets": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "ElectricitySpotMarkets"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "CO2Auction": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "CO2Auction"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "EnergyConsumers": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "EnergyConsumers"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "EnergyProducers": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "EnergyProducers"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "StepTrends": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "StepTrends"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "Governments": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "Governments"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "NationalGovernments": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "NationalGovernments"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "GeometricTrends": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "GeometricTrends"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "PowerGeneratingTechnologies": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "PowerGeneratingTechnologies"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "PowerGeneratingTechnologyFuel": [
+                                {
+                                    "map_type": "RelationshipClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "PowerGeneratingTechnologyFuel"
+                                    },
+                                    "parameters": {
+                                        "map_type": "None"
+                                    },
+                                    "import_objects": false,
+                                    "objects": [
+                                        {
+                                            "map_type": "column",
+                                            "reference": 0
+                                        },
+                                        {
+                                            "map_type": "column",
+                                            "reference": 1
+                                        }
+                                    ],
+                                    "object_classes": [
+                                        {
+                                            "map_type": "constant",
+                                            "reference": "PowerGeneratingTechnologies"
+                                        },
+                                        {
+                                            "map_type": "constant",
+                                            "reference": "Substances"
+                                        }
+                                    ],
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "PowerGeneratingTechnologyTarget": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "PowerGeneratingTechnologyTarget"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "TargetInvestors": [
+                                {
+                                    "map_type": "ObjectClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "TargetInvestors"
+                                    },
+                                    "parameters": {
+                                        "map_type": "parameter",
+                                        "name": {
+                                            "map_type": "row",
+                                            "reference": 0
+                                        },
+                                        "parameter_type": "single value",
+                                        "value": {
+                                            "map_type": "None"
+                                        },
+                                        "alternative_name": {
+                                            "map_type": "None"
+                                        }
+                                    },
+                                    "import_objects": true,
+                                    "objects": {
+                                        "map_type": "column",
+                                        "reference": 0
+                                    },
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ],
+                            "TargetInvestorTargets": [
+                                {
+                                    "map_type": "RelationshipClass",
+                                    "skip_columns": [],
+                                    "read_start_row": 0,
+                                    "name": {
+                                        "map_type": "table_name",
+                                        "reference": "TargetInvestorTargets"
+                                    },
+                                    "parameters": {
+                                        "map_type": "None"
+                                    },
+                                    "import_objects": false,
+                                    "objects": [
+                                        {
+                                            "map_type": "column",
+                                            "reference": 0
+                                        },
+                                        {
+                                            "map_type": "column",
+                                            "reference": 1
+                                        }
+                                    ],
+                                    "object_classes": [
+                                        {
+                                            "map_type": "constant",
+                                            "reference": "TargetInvestors"
+                                        },
+                                        {
+                                            "map_type": "constant",
+                                            "reference": "PowerGeneratingTechnologyTarget"
+                                        }
+                                    ],
+                                    "mapping_name": "Mapping 1"
+                                }
+                            ]
+                        },
+                        "table_options": {
+                            "dutchPlants2015": {
+                                "header": true
+                            },
+                            "ldcNLDE-hourly": {
+                                "header": false
+                            },
+                            "renewablesNinja2015Profiles": {
+                                "header": false,
+                                "read_until_row": true,
+                                "read_until_col": true
+                            },
+                            "Zones": {
+                                "header": true
+                            },
+                            "InterconnectorNodes": {
+                                "header": true
+                            },
+                            "PowerGeneratingTechnologyFuel": {
+                                "header": true
+                            },
+                            "TargetInvestorTargets": {
+                                "header": true
+                            }
+                        },
+                        "table_types": {
+                            "dutchPlants2015": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string",
+                                "5": "string",
+                                "6": "string"
+                            },
+                            "ldcNLDE-hourly": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string"
+                            },
+                            "renewablesNinja2015Profiles": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string",
+                                "5": "string",
+                                "6": "string",
+                                "7": "string",
+                                "8": "string",
+                                "9": "string",
+                                "10": "string",
+                                "11": "string",
+                                "12": "string",
+                                "13": "string",
+                                "14": "string",
+                                "15": "string",
+                                "16": "string",
+                                "17": "string"
+                            },
+                            "emlabModel": {
+                                "0": "string",
+                                "1": "string"
+                            },
+                            "TriangularTrends": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string"
+                            },
+                            "Substances": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string"
+                            },
+                            "Zones": {
+                                "0": "string"
+                            },
+                            "PowerGridNodes": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string"
+                            },
+                            "IntermittentResourceProfiles": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string"
+                            },
+                            "Interconnectors": {
+                                "0": "string",
+                                "1": "string"
+                            },
+                            "InterconnectorNodes": {
+                                "0": "string",
+                                "1": "string"
+                            },
+                            "LoadDurationCurves": {
+                                "0": "string",
+                                "1": "string"
+                            },
+                            "ElectricitySpotMarkets": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string",
+                                "5": "string",
+                                "6": "string",
+                                "7": "string"
+                            },
+                            "CO2Auction": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string"
+                            },
+                            "EnergyConsumers": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string"
+                            },
+                            "EnergyProducers": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string",
+                                "5": "string",
+                                "6": "string",
+                                "7": "string",
+                                "8": "string",
+                                "9": "string",
+                                "10": "string",
+                                "11": "string",
+                                "12": "string",
+                                "13": "string",
+                                "14": "string",
+                                "15": "string",
+                                "16": "string"
+                            },
+                            "StepTrends": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string"
+                            },
+                            "Governments": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string"
+                            },
+                            "NationalGovernments": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string"
+                            },
+                            "GeometricTrends": {
+                                "0": "string",
+                                "1": "string"
+                            },
+                            "PowerGeneratingTechnologies": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string",
+                                "3": "string",
+                                "4": "string",
+                                "5": "string",
+                                "6": "string",
+                                "7": "string",
+                                "8": "string",
+                                "9": "string",
+                                "10": "string",
+                                "11": "string",
+                                "12": "string",
+                                "13": "string",
+                                "14": "string",
+                                "15": "string",
+                                "16": "string",
+                                "17": "string"
+                            },
+                            "PowerGeneratingTechnologyFuel": {
+                                "0": "string",
+                                "1": "string"
+                            },
+                            "PowerGeneratingTechnologyTarget": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string"
+                            },
+                            "TargetInvestors": {
+                                "0": "string",
+                                "1": "string",
+                                "2": "string"
+                            },
+                            "TargetInvestorTargets": {
+                                "0": "string",
+                                "1": "string"
+                            }
+                        },
+                        "table_row_types": {
+                            "ldcNLDE-hourly": {
+                                "0": "string"
+                            },
+                            "renewablesNinja2015Profiles": {
+                                "0": "string"
+                            },
+                            "emlabModel": {
+                                "4": "float"
+                            },
+                            "TriangularTrends": {
+                                "0": "string"
+                            },
+                            "Substances": {
+                                "0": "string"
+                            },
+                            "Zones": {
+                                "2": "string"
+                            },
+                            "PowerGridNodes": {
+                                "0": "string"
+                            },
+                            "IntermittentResourceProfiles": {
+                                "0": "string"
+                            },
+                            "Interconnectors": {
+                                "0": "string"
+                            },
+                            "LoadDurationCurves": {
+                                "0": "string"
+                            },
+                            "ElectricitySpotMarkets": {
+                                "0": "string"
+                            },
+                            "CO2Auction": {
+                                "0": "string"
+                            },
+                            "EnergyConsumers": {
+                                "0": "string"
+                            },
+                            "EnergyProducers": {
+                                "0": "string"
+                            },
+                            "StepTrends": {
+                                "0": "string"
+                            },
+                            "Governments": {
+                                "0": "string"
+                            },
+                            "NationalGovernments": {
+                                "0": "string"
+                            },
+                            "GeometricTrends": {
+                                "0": "string"
+                            },
+                            "PowerGeneratingTechnologies": {
+                                "0": "string"
+                            },
+                            "PowerGeneratingTechnologyTarget": {
+                                "0": "string"
+                            },
+                            "TargetInvestors": {
+                                "0": "string"
+                            }
+                        },
+                        "selected_tables": [
+                            "dutchPlants2015",
+                            "ldcNLDE-hourly",
+                            "renewablesNinja2015Profiles",
+                            "emlabModel",
+                            "TriangularTrends",
+                            "Substances",
+                            "Zones",
+                            "PowerGridNodes",
+                            "IntermittentResourceProfiles",
+                            "Interconnectors",
+                            "InterconnectorNodes",
+                            "LoadDurationCurves",
+                            "ElectricitySpotMarkets",
+                            "CO2Auction",
+                            "EnergyConsumers",
+                            "EnergyProducers",
+                            "StepTrends",
+                            "Governments",
+                            "NationalGovernments",
+                            "GeometricTrends",
+                            "PowerGeneratingTechnologies",
+                            "PowerGeneratingTechnologyFuel",
+                            "PowerGeneratingTechnologyTarget",
+                            "TargetInvestors",
+                            "TargetInvestorTargets"
+                        ],
+                        "source_type": "ExcelConnector"
+                    }
+                ]
+            ],
+            "cancel_on_error": true,
+            "mapping_selection": [
+                [
+                    {
+                        "type": "path",
+                        "relative": true,
+                        "path": "resources/data/init_ScenarioNLIntermittent.xlsx"
+                    },
+                    true
+                ]
+            ]
+        }
+    }
+}

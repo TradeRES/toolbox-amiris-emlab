@@ -1,0 +1,20 @@
+{
+    "name": "COMPETES SpineDB to MS Access",
+    "tooltype": "python",
+    "includes": [
+        "competes_spinedb_to_ms_access.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../resources/scripts",
+    "execution_settings": {
+        "env": "",
+        "kernel_spec_name": "jupyter_kernel",
+        "use_jupyter_console": true,
+        "executable": ""
+    }
+}

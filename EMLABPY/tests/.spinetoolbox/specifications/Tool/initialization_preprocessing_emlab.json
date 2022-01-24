@@ -1,0 +1,20 @@
+{
+    "name": "Initialization Preprocessing EMLAB",
+    "tooltype": "python",
+    "includes": [
+        "emlab_initialization_preprocessing.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../resources/scripts",
+    "execution_settings": {
+        "env": "",
+        "kernel_spec_name": "python3",
+        "use_jupyter_console": true,
+        "executable": ""
+    }
+}

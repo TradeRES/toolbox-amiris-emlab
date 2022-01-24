@@ -1,0 +1,31 @@
+INFO:root:Starting EM-Lab Run
+INFO:root:Selected modules: ['C:\\Users\\isanchezjimene\\Documents\\Spine_EMLab_COMPETES\\resources\\configurations\\EMLAB config.xlsx', 'run_co2_market']
+INFO:root:Selected database: http://127.0.0.1:56077
+INFO:root:Configuration file found: C:\Users\isanchezjimene\Documents\Spine_EMLab_COMPETES\resources\configurations\EMLAB config.xlsx
+INFO:root:SpineDBRW: Start Read Repository
+WARNING:root:No value found for class: GeometricTrends, object: biomassCHPEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: biomassCHPInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: ccgtEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: ccgtInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: coalPSCEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: coalPSCInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: hydroEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: hydroInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: lignitePSCEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: lignitePSCInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: nuclearPGTEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: nuclearPGTInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: ocgtEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: ocgtFixedOperatingCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: ocgtInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: oilPGTEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: oilPGTInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: pvEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: pvInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: windOffshoreEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: windOffshoreFixedOperatingCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: windOffshoreInvestmentCostTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: windOnshoreEfficiencyTimeSeries, parameter: start
+WARNING:root:No value found for class: GeometricTrends, object: windOnshoreInvestmentCostTimeSeries, parameter: start
+ERROR:root:Exception occurred: 'NED'
+INFO:root:Closing database connections...

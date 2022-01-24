@@ -1,0 +1,17 @@
+{
+    "name": "Prepare COMPETES output",
+    "tooltype": "python",
+    "includes": [
+        "competes_output_copy.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "../../COMPETES/Results/current_Gen&Trans.xlsx"
+    ],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../resources/scripts",
+    "execution_settings": null
+}

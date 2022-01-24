@@ -1,0 +1,64 @@
+{
+    "name": "Import EMLAB Config",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Import Priorities": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "constant"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "table_options": {
+            "Import Priorities": {}
+        },
+        "table_types": {
+            "Import Priorities": {
+                "0": "string",
+                "1": "float"
+            }
+        },
+        "table_row_types": {
+            "Import Priorities": {
+                "0": "string"
+            }
+        },
+        "selected_tables": [
+            "Import Priorities"
+        ],
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

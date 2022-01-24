@@ -1,0 +1,14 @@
+{
+    "name": "Electricity Spot Market",
+    "tooltype": "python",
+    "includes": [
+        "emlab.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../emlab"
+}

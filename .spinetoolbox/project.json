@@ -16,27 +16,32 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_hola.json"
                 }
             ]
         },
         "connections": [
             {
                 "from": [
-                    "combine results",
+                    "amiris importer",
                     "right"
                 ],
                 "to": [
-                    "amiris importer",
+                    "AMIRIS",
                     "left"
                 ]
             },
             {
                 "from": [
-                    "amiris importer",
+                    "combinedResults",
                     "right"
                 ],
                 "to": [
-                    "Amiris DB",
+                    "amiris importer",
                     "left"
                 ]
             }
@@ -44,28 +49,12 @@
         "jumps": []
     },
     "items": {
-        "Amiris DB": {
-            "type": "Data Store",
-            "description": "",
-            "x": 182.2599008858953,
-            "y": 19.25497311123069,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/amiris_db/Amiris DB.sqlite"
-                }
-            }
-        },
         "combine results": {
             "type": "Tool",
             "description": "importAmiris",
-            "x": -151.75990088589532,
-            "y": -8.754973111230704,
-            "specification": "Load template",
+            "x": -281.10229517698554,
+            "y": -176.01784920909571,
+            "specification": "combined results",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
@@ -77,17 +66,46 @@
         "amiris importer": {
             "type": "Importer",
             "description": "",
-            "x": 20.17286451852707,
-            "y": 0.008643225926353582,
+            "x": 3.3809594056036474,
+            "y": -5.0086432259263525,
             "specification": "Amiris importer",
-            "cancel_on_error": false,
+            "cancel_on_error": true,
             "purge_before_writing": false,
-            "on_conflict": "merge",
+            "on_conflict": "replace",
             "file_selection": [
                 [
-                    "combined_results.csv",
+                    "<project>/scripts/AMIRIS_combined.csv",
                     true
                 ]
+            ]
+        },
+        "AMIRIS": {
+            "type": "Data Store",
+            "description": "",
+            "x": 127.76001474278392,
+            "y": -25.34920927436189,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/amiris/AMIRIS.sqlite"
+                }
+            }
+        },
+        "combinedResults": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -138.91366682350315,
+            "y": -12.167620451693708,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "scripts/AMIRIS_combined.csv"
+                }
             ]
         }
     }

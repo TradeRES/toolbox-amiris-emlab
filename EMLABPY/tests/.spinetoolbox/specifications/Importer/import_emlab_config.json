@@ -1,0 +1,68 @@
+{
+    "name": "Import EMLAB Config",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Import Priorities": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "EMLAB Parameters"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden",
+                                "value": "Import Priorities"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 1
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "table_options": {
+            "Import Priorities": {
+                "header": true
+            }
+        },
+        "table_types": {
+            "Import Priorities": {
+                "0": "string",
+                "1": "float"
+            }
+        },
+        "table_row_types": {
+            "Import Priorities": {
+                "0": "string"
+            }
+        },
+        "selected_tables": [
+            "Import Priorities"
+        ],
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

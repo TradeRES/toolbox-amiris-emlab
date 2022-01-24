@@ -1,0 +1,644 @@
+{
+    "project": {
+        "version": 6,
+        "name": "TestPy Initialize Databases",
+        "description": "",
+        "specifications": {
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/capacity_market.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/competes.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/clock.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/co2_market.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/competes_real.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/emlab_to_competes.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/competes_spinedb_to_ms_access.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/db_competes_to_db_emlab.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/prepare_competes_output.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/preprocessing_db_emlab.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/execute_sleep_and_click.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/initialization_preprocessing_emlab.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/emlab_init_preprocessing.json"
+                }
+            ],
+            "Importer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/Import Init Data to DB.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_shared_init_emlab.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_shared_init_to_competes.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_competes.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_competes_(pp).json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_emlab_parameter_metadata.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_competes_to_competes_db.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_emlab_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_coupling_config.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_competes_config.json"
+                }
+            ]
+        },
+        "connections": [
+            {
+                "from": [
+                    "Import EMLAB Init",
+                    "right"
+                ],
+                "to": [
+                    "DB EMLAB",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "EMLAB Init Data",
+                    "right"
+                ],
+                "to": [
+                    "Import EMLAB Init",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "SHARED Init Data",
+                    "right"
+                ],
+                "to": [
+                    "Import SHARED Init to EMLAB",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import SHARED Init to EMLAB",
+                    "right"
+                ],
+                "to": [
+                    "DB EMLAB",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "COMPETES Init Data",
+                    "right"
+                ],
+                "to": [
+                    "Import COMPETES Init",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import COMPETES Init",
+                    "right"
+                ],
+                "to": [
+                    "DB COMPETES",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "SHARED Init Data",
+                    "right"
+                ],
+                "to": [
+                    "Import SHARED Init to COMPETES",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import SHARED Init to COMPETES",
+                    "right"
+                ],
+                "to": [
+                    "DB COMPETES",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "COMPETES Init Data",
+                    "right"
+                ],
+                "to": [
+                    "Import COMPETES Init (PP)",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import COMPETES Init (PP)",
+                    "right"
+                ],
+                "to": [
+                    "DB COMPETES",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import SHARED Init to EMLAB",
+                    "left"
+                ],
+                "to": [
+                    "Import EMLAB Init",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import SHARED Init to COMPETES",
+                    "left"
+                ],
+                "to": [
+                    "Import COMPETES Init",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import SHARED Init to COMPETES",
+                    "left"
+                ],
+                "to": [
+                    "Import COMPETES Init (PP)",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "EMLAB Config File",
+                    "right"
+                ],
+                "to": [
+                    "Import EMLAB Config",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import EMLAB Config",
+                    "right"
+                ],
+                "to": [
+                    "Simulation Configuration Parameters",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Coupling Config File",
+                    "right"
+                ],
+                "to": [
+                    "Import Coupling Config",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import Coupling Config",
+                    "right"
+                ],
+                "to": [
+                    "Simulation Configuration Parameters",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "COMPETES Config File",
+                    "right"
+                ],
+                "to": [
+                    "Import COMPETES Config",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import COMPETES Config",
+                    "right"
+                ],
+                "to": [
+                    "Simulation Configuration Parameters",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Import EMLAB Init",
+                    "right"
+                ],
+                "to": [
+                    "EMLAB Init Preprocessing",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "DB EMLAB",
+                    "left"
+                ],
+                "to": [
+                    "EMLAB Init Preprocessing",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "DB COMPETES",
+                    "left"
+                ],
+                "to": [
+                    "EMLAB Init Preprocessing",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Simulation Configuration Parameters",
+                    "left"
+                ],
+                "to": [
+                    "EMLAB Init Preprocessing",
+                    "left"
+                ]
+            }
+        ]
+    },
+    "items": {
+        "DB EMLAB": {
+            "type": "Data Store",
+            "description": "",
+            "x": 160.7816884098833,
+            "y": 25.835084009031974,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/db_emlab/DB.sqlite"
+                }
+            },
+            "cancel_on_error": true
+        },
+        "EMLAB Init Data": {
+            "type": "Data Connection",
+            "description": "Loads all initialization values",
+            "x": -214.91243522729218,
+            "y": -27.80433492712895,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/EMLAB Init.xlsx"
+                }
+            ]
+        },
+        "Import EMLAB Init": {
+            "type": "Importer",
+            "description": "",
+            "x": -54.06776620288203,
+            "y": -26.880958177986344,
+            "specification": "Import EMLAB Init",
+            "cancel_on_error": true,
+            "file_selection": [
+                [
+                    "EMLAB Init.xlsx",
+                    true
+                ]
+            ]
+        },
+        "SHARED Init Data": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -213.12470164195003,
+            "y": 112.91920731186207,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/Shared Init.xlsx"
+                }
+            ]
+        },
+        "COMPETES Init Data": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -208.82643575676218,
+            "y": 351.43731433614994,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/COMPETES EU 2050-KIP.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/COMPETES EU PowerPlants 2050-KIP.xlsx"
+                }
+            ]
+        },
+        "Import COMPETES Init": {
+            "type": "Importer",
+            "description": "",
+            "x": -51.79008954709831,
+            "y": 258.66632716199376,
+            "specification": "Import COMPETES",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "COMPETES EU 2050-KIP.xlsx",
+                    true
+                ],
+                [
+                    "COMPETES EU PowerPlants 2050-KIP.xlsx",
+                    false
+                ]
+            ]
+        },
+        "DB COMPETES": {
+            "type": "Data Store",
+            "description": "",
+            "x": 160.75030886117474,
+            "y": 242.09293953605084,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/db_competes/DB COMPETES.sqlite"
+                }
+            },
+            "cancel_on_error": false
+        },
+        "Import SHARED Init to COMPETES": {
+            "type": "Importer",
+            "description": "",
+            "x": -53.14872503518001,
+            "y": 164.69346692609474,
+            "specification": "Import Shared Init to COMPETES",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "Shared Init.xlsx",
+                    true
+                ]
+            ]
+        },
+        "Import SHARED Init to EMLAB": {
+            "type": "Importer",
+            "description": "",
+            "x": -53.65063088041899,
+            "y": 73.82703785230984,
+            "specification": "Import Shared Init EMLAB",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "Shared Init.xlsx",
+                    true
+                ]
+            ]
+        },
+        "Import COMPETES Init (PP)": {
+            "type": "Importer",
+            "description": "",
+            "x": -55.38826506364564,
+            "y": 355.18109930985264,
+            "specification": "Import COMPETES (PP)",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "COMPETES EU 2050-KIP.xlsx",
+                    false
+                ],
+                [
+                    "COMPETES EU PowerPlants 2050-KIP.xlsx",
+                    true
+                ]
+            ]
+        },
+        "EMLAB Config File": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -212.36609469089075,
+            "y": -351.18109930985264,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/configurations/EMLAB config.xlsx"
+                }
+            ]
+        },
+        "COMPETES Config File": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -212.57097239635112,
+            "y": -155.36079576065868,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/configurations/COMPETES EU 2050-KIP config.xlsx"
+                }
+            ]
+        },
+        "Coupling Config File": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -213.26779685138848,
+            "y": -251.6808534272074,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "resources/configurations/Coupling Config.xlsx"
+                }
+            ]
+        },
+        "Simulation Configuration Parameters": {
+            "type": "Data Store",
+            "description": "",
+            "x": 160.57097239635112,
+            "y": -249.36472133028354,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/simulation_configuration_parameters/Simulation Configuration Parameters.sqlite"
+                }
+            },
+            "cancel_on_error": false
+        },
+        "Import EMLAB Config": {
+            "type": "Importer",
+            "description": "",
+            "x": -57.63790895491019,
+            "y": -350.7598697258499,
+            "specification": "Import EMLAB Config",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "EMLAB config.xlsx",
+                    true
+                ]
+            ]
+        },
+        "Import Coupling Config": {
+            "type": "Importer",
+            "description": "",
+            "x": -58.371827594159356,
+            "y": -250.946934787958,
+            "specification": "Import Coupling Config",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "Coupling Config.xlsx",
+                    true
+                ]
+            ]
+        },
+        "Import COMPETES Config": {
+            "type": "Importer",
+            "description": "",
+            "x": -59.105746233408524,
+            "y": -154.06967440706268,
+            "specification": "Import COMPETES Config",
+            "cancel_on_error": false,
+            "file_selection": [
+                [
+                    "COMPETES EU 2050-KIP config.xlsx",
+                    true
+                ]
+            ]
+        },
+        "EMLAB Init Preprocessing": {
+            "type": "Tool",
+            "description": "",
+            "x": 161.08375291719878,
+            "y": -82.58091130565256,
+            "specification": "EMLAB Init Preprocessing",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@DB EMLAB"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@DB COMPETES"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@Simulation Configuration Parameters"
+                }
+            ]
+        }
+    }
+}
