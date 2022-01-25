@@ -2,18 +2,21 @@
     "name": "AMIRIS",
     "tooltype": "python",
     "includes": [
-        "run-java_ingrid.py"
+        "run-java_ingrid.py",
+        "amiris-jar-with-dependencies.jar"
     ],
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [],
+    "outputfiles": [
+        "AMIRIS.FameResult.pb"
+    ],
     "cmdline_args": [
         "-cp",
         "amiris-jar-with-dependencies.jar",
         "de.dlr.gitlab.fame.setup.FameRunner"
     ],
-    "execute_in_work": false,
+    "execute_in_work": true,
     "includes_main_path": "../../../scripts",
     "execution_settings": {
         "env": "conda",

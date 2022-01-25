@@ -14,7 +14,8 @@ CONFIG = {
     Config.LOG_LEVEL: "info",
     Config.LOG_FILE: None,
     Config.AGENT_LIST: None,
-    Config.OUTPUT: 'FameResults_converted'
+    Config.OUTPUT: 'FameResults_converted',
+    Config.SINGLE_AGENT_EXPORT: False
 
 }
 
@@ -50,12 +51,16 @@ def convert_fame_time_step_to_datetime(fame_time_steps: int) -> str:
 
 
 # Get input file from cmd line arguments
-input_pb_file = sys.argv[1]
-parent = os.path.basename(os.getcwd())
-complete = os.path.join(Path(os.getcwd()).parent, "data", input_pb_file)
-# Convert Proto Buffer file to csv's
-# convert_results(complete, CONFIG)
 
+print(os.getcwd())
+print(sys.argv)
+print(sys.argv[1])
+input_pb_file = sys.argv[1]
+#parent = os.path.basename(os.getcwd())
+#complete = os.path.join(Path(os.getcwd()).parent, "data", input_pb_file)
+
+# Convert Proto Buffer file to csv's
+convert_results(input_pb_file, CONFIG)
 # Combine csv files into one data frame
 csv_files = glob(f'{CONFIG[Config.OUTPUT]}/*.csv')
 data = pd.concat(map(process_file, csv_files))

@@ -69,7 +69,7 @@
             "data": {
                 "0": "string",
                 "1": "string",
-                "2": "datetime",
+                "2": "string",
                 "3": "string",
                 "4": "float"
             }
