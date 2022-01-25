@@ -1,0 +1,13 @@
+outputPath: "."
+outputFilePrefix: "AMIRIS.FameResult"
+outputFileTimeStamp: false
+
+agentPackages:
+   - "agents"
+
+messagePackages:
+   - "communications.message"
+   
+portablePackages:
+   - "communications"
+   - "agents"

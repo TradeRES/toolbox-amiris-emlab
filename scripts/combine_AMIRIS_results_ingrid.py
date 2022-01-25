@@ -2,14 +2,13 @@ import sys
 import os
 from pathlib import Path
 from glob import glob
-#from datetime import timedelta
+# from datetime import timedelta
 import datetime as dt
 import pandas as pd
 from fameio.scripts.convert_results import run as convert_results
 from fameio.source.cli import Config
 from fameio.source.time import FameTime, Constants
 import math
-
 
 CONFIG = {
     Config.LOG_LEVEL: "info",
@@ -19,6 +18,7 @@ CONFIG = {
 
 }
 
+
 def process_file(filepath: str) -> pd.DataFrame:
     """Process single AMIRIS csv file"""
     df = pd.read_csv(filepath, sep=';')
@@ -26,9 +26,15 @@ def process_file(filepath: str) -> pd.DataFrame:
     assert df.columns[1] == 'TimeStep'
     assert df.columns[0] == 'AgentId'
     # Convert times steps
-    df['TimeStamp'] = df['TimeStep'].apply(convert_fame_time_step_to_datetime)
+    df['TimeStamp'] = df['TimeStep'].apply(roundup)
+    df['TimeStamp'] = df['TimeStamp'].apply(convert_fame_time_step_to_datetime)
     df['ObjectClass'] = object_class
     return df.drop('TimeStep', axis=1).melt(['ObjectClass', 'AgentId', 'TimeStamp']).dropna()
+
+
+def roundup(x):
+    return round(x / 100.0) * 100
+
 
 def convert_fame_time_step_to_datetime(fame_time_steps: int) -> str:
     """Converts given `fame_time_steps` to corresponding real-world datetime string"""
@@ -37,8 +43,9 @@ def convert_fame_time_step_to_datetime(fame_time_steps: int) -> str:
     beginning_of_year = dt.datetime(year=current_year, month=1, day=1, hour=0, minute=0, second=0)
     steps_in_current_year = (fame_time_steps - years_since_start_time * Constants.STEPS_PER_YEAR)
     seconds_in_current_year = steps_in_current_year / Constants.STEPS_PER_SECOND
-    tiempo = beginning_of_year + dt.timedelta(seconds=seconds_in_current_year)
-    tiemporounded = tiempo.replace(second=0, microsecond=0, minute=0, hour=tiempo.hour) + dt.timedelta(hours=tiempo.minute//30)
+    simulatedtime = beginning_of_year + dt.timedelta(seconds=seconds_in_current_year)
+    tiemporounded = simulatedtime.replace(second=0, microsecond=0, minute=0, hour=simulatedtime.hour) + dt.timedelta(
+        hours=simulatedtime.minute // 30)
     return tiemporounded.strftime('%Y-%m-%dT%H:%M:%S')
 
 
@@ -47,7 +54,7 @@ input_pb_file = sys.argv[1]
 parent = os.path.basename(os.getcwd())
 complete = os.path.join(Path(os.getcwd()).parent, "data", input_pb_file)
 # Convert Proto Buffer file to csv's
-#convert_results(complete, CONFIG)
+# convert_results(complete, CONFIG)
 
 # Combine csv files into one data frame
 csv_files = glob(f'{CONFIG[Config.OUTPUT]}/*.csv')

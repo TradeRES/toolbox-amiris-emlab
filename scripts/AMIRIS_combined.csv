@@ -1,5 +1,5 @@
 ObjectClass,AgentId,TimeStamp,variable,value
-ConventionalPlantOperator,504,2020-12-31T00:00:00,OfferedPowerInMW,28808.999999999894
+ConventionalPlantOperator,504,2021-01-01T00:00:00,OfferedPowerInMW,28808.999999999894
 ConventionalPlantOperator,504,2021-01-01T01:00:00,OfferedPowerInMW,28808.999999999894
 ConventionalPlantOperator,504,2021-01-01T02:00:00,OfferedPowerInMW,28808.999999999894
 ConventionalPlantOperator,504,2021-01-01T03:00:00,OfferedPowerInMW,28808.999999999894
@@ -95,7 +95,7 @@ ConventionalPlantOperator,504,2021-01-01T20:00:00,CostsInEUR,1079312.1289827686
 ConventionalPlantOperator,504,2021-01-01T21:00:00,CostsInEUR,186823.59254276825
 ConventionalPlantOperator,504,2021-01-01T22:00:00,CostsInEUR,0.0
 ConventionalPlantOperator,504,2021-01-01T23:00:00,CostsInEUR,0.0
-ConventionalTrader,1004,2020-12-31T00:00:00,OfferedPowerInMW,28808.999999999894
+ConventionalTrader,1004,2021-01-01T00:00:00,OfferedPowerInMW,28808.999999999894
 ConventionalTrader,1004,2021-01-01T01:00:00,OfferedPowerInMW,28808.999999999894
 ConventionalTrader,1004,2021-01-01T02:00:00,OfferedPowerInMW,28808.999999999894
 ConventionalTrader,1004,2021-01-01T03:00:00,OfferedPowerInMW,28808.999999999894
@@ -143,7 +143,7 @@ ConventionalTrader,1004,2021-01-01T20:00:00,AwardedPower,4262.000000000004
 ConventionalTrader,1004,2021-01-01T21:00:00,AwardedPower,751.0000000000081
 ConventionalTrader,1004,2021-01-01T22:00:00,AwardedPower,0.0
 ConventionalTrader,1004,2021-01-01T23:00:00,AwardedPower,0.0
-DemandTrader,100,2020-12-31T00:00:00,RequestedEnergyInMWH,12431.0
+DemandTrader,100,2021-01-01T00:00:00,RequestedEnergyInMWH,12431.0
 DemandTrader,100,2021-01-01T01:00:00,RequestedEnergyInMWH,11416.0
 DemandTrader,100,2021-01-01T02:00:00,RequestedEnergyInMWH,11163.0
 DemandTrader,100,2021-01-01T03:00:00,RequestedEnergyInMWH,11036.0
@@ -263,7 +263,7 @@ EnergyExchange,1,2021-01-01T20:00:00,DispatchSystemCostInEUR,1084426.5289827688
 EnergyExchange,1,2021-01-01T21:00:00,DispatchSystemCostInEUR,187724.79254276823
 EnergyExchange,1,2021-01-01T22:00:00,DispatchSystemCostInEUR,0.0
 EnergyExchange,1,2021-01-01T23:00:00,DispatchSystemCostInEUR,0.0
-NoSupportTrader,12,2020-12-31T00:00:00,OfferedEnergyInMWH,5500.0
+NoSupportTrader,12,2021-01-01T00:00:00,OfferedEnergyInMWH,5500.0
 NoSupportTrader,12,2021-01-01T01:00:00,OfferedEnergyInMWH,6050.0
 NoSupportTrader,12,2021-01-01T02:00:00,OfferedEnergyInMWH,6600.0
 NoSupportTrader,12,2021-01-01T03:00:00,OfferedEnergyInMWH,7700.000000000001
@@ -335,7 +335,7 @@ NoSupportTrader,12,2021-01-01T20:00:00,EnergyImbalaceInMWH,0.0
 NoSupportTrader,12,2021-01-01T21:00:00,EnergyImbalaceInMWH,0.0
 NoSupportTrader,12,2021-01-01T22:00:00,EnergyImbalaceInMWH,0.0
 NoSupportTrader,12,2021-01-01T23:00:00,EnergyImbalaceInMWH,0.0
-VariableRenewableOperator,10,2020-12-31T00:00:00,OfferedPowerInMW,0.0
+VariableRenewableOperator,10,2021-01-01T00:00:00,OfferedPowerInMW,0.0
 VariableRenewableOperator,10,2021-01-01T01:00:00,OfferedPowerInMW,0.0
 VariableRenewableOperator,10,2021-01-01T02:00:00,OfferedPowerInMW,0.0
 VariableRenewableOperator,10,2021-01-01T03:00:00,OfferedPowerInMW,0.0
@@ -359,7 +359,7 @@ VariableRenewableOperator,10,2021-01-01T20:00:00,OfferedPowerInMW,0.0
 VariableRenewableOperator,10,2021-01-01T21:00:00,OfferedPowerInMW,0.0
 VariableRenewableOperator,10,2021-01-01T22:00:00,OfferedPowerInMW,0.0
 VariableRenewableOperator,10,2021-01-01T23:00:00,OfferedPowerInMW,0.0
-VariableRenewableOperator,20,2020-12-31T00:00:00,OfferedPowerInMW,5500.0
+VariableRenewableOperator,20,2021-01-01T00:00:00,OfferedPowerInMW,5500.0
 VariableRenewableOperator,20,2021-01-01T01:00:00,OfferedPowerInMW,6050.0
 VariableRenewableOperator,20,2021-01-01T02:00:00,OfferedPowerInMW,6600.0
 VariableRenewableOperator,20,2021-01-01T03:00:00,OfferedPowerInMW,7700.000000000001

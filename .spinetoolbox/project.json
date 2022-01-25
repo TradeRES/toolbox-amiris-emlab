@@ -4,23 +4,23 @@
         "name": "Spine-EMLab-Amiris",
         "description": "",
         "specifications": {
-            "Tool": [
-                {
-                    "type": "path",
-                    "relative": false,
-                    "path": "C:/Users/isanchezjimene/.spinetoolbox/plugins/SpineOpt/specifications/Tool/load_template.json"
-                }
-            ],
             "Importer": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
+                }
+            ],
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/run_config.json"
                 },
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Importer/import_hola.json"
+                    "path": ".spinetoolbox/specifications/Tool/amiris.json"
                 }
             ]
         },
@@ -31,7 +31,7 @@
                     "right"
                 ],
                 "to": [
-                    "AMIRIS",
+                    "AMIRIS DB",
                     "left"
                 ]
             },
@@ -44,6 +44,56 @@
                     "amiris importer",
                     "left"
                 ]
+            },
+            {
+                "from": [
+                    "combine results",
+                    "right"
+                ],
+                "to": [
+                    "combinedResults",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "Scenario",
+                    "right"
+                ],
+                "to": [
+                    "run config",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "run config",
+                    "right"
+                ],
+                "to": [
+                    "AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "combine results",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "fameSetup",
+                    "right"
+                ],
+                "to": [
+                    "AMIRIS",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -52,8 +102,8 @@
         "combine results": {
             "type": "Tool",
             "description": "importAmiris",
-            "x": -281.10229517698554,
-            "y": -176.01784920909571,
+            "x": -185.41983244116815,
+            "y": 177.3780850666229,
             "specification": "combined results",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -66,8 +116,8 @@
         "amiris importer": {
             "type": "Importer",
             "description": "",
-            "x": 3.3809594056036474,
-            "y": -5.0086432259263525,
+            "x": 32.17522687853054,
+            "y": 176.00968702478065,
             "specification": "Amiris importer",
             "cancel_on_error": true,
             "purge_before_writing": false,
@@ -79,11 +129,24 @@
                 ]
             ]
         },
-        "AMIRIS": {
+        "combinedResults": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -68.58845054766645,
+            "y": 82.65208710321602,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "scripts/AMIRIS_combined.csv"
+                }
+            ]
+        },
+        "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": 127.76001474278392,
-            "y": -25.34920927436189,
+            "x": 173.802769826115,
+            "y": 84.69632880161554,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -91,20 +154,78 @@
                 "database": {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/items/amiris/AMIRIS.sqlite"
+                    "path": ".spinetoolbox/items/amiris_db/AMIRIS.sqlite"
                 }
             }
         },
-        "combinedResults": {
+        "AMIRIS": {
+            "type": "Tool",
+            "description": "",
+            "x": -277.9319803842921,
+            "y": 43.617062615053136,
+            "specification": "AMIRIS",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "literal",
+                    "arg": "-f"
+                },
+                {
+                    "type": "resource",
+                    "arg": "fameConfig.pb"
+                },
+                {
+                    "type": "literal",
+                    "arg": "setup"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/data/fameSetup.yaml"
+                }
+            ]
+        },
+        "Scenario": {
             "type": "Data Connection",
             "description": "",
-            "x": -138.91366682350315,
-            "y": -12.167620451693708,
+            "x": -511.23254786015775,
+            "y": 143.02339136563933,
             "references": [
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "scripts/AMIRIS_combined.csv"
+                    "path": "amiris/input/Simple/scenario.yaml"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "amiris/input/Austria2019/scenario.yaml"
+                }
+            ]
+        },
+        "run config": {
+            "type": "Tool",
+            "description": "",
+            "x": -379.367009721625,
+            "y": 150.12384341925264,
+            "specification": "Run config",
+            "execute_in_work": true,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/amiris/input/Austria2019/scenario.yaml"
+                }
+            ]
+        },
+        "fameSetup": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -476.74463788546456,
+            "y": -119.6933346180528,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/fameSetup.yaml"
                 }
             ]
         }
