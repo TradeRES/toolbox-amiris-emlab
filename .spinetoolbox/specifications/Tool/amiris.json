@@ -3,20 +3,20 @@
     "tooltype": "python",
     "includes": [
         "run-java_ingrid.py",
-        "amiris-jar-with-dependencies.jar"
+        "amiris-jar-with-dependencies2.jar"
     ],
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [
-        "AMIRIS.FameResult.pb"
+        "AMIRIS.FameResult2.pb"
     ],
     "cmdline_args": [
         "-cp",
-        "amiris-jar-with-dependencies.jar",
+        "amiris-jar-with-dependencies2.jar",
         "de.dlr.gitlab.fame.setup.FameRunner"
     ],
-    "execute_in_work": true,
+    "execute_in_work": false,
     "includes_main_path": "../../../scripts",
     "execution_settings": {
         "env": "conda",
