@@ -14,16 +14,27 @@ Other project-specific ignores can be added to the [.gitignore](.gitignore) file
 
 ## Folder strucure
 
-### `data`
-
-This folder could be used for storing the original data files. 
-Please add metadata and licensing information as well.
-
 
 ### `scripts`
 
-This folder could be used for storing processing scripts and their tool specifications.
+This folder stores the code triggered from Spinetoolbox to do the data exchange
 
+### `amiris`
+
+This is the code from the amiris project https://gitlab.com/dlr-ve/esy/amiris/amiris/
+
+### `emlabpy`
+
+This code is based on the model EMLab.
+
+### `examples`
+
+This folder contains the data to run Amiris https://gitlab.com/dlr-ve/esy/amiris/examples
+
+### `data`
+
+This folder could be used for storing the original data files.
+Please add metadata and licensing information as well.
 
 ## License and Terms of Use
 

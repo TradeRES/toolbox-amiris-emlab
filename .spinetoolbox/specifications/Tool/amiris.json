@@ -2,7 +2,7 @@
     "name": "AMIRIS",
     "tooltype": "python",
     "includes": [
-        "run-java_ingrid2.py"
+        "run-java_ingrid.py"
     ],
     "description": "",
     "inputfiles": [],
@@ -12,7 +12,7 @@
     ],
     "cmdline_args": [
         "-cp",
-        "amiris-jar-with-dependencies2.jar",
+        "amiris-jar-with-dependencies.jar",
         "de.dlr.gitlab.fame.setup.FameRunner"
     ],
     "execute_in_work": false,

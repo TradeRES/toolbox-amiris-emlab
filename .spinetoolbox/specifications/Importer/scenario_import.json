@@ -10,11 +10,11 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "constant"
+                                "value": "unit"
                             },
                             {
                                 "map_type": "Object",
-                                "position": -1
+                                "position": "header"
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -26,7 +26,8 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "Base"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -34,7 +35,7 @@
                             },
                             {
                                 "map_type": "ParameterValue",
-                                "position": 1
+                                "position": "hidden"
                             }
                         ]
                     }
@@ -42,48 +43,12 @@
             ],
             "VariableRenewableOperator": [
                 {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": 1,
-                                "skip_columns": [
-                                    0
-                                ]
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                },
-                {
-                    "Mapping 2": {
+                    "Conventional": {
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
+                                "value": "Unit",
                                 "skip_columns": [
                                     0
                                 ]
@@ -98,11 +63,12 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": "hidden"
+                                "position": 1
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": 1
+                                "position": "hidden",
+                                "value": "Base"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -118,7 +84,8 @@
             ]
         },
         "selected_tables": [
-            "PredefinedPlantBuilder"
+            "PredefinedPlantBuilder",
+            "VariableRenewableOperator"
         ],
         "table_options": {
             "PredefinedPlantBuilder": {
@@ -131,10 +98,10 @@
             "PredefinedPlantBuilder": {
                 "0": "string",
                 "1": "float",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string"
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float"
             },
             "VariableRenewableOperator": {
                 "0": "float",

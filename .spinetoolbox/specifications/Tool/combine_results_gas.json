@@ -1,0 +1,23 @@
+{
+    "name": "Combine results gas",
+    "tooltype": "python",
+    "includes": [
+        "combine_AMIRIS_results_ingrid2.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combinedGas.csv"
+    ],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../scripts",
+    "execution_settings": {
+        "env": "conda",
+        "kernel_spec_name": "conda-env-amirisspine-py",
+        "use_jupyter_console": true,
+        "executable": "",
+        "fail_on_stderror": false
+    }
+}

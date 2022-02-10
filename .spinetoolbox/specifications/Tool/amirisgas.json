@@ -1,0 +1,27 @@
+{
+    "name": "Amirisgas",
+    "tooltype": "python",
+    "includes": [
+        "run-java_ingrid2.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "AMIRIS.FameResultGas.pb"
+    ],
+    "cmdline_args": [
+        "-cp",
+        "amiris-jar-with-dependencies2.jar",
+        "de.dlr.gitlab.fame.setup.FameRunner"
+    ],
+    "execute_in_work": true,
+    "includes_main_path": "../../../scripts",
+    "execution_settings": {
+        "env": "conda",
+        "kernel_spec_name": "conda-env-amirisspine-py",
+        "use_jupyter_console": true,
+        "executable": "",
+        "fail_on_stderror": false
+    }
+}
