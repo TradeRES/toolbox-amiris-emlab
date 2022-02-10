@@ -1,0 +1,5 @@
+,ObjectClass,variable,AgentId,value
+59,VariableRenewableOperator,AwardedPowerInMWH,50,27127225.630324848
+65,VariableRenewableOperator,CostsInEUR,50,0.0
+71,VariableRenewableOperator,OfferedPowerInMW,50,27495523.63040045
+77,VariableRenewableOperator,ReceivedMoneyInEUR,50,914669048.04734

@@ -1,0 +1,1 @@
+[{"Id": 10, "Type": "VariableRenewableOperator", "Set": "PVRooftop", "EnergyCarrier": "PV", "SupportInstrument": "FIT", "InstalledPowerInMW": 1193, "OpexVarInEURperMWH": 0.0, "YieldProfile": "./timeseries/solar_profile.csv"}]

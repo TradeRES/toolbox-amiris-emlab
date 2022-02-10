@@ -1,7 +1,10 @@
 # %%
 import pandas as pd
-df = pd.read_csv("C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combined.csv", sep=',')
-
+import sys
+#df = pd.read_csv("C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combined.csv", sep=',')
+print(sys.argv[1])
+combinedfile = sys.argv[1]
+df = pd.read_csv(combinedfile, sep=',')
 # Conventional operator
 
 # %%
@@ -29,8 +32,10 @@ for agent in agents:
 # %%
 #highest profits
 dfprofits = pd.DataFrame(profits, columns=["Agent", "profit"])
-dfprofits.sort_values(by=['profit'], ascending=False)
+dfprofits = dfprofits.sort_values(by=["profit"], ascending=False)
 
 # %%
 HighestProfitAgent = dfprofits.iloc[0].Agent
 BestInvestment = df.loc[(df['AgentId'] == HighestProfitAgent)]
+
+BestInvestment.to_csv('Bestinvestment.csv', index=True)

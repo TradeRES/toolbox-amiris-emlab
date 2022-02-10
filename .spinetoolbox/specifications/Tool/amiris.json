@@ -2,14 +2,13 @@
     "name": "AMIRIS",
     "tooltype": "python",
     "includes": [
-        "run-java_ingrid.py",
-        "amiris-jar-with-dependencies2.jar"
+        "run-java_ingrid2.py"
     ],
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [
-        "AMIRIS.FameResult2.pb"
+        "AMIRIS.FameResult.pb"
     ],
     "cmdline_args": [
         "-cp",

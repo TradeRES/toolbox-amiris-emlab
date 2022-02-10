@@ -14,7 +14,8 @@ CONFIG = {
     Config.LOG_LEVEL: "info",
     Config.LOG_FILE: None,
     Config.AGENT_LIST: None,
-    Config.OUTPUT: 'FameResults_converted'
+    Config.OUTPUT: 'FameResults_converted',
+    Config.SINGLE_AGENT_EXPORT: False,
 }
 
 
@@ -50,7 +51,9 @@ def convert_fame_time_step_to_datetime(fame_time_steps: int) -> str:
 
 # Get input file from cmd line arguments
 
+print("PATH")
 print(os.getcwd())
+print("PB")
 print(sys.argv[1])
 input_pb_file = sys.argv[1]
 

@@ -26,6 +26,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/amiris_importer.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/scenario_import.json"
                 }
             ]
         },
@@ -129,6 +134,16 @@
                     "AMIRIS2",
                     "left"
                 ]
+            },
+            {
+                "from": [
+                    "ScenarioImporter",
+                    "right"
+                ],
+                "to": [
+                    "PowerPlants",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -137,8 +152,8 @@
         "combine results": {
             "type": "Tool",
             "description": "importAmiris",
-            "x": 311.8768894426474,
-            "y": 160.2845129916968,
+            "x": 307.37688944264727,
+            "y": 191.85447084305466,
             "specification": "combined results",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -146,15 +161,15 @@
         "amiris importer": {
             "type": "Importer",
             "description": "",
-            "x": 419.00228840515814,
-            "y": 209.12959693039454,
+            "x": 414.502288405158,
+            "y": 240.6995547817524,
             "specification": "Amiris importer",
             "cancel_on_error": true,
             "purge_before_writing": false,
             "on_conflict": "keep",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combined2.csv",
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combined.csv",
                     true
                 ]
             ]
@@ -162,8 +177,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": 107.88301573597556,
-            "y": 75.72490711430703,
+            "x": 103.38301573597545,
+            "y": 107.29486496566489,
             "specification": "AMIRIS",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -188,8 +203,8 @@
         "Scenario": {
             "type": "Data Connection",
             "description": "",
-            "x": -578.0006068910744,
-            "y": -2.289733799681329,
+            "x": -582.5006068910745,
+            "y": 29.280224051676527,
             "references": [
                 {
                     "type": "path",
@@ -206,8 +221,8 @@
         "run config": {
             "type": "Tool",
             "description": "",
-            "x": -323.3474135970025,
-            "y": 142.0478259064755,
+            "x": -327.8474135970026,
+            "y": 173.61778375783337,
             "specification": "Run config",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -220,8 +235,8 @@
         "fameSetup": {
             "type": "Data Connection",
             "description": "",
-            "x": -99.71827021124449,
-            "y": 194.44204372682088,
+            "x": -105.51127635798835,
+            "y": 226.01200157817874,
             "references": [
                 {
                     "type": "path",
@@ -233,8 +248,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 572.5006068910745,
-            "y": 141.18355034187613,
+            "x": 568.0006068910744,
+            "y": 172.75350819323398,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -249,8 +264,8 @@
         "AMIRIS2": {
             "type": "Tool",
             "description": "",
-            "x": 100.57544109148415,
-            "y": -37.94645459266667,
+            "x": 96.07544109148404,
+            "y": -6.376496741308813,
             "specification": "AMIRIS",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -275,8 +290,8 @@
         "fameSetup2": {
             "type": "Data Connection",
             "description": "",
-            "x": -128.73279328631503,
-            "y": -198.62959693039454,
+            "x": -133.23279328631514,
+            "y": -167.05963907903669,
             "references": [
                 {
                     "type": "path",
@@ -288,8 +303,8 @@
         "combine results 2": {
             "type": "Tool",
             "description": "importAmiris",
-            "x": 286.365324419482,
-            "y": -9.492148137027357,
+            "x": 281.8653244194819,
+            "y": 22.0778097143305,
             "specification": "combined results",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -297,8 +312,8 @@
         "run config 2": {
             "type": "Tool",
             "description": "",
-            "x": -309.50132841625884,
-            "y": -81.46480564246798,
+            "x": -314.00132841625896,
+            "y": -49.894847791110124,
             "specification": "run config2",
             "execute_in_work": true,
             "cmd_line_args": [
@@ -311,14 +326,37 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -484.4616037812919,
-            "y": -267.7695126331102,
+            "x": -488.961603781292,
+            "y": -236.19955478175234,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
                 "port": "44999",
                 "database": "traderes"
             }
+        },
+        "PowerPlants": {
+            "type": "Data Store",
+            "description": "",
+            "x": -437.64310529181853,
+            "y": -130.5754838739524,
+            "url": {
+                "dialect": "",
+                "host": "",
+                "port": "",
+                "database": ""
+            }
+        },
+        "ScenarioImporter": {
+            "type": "Importer",
+            "description": "",
+            "x": -563.9139028842121,
+            "y": -136.31506558269757,
+            "specification": "Scenario import",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": []
         }
     }
 }

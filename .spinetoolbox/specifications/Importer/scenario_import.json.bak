@@ -1,0 +1,38 @@
+{
+    "name": "Scenario import",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "scenario": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "scenario"
+        ],
+        "table_options": {
+            "scenario": {}
+        },
+        "table_types": {},
+        "table_row_types": {},
+        "source_type": "JSONConnector"
+    },
+    "description": ""
+}

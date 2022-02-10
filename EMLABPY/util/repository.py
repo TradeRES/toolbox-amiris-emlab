@@ -2,6 +2,9 @@
 The Repository: home of all objects that play a part in the model.
 All objects are read through the SpineDBReader and stored in the Repository.
 
+
+
+
 Jim Hommes - 25-3-2021
 """
 from datetime import datetime
@@ -12,6 +15,9 @@ from domain.energy import *
 from domain.markets import *
 from domain.trends import *
 from domain.zones import *
+from contracts import *
+
+from contracts import Loan
 
 
 class Repository:
@@ -25,11 +31,9 @@ class Repository:
         Initialize all Repository variables
         """
         self.dbrw = None
-
         self.current_tick = 0
         self.time_step = 0
         self.start_simulation_year = 0
-
         self.energy_producers = dict()
         self.power_plants = dict()
         self.substances = dict()
@@ -46,23 +50,70 @@ class Repository:
         self.national_governments = dict()
         self.governments = dict()
         self.market_stability_reserves = dict()
-
         self.load = dict()
         self.emissions = dict()
-
         self.exports = dict()
-
         self.power_plant_dispatch_plan_status_accepted = 'Accepted'
         self.power_plant_dispatch_plan_status_failed = 'Failed'
         self.power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
         self.power_plant_dispatch_plan_status_awaiting = 'Awaiting'
-
         self.power_plant_status_operational = 'OPR'
 
-    """
-    Repository functions:
-    All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
-    """
+        self.marketForSubstance = {}
+        self.electricitySpotMarketForNationalGovernment = {}
+        self.electricitySpotMarketForPowerPlant = {}
+        self.loansFromAgent = {}
+        self.loansToAgent = {}
+        self.powerPlantsForAgent = {}
+        self.loanList = []
+     """
+     Repository functions:
+     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
+     """
+
+    # PowerPlants
+    def createLoan(self, from_keyword_conflict, to, amount, numberOfPayments, loanStartTime, plant):
+        loan = Loan()
+        loan.setFrom(from_keyword_conflict)
+        loan.setTo(to)
+        loan.setAmountPerPayment(amount)
+        loan.setTotalNumberOfPayments(numberOfPayments)
+        loan.setRegardingPowerPlant(plant)
+        loan.setLoanStartTime(loanStartTime)
+        loan.setNumberOfPaymentsDone(0)
+        plant.setLoan(loan)
+        self.loanList.add(loan)
+        if not self.loansFromAgent.containsKey(from_keyword_conflict):
+            self.loansFromAgent.put(from_keyword_conflict, [])
+        self.loansFromAgent.get(from_keyword_conflict).add(loan)
+        if not self.loansToAgent.containsKey(to):
+            self.loansToAgent.put(to, [])
+        self.loansToAgent.get(to).add(loan)
+        return loan
+
+    def findLoansFromAgent(self, agent):
+        return self.loansFromAgent.get(agent)
+
+
+    def findLoansToAgent(self, agent):
+        return self.loansToAgent.get(agent)
+
+    # Cashflow
+    def createCashFlow(self, from_keyword_conflict, to, amount, type, time, plant):
+        cashFlow = CashFlow()
+        cashFlow.setFrom(from_keyword_conflict)
+        cashFlow.setTo(to)
+        cashFlow.setMoney(amount)
+        cashFlow.setType(type)
+        cashFlow.setTime(time)
+        cashFlow.setRegardingPowerPlant(plant)
+        from_keyword_conflict.setCash(from_keyword_conflict.getCash() - amount)
+        if to is not None:
+            to.setCash(to.getCash() + amount)
+        cashFlows.add(cashFlow)
+        return cashFlow
+
+
 
     # PowerPlants
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:

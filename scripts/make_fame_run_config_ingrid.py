@@ -14,7 +14,7 @@ CONFIG = {
 
 # Get scenario file from the command line
 scenario_yaml = sys.argv[1] 
-
+print(scenario_yaml)
 # Hack to overcome the issue that `make_config` has to be run
 # from the scenario root dir (containing yaml and data folders
 curdir = os.getcwd()
