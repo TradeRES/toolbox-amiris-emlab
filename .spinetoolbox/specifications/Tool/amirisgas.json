@@ -8,14 +8,14 @@
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [
-        "AMIRIS.FameResultGas.pb"
+        "AMIRIS.FameResult2.pb"
     ],
     "cmdline_args": [
         "-cp",
         "amiris-jar-with-dependencies2.jar",
         "de.dlr.gitlab.fame.setup.FameRunner"
     ],
-    "execute_in_work": true,
+    "execute_in_work": false,
     "includes_main_path": "../../../scripts",
     "execution_settings": {
         "env": "conda",
