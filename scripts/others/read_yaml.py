@@ -71,6 +71,6 @@ for agent in data['Agents']:
             position += 1
             column = []
             value = []
-with pd.ExcelWriter('scenario.xlsx') as writer:
+with pd.ExcelWriter("C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\scenario.xlsx") as writer:
     df1.to_excel(writer, sheet_name='PredefinedPlantBuilder')
     df2.to_excel(writer, sheet_name='VariableRenewableOperator')

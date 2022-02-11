@@ -43,7 +43,17 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/combine_results_gas.json"
+                    "path": ".spinetoolbox/specifications/Tool/run_config_river.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/amiris_river.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/combineresultsriver.json"
                 }
             ],
             "Importer": [
@@ -180,6 +190,50 @@
                     "CombineResultsGas",
                     "left"
                 ]
+            },
+            {
+                "name": "from ScenarioRiver to run config river",
+                "from": [
+                    "ScenarioRiver",
+                    "right"
+                ],
+                "to": [
+                    "run config river",
+                    "left"
+                ]
+            },
+            {
+                "name": "from run config river to Amiris River",
+                "from": [
+                    "run config river",
+                    "right"
+                ],
+                "to": [
+                    "Amiris River",
+                    "left"
+                ]
+            },
+            {
+                "name": "from fameSetupRiver to Amiris River",
+                "from": [
+                    "fameSetupRiver",
+                    "right"
+                ],
+                "to": [
+                    "Amiris River",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Amiris River to CombineResultsRiver",
+                "from": [
+                    "Amiris River",
+                    "right"
+                ],
+                "to": [
+                    "CombineResultsRiver",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -188,8 +242,8 @@
         "combine results": {
             "type": "Tool",
             "description": "importAmiris",
-            "x": 310.2581251980056,
-            "y": 171.68582055554705,
+            "x": 295.1526016675126,
+            "y": 441.06765684933754,
             "specification": "combined results",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -208,8 +262,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": 93.29869059222165,
-            "y": 167.8008158281877,
+            "x": -40.13343392713251,
+            "y": 442.2178266321424,
             "specification": "AMIRIS",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -234,8 +288,8 @@
         "run config": {
             "type": "Tool",
             "description": "",
-            "x": -327.8474135970026,
-            "y": 173.61778375783337,
+            "x": -365.6112224232349,
+            "y": 445.5172073067059,
             "specification": "Run config",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -248,8 +302,8 @@
         "fameSetup": {
             "type": "Data Connection",
             "description": "",
-            "x": -105.51127635798835,
-            "y": 226.01200157817874,
+            "x": -281.7423842137391,
+            "y": 306.5747937408076,
             "references": [
                 {
                     "type": "path",
@@ -347,8 +401,8 @@
         "Scenario": {
             "type": "Data Connection",
             "description": "",
-            "x": -509.97872869840603,
-            "y": 169.99290956613538,
+            "x": -580.4711718407065,
+            "y": 449.4450948802545,
             "references": [
                 {
                     "type": "path",
@@ -423,6 +477,81 @@
                     "arg": "AMIRIS.FameResult2.pb"
                 }
             ]
+        },
+        "ScenarioRiver": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -596.9038095283726,
+            "y": 173.89538850255036,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "amiris/input/Austria2019/scenario_river.yaml"
+                }
+            ]
+        },
+        "run config river": {
+            "type": "Tool",
+            "description": "",
+            "x": -344.35923282567245,
+            "y": 165.1518769674142,
+            "specification": "Run Config River",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "<project>/amiris/input/Austria2019/scenario_river.yaml"
+                }
+            ]
+        },
+        "fameSetupRiver": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -166.90881182876973,
+            "y": 77.30513389964074,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "scripts/NewPowerPlants/River/fameSetupRiver.yaml"
+                }
+            ]
+        },
+        "Amiris River": {
+            "type": "Tool",
+            "description": "",
+            "x": 19.326283474910184,
+            "y": 173.93655127419163,
+            "specification": "Amiris river",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "literal",
+                    "arg": "-f"
+                },
+                {
+                    "type": "resource",
+                    "arg": "fameConfigRiver.pb"
+                },
+                {
+                    "type": "literal",
+                    "arg": "--setup"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/scripts/NewPowerPlants/River/fameSetupRiver.yaml"
+                }
+            ]
+        },
+        "CombineResultsRiver": {
+            "type": "Tool",
+            "description": "",
+            "x": 293.40812184636366,
+            "y": 172.1796164128362,
+            "specification": "CombineResultsRiver",
+            "execute_in_work": true,
+            "cmd_line_args": []
         }
     }
 }
