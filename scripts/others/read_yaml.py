@@ -16,6 +16,7 @@ with open(scenario, "r") as stream:
 column = []
 value = []
 position = 0
+
 for agent in data['Agents']:
     if 'Attributes' in agent:
         if (agent['Type'] in ('PredefinedPlantBuilder')):
@@ -41,6 +42,15 @@ for agent in data['Agents']:
             column = []
             value = []
 
+oldheaders = df1.columns.values.tolist()
+neaheader = []
+for i in oldheaders:
+    if i == 'index':
+        neaheader.append('index')
+    else:
+        new = str(5) + str(i)[2:]
+        neaheader.append(int(new))
+df1.rename(columns=dict(zip(oldheaders, neaheader)), inplace=True)
 
 
 

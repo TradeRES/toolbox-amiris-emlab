@@ -10,7 +10,7 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "unit"
+                                "value": "ConventionalPlantOperator"
                             },
                             {
                                 "map_type": "Object",
@@ -47,8 +47,7 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Unit",
+                                "position": -2,
                                 "skip_columns": [
                                     0
                                 ]
@@ -112,10 +111,15 @@
                 "5": "float",
                 "6": "float",
                 "7": "float",
-                "8": "float"
+                "8": "float",
+                "9": "string"
             }
         },
-        "table_row_types": {},
+        "table_row_types": {
+            "VariableRenewableOperator": {
+                "1": "string"
+            }
+        },
         "source_type": "ExcelConnector"
     },
     "description": ""

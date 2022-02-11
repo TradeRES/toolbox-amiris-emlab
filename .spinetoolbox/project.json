@@ -66,6 +66,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/scenario_import.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/amiris_importer_gas.json"
                 }
             ]
         },
@@ -122,17 +127,6 @@
                 ],
                 "to": [
                     "run config gas",
-                    "left"
-                ]
-            },
-            {
-                "name": "from ScenarioImporter to PowerPlants",
-                "from": [
-                    "ScenarioImporter",
-                    "right"
-                ],
-                "to": [
-                    "PowerPlants",
                     "left"
                 ]
             },
@@ -234,6 +228,50 @@
                     "CombineResultsRiver",
                     "left"
                 ]
+            },
+            {
+                "name": "from CombineResultsRiver to amiris importer",
+                "from": [
+                    "CombineResultsRiver",
+                    "right"
+                ],
+                "to": [
+                    "amiris importer",
+                    "left"
+                ]
+            },
+            {
+                "name": "from CombineResultsGas to amiris importer gas",
+                "from": [
+                    "CombineResultsGas",
+                    "right"
+                ],
+                "to": [
+                    "amiris importer gas",
+                    "left"
+                ]
+            },
+            {
+                "name": "from amiris importer gas to AMRISDB",
+                "from": [
+                    "amiris importer gas",
+                    "right"
+                ],
+                "to": [
+                    "AMRISDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from ScenarioImporter to AMRISDB",
+                "from": [
+                    "ScenarioImporter",
+                    "right"
+                ],
+                "to": [
+                    "AMRISDB",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -251,13 +289,18 @@
         "amiris importer": {
             "type": "Importer",
             "description": "",
-            "x": 500.29370888146434,
-            "y": 20.62071744058838,
+            "x": 506.2816426343531,
+            "y": 110.43972373391804,
             "specification": "Amiris importer",
             "cancel_on_error": true,
             "purge_before_writing": false,
-            "on_conflict": "keep",
-            "file_selection": []
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\NewPowerPlants\\River\\AMIRIS_combinedRiver.csv",
+                    true
+                ]
+            ]
         },
         "AMIRIS": {
             "type": "Tool",
@@ -315,8 +358,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 676.0469477170079,
-            "y": 12.844923770852375,
+            "x": 741.9142189987831,
+            "y": -194.73677966262062,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -343,8 +386,8 @@
         "PowerPlants": {
             "type": "Data Store",
             "description": "",
-            "x": 13.141571906543845,
-            "y": -371.90214773352295,
+            "x": -20.790052693158472,
+            "y": -397.8498606627072,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -467,22 +510,17 @@
         "CombineResultsGas": {
             "type": "Tool",
             "description": "",
-            "x": 287.59016593403555,
-            "y": -48.47025268551159,
+            "x": 285.59418801640595,
+            "y": -48.47025268551158,
             "specification": "Combine Results Gas",
             "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "AMIRIS.FameResult2.pb"
-                }
-            ]
+            "cmd_line_args": []
         },
         "ScenarioRiver": {
             "type": "Data Connection",
             "description": "",
-            "x": -596.9038095283726,
-            "y": 173.89538850255036,
+            "x": -600.8957653636317,
+            "y": 173.89538850255033,
             "references": [
                 {
                     "type": "path",
@@ -550,8 +588,36 @@
             "x": 293.40812184636366,
             "y": 172.1796164128362,
             "specification": "CombineResultsRiver",
-            "execute_in_work": true,
-            "cmd_line_args": []
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "AMIRIS.FameResult_River.pb"
+                }
+            ]
+        },
+        "amiris importer gas": {
+            "type": "Importer",
+            "description": "",
+            "x": 473.04676647820287,
+            "y": -81.83509462281147,
+            "specification": "amiris importer gas",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combinedGas.csv",
+                    true
+                ]
+            ]
+        },
+        "rename conventional": {
+            "type": "Data Transformer",
+            "description": "",
+            "x": 205.58572551584342,
+            "y": -365.2639589262072,
+            "specification": ""
         }
     }
 }
