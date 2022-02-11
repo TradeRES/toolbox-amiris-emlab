@@ -8,7 +8,7 @@
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [
-        "AMIRIS_combinedGas.csv"
+        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combinedGas.csv"
     ],
     "cmdline_args": [
         "AMIRIS.FameResult2.pb"

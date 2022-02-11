@@ -1,0 +1,69 @@
+{
+    "name": "amiris importer gas",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "data": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 2
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "RunRiver"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 3
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "data"
+        ],
+        "table_options": {
+            "data": {
+                "encoding": "ascii",
+                "delimiter": ",",
+                "quotechar": "\"",
+                "skip": 0,
+                "has_header": false
+            }
+        },
+        "table_types": {
+            "data": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "float"
+            }
+        },
+        "table_row_types": {},
+        "source_type": "CSVConnector"
+    },
+    "description": ""
+}
