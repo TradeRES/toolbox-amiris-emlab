@@ -1,45 +1,54 @@
 """
 This file contains all interactions with the system clock.
 A tick is one year.
-
+For the initialization. make current year the start year and the Simulation tick 0
+for the increment clock, add a tick to SimulationTick and a year to current year
+Ingrid modified 17-2-2022
 Jim Hommes - 7-4-2021
 """
 import sys
 from util.spinedb import SpineDB
 
 db_url = sys.argv[1]
-db_config_url = sys.argv[2]
-db_emlab = SpineDB(db_url)
-db_parameters = SpineDB(db_config_url)
+db_amiris = SpineDB(db_url)
 
 try:
-    object_name = 'SystemClockTicks'
-    object_parameter_value_name = 'ticks'
+    class_name = "Configuration"
+    object_name = 'SimulationYears'
+    object_parameter_value_name = 'SimulationTick'
 
-    if len(sys.argv) >= 3:
-        if sys.argv[3] == 'initialize_clock':
+    if len(sys.argv) >= 2:
+        if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')
-            db_emlab.import_object_classes([object_name])
-            db_emlab.import_objects([(object_name, object_name)])
-            db_emlab.import_data({'object_parameters': [[object_name, object_parameter_value_name]]})
-            db_emlab.import_alternatives([str(0)])
-            db_emlab.import_object_parameter_values([(object_name, object_name, object_parameter_value_name, 0, '0')])
-            db_emlab.commit('Clock intialization')
+            db_amiris.import_object_classes([class_name])
+            db_amiris.import_objects([(class_name, object_name)])
+            db_amiris.import_data({'object_parameters': [[class_name, object_parameter_value_name]]})
+            db_amiris.import_alternatives([str(0)])
+            db_amiris.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
+            StartYear = next(int(i['parameter_value']) for i in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                            if i['parameter_name'] == 'Start Year')
+            db_amiris.import_object_parameter_values([(class_name,object_name, "CurrentYear", StartYear, '0')])
+            db_amiris.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
-        if sys.argv[3] == 'increment_clock':
+        if sys.argv[2] == 'increment_clock':
+
             step = next(int(i['parameter_value']) for i
-                        in db_parameters.query_object_parameter_values_by_object_class('Coupling Parameters')
-                        if i['object_name'] == 'Time Step')
+                        in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                        if i['parameter_name'] == 'Time Step')
+
             print('Incrementing Clock (tick +' + str(step) + ')')
-            previous_tick = max([int(i['parameter_value']) for i
-                                 in db_emlab.query_object_parameter_values_by_object_class('SystemClockTicks')])
+            previous_tick = next(int(i['parameter_value']) for i
+                                 in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                                 if i['parameter_name'] == object_parameter_value_name)
 
             new_tick = step + previous_tick
-            db_emlab.import_alternatives([str(new_tick)])
-            db_emlab.import_object_parameter_values([(object_name, object_name, object_parameter_value_name, new_tick,
-                                                      str(new_tick))])
-            db_emlab.commit('Clock increment')
+            Current_year = next(int(i['parameter_value']) for i in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                                if i['parameter_name'] == 'CurrentYear')
+            updated_year = step + Current_year
+            db_amiris.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
+            db_amiris.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
+            db_amiris.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + ')')
     else:
         print('No mode specified.')
@@ -47,5 +56,4 @@ except Exception:
     raise
 finally:
     print('Closing DB Connections...')
-    db_emlab.close_connection()
-    db_parameters.close_connection()
+    db_amiris.close_connection()

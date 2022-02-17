@@ -1,6 +1,6 @@
 """
 This file contains all classes directly related to energy. PowerPlants, fuels, technologies, etc.
-
+Ingrid Sanchez added lans
 Jim Hommes - 13-5-2021
 """
 from domain.actors import EnergyProducer
@@ -121,7 +121,12 @@ class PowerPlant(ImportObject):
                                                                         self.actualPermittime + \
                                                                         self.actualLeadtime ) * self.actualNominalCapacity)
 
-    # FROM HERE EQUATIONS ARE OLD
+
+
+    '''
+     # FROM HERE EQUATIONS ARE OLD   
+    
+    '''
     def calculate_emission_intensity(self, reps):
         emission = 0
         substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)

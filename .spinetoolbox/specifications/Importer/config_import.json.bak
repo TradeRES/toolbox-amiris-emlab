@@ -1,0 +1,39 @@
+{
+    "name": "Config Import",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "Coupling Parameters": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "FeatureEntityClass",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "FeatureParameterDefinition",
+                                "position": 1
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "Coupling Parameters"
+        ],
+        "table_options": {
+            "Coupling Parameters": {}
+        },
+        "table_types": {
+            "Coupling Parameters": {
+                "0": "string",
+                "1": "string"
+            }
+        },
+        "table_row_types": {},
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

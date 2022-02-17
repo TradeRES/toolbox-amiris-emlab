@@ -2,10 +2,8 @@
 The Repository: home of all objects that play a part in the model.
 All objects are read through the SpineDBReader and stored in the Repository.
 
-
-
-
 Jim Hommes - 25-3-2021
+Ingrid Sanchez 16-2-2022
 """
 from datetime import datetime
 from typing import Optional, Dict, List
@@ -66,10 +64,9 @@ class Repository:
         self.loansToAgent = {}
         self.powerPlantsForAgent = {}
         self.loanList = []
-     """
-     Repository functions:
-     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
-     """
+    """
+    This part is new 
+    """
 
     # PowerPlants
     def createLoan(self, from_keyword_conflict, to, amount, numberOfPayments, loanStartTime, plant):
@@ -114,7 +111,10 @@ class Repository:
         return cashFlow
 
 
-
+    """
+    Repository functions:
+    All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
+    """
     # PowerPlants
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

@@ -1,3 +1,7 @@
+# Set future values to AMIRIS
+
+
+
 CO2_price = 35
 CO2_development = 1.062
 gas_price = 25.56
@@ -10,12 +14,15 @@ hydrogen_import_price = 4000
 hydrogen_development = 1
 
 class UpdatefutureValues():
-    useFundamentalCO2Forecast = False
-    futureTimePoint = 5
-    expectedCO2Price = 0
-    expectedDemand = 0
-    MarketInformation = ''
-    EnergyProducer = ''
+    def __init__(self, reps: Repository):
+        self.__useFundamentalCO2Forecast = False
+        self.futureTimePoint = 5
+        self.__expectedCO2Price = None
+        self.__expectedFuelPrices = None
+        self.__expectedDemand = None
+        self.__market = None
+        self.marketInformation = None
+        self.agent = None
 
     def initEvaluationForEnergyProducer(, ):
         setAgent()
@@ -42,6 +49,7 @@ class UpdatefutureValues():
 
     def setTimeHorizon():
         return futureTimePoint = getCurrentTick() + agent.InvestmentFutureTimeHorizon()
+
 
 
     def predictFuelPrices(EnergyProducer, futureTimePoint):
