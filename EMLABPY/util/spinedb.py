@@ -214,6 +214,7 @@ class SpineDB(object):
     def import_alternatives(self, data) -> int:
         """
         Imports alternatives.
+        Imports alternatives.
 
         Example:
 

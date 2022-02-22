@@ -41,18 +41,106 @@
                         ]
                     }
                 }
+            ],
+            "FuelMap": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": 0,
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 2
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Tech-Fuel": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dictFuel": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "Coupling Parameters"
+            "Coupling Parameters",
+            "FuelMap",
+            "Tech-Fuel",
+            "dictFuel"
         ],
         "table_options": {
-            "Coupling Parameters": {}
+            "Coupling Parameters": {},
+            "FuelMap": {},
+            "Tech-Fuel": {},
+            "dictFuel": {}
         },
         "table_types": {
             "Coupling Parameters": {
                 "0": "string",
                 "1": "float"
+            },
+            "FuelMap": {
+                "0": "string",
+                "1": "string",
+                "2": "float"
             }
         },
         "table_row_types": {},

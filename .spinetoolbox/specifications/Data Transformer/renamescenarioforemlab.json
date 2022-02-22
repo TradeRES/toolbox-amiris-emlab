@@ -1,0 +1,17 @@
+{
+    "name": "RenameScenarioforEMLab",
+    "item_type": "Data Transformer",
+    "description": "",
+    "filter": {
+        "type": "parameter_rename",
+        "settings": {
+            "ConventionalPlantOperator": {
+                "InstalledPowerInMW": "capacity",
+                "Minimal": "efficiency"
+            },
+            "VariableRenewableOperator": {
+                "InstalledPowerInMW": "capacity"
+            }
+        }
+    }
+}

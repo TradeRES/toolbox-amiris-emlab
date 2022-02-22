@@ -1,0 +1,573 @@
+{
+    "item_type": "Exporter",
+    "output_format": "Excel",
+    "name": "Exporter toward backbone",
+    "description": "",
+    "mappings": {
+        "object classes without parameters": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^grid$|^flow$|^unittype$|^reserve_type$|^group$"
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "node": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": "table_name",
+                    "filter_re": "^node$"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 1,
+                    "filter_re": "^price$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 2
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "unit": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "unit"
+                },
+                {
+                    "map_type": "ObjectClass",
+                    "position": "hidden",
+                    "filter_re": "^unit$"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 1,
+                    "filter_re": "^availability$|^maxUnitCount$|^minShutDownHours$|^minOperationHours$|^unitCount$|^op00$|^op01$|^eff00$|^eff01$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 2
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "node_emission": {
+            "type": "relationship_object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "node_emission"
+                },
+                {
+                    "map_type": "RelationshipClassObjectHighlightingMapping",
+                    "position": "hidden",
+                    "filter_re": "^grid__node$",
+                    "highlight_dimension": 0
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 1,
+                    "filter_re": "^co2_content$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "RelationshipObjectHighlightingMapping",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 2
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 3
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "2d classes without parameters": {
+            "type": "relationships",
+            "mapping": [
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "table_name",
+                    "filter_re": "^flow__unit$|^unit__unittype$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        },
+        "group_emission": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "group_emission"
+                },
+                {
+                    "map_type": "ObjectClass",
+                    "position": "hidden",
+                    "filter_re": "^group$"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 1,
+                    "filter_re": "^emissionCap$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 2
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "grid__node": {
+            "type": "relationship_object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "grid__node_demand"
+                },
+                {
+                    "map_type": "RelationshipClassObjectHighlightingMapping",
+                    "position": "hidden",
+                    "filter_re": "^grid__node$",
+                    "highlight_dimension": 1
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 2,
+                    "filter_re": "demand"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "RelationshipObjectHighlightingMapping",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 3
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "DefaultValueIndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefaultValueIndex",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "DefaultValueIndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefaultValueIndex",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 4
+                }
+            ],
+            "enabled": false,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "group_energymax": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "group_energymax"
+                },
+                {
+                    "map_type": "ObjectClass",
+                    "position": "hidden",
+                    "filter_re": "^node$"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 1,
+                    "filter_re": "^annual_resource_limit$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 2
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "group_emission2": {
+            "type": "object_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "group_emission"
+                },
+                {
+                    "map_type": "ObjectClass",
+                    "position": "hidden",
+                    "filter_re": "^node$"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 1,
+                    "filter_re": "^emissionTax$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Object",
+                    "position": 0
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 2
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "group__restype__up_down": {
+            "type": "relationship_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "group__restype__up_down"
+                },
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "hidden",
+                    "filter_re": "^group__reserve_type__up_down$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 3
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 4
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "IndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueIndex",
+                    "position": 5
+                },
+                {
+                    "map_type": "IndexName",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValueIndex",
+                    "position": 6
+                },
+                {
+                    "map_type": "ExpandedValue",
+                    "position": 7
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        },
+        "unit__constraint__node": {
+            "type": "relationship_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "unit__constraint__node"
+                },
+                {
+                    "map_type": "RelationshipClass",
+                    "position": "hidden",
+                    "filter_re": "^unit__constraint__node$"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipClassObjectClass",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": 3,
+                    "filter_re": "^coefficient$"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 0
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 1
+                },
+                {
+                    "map_type": "RelationshipObject",
+                    "position": 2
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": 4
+                },
+                {
+                    "map_type": "ParameterValueType",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "ParameterValue",
+                    "position": 5
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": true
+        }
+    }
+}

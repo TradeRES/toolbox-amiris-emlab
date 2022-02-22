@@ -1,0 +1,11 @@
+{
+    "name": "rename DB Scenario",
+    "item_type": "Data Transformer",
+    "description": "",
+    "filter": {
+        "type": "entity_class_rename",
+        "settings": {
+            "vintage-2050": "0"
+        }
+    }
+}

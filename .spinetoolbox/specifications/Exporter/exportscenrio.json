@@ -1,0 +1,25 @@
+{
+    "item_type": "Exporter",
+    "output_format": "csv",
+    "name": "ExportScenrio",
+    "description": "",
+    "mappings": {
+        "Mapping 1": {
+            "type": "parameter_value_lists",
+            "mapping": [
+                {
+                    "map_type": "ParameterValueList",
+                    "position": 0
+                },
+                {
+                    "map_type": "ParameterValueListValue",
+                    "position": 1
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        }
+    }
+}

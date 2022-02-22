@@ -1,13 +1,16 @@
 """
 This is the Python class responsible for all reads and writes of the SpineDB.
 This is a separate file so that all import definitions are centralized.
-
+Ingrid Sanchez 18-2-2022 modified
 Jim Hommes - 25-3-2021
 """
 import logging
 
-from util.repository import *
-from util.spinedb import SpineDB
+from twine.repository import Repository
+
+from emlabpy.domain.CandidatePowerPlant import FuturePowerPlant
+from emlabpy.util.repository import *
+from emlabpy.util.spinedb import SpineDB
 
 
 class SpineDBReaderWriter:
@@ -15,60 +18,61 @@ class SpineDBReaderWriter:
     The class that handles all writing and reading to the SpineDB.
     """
 
-    def __init__(self, db_url: str, config_url: str):
+    def __init__(self, db_url: str, secondURL: str, run_investment_module):
         self.db_url = db_url
-        self.config_db = SpineDB(config_url)
         self.db = SpineDB(db_url)
+        self.amirisdb = SpineDB(secondURL)
+        self.run_investment_module = run_investment_module
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
+        self.energyProducer_classname = "EnergyProducers"
+        self.ConventionalOperator_classname = "ConventionalPlantOperator"
+        self.VariableRenewableOperator_classname = "VariableRenewableOperator"
 
+    def stage_cashflow_PowerPlant(self, current_tick: int):
+        self.stage_init_alternative("0")
+        self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
+        self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
+                                           [('Plant', ppdp.plant.name),
+                                            ('Market', ppdp.bidding_market.name),
+                                            ('Price', ppdp.price),
+                                            ('Capacity', ppdp.amount),
+                                            ('EnergyProducer', ppdp.bidder.name),
+                                            ('AcceptedAmount', ppdp.accepted_amount),
+                                            ('Status', ppdp.status)], current_tick)
+        for row in self.db.query_object_parameter_values_by_object_class_and_object_name('Configuration',
+                                                                                         "SimulationYears"):
+            if row['parameter_name'] == 'Start Year':
+                reps.start_simulation_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'End Year':
+                reps.end_simulation_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'Look Ahead':
+                reps.lookAhead = int(row['parameter_value'])
+
+    """
+    All functions from here are old
+    """
     def read_db_and_create_repository(self) -> Repository:
+        """
+        This function add all info from EMLAB DB to REPOSITORY
+        """
         logging.info('SpineDBRW: Start Read Repository')
         reps = Repository()
         reps.dbrw = self
         db_data = self.db.export_data()
-
-        # Determine current tick
-        reps.current_tick = max(
-            [int(i[3]) for i in db_data['object_parameter_values'] if i[0] == i[1] == 'SystemClockTicks' and
-             i[2] == 'ticks'])
-        logging.info('Current tick: ' + str(reps.current_tick))
-        self.stage_init_alternative(reps.current_tick)
-
-        # Load Coupling Parameters and set in repository
-        for row in self.config_db.query_object_parameter_values_by_object_class('Coupling Parameters'):
-            if row['object_name'] == 'Start Year':
-                reps.start_simulation_year = int(row['parameter_value'])
-            elif row['object_name'] == 'Time Step':
-                reps.time_step = int(row['parameter_value'])
-
-        # Load the parameter priorities from the config db
-        parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
-                                in self.config_db.query_object_parameter_values_by_object_class('EMLAB Parameters')}
-
-        # Sort the object_parameter_values and object_parameters
-        # so that the most recent (highest tick) and highest priority is first selected.
-        sorted_object_parameter_values = sorted(db_data['object_parameter_values'], reverse=True,
-                                                key=lambda item: int(item[4]))
-        sorted_parameter_names = sorted(db_data['object_parameters'],
-                                        key=lambda item: parameter_priorities[item[0]]
-                                        if item[0] in parameter_priorities.keys() else 0, reverse=True)
-
-        # Import all object parameter values in one go
-        for (object_class_name, parameter_name, _, _, _) in sorted_parameter_names:
-            for (_, object_name, _) in [i for i in db_data['objects'] if i[0] == object_class_name]:
-                try:
-                    db_line = next(i for i in sorted_object_parameter_values
-                                   if i[0] == object_class_name and i[1] == object_name and i[2] == parameter_name and
-                                   int(i[4]) <= reps.current_tick)
-                    add_parameter_value_to_repository_based_on_object_class_name(reps, db_line)
-                except StopIteration:
-                    logging.warning('No value found for class: ' + object_class_name +
-                                    ', object: ' + object_name +
-                                    ', parameter: ' + parameter_name)
+        self.stage_init_alternative("0")
+        try:
+            for db_line in db_data['object_parameter_values']:
+                add_parameter_value_to_repository_based_on_object_class_name(reps, db_line)
+            if self.run_investment_module:
+                add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps)
+        except StopIteration:
+            logging.warning('No value found for class: ' + object_class_name +
+                            ', object: ' + object_name +
+                            ', parameter: ' + parameter_name)
 
         # Because of COMPETES structure, this is hard to set normally. So separate function:
-        set_expected_lifetimes_of_power_generating_technologies(reps, db_data, 'PowerGeneratingTechnologyLifetime')
+        # set_expected_lifetimes_of_power_generating_technologies(reps, db_data, 'PowerGeneratingTechnologyLifetime')
 
         logging.info('SpineDBRW: End Read Repository')
         # logging.info('Repository: ' + str(reps))
@@ -76,6 +80,8 @@ class SpineDBReaderWriter:
 
     """
     Staging functions that are the core for communicating with SpineDB
+    
+    TO ADD DATA TO DB
     """
 
     def stage_object_class(self, object_class_name: str):
@@ -107,6 +113,8 @@ class SpineDBReaderWriter:
 
     """
     Element specific initialization staging functions
+    TO ADD SPECIFICALLY TO DB
+    
     """
 
     def stage_init_market_clearing_point_structure(self):
@@ -124,6 +132,7 @@ class SpineDBReaderWriter:
 
     """
     Element specific staging functions
+    
     """
 
     def stage_power_plant_dispatch_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
@@ -167,6 +176,7 @@ class SpineDBReaderWriter:
 
 
 def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: dict, class_to_create):
+
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
@@ -220,45 +230,67 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     """
 
     object_class_name = db_line[0]
-    if object_class_name == 'GeometricTrends':
-        add_parameter_value_to_repository(reps, db_line, reps.trends, GeometricTrend)
-    elif object_class_name == 'TriangularTrends':
-        add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
-    elif object_class_name == 'StepTrends':
-        add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
-    elif object_class_name == 'Zones':
-        add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
-    elif object_class_name == 'EnergyProducers':
-        add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
-    elif object_class_name == 'Substances':
+    if object_class_name == 'ConventionalPlantOperator':
+        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+    if object_class_name == 'ConventionalPlantOperator':
+        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+    elif object_class_name == 'unit':
+        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+    elif object_class_name == 'node':
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
-    elif object_class_name == 'ElectricitySpotMarkets':
-        add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-    elif object_class_name == 'CO2Auction':
-        add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
     elif object_class_name == 'CapacityMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
-    elif object_class_name == 'PowerGeneratingTechnologies':
-        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    elif object_class_name == 'Hourly Demand':
-        add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
-    elif object_class_name == 'PowerGridNodes':
-        add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
-    elif object_class_name == 'PowerPlants':
-        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
-    elif object_class_name == 'PowerPlantDispatchPlans':
-        add_parameter_value_to_repository(reps, db_line, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
-    elif object_class_name == 'MarketClearingPoints':
-        add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
-    elif object_class_name == 'NationalGovernments':
-        add_parameter_value_to_repository(reps, db_line, reps.national_governments, NationalGovernment)
-    elif object_class_name == 'Governments':
-        add_parameter_value_to_repository(reps, db_line, reps.governments, Government)
-    elif object_class_name == 'MarketStabilityReserve':
-        add_parameter_value_to_repository(reps, db_line, reps.market_stability_reserves, MarketStabilityReserve)
-    elif object_class_name == 'PowerGeneratingTechnologyFuel':
-        add_parameter_value_to_repository(reps, db_line, reps.power_plants_fuel_mix, SubstanceInFuelMix)
-    elif object_class_name == 'YearlyEmissions':
-        add_parameter_value_to_repository(reps, db_line, reps.emissions, YearlyEmissions)
+    elif object_class_name == 'FuelPriceTrends':
+        add_parameter_value_to_repository(reps, db_line, reps.zones, StepTrend)
+    elif object_class_name == 'EnergyProducers':
+        add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
+
+    # if object_class_name == 'GeometricTrends':
+    #     add_parameter_value_to_repository(reps, db_line, reps.trends, GeometricTrend)
+    # elif object_class_name == 'TriangularTrends':
+    #     add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
+    # elif object_class_name == 'StepTrends':
+    #     add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
+    # elif object_class_name == 'Zones':
+    #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
+
+
+    # elif object_class_name == 'ElectricitySpotMarkets':
+    #     add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
+    # elif object_class_name == 'CO2Auction':
+    #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
+
+    # elif object_class_name == 'Hourly Demand':
+    #     add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
+    # elif object_class_name == 'PowerGridNodes':
+    #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
+    # elif object_class_name == 'PowerPlants':
+    #     add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+    # elif object_class_name == 'PowerPlantDispatchPlans':
+    #     add_parameter_value_to_repository(reps, db_line, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
+    # elif object_class_name == 'MarketClearingPoints':
+    #     add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
+    # elif object_class_name == 'NationalGovernments':
+    #     add_parameter_value_to_repository(reps, db_line, reps.national_governments, NationalGovernment)
+    # elif object_class_name == 'Governments':
+    #     add_parameter_value_to_repository(reps, db_line, reps.governments, Government)
+    # elif object_class_name == 'MarketStabilityReserve':
+    #     add_parameter_value_to_repository(reps, db_line, reps.market_stability_reserves, MarketStabilityReserve)
+    # elif object_class_name == 'PowerGeneratingTechnologyFuel':
+    #     add_parameter_value_to_repository(reps, db_line, reps.power_plants_fuel_mix, SubstanceInFuelMix)
+    # elif object_class_name == 'YearlyEmissions':
+    #     add_parameter_value_to_repository(reps, db_line, reps.emissions, YearlyEmissions)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
+
+
+def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps):
+    db_amirisdata = self.amirisdb.export_data()
+    uniquealternatives = [a_tuple[0] for a_tuple in db_amirisdata["alternatives"]]
+    for db_line_amiris in db_amirisdata['object_parameter_values']:
+        object_class_name = db_line_amiris[0]
+        object_name = db_line_amiris[1]
+        if object_class_name == self.ConventionalOperator_classname and object_name in uniquealternatives:
+            add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, FuturePowerPlant)
+        if object_class_name == self.VariableRenewableOperator_classname and object_name in uniquealternatives:
+            add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, FuturePowerPlant)

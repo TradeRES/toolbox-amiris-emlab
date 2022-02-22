@@ -103,6 +103,18 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Exporter/exporter_traderes.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/exportscenrio.json"
+                }
+            ],
+            "Data Transformer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Data Transformer/rename_db_scenario.json"
                 }
             ]
         },
@@ -328,39 +340,6 @@
                 ]
             },
             {
-                "name": "from ScenarioImporter to AMIRIS_DB",
-                "from": [
-                    "ScenarioImporter",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS_DB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Import EMLAB Init to AMIRIS_DB",
-                "from": [
-                    "Import EMLAB Init",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS_DB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from traderesCommon to Amiris to AMIRIS_DB",
-                "from": [
-                    "traderesCommon to Amiris",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS_DB",
-                    "left"
-                ]
-            },
-            {
                 "name": "from Config to Config Importer",
                 "from": [
                     "Config",
@@ -372,26 +351,99 @@
                 ]
             },
             {
-                "name": "from Config Importer to AMIRIS_DB",
+                "name": "from Initialize Clock to EmlabDB",
+                "from": [
+                    "Initialize Clock",
+                    "left"
+                ],
+                "to": [
+                    "EmlabDB",
+                    "right"
+                ]
+            },
+            {
+                "name": "from Config Importer to EmlabDB",
                 "from": [
                     "Config Importer",
                     "right"
                 ],
                 "to": [
-                    "AMIRIS_DB",
+                    "EmlabDB",
                     "left"
                 ]
             },
             {
-                "name": "from AMIRIS_DB to Initialize Clock",
+                "name": "from Import EMLAB Init to EmlabDB",
                 "from": [
-                    "AMIRIS_DB",
+                    "Import EMLAB Init",
                     "right"
                 ],
                 "to": [
-                    "Initialize Clock",
+                    "EmlabDB",
                     "left"
                 ]
+            },
+            {
+                "name": "from ScenarioImporter to EmlabDB",
+                "from": [
+                    "ScenarioImporter",
+                    "right"
+                ],
+                "to": [
+                    "EmlabDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TraderesDB to exporterTraderes",
+                "from": [
+                    "TraderesDB",
+                    "right"
+                ],
+                "to": [
+                    "exporterTraderes",
+                    "left"
+                ]
+            },
+            {
+                "name": "from traderesLocal to fromTraderestoEmlab",
+                "from": [
+                    "traderesLocal",
+                    "right"
+                ],
+                "to": [
+                    "fromTraderestoEmlab",
+                    "left"
+                ]
+            },
+            {
+                "name": "from traderesCommon to Amiris to EmlabDB",
+                "from": [
+                    "traderesCommon to Amiris",
+                    "right"
+                ],
+                "to": [
+                    "EmlabDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to BestInvestment",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "BestInvestment",
+                    "left"
+                ],
+                "resource_filters": {
+                    "db_url@EmlabDB": {
+                        "scenario_filter": [
+                            1
+                        ]
+                    }
+                }
             }
         ],
         "jumps": []
@@ -478,8 +530,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 742.5992264197179,
-            "y": -194.73677966262065,
+            "x": 784.9851860110986,
+            "y": 0.6072080193946192,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -494,8 +546,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -972.0751899365325,
-            "y": -643.782195932797,
+            "x": -961.7067341920999,
+            "y": -710.4365542898643,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -506,8 +558,8 @@
         "ScenarioImporter": {
             "type": "Importer",
             "description": "",
-            "x": -672.4797191247388,
-            "y": -416.2412889191788,
+            "x": -1028.0703905180517,
+            "y": -366.28222324453634,
             "specification": "Scenario import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -522,8 +574,8 @@
         "scenario_excel": {
             "type": "Data Connection",
             "description": "",
-            "x": -689.6360441929893,
-            "y": -616.0010158656884,
+            "x": -1162.8207006330458,
+            "y": -433.8646237457562,
             "references": [
                 {
                     "type": "path",
@@ -719,15 +771,15 @@
         "rename conventional": {
             "type": "Data Transformer",
             "description": "",
-            "x": 844.7236119248416,
-            "y": -426.682614677222,
+            "x": 424.54975162767676,
+            "y": -548.3118900264013,
             "specification": ""
         },
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -969.9266227687273,
-            "y": -345.9265546852376,
+            "x": -1049.343191689003,
+            "y": -176.063337827981,
             "references": [
                 {
                     "type": "path",
@@ -739,8 +791,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -831.0593894198404,
-            "y": -345.2180096943685,
+            "x": -903.8579109300935,
+            "y": -179.7668244437939,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": true,
@@ -752,21 +804,11 @@
                 ]
             ]
         },
-        "Exporter Traderes": {
-            "type": "Exporter",
-            "description": "",
-            "x": -819.2004320269873,
-            "y": -652.8332770346732,
-            "output_time_stamps": false,
-            "cancel_on_error": true,
-            "output_labels": [],
-            "specification": "Exporter Traderes"
-        },
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -990.173077563593,
-            "y": -501.55407991016557,
+            "x": -1062.971599073846,
+            "y": -530.2322853535984,
             "references": [
                 {
                     "type": "path",
@@ -785,10 +827,10 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -829.4604837515715,
-            "y": -500.48818058432164,
+            "x": -899.1475719136733,
+            "y": -464.80828102464034,
             "specification": "import traderes db",
-            "cancel_on_error": false,
+            "cancel_on_error": true,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
@@ -801,38 +843,26 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 1024.3823893602644,
-            "y": -70.21976056098586,
+            "x": 956.1962804523912,
+            "y": -376.13581674225503,
             "specification": "Best Investment",
-            "execute_in_work": false,
+            "execute_in_work": true,
             "cmd_line_args": [
                 {
                     "type": "resource",
                     "arg": "db_url@AMRISDB"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
                 }
             ]
-        },
-        "AMIRIS_DB": {
-            "type": "Data Store",
-            "description": "",
-            "x": -715.0407159664517,
-            "y": -174.86943813165877,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/amrisdb/AMRISDB.sqlite"
-                }
-            }
         },
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1071.8839920926957,
-            "y": -173.4841143271415,
+            "x": -1063.0599288793314,
+            "y": -35.98632668014923,
             "references": [
                 {
                     "type": "path",
@@ -844,8 +874,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -914.9221743681395,
-            "y": -171.41882725181839,
+            "x": -921.5726953112744,
+            "y": -40.7967128675418,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -860,8 +890,8 @@
         "test": {
             "type": "Data Store",
             "description": "",
-            "x": -898.3998777655544,
-            "y": 24.783444903877363,
+            "x": -747.8785950945078,
+            "y": 27.42416916126415,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -876,20 +906,77 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -497.7341851528704,
-            "y": -223.05100413489632,
+            "x": -177.55390552764317,
+            "y": -531.8949076589779,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@AMIRIS_DB"
+                    "arg": "db_url@EmlabDB"
                 },
                 {
                     "type": "literal",
                     "arg": "initialize_clock"
                 }
             ]
+        },
+        "EmlabDB": {
+            "type": "Data Store",
+            "description": "",
+            "x": -539.9602678380235,
+            "y": -380.43474332321085,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/emlabdb/EmlabDB.sqlite"
+                }
+            }
+        },
+        "traderesLocal": {
+            "type": "Data Store",
+            "description": "",
+            "x": -755.776302031296,
+            "y": -617.1686263301129,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/tradereslocal/traderesLocal.sqlite"
+                }
+            }
+        },
+        "exporterTraderes": {
+            "type": "Exporter",
+            "description": "",
+            "x": -722.6329344434837,
+            "y": -707.984969556116,
+            "output_time_stamps": false,
+            "cancel_on_error": true,
+            "output_labels": [],
+            "specification": "Exporter Traderes"
+        },
+        "fromTraderestoEmlab": {
+            "type": "Exporter",
+            "description": "",
+            "x": -537.3454605640579,
+            "y": -620.3755171526732,
+            "output_time_stamps": false,
+            "cancel_on_error": true,
+            "output_labels": [
+                {
+                    "in_label": "db_url@traderesLocal",
+                    "out_label": ""
+                }
+            ],
+            "specification": ""
         }
     }
 }

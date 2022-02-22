@@ -1,18 +1,7 @@
 # Set future values to AMIRIS
 
 
-
-CO2_price = 35
-CO2_development = 1.062
-gas_price = 25.56
-gas_development = 1.011
-uranium_price = 12.96
-uranium_development = 1.035
-biomass_price = 21.6
-biomass_development = 1.062
-hydrogen_import_price = 4000
-hydrogen_development = 1
-
+from emlabpy.domain.import_object import *
 class UpdatefutureValues():
     def __init__(self, reps: Repository):
         self.__useFundamentalCO2Forecast = False

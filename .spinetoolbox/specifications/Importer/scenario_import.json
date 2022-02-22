@@ -27,7 +27,7 @@
                             {
                                 "map_type": "Alternative",
                                 "position": "hidden",
-                                "value": "Base"
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -67,7 +67,7 @@
                             {
                                 "map_type": "Alternative",
                                 "position": "hidden",
-                                "value": "Base"
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -112,7 +112,7 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "string"
+                "9": "float"
             }
         },
         "table_row_types": {

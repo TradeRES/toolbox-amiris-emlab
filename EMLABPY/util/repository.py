@@ -8,14 +8,14 @@ Ingrid Sanchez 16-2-2022
 from datetime import datetime
 from typing import Optional, Dict, List
 
-from domain.actors import *
-from domain.energy import *
-from domain.markets import *
-from domain.trends import *
-from domain.zones import *
-from contracts import *
-
-from contracts import Loan
+from emlabpy.domain.actors import *
+from emlabpy.domain.energy import *
+from emlabpy.domain.markets import *
+from emlabpy.domain.powerplant import *
+from emlabpy.domain.trends import *
+from emlabpy.domain.zones import *
+from emlabpy.domain.contract import *
+from emlabpy.domain.loans import Loan
 
 
 class Repository:
@@ -32,6 +32,9 @@ class Repository:
         self.current_tick = 0
         self.time_step = 0
         self.start_simulation_year = 0
+        self.end_simulation_year = 0
+        self.lookAhead = 0
+
         self.energy_producers = dict()
         self.power_plants = dict()
         self.substances = dict()
@@ -64,6 +67,8 @@ class Repository:
         self.loansToAgent = {}
         self.powerPlantsForAgent = {}
         self.loanList = []
+        self.candidatePowerPlants = dict()
+
     """
     This part is new 
     """
@@ -88,6 +93,9 @@ class Repository:
         self.loansToAgent.get(to).add(loan)
         return loan
 
+
+
+
     def findLoansFromAgent(self, agent):
         return self.loansFromAgent.get(agent)
 
@@ -110,7 +118,32 @@ class Repository:
         cashFlows.add(cashFlow)
         return cashFlow
 
+    def create_or_update_power_plant_loan(self, plant: PowerPlant,
+                                          bidder: EnergyProducer,
+                                          bidding_market: Market,
+                                          amount: float,
+                                          price: float,
+                                          time: int) -> PowerPlantDispatchPlan:
+        ppdp = next((ppdp for ppdp in self.power_plant_dispatch_plans.values() if ppdp.plant == plant and
+                     ppdp.bidding_market == bidding_market and
+                     ppdp.tick == time), None)
+        if ppdp is None:
+            # PowerPlantDispatchPlan not found, so create a new one
+            name = 'PowerPlantDispatchPlan ' + str(datetime.now())
+            ppdp = PowerPlantDispatchPlan(name)
 
+        ppdp.plant = plant
+        ppdp.bidder = bidder
+        ppdp.bidding_market = bidding_market
+        ppdp.amount = amount
+        ppdp.price = price
+        ppdp.status = self.power_plant_dispatch_plan_status_awaiting
+        ppdp.accepted_amount = 0
+        ppdp.tick = time
+
+        self.power_plant_dispatch_plans[ppdp.name] = ppdp
+        self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
+        return ppdp
     """
     Repository functions:
     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
@@ -190,6 +223,12 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.plant == plant and i.tick == time]
 
+
+    """
+    SET => AD INFO TO DB 
+    """
+
+
     def set_power_plant_dispatch_plan_production(self,
                                                  ppdp: PowerPlantDispatchPlan,
                                                  status: str, accepted_amount: float):
@@ -224,6 +263,9 @@ class Repository:
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
 
+    """
+    MARKETS 
+    """
     # Markets
     def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:
         try:
@@ -280,7 +322,9 @@ class Repository:
             return mcp.price
         else:
             return 0
-
+    """
+    MARKETS SET
+    """
     def create_or_update_market_clearing_point(self,
                                                market: Market,
                                                price: float,

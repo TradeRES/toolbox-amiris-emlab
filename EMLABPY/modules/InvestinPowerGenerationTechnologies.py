@@ -17,20 +17,21 @@ class FutureCapacityExpectation:
     def _initialize_instance_fields(self, reps: Repository, market, agent):
         self.expectedInstalledCapacityOfTechnology = 0
         self.expectedInstalledCapacityOfTechnologyInNode = 0
-        self.expectedOwnedTotalCapacityInMarket = 0
-        self.expectedOwnedCapacityInMarketOfThisTechnology = 0
+       # self.expectedOwnedTotalCapacityInMarket = 0
+       # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
         self.capacityOfTechnologyInPipeline = 0
         self.operationalCapacityOfTechnology = 0
         self.capacityInPipelineInMarket = 0
+
         self.viableInvestment = False
         self.technology = None
         self.plant = None
-        self.node = None
-        self.pgtNodeLimit = Double.MAX_VALUE
+       # self.node = None
+       # self.pgtNodeLimit = Double.MAX_VALUE
         self.market = market
         #agent = ENERGY PRODUCER
         self.agent = agent
-        self.budget_year0 = 0
+        #self.budget_year0 = 0
 
     def isViableInvestment(self):
         return viableInvestment
@@ -160,35 +161,7 @@ def check(self):
 #         * Return true if the checks in this class have all been passed.
 #         * This means that future capacity expansion is viable.
 
-def export_investment_decisions_to_emlab_and_competes(db_emlab,
-                                                      new_generation_capacity_df,
-                                                      db_amiris_technologies):
-    """
-    This function exports all Investment decisions.
-    :param db_emlab: SpineDB
-    :param db_competes: SpineDB
-    :param new_generation_capacity_df: Dataframe of new generation capacity from COMPETES output
-    """
-    print('Exporting Investment Decisions to EMLAB ')
-    for index, row in new_generation_capacity_df.iterrows():
-        row = row.fillna(0)
 
-
-        technology = next(name for name in db_amiris_technologies)
-        expected_permit_time = next(int(i['parameter_value']) for i in db_emlab_technologies if i['object_name'] == technology and i['parameter_name'] == 'expectedPermittime')
-        expected_lead_time = next(int(i['parameter_value']) for i in db_emlab_technologies if i['object_name'] == technology and i['parameter_name'] == 'expectedLeadtime')
-        build_time = expected_permit_time + expected_lead_time
-        online_in_year = build_time + currentyear
-
-        print('Exporting to EM-Lab...')
-        db_emlab.import_objects([('PowerPlants', plant_name), ('PowerPlants', plant_name_decom)])
-        db_emlab.import_object_parameter_values(
-            [('PowerPlants', plant_name, param_index, param_value, str(current_emlab_tick))
-             for (param_index, param_value) in param_values_emlab] +
-            [('PowerPlants', plant_name_decom, param_index, param_value, str(current_emlab_tick))
-             for (param_index, param_value) in param_values_emlab_decom])
-
-        print('Done exporting Investment Decisions to EMLAB and COMPETES')
 
 def invest_BestTechnology():
     """
@@ -227,10 +200,7 @@ def invest_BestTechnology():
         db_config.close_connection()
 
 
-if __name__ == "__main__":
-    print('===== Starting Best investment script =====')
-    invest_BestTechnology()
-    print('===== End of Best investment script =====')
+
 
 # projectValue = calculateProjectValue();
 # projectCost = calculateProjectCost();

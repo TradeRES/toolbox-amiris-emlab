@@ -47,7 +47,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name"
+                                "position": "table_name",
+                                "value": "CO2Auction"
                             },
                             {
                                 "map_type": "Object",
@@ -84,7 +85,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name"
+                                "position": "table_name",
+                                "value": "ElectricitySpotMarkets"
                             },
                             {
                                 "map_type": "Object",
@@ -235,7 +237,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name"
+                                "position": "table_name",
+                                "value": "Governments"
                             },
                             {
                                 "map_type": "Object",
@@ -420,43 +423,6 @@
                     }
                 }
             ],
-            "FuelMap": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "constant"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 6
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "FuelPriceTrends": [
                 {
                     "Mapping 1": {
@@ -480,7 +446,8 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -533,19 +500,52 @@
                         ]
                     }
                 }
+            ],
+            "explanation": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Technologies": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "CapacityMarkets",
-            "CO2Auction",
-            "ElectricitySpotMarkets",
-            "EnergyConsumers",
             "EnergyProducers",
-            "GeometricTrends",
-            "Governments",
-            "StepTrends",
-            "FuelPriceTrends",
-            "powerTechnologies"
+            "FuelPriceTrends"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -561,56 +561,45 @@
             "StepTrends": {},
             "TargetInvestors": {},
             "TargetInvestorTargets": {},
-            "FuelMap": {},
             "FuelPriceTrends": {},
-            "powerTechnologies": {}
+            "powerTechnologies": {},
+            "explanation": {},
+            "Technologies": {}
         },
         "table_types": {
             "CapacityMarkets": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "5": "float"
             },
             "CO2Auction": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "5": "float"
             },
             "ElectricitySpotMarkets": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "6": "float"
             },
             "EnergyConsumers": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "3": "float"
             },
             "EnergyProducers": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
@@ -619,9 +608,17 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "float"
+                "9": "float",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string",
+                "15": "string",
+                "16": "string"
             },
             "GeometricTrends": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
@@ -630,18 +627,19 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "float"
+                "9": "float",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string"
             },
             "Governments": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "4": "float"
             },
             "IntermittentResourceProfiles": {
                 "0": "string",
@@ -661,15 +659,11 @@
                 "2": "string"
             },
             "StepTrends": {
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "4": "float"
             },
             "TargetInvestors": {
                 "0": "string",
@@ -680,32 +674,13 @@
                 "0": "string",
                 "1": "string"
             },
-            "FuelMap": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string",
-                "12": "string",
-                "13": "string",
-                "14": "string",
-                "15": "string",
-                "16": "string"
-            },
             "FuelPriceTrends": {
                 "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string"
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float"
             },
             "powerTechnologies": {
                 "0": "float",

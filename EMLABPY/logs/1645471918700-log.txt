@@ -1,0 +1,7 @@
+INFO:root:Starting EM-Lab Run
+INFO:root:Selected modules: ['sqlite:///C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\.spinetoolbox\\items\\amrisdb\\AMRISDB.sqlite']
+INFO:root:Selected database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\test\test.sqlite
+INFO:root:Selected simulation parameter database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\amrisdb\AMRISDB.sqlite
+INFO:root:SpineDBRW: Start Read Repository
+ERROR:root:Exception occurred: invalid literal for int() with base 10: 'Base'
+INFO:root:Closing database connections...

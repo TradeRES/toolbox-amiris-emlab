@@ -2,7 +2,7 @@
     "name": "Best Investment",
     "tooltype": "python",
     "includes": [
-        "InvestinPowerGenerationTechnologies.py"
+        "emlab.py"
     ],
     "description": "calculates NPV for all possible PP",
     "inputfiles": [],
@@ -10,12 +10,12 @@
     "outputfiles": [],
     "cmdline_args": [],
     "execute_in_work": true,
-    "includes_main_path": "../../../emlabpy/modules",
+    "includes_main_path": "../../../emlabpy",
     "execution_settings": {
         "env": "conda",
         "kernel_spec_name": "conda-env-spinetoolbox-py",
         "use_jupyter_console": true,
         "executable": "",
-        "fail_on_stderror": true
+        "fail_on_stderror": false
     }
 }
