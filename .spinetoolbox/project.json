@@ -461,10 +461,10 @@
         "amiris importer": {
             "type": "Importer",
             "description": "",
-            "x": 506.2816426343531,
-            "y": 110.43972373391804,
+            "x": 504.0263385169102,
+            "y": 109.08986117135248,
             "specification": "Amiris importer",
-            "cancel_on_error": true,
+            "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
@@ -530,8 +530,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 784.9851860110986,
-            "y": 0.6072080193946192,
+            "x": 775.5361480731398,
+            "y": -73.63523292171111,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -558,15 +558,15 @@
         "ScenarioImporter": {
             "type": "Importer",
             "description": "",
-            "x": -1028.0703905180517,
-            "y": -366.28222324453634,
+            "x": -968.6764377651673,
+            "y": -367.6320858071019,
             "specification": "Scenario import",
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/scripts/scenario.xlsx",
+                    "<project>/data/scenariofromAMIRIS.xlsx",
                     true
                 ]
             ]
@@ -580,7 +580,7 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "scripts/scenario.xlsx"
+                    "path": "data/scenariofromAMIRIS.xlsx"
                 }
             ]
         },
@@ -791,11 +791,11 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -903.8579109300935,
-            "y": -179.7668244437939,
+            "x": -878.2105222413478,
+            "y": -233.76132694641623,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
-            "purge_before_writing": true,
+            "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
@@ -830,7 +830,7 @@
             "x": -899.1475719136733,
             "y": -464.80828102464034,
             "specification": "import traderes db",
-            "cancel_on_error": true,
+            "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
@@ -906,8 +906,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -177.55390552764317,
-            "y": -531.8949076589779,
+            "x": -177.55390552764314,
+            "y": -533.5107686186802,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -925,7 +925,7 @@
             "type": "Data Store",
             "description": "",
             "x": -539.9602678380235,
-            "y": -380.43474332321085,
+            "y": -381.78460588577644,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

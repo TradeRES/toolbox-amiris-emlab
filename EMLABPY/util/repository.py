@@ -12,6 +12,7 @@ from emlabpy.domain.actors import *
 from emlabpy.domain.energy import *
 from emlabpy.domain.markets import *
 from emlabpy.domain.powerplant import *
+from emlabpy.domain.CandidatePowerPlant import *
 from emlabpy.domain.trends import *
 from emlabpy.domain.zones import *
 from emlabpy.domain.contract import *
@@ -37,6 +38,7 @@ class Repository:
 
         self.energy_producers = dict()
         self.power_plants = dict()
+        self.candidatePowerPlants = dict()
         self.substances = dict()
         self.power_plants_fuel_mix = dict()
         self.electricity_spot_markets = dict()
@@ -67,12 +69,14 @@ class Repository:
         self.loansToAgent = {}
         self.powerPlantsForAgent = {}
         self.loanList = []
-        self.candidatePowerPlants = dict()
+
 
     """
     This part is new 
     """
-
+    def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
+        return [i for i in self.candidatePowerPlants.values()
+                if i.owner == owner]
     # PowerPlants
     def createLoan(self, from_keyword_conflict, to, amount, numberOfPayments, loanStartTime, plant):
         loan = Loan()
@@ -158,6 +162,7 @@ class Repository:
                                          self.get_power_plant_dispatch_plans_by_plant(plant)
                                          if i.tick == current_tick])
         return plant.capacity - ppdps_sum_accepted_amount
+
 
     def get_power_plant_electricity_spot_market_revenues_by_tick(self, power_plant: PowerPlant, time: int) -> float:
         # Accepted Amount is in MW

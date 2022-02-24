@@ -27,7 +27,8 @@ try:
             db_amiris.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
             StartYear = next(int(i['parameter_value']) for i in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                             if i['parameter_name'] == 'Start Year')
-            db_amiris.import_object_parameter_values([(class_name,object_name, "CurrentYear", StartYear, '0')])
+            db_amiris.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
+
             db_amiris.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 

@@ -15,6 +15,7 @@ from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.co2market import *
+from modules.invest import *
 
 # Initialize Logging
 if not os.path.isdir('logs'):
@@ -50,38 +51,29 @@ for arg in sys.argv[3:]:
 if run_investment_module:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
-
     # Second argumant always has to be the Config Excel file
     amiris_url = sys.argv[2]
     logging.info('amiris database: ' + str(amiris_url))
-
     spinedb_reader_writer = SpineDBReaderWriter(emlab_url, amiris_url, run_investment_module)
 else:
     # First argument always has to be the Database URL
     # For manual insertion, it's of the form sqlite:///C:\path\to\db\db.sqlite
     db_url = sys.argv[1]
     logging.info('Selected database: ' + str(db_url))
-
     # Second argumant always has to be the Config Excel file
     config_spinedb_url = sys.argv[2]
     logging.info('Selected simulation parameter database: ' + str(config_spinedb_url))
-
     # Initialize SpineDB Reader Writer (also initializes DB connection)
     spinedb_reader_writer = SpineDBReaderWriter(db_url, config_spinedb_url, run_investment_module)
-
-
-
-
 
 try:    # Try statement to always close DB properly
     # Load repository
     reps = spinedb_reader_writer.read_db_and_create_repository()
     print(reps)
-    # Initialize all the modules
-    # This initialization often includes the commit of the first structure to SpineDB
     logging.info('Start Initialization Modules')
-    capacity_market_submit_bids = CapacityMarketSubmitBids(reps)
-    capacity_market_clear = CapacityMarketClearing(reps)
+    capacity_market_submit_bids = CapacityMarketSubmitBids(reps) # This function stages new dispatch power plant
+    capacity_market_clear = CapacityMarketClearing(reps) # This function adds rep to class capacity markets
+    investing = Investmentdecision(reps) # This function adds rep to class capacity markets
     co2_market_determine_co2_price = CO2MarketDetermineCO2Price(reps)
     payment_and_bank_co2 = PayAndBankCO2Allowances(reps)
     use_co2_allowances = UseCO2Allowances(reps)
@@ -94,13 +86,10 @@ try:    # Try statement to always close DB properly
 
     # From here on modules will be run according to the previously set booleans
     logging.info('Start Run Modules')
-    if run_co2_market:
-        logging.info('Start Investment algorithm')
-    market_stability_reserve.act_and_commit(reps.current_tick)
-    co2_market_determine_co2_price.act_and_commit(reps.current_tick)
-    # payment_and_bank_co2.act_and_commit(reps.current_tick)
-    # use_co2_allowances.act_and_commit(reps.current_tick)
-    logging.info('End Investment algorithm')
+    if run_investment_module:
+        logging.info('Start Run Investment')
+        investing.act_and_commit(reps)
+        logging.info('End Run Investment')
 
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
@@ -122,5 +111,4 @@ except Exception as e:
 finally:
     logging.info('Closing database connections...')
     spinedb_reader_writer.db.close_connection()
-    if run_investment_module:
-        spinedb_reader_writer.amirisdb.close_connection()
+    spinedb_reader_writer.amirisdb.close_connection()

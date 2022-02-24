@@ -18,66 +18,74 @@ class PowerGeneratingTechnology(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.capacity = 0
-        self.investment_cost_time_series = None
-        self.fixed_operating_cost_time_series = None
-        self.efficiency_time_series = None
-        self.applicable_for_long_term_contract = False
-        self.co2_capture_efficiency = 0
+
+        self.variable_operating_costs = None
+        self.investment_cost = None
+        self.fixed_operating_costs = None
         self.depreciation_time = 0
         self.minimum_running_hours = 0
         self.fixed_operating_cost_modifier_after_lifetime = 0
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
-        self.minimum_fuel_quality = 0
         self.maximum_installed_capacity_fraction_in_country = 0
+        self.intermittent = False
+        self.fuel = ''
+        # here are missing info
+        self.efficiency_time_series = None
+        self.applicable_for_long_term_contract = False
+        self.co2_capture_efficiency = 0
+        self.techtype = ''
+        self.investment_cost_time_series = None
+        self.fixed_operating_cost_time_series = None
+        self.minimum_fuel_quality = 0
         self.maximum_installed_capacity_fraction_per_agent = 0
         self.base_segment_dependent_availability = 0
         self.peak_segment_dependent_availability = 0
         self.applicableForLongTermContract = False
-        self.intermittent = False
-        self.fuel = ''
-        self.techtype = ''
-
-
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'FUELNEW':
+        # according to the scenario.yaml, if is has energy carrier then it is intermittent
+        if parameter_name == 'EnergyCarrier':
             self.fuel = parameter_value
-        elif parameter_name == 'FUELTYPENEW':
-            self.techtype = parameter_value
-        # elif parameter_name == 'capacity': # TODO
-        #     self.capacity = int(parameter_value)
-        # elif parameter_name == 'intermittent':
-        #     self.intermittent = 'TRUE' == parameter_value
-        # elif parameter_name == 'applicableForLongTermContract':
-        #     self.applicable_for_long_term_contract = bool(parameter_value)
-        elif parameter_name == 'peakSegmentDependentAvailability':
-            self.peak_segment_dependent_availability = float(parameter_value)
-        # elif parameter_name == 'baseSegmentDependentAvailability':
-        #     self.base_segment_dependent_availability = float(parameter_value)
-        # elif parameter_name == 'maximumInstalledCapacityFractionPerAgent':
-        #     self.maximum_installed_capacity_fraction_per_agent = float(parameter_value)
-        # elif parameter_name == 'maximumInstalledCapacityFractionInCountry':
-        #     self.maximum_installed_capacity_fraction_in_country = float(parameter_value)
-        # elif parameter_name == 'minimumFuelQuality':
-        #     self.minimum_fuel_quality = float(parameter_value)
+            self.intermittent = 'TRUE'
+#From here are the inputs from emlab unit
+        elif parameter_name == 'annuity':
+            self.annuity = int(parameter_value)
+        elif parameter_name == 'lifetime_technical':
+            self.expected_lifetime = int(parameter_value)
+        elif parameter_name == 'lifetime_economic':
+            self.depreciation_time = int(parameter_value)
+        elif parameter_name == 'investment_limit':
+            self.maximum_installed_capacity_fraction_in_country = float(parameter_value)
+#From here are the inputs from emlab electricity
+        elif parameter_name == 'fom_cost':
+            self.fixed_operating_costs = float(parameter_value)
+        elif parameter_name == 'vom_cost':
+            self.variable_operating_costs = float(parameter_value)
+        elif parameter_name == 'investment_cost':
+            self.investment_cost = float(parameter_value)
+#From here are the inputs from emlab TechnologyEmlab
         elif parameter_name == 'expectedPermittime':
             self.expected_permittime = int(parameter_value)
         elif parameter_name == 'expectedLeadtime':
             self.expected_leadtime = int(parameter_value)
-        elif parameter_name == 'LifeTime(Years)':
-            self.expected_lifetime = int(parameter_value)
-        # elif parameter_name == 'fixedOperatingCostModifierAfterLifetime':
-        #     self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
+
+
+        # elif parameter_name == 'maximumInstalledCapacityFractionPerAgent':
+        #     self.maximum_installed_capacity_fraction_per_agent = float(parameter_value)
+        # elif parameter_name == 'minimumFuelQuality':
+        #     self.minimum_fuel_quality = float(parameter_value)
+
         # elif parameter_name == 'minimumRunningHours':
         #     self.minimum_running_hours = int(parameter_value)
-        # elif parameter_name == 'depreciationTime':
-        #     self.depreciation_time = int(parameter_value)
         # elif parameter_name == 'efficiencyTimeSeries':
         #     self.efficiency_time_series = reps.trends[parameter_value]
-        elif parameter_name == 'fixedOperatingCostTimeSeries':
-            self.fixed_operating_cost_time_series = reps.trends[parameter_value]
+        # FOR THE FIXED OPERATING COSTS TIME SERIES IT COULD BE ENOUGH TO PUT AS A START THE INITIAL VALUES AND THEN GROWTH TREND 0.05
+        # elif parameter_name == 'fixedOperatingCostTimeSeries':
+        #     self.fixed_operating_cost_time_series = reps.trends[parameter_value]
+        # elif parameter_name == 'fixedOperatingCostModifierAfterLifetime':
+        #     self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
         # elif parameter_name == 'investmentCostTimeSeries':
         #     self.investment_cost_time_series = reps.trends[parameter_value]
         elif parameter_name == 'co2CaptureEfficiency':
@@ -85,6 +93,7 @@ class PowerGeneratingTechnology(ImportObject):
 
     def get_fixed_operating_cost(self, time):
         return self.fixed_operating_cost_time_series.get_value(time)
+
 
 
 class Substance(ImportObject):

@@ -26,7 +26,7 @@ class UpdatefutureValues():
         pass
 
     def setExpectations():
-        expectedFuelPrices = predictFuelPrices(EnergyProducer, futureTimePoint)
+        expectedFuelPrices = predictFuelzPrices(EnergyProducer, futureTimePoint)
         if useFundamentalCO2Forecast==False:
             expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(
                 futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick())

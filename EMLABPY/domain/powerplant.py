@@ -1,3 +1,7 @@
+"""
+This file contains all classes directly related to
+PowerPlant
+"""
 from emlabpy.domain.energyproducer import EnergyProducer
 from emlabpy.domain.import_object import *
 import logging
@@ -36,41 +40,43 @@ class PowerPlant(ImportObject):
         self.flagOutputChanged = True
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'TECHTYPENL':
-            self.techtypestr = parameter_value
-            if self.fuelstr != '':
-                self.technology = reps.get_power_generating_technology_by_techtype_and_fuel(self.techtypestr,
-                                                                                            self.fuelstr)
-                # self.constructionStartTime = - (self.technology.expected_leadtime +
-                #                                   self.technology.expected_permittime +
-                #                                   round(random.random() * self.technology.expected_lifetime)) + 2
-        elif parameter_name == 'FUELNL':
-            self.fuelstr = parameter_value
-            if self.techtypestr != '':
-                self.technology = reps.get_power_generating_technology_by_techtype_and_fuel(self.techtypestr,
-                                                                                            self.fuelstr)
-                # self.constructionStartTime = - (self.technology.expected_leadtime +
-                #                                   self.technology.expected_permittime +
-                #                                   round(random.random() * self.technology.expected_lifetime)) + 2
-        elif parameter_name == 'BUSNL':
-            self.location = reps.power_grid_nodes[parameter_value]
-        elif parameter_name == 'FirmNL':
-            try:
-                self.owner = reps.energy_producers[parameter_value]
-            except KeyError:
-                logging.warning('PowerPlant: EnergyProducer not found: ' + parameter_value)
-                reps.energy_producers[parameter_value] = EnergyProducer(parameter_value)
-                self.owner = reps.energy_producers[parameter_value]
-        elif parameter_name == 'MWNL':
-            self.capacity = int(parameter_value)
-        elif parameter_name == 'EfficiencyNL':
+        if parameter_name == 'Id':
+            self.name = parameter_value
+        if parameter_name == 'Technology':
+            self.technology = parameter_value
+        elif parameter_name == 'InstalledPowerInMW':
+            self.capacity = parameter_value
+        elif parameter_name == 'Owner':
+            self.owner = parameter_value
+        elif parameter_name == 'ComissionedYear':
+            self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
+        elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
-        elif parameter_name == 'Allowances':    # TODO
-            self.banked_allowances[int(alternative)] = int(parameter_value)
-        elif parameter_name == 'STATUSNL':
-            self.status = parameter_value
-        elif parameter_name == 'ON-STREAMNL':
-            self.age = reps.current_tick - int(parameter_value) + reps.start_simulation_year
+        # elif parameter_name == 'FUELNL':
+        #     self.fuelstr = parameter_value
+        #     if self.techtypestr != '':
+        #         self.technology = reps.get_power_generating_technology_by_techtype_and_fuel(self.techtypestr,
+        #                                                                                     self.fuelstr)
+                # self.constructionStartTime = - (self.technology.expected_leadtime +
+                #                                   self.technology.expected_permittime +
+                #                                   round(random.random() * self.technology.expected_lifetime)) + 2
+        # elif parameter_name == 'BUSNL':
+        #     self.location = reps.power_grid_nodes[parameter_value]
+        # elif parameter_name == 'FirmNL':
+        #     try:
+        #         self.owner = reps.energy_producers[parameter_value]
+        #     except KeyError:
+        #         logging.warning('PowerPlant: EnergyProducer not found: ' + parameter_value)
+        #         reps.energy_producers[parameter_value] = EnergyProducer(parameter_value)
+        #         self.owner = reps.energy_producers[parameter_value]
+        # elif parameter_name == 'MWNL':
+        #     self.capacity = int(parameter_value)
+
+        # elif parameter_name == 'Allowances':    # TODO
+        #     self.banked_allowances[int(alternative)] = int(parameter_value)
+        # elif parameter_name == 'STATUSNL':
+        #     self.status = parameter_value
+
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
