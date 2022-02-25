@@ -437,12 +437,8 @@
                     "BestInvestment",
                     "left"
                 ],
-                "resource_filters": {
-                    "db_url@EmlabDB": {
-                        "scenario_filter": [
-                            1
-                        ]
-                    }
+                "options": {
+                    "use_memory_db": false
                 }
             }
         ],
@@ -771,8 +767,8 @@
         "rename conventional": {
             "type": "Data Transformer",
             "description": "",
-            "x": 424.54975162767676,
-            "y": -548.3118900264013,
+            "x": 641.8053132083493,
+            "y": -736.055059614638,
             "specification": ""
         },
         "EmlabParameters": {
@@ -791,8 +787,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -878.2105222413478,
-            "y": -233.76132694641623,
+            "x": -878.2105222413477,
+            "y": -235.00358189804066,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -924,8 +920,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -539.9602678380235,
-            "y": -381.78460588577644,
+            "x": -539.9602678380234,
+            "y": -383.0268608374008,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

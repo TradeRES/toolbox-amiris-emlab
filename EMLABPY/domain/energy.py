@@ -18,6 +18,7 @@ class PowerGeneratingTechnology(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.capacity = 0
+        self.annuity = 0
 
         self.variable_operating_costs = None
         self.investment_cost = None
@@ -46,24 +47,26 @@ class PowerGeneratingTechnology(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
-        if parameter_name == 'EnergyCarrier':
-            self.fuel = parameter_value
-            self.intermittent = 'TRUE'
-#From here are the inputs from emlab unit
+
+        if parameter_name == 'intermittent':
+            self.intermittent = parameter_value
+        #From here are the inputs from emlab unit
         elif parameter_name == 'annuity':
-            self.annuity = int(parameter_value)
+            self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':
             self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'lifetime_economic':
             self.depreciation_time = int(parameter_value)
         elif parameter_name == 'investment_limit':
-            self.maximum_installed_capacity_fraction_in_country = float(parameter_value)
-#From here are the inputs from emlab electricity
+            self.maximum_installed_capacity_fraction_in_country = int(parameter_value)
+        elif parameter_name == 'interest_rate':
+            self.interest_rate = int(parameter_value)
+        #From here are the inputs from emlab electricity = traderes
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
-        elif parameter_name == 'investment_cost':
+        elif parameter_name == 'investment_cost': # these are in eur/kw -> *1000 eur /MW
             self.investment_cost = float(parameter_value)
 #From here are the inputs from emlab TechnologyEmlab
         elif parameter_name == 'expectedPermittime':
@@ -93,6 +96,8 @@ class PowerGeneratingTechnology(ImportObject):
 
     def get_fixed_operating_cost(self, time):
         return self.fixed_operating_cost_time_series.get_value(time)
+
+
 
 
 

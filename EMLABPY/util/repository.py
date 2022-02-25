@@ -74,6 +74,8 @@ class Repository:
     """
     This part is new 
     """
+
+
     def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values()
                 if i.owner == owner]
@@ -268,9 +270,7 @@ class Repository:
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
 
-    """
-    MARKETS 
-    """
+
     # Markets
     def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:
         try:
@@ -327,9 +327,7 @@ class Repository:
             return mcp.price
         else:
             return 0
-    """
-    MARKETS SET
-    """
+
     def create_or_update_market_clearing_point(self,
                                                market: Market,
                                                price: float,

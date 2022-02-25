@@ -60,10 +60,13 @@ class SpineDBReaderWriter:
                 candidatePowerPlants = [a_tuple[0] for a_tuple in db_amirisdata["alternatives"]]
                 add_parameter_value_to_repository_based_on_object_class_name_amiris(self,reps, db_amirisdata, candidatePowerPlants)
                 for db_line in db_data['object_parameter_values']:
+                    add_trends(reps, db_line)
                     add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, candidatePowerPlants)
+
             else:
                 candidatePowerPlants = []
                 for db_line in db_data['object_parameter_values']:
+                    add_trends(reps, db_line)
                     add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, candidatePowerPlants)
         except StopIteration:
             logging.warning('No value found for class: ' + object_class_name +
@@ -94,6 +97,8 @@ class SpineDBReaderWriter:
                 reps.end_simulation_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'Look Ahead':
                 reps.lookAhead = int(row['parameter_value'])
+
+
 
     """
     All functions from here are old
@@ -227,6 +232,13 @@ def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationsh
         else:
             to_arr.append((unit[1][0], unit[1][1], unit[1][2]))
 
+def add_trends(reps, db_line):
+    object_class_name = db_line[0]
+    if object_class_name == 'FuelPriceTrends':
+        add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
+    elif object_class_name == 'StepTrends':
+        add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
+
 
 def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, candidatePowerPlants):
     """
@@ -245,36 +257,31 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
         else:
             add_parameter_value_to_repository(reps, db_line, reps.candidatePowerPlants, CandidatePowerPlant)
-
+# data from old emlab
+    elif object_class_name == 'TechnologiesEmlab':
+        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+# data from Traderes
     elif object_class_name == 'unit':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    elif object_class_name == 'node':
-        add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
+    elif object_class_name == 'electricity':
+        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+    # elif object_class_name == 'node':
+    #     add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
+    elif object_class_name == 'Fuels':
+        add_parameter_value_to_repository(reps, db_line, reps.zones, Substance)
     elif object_class_name == 'CapacityMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
-    elif object_class_name == 'FuelPriceTrends':
-        add_parameter_value_to_repository(reps, db_line, reps.zones, StepTrend)
     elif object_class_name == 'EnergyProducers':
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
 
-
-    # if object_class_name == 'GeometricTrends':
-    #     add_parameter_value_to_repository(reps, db_line, reps.trends, GeometricTrend)
-    # elif object_class_name == 'TriangularTrends':
-    #     add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
-    # elif object_class_name == 'StepTrends':
-    #     add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
     # elif object_class_name == 'Zones':
     #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
-
-
     # elif object_class_name == 'ElectricitySpotMarkets':
     #     add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
     # elif object_class_name == 'CO2Auction':
     #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
-
     # elif object_class_name == 'Hourly Demand':
     #     add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
     # elif object_class_name == 'PowerGridNodes':
@@ -299,11 +306,11 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
 
 
 def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata, candidatePowerPlants):
-
-    for db_line_amiris in db_amirisdata['object_parameter_values']:
-        object_class_name = db_line_amiris[0]
-        object_name = db_line_amiris[1]
-        if object_class_name == self.ConventionalOperator_classname and object_name in candidatePowerPlants:
-            add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
-        if object_class_name == self.VariableRenewableOperator_classname and object_name in candidatePowerPlants:
-            add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
+    for candidateplant in candidatePowerPlants:
+        for db_line_amiris in db_amirisdata['object_parameter_values']:
+            object_class_name = db_line_amiris[0]
+            object_name = db_line_amiris[1]
+            if object_class_name == self.ConventionalOperator_classname and object_name == candidateplant:
+                add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
+            if object_class_name == self.VariableRenewableOperator_classname and object_name == candidateplant:
+                add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)

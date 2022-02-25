@@ -69,7 +69,7 @@ else:
 try:    # Try statement to always close DB properly
     # Load repository
     reps = spinedb_reader_writer.read_db_and_create_repository()
-    print(reps)
+    print("repository complete")
     logging.info('Start Initialization Modules')
     capacity_market_submit_bids = CapacityMarketSubmitBids(reps) # This function stages new dispatch power plant
     capacity_market_clear = CapacityMarketClearing(reps) # This function adds rep to class capacity markets

@@ -26,7 +26,8 @@ class GeometricTrend(Trend):
     def __init__(self, name):
         super().__init__(name)
         self.start = 0
-        self.growth_rate = 0
+        self.growth_rate = 0.05
+        # the start can be taken the fixed costs
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'start':

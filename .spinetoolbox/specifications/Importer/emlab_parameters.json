@@ -461,46 +461,6 @@
                     }
                 }
             ],
-            "powerTechnologies": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "FuelGen",
-                                "skip_columns": [
-                                    0
-                                ]
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": -1
-                            }
-                        ]
-                    }
-                }
-            ],
             "explanation": [
                 {
                     "Mapping 1": {
@@ -587,13 +547,55 @@
                         ]
                     }
                 }
+            ],
+            "Fuels": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Fuels",
+                                "skip_columns": [
+                                    0
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "CapacityMarkets",
             "EnergyProducers",
             "FuelPriceTrends",
-            "TechnologiesEmlab"
+            "TechnologiesEmlab",
+            "Fuels"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -610,10 +612,10 @@
             "TargetInvestors": {},
             "TargetInvestorTargets": {},
             "FuelPriceTrends": {},
-            "powerTechnologies": {},
             "explanation": {},
             "TechnologiesEmlab": {},
-            "TechnologiesCompetes": {}
+            "TechnologiesCompetes": {},
+            "Fuels": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -731,14 +733,6 @@
                 "4": "float",
                 "5": "float"
             },
-            "powerTechnologies": {
-                "0": "float",
-                "1": "string",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float"
-            },
             "TechnologiesEmlab": {
                 "0": "string",
                 "1": "float",
@@ -767,6 +761,14 @@
                 "12": "string",
                 "13": "string",
                 "14": "string"
+            },
+            "Fuels": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float"
             }
         },
         "table_row_types": {},
