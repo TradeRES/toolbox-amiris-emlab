@@ -4,7 +4,7 @@ The advantage of this parent class is that some calculations can be static as th
 
 Jim Hommes - 7-4-2021
 """
-from modules.defaultmodule import DefaultModule
+from emlabpy.modules.defaultmodule import DefaultModule
 
 
 class MarketModule(DefaultModule):

@@ -1,7 +1,0 @@
-INFO:root:Starting EM-Lab Run
-INFO:root:Selected modules: ['run_capacity_market']
-INFO:root:Selected database: http://127.0.0.1:53934
-INFO:root:Configuration file found: run_capacity_market
-INFO:root:SpineDBRW: Start Read Repository
-ERROR:root:Exception occurred: [Errno 2] No such file or directory: 'run_capacity_market'
-INFO:root:Closing database connections...

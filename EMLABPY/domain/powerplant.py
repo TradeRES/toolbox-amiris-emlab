@@ -28,6 +28,7 @@ class PowerPlant(ImportObject):
         self.actualLeadtime = 0
         self.actualPermittime = 0
         self.actualLifetime = 0
+        self.commissionedYear = 0
         self.name = ""
         self.label = ""
         self.actualInvestedCapital = 0
@@ -43,23 +44,18 @@ class PowerPlant(ImportObject):
         if parameter_name == 'Id':
             self.name = parameter_value
         if parameter_name == 'Technology':
-            self.technology = parameter_value
+            self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'InstalledPowerInMW':
             self.capacity = parameter_value
         elif parameter_name == 'Owner':
             self.owner = parameter_value
         elif parameter_name == 'ComissionedYear':
             self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
+            self.commissionedYear = int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
-        # elif parameter_name == 'FUELNL':
-        #     self.fuelstr = parameter_value
-        #     if self.techtypestr != '':
-        #         self.technology = reps.get_power_generating_technology_by_techtype_and_fuel(self.techtypestr,
-        #                                                                                     self.fuelstr)
-                # self.constructionStartTime = - (self.technology.expected_leadtime +
-                #                                   self.technology.expected_permittime +
-                #                                   round(random.random() * self.technology.expected_lifetime)) + 2
+
+
         # elif parameter_name == 'BUSNL':
         #     self.location = reps.power_grid_nodes[parameter_value]
         # elif parameter_name == 'FirmNL':
@@ -76,7 +72,6 @@ class PowerPlant(ImportObject):
         #     self.banked_allowances[int(alternative)] = int(parameter_value)
         # elif parameter_name == 'STATUSNL':
         #     self.status = parameter_value
-
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
@@ -122,6 +117,71 @@ class PowerPlant(ImportObject):
                 return False
         # Construction finished
 
+    def getAvailableCapacity(self, currentTick, segment, numberOfSegments):
+        if isOperational(currentTick):
+            if self.getTechnology().isIntermittent():
+                intermittentTechnologyNodeLoadFactor = getIntermittentTechnologyNodeLoadFactor()
+                factor = intermittentTechnologyNodeLoadFactor.getLoadFactorForSegment(segment)
+                return getActualNominalCapacity() * factor
+            else:
+                factor = 1
+                if segment is not None:
+                    # capacity
+                    segmentID = segment.getSegmentID()
+                    if int(segmentID) > 1:
+
+                        min = getTechnology().getPeakSegmentDependentAvailability()
+                        max = getTechnology().getBaseSegmentDependentAvailability()
+                        segmentPortion = (numberOfSegments - segmentID) / (numberOfSegments - 1)
+                        Logger.getGlobal().finer("Segment portion for segment " + segmentID + " is "+ segmentPortion)
+
+                        # start
+                        # counting
+                        # at
+                        # 1.
+
+                        range = max - min
+
+                        factor = max - segmentPortion * range
+                    else:
+                        factor = getTechnology().getPeakSegmentDependentAvailability()
+                cap = getActualNominalCapacity() * factor
+                if factor < 1:
+                    Logger.getGlobal().finer("Capacity factor for " + getTechnology() + " is " + cap + " for segment " + segment + " because load factor is " + factor)
+                return cap
+        else:
+            return 0
+
+    def getExpectedAvailableCapacity(self, futureTick, segment, numberOfSegments):
+        if isExpectedToBeOperational(futureTick):
+            if self.getTechnology().isIntermittent():
+                factor = getIntermittentTechnologyNodeLoadFactor().getLoadFactorForSegment(segment)
+                return getActualNominalCapacity() * factor
+            else:
+                factor = 1
+                if segment is not None:
+                    # capacity
+                    segmentID = segment.getSegmentID()
+                    min = getTechnology().getPeakSegmentDependentAvailability()
+                    max = getTechnology().getBaseSegmentDependentAvailability()
+                    segmentPortion = (numberOfSegments - segmentID) / (numberOfSegments - 1) # start
+                    # counting
+                    # at
+                    # 1.
+
+                    range = max - min
+
+                    factor = max - segmentPortion * range
+                return getActualNominalCapacity() * factor
+        else:
+            return 0
+
+    def getAvailableCapacity(self, currentTick):
+        if isOperational(currentTick):
+            return getActualNominalCapacity()
+        else:
+            return 0
+
     def calculateActualLeadtime(self):
         actual = None
         actual = self.actualLeadtime
@@ -151,7 +211,6 @@ class PowerPlant(ImportObject):
         if endOfTechnicalLifetime <= currentTick:
             return False
         return True
-
 
     def calculateAndSetActualInvestedCapital(self, timeOfPermitorBuildingStart):
         setActualInvestedCapital(self.technology.getInvestmentCost(timeOfPermitorBuildingStart + \
@@ -199,9 +258,137 @@ class PowerPlant(ImportObject):
         #        }
         #        return amount
 
-
     def calculateCO2EmissionsAtTime(self, time, forecast):
         return self.calculateEmissionIntensity() * self.calculateElectricityOutputAtTime(time, forecast)
+
+    def dismantlePowerPlant(self, time):
+        self.setDismantleTime(time)
+
+    def createOrUpdateLoan(self, loan):
+        self.setLoan(loan)
+
+    def createOrUpdateDownPayment(self, downpayment):
+        self.setDownpayment(downpayment)
+
+    def updateFuelMix(self, fuelMix):
+        self.setFuelMix(fuelMix)
+
+    def getActualNominalCapacity(self):
+        return self.actualNominalCapacity
+
+    def setActualNominalCapacity(self, actualNominalCapacity):
+        if actualNominalCapacity < 0:
+            raise RuntimeException("ERROR: " + self.name + " power plant is being set with a negative capacity!")
+        self.actualNominalCapacity = actualNominalCapacity
+
+    def getActualFixedOperatingCost(self):
+        return self.actualFixedOperatingCost
+
+    def setActualFixedOperatingCost(self, actualFixedOperatingCost):
+        self.actualFixedOperatingCost = actualFixedOperatingCost
+
+    def getIntermittentTechnologyNodeLoadFactor(self):
+        return reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(), self.getTechnology())
+
+    def isHistoricalCvarDummyPlant(self):
+        return self.historicalCvarDummyPlant
+#getter and setters
+    def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
+        self.historicalCvarDummyPlant = historicalCvarDummyPlant
+
+    def setName(self, label):
+        self.name = label
+        self.label = label
+
+    def getTechnology(self):
+        return self.technology
+
+    def setTechnology(self, technology):
+        self.technology = technology
+
+    def setLocation(self, location):
+        self.location = location
+
+    def getLocation(self):
+        return self.location
+
+    def setOwner(self, owner):
+        self.owner = owner
+
+    def getOwner(self):
+        return self.owner
+
+    def setConstructionStartTime(self):
+        self.constructionStartTime = - (self.technology.expected_leadtime +
+                                        self.technology.expected_permittime +
+                                        round(random() * self.technology.expected_lifetime)) + 2
+
+    def getConstructionStartTime(self):
+        return self.constructionStartTime
+
+    def setActualLeadtime(self, actualLeadtime):
+        self.actualLeadtime = actualLeadtime
+
+    def getActualLeadtime(self):
+        return self.actualLeadtime
+
+    def getExpectedEndOfLife(self):
+        return self.expectedEndOfLife
+
+    def setExpectedEndOfLife(self, expectedEndOfLife):
+        self.expectedEndOfLife = expectedEndOfLife
+
+    def setActualPermittime(self, actualPermittime):
+        self.actualPermittime = actualPermittime
+
+    def getActualPermittime(self):
+        return self.actualPermittime
+
+    def getDismantleTime(self):
+        return self.dismantleTime
+
+    def setDismantleTime(self, dismantleTime):
+        self.dismantleTime = dismantleTime
+
+    def setName(self, label):
+        self.name = label
+        self.label = label
+
+    def getLabel(self):
+        return self.label
+
+    def setLabel(self, label):
+        self.label = label
+
+    def getActualInvestedCapital(self):
+        return self.actualInvestedCapital
+
+    def setActualInvestedCapital(self, actualInvestedCapital):
+        self.actualInvestedCapital = actualInvestedCapital
+
+    def getFuelMix(self):
+        return self.fuelMix
+
+    def setFuelMix(self, fuelMix):
+        self.fuelMix = fuelMix
+
+    def getLoan(self):
+        return self.loan
+
+    def setLoan(self, loan):
+        self.loan = loan
+
+    def getDownpayment(self):
+        return self.downpayment
+
+    def setDownpayment(self, downpayment):
+        self.downpayment = downpayment
+
+    def getActualEfficiency(self):
+        return self.actualEfficiency
+
+    def setActualEfficiency(self, actualEfficiency):
+        self.actualEfficiency = actualEfficiency
 
     def dismantlePowerPlant(self, time):
         self.setDismantleTime(time)
@@ -226,7 +413,7 @@ class PowerPlant(ImportObject):
 
     def setActualNominalCapacity(self, actualNominalCapacity):
         if actualNominalCapacity < 0:
-            raise RuntimeException("ERROR: " + self.name + " power plant is being set with a negative capacity!")
+            raise ValueError("ERROR: " + self.name + " power plant is being set with a negative capacity!")
         self.actualNominalCapacity = actualNominalCapacity
 
     def getActualFixedOperatingCost(self):
@@ -237,12 +424,6 @@ class PowerPlant(ImportObject):
 
     def getIntermittentTechnologyNodeLoadFactor(self):
         return reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(), self.getTechnology())
-
-    def isHistoricalCvarDummyPlant(self):
-        return self.historicalCvarDummyPlant
-
-    def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
-        self.historicalCvarDummyPlant = historicalCvarDummyPlant
 
     '''
      # FROM HERE EQUATIONS ARE OLD   

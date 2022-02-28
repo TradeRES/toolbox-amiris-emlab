@@ -35,6 +35,7 @@ class Repository:
         self.start_simulation_year = 0
         self.end_simulation_year = 0
         self.lookAhead = 0
+        self.current_year = 0
 
         self.energy_producers = dict()
         self.power_plants = dict()
@@ -60,8 +61,9 @@ class Repository:
         self.power_plant_dispatch_plan_status_failed = 'Failed'
         self.power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
         self.power_plant_dispatch_plan_status_awaiting = 'Awaiting'
-        self.power_plant_status_operational = 'OPR'
-
+        self.power_plant_status_operational = 'Operational'
+        self.power_plant_status_inPipeline = 'InPipeline'
+        self.power_plant_status_decommissioned = 'Decommissioned'
         self.marketForSubstance = {}
         self.electricitySpotMarketForNationalGovernment = {}
         self.electricitySpotMarketForPowerPlant = {}
@@ -98,6 +100,9 @@ class Repository:
             self.loansToAgent.put(to, [])
         self.loansToAgent.get(to).add(loan)
         return loan
+
+    def set_correct_power_plant_statuses():
+        pass
 
 
 
@@ -150,6 +155,7 @@ class Repository:
         self.power_plant_dispatch_plans[ppdp.name] = ppdp
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
+
     """
     Repository functions:
     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
@@ -158,6 +164,15 @@ class Repository:
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == self.power_plant_status_operational]
+
+    def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
+        res = 0
+        for power_plant in [i for i in self.power_plants.values() if i.status == self.power_plant_status_operational]:
+            revenues = self.get_power_plant_electricity_spot_market_revenues_by_tick(power_plant, time)
+            mc = power_plant.calculate_marginal_cost_excl_co2_market_cost(self, time)
+            total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time, market)
+            res[power_plant.name] = revenues - mc * total_capacity
+        return res
 
     def get_available_power_plant_capacity_at_tick(self, plant: PowerPlant, current_tick: int) -> float:
         ppdps_sum_accepted_amount = sum([float(i.accepted_amount) for i in
@@ -208,6 +223,8 @@ class Repository:
             res[power_plant.name] = total_capacity * emission_intensity
         return res
 
+
+
     # PowerPlantDispatchPlans
     def get_power_plant_dispatch_plan_price_by_plant_and_time_and_market(self, plant: PowerPlant, time: int,
                                                                          market: Market) -> float:
@@ -249,14 +266,13 @@ class Repository:
                                                    amount: float,
                                                    price: float,
                                                    time: int) -> PowerPlantDispatchPlan:
-        ppdp = next((ppdp for ppdp in self.power_plant_dispatch_plans.values() if ppdp.plant == plant and
+        ppdp = next((ppdp for ppdp in self.power_plant_dispatch_plans.values() if ppdp.plant == plant and \
                      ppdp.bidding_market == bidding_market and
                      ppdp.tick == time), None)
         if ppdp is None:
             # PowerPlantDispatchPlan not found, so create a new one
             name = 'PowerPlantDispatchPlan ' + str(datetime.now())
             ppdp = PowerPlantDispatchPlan(name)
-
         ppdp.plant = plant
         ppdp.bidder = bidder
         ppdp.bidding_market = bidding_market
@@ -265,7 +281,6 @@ class Repository:
         ppdp.status = self.power_plant_dispatch_plan_status_awaiting
         ppdp.accepted_amount = 0
         ppdp.tick = time
-
         self.power_plant_dispatch_plans[ppdp.name] = ppdp
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp

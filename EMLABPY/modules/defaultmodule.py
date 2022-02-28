@@ -10,7 +10,7 @@ Jim Hommes - 25-3-2021
 import logging
 
 from datetime import datetime
-from util.repository import Repository
+from emlabpy.util.repository import Repository
 
 
 class DefaultModule:
@@ -23,9 +23,10 @@ class DefaultModule:
     def act(self):
         pass
 
-    def act_and_commit(self, current_tick: int):
+    def act_and_commit(self):
         self.act()
         self.reps.dbrw.commit('Commit: ' + self.name + ' at ' + str(datetime.now()))
+
 
     def __str__(self):
         return str(vars(self))

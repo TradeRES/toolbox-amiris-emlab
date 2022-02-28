@@ -10,7 +10,7 @@ import sys
 from util.spinedb import SpineDB
 
 db_url = sys.argv[1]
-db_amiris = SpineDB(db_url)
+db_emlab = SpineDB(db_url)
 
 try:
     class_name = "Configuration"
@@ -20,41 +20,43 @@ try:
     if len(sys.argv) >= 2:
         if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')
-            db_amiris.import_object_classes([class_name])
-            db_amiris.import_objects([(class_name, object_name)])
-            db_amiris.import_data({'object_parameters': [[class_name, object_parameter_value_name]]})
-            db_amiris.import_alternatives([str(0)])
-            db_amiris.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
-            StartYear = next(int(i['parameter_value']) for i in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
-                            if i['parameter_name'] == 'Start Year')
-            db_amiris.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
+            db_emlab.import_object_classes([class_name])
+            db_emlab.import_objects([(class_name, object_name)])
+            db_emlab.import_data({'object_parameters': [[class_name, object_parameter_value_name]]})
+            db_emlab.import_alternatives([str(0)])
+            db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
+            StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                             if i['parameter_name'] == 'Start Year')
+            db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
 
-            db_amiris.commit('Clock intialization')
+            db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
         if sys.argv[2] == 'increment_clock':
 
             step = next(int(i['parameter_value']) for i
-                        in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                        in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                         if i['parameter_name'] == 'Time Step')
 
             print('Incrementing Clock (tick +' + str(step) + ')')
             previous_tick = next(int(i['parameter_value']) for i
-                                 in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                                 in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                  if i['parameter_name'] == object_parameter_value_name)
 
             new_tick = step + previous_tick
-            Current_year = next(int(i['parameter_value']) for i in db_amiris.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+            Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
-            db_amiris.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
-            db_amiris.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
-            db_amiris.commit('Clock increment')
+            db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
+            db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
+            db_emlab.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + ')')
+
+
     else:
         print('No mode specified.')
 except Exception:
     raise
 finally:
     print('Closing DB Connections...')
-    db_amiris.close_connection()
+    db_emlab.close_connection()

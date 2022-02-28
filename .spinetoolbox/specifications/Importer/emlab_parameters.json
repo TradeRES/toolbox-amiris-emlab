@@ -490,13 +490,19 @@
                                 "position": "table_name",
                                 "value": "TechnologiesEmlab",
                                 "skip_columns": [
-                                    3,
-                                    4,
                                     5,
                                     6,
                                     7,
                                     8,
-                                    9
+                                    9,
+                                    10,
+                                    11,
+                                    12,
+                                    13,
+                                    14,
+                                    15,
+                                    16,
+                                    17
                                 ]
                             },
                             {
@@ -522,26 +528,6 @@
                             },
                             {
                                 "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "TechnologiesCompetes": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
                                 "position": "hidden"
                             }
                         ]
@@ -588,6 +574,45 @@
                         ]
                     }
                 }
+            ],
+            "Import Priorities": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Configuration",
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -595,7 +620,8 @@
             "EnergyProducers",
             "FuelPriceTrends",
             "TechnologiesEmlab",
-            "Fuels"
+            "Fuels",
+            "Import Priorities"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -614,8 +640,8 @@
             "FuelPriceTrends": {},
             "explanation": {},
             "TechnologiesEmlab": {},
-            "TechnologiesCompetes": {},
-            "Fuels": {}
+            "Fuels": {},
+            "Import Priorities": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -743,24 +769,15 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "float"
-            },
-            "TechnologiesCompetes": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string",
-                "12": "string",
-                "13": "string",
-                "14": "string"
+                "9": "float",
+                "10": "float",
+                "11": "float",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float"
             },
             "Fuels": {
                 "0": "string",
@@ -769,9 +786,18 @@
                 "3": "float",
                 "4": "float",
                 "5": "float"
+            },
+            "Import Priorities": {
+                "0": "string",
+                "1": "float"
             }
         },
-        "table_row_types": {},
+        "table_row_types": {
+            "TechnologiesEmlab": {
+                "1": "string",
+                "0": "string"
+            }
+        },
         "source_type": "ExcelConnector"
     },
     "description": ""

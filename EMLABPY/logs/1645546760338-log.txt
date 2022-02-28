@@ -1,7 +1,0 @@
-INFO:root:Starting EM-Lab Run
-INFO:root:Selected modules: ['sqlite:///C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\.spinetoolbox\\items\\amrisdb\\AMRISDB.sqlite', 'run_investment_module']
-INFO:root:emlab database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite
-INFO:root:amiris database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\amrisdb\AMRISDB.sqlite
-INFO:root:SpineDBRW: Start Read Repository
-ERROR:root:Exception occurred: 0
-INFO:root:Closing database connections...

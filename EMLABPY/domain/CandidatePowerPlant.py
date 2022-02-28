@@ -1,8 +1,9 @@
-from emlabpy.domain.import_object import *
+
+from emlabpy.domain.powerplant import *
 import logging
 
 
-class CandidatePowerPlant(ImportObject):
+class CandidatePowerPlant(PowerPlant):
     def __init__(self, name):
         super().__init__(name)
         # results from Amiris
@@ -12,7 +13,6 @@ class CandidatePowerPlant(ImportObject):
         self.ReceivedMoneyinEUR = 0
         self.Profit = 0
         # scenario from amiris
-        self.name = ""
         self.technology = None
         self.location = None
         self.age = 0
@@ -46,7 +46,7 @@ class CandidatePowerPlant(ImportObject):
         elif parameter_name == 'Id':
             self.name = parameter_value
         elif parameter_name == 'Technology':
-            self.technology = parameter_value
+            self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'InstalledPowerInMW':
             print("InstalledPowerInMW",  parameter_value)
             self.capacity = parameter_value
@@ -68,6 +68,25 @@ class CandidatePowerPlant(ImportObject):
 
     def setInvestedCapital(self):
         pass
+
+    def specifyTemporaryPowerPlant(self, time, energyProducer, location, technology):
+        label = energyProducer.getName() + " - " + technology.getName()
+        plant.setOwner(energyProducer)
+        plant.setLocation(location)
+        plant.setConstructionStartTime(time)
+        plant.setActualLeadtime(technology.getExpectedLeadtime())
+        plant.setActualPermittime(technology.getExpectedPermittime())
+        plant.calculateAndSetActualEfficiency(time)
+        plant.setHistoricalCvarDummyPlant(False)
+        plant.setActualNominalCapacity(plant.getTechnology().getCapacity() * location.getCapacityMultiplicationFactor())
+        assert plant.getActualEfficiency() <= 1, plant.getActualEfficiency()
+        plant.setDismantleTime(1000)
+        plant.calculateAndSetActualInvestedCapital(time)
+        plant.calculateAndSetActualFixedOperatingCosts(time)
+        plant.setExpectedEndOfLife(time + plant.getActualPermittime() + plant.getActualLeadtime() + plant.getTechnology().getExpectedLifetime())
+
+        plant.reps = self
+        return plant
 
 
 
