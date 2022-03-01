@@ -9,9 +9,11 @@ from datetime import datetime
 from typing import Optional, Dict, List
 
 from emlabpy.domain.actors import *
-from emlabpy.domain.energy import *
+from emlabpy.domain.powerplantDispatchPlan import *
+from emlabpy.domain.technologies import *
 from emlabpy.domain.markets import *
 from emlabpy.domain.powerplant import *
+from emlabpy.domain.substances import *
 from emlabpy.domain.CandidatePowerPlant import *
 from emlabpy.domain.trends import *
 from emlabpy.domain.zones import *
@@ -101,12 +103,6 @@ class Repository:
         self.loansToAgent.get(to).add(loan)
         return loan
 
-    def set_correct_power_plant_statuses():
-        pass
-
-
-
-
     def findLoansFromAgent(self, agent):
         return self.loansFromAgent.get(agent)
 
@@ -161,6 +157,18 @@ class Repository:
     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
     """
     # PowerPlants
+    def calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(self, technology, futuretick):
+        expectedOperationalcapacity = 0
+        plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
+        for plant in plantsoftechnology:
+            if PowerPlant.isExpectedToBeOperational(plant, futuretick):
+                expectedOperationalcapacity.sum()
+
+        return expectedOperationalcapacity
+
+
+
+
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == self.power_plant_status_operational]
@@ -200,15 +208,6 @@ class Repository:
         total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time, market)
         return foc + mc * total_capacity
 
-    def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market) -> Dict[str, float]:
-        res = {}
-        for power_plant in [i for i in self.power_plants.values() if i.status == self.power_plant_status_operational]:
-            revenues = self.get_power_plant_electricity_spot_market_revenues_by_tick(power_plant, time)
-            mc = power_plant.calculate_marginal_cost_excl_co2_market_cost(self, time)
-            total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time, market)
-            res[power_plant.name] = revenues - mc * total_capacity
-        return res
-
     def get_power_plant_emissions_by_tick(self, time: int) -> Dict[str, float]:
         if 'YearlyEmissions' in self.emissions.keys():
             res = self.emissions['YearlyEmissions'].emissions[time]
@@ -222,6 +221,7 @@ class Repository:
             emission_intensity = power_plant.calculate_emission_intensity(self)
             res[power_plant.name] = total_capacity * emission_intensity
         return res
+
 
 
 
@@ -329,6 +329,10 @@ class Repository:
         else:
             return None
 
+    def findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(self, substance, timeFrom, timeTo,  forecast):
+        #return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
+        # filter(lambda p : p.getAbstractMarket().getSubstance() is substance).filter(p -(> p.isForecast()) == forecast).collect(Collectors.toList())
+        return
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:

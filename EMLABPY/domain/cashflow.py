@@ -2,7 +2,7 @@
 """
 This file contains Loans, CashFlow
 """
-from energy import PowerPlant
+from technologies import PowerPlant
 
 class CashFlow:
 

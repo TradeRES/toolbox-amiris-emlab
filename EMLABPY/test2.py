@@ -1,3 +1,5 @@
+from random import random
+
 students = {
     'ID 1':    {'Name': 'Shaun', 'Age': 35, 'City': 'Delhi'},
     'ID 2':    {'Name': 'Ritika', 'Age': 31, 'City': 'Mumbai'},
@@ -22,3 +24,5 @@ def nested_dict_pairs_iterator(dict_obj):
 #Loop through all key-value pairs of a nested dictionary
 for pair in nested_dict_pairs_iterator(students):
     print(pair)
+
+print("random", random())

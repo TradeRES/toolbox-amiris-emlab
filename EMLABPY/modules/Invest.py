@@ -3,17 +3,17 @@
 # it is the sum of the revenues minus the debt
 # once an investment is done, decrease the amount from the investment budget
 from emlabpy.domain.energyproducer import EnergyProducer
-from emlabpy.domain.energy import PowerGeneratingTechnology
+from emlabpy.domain.technologies import PowerGeneratingTechnology
 from emlabpy.modules.defaultmodule import DefaultModule
-
+from emlabpy.domain.powerplant import *
+from emlabpy.domain.CandidatePowerPlant import *
 import numpy_financial as npf
-from domain.energy import *
+
 from domain.actors import *
-
 from util.repository import Repository
-
 from emlabpy.helpers.helper_functions import get_current_ticks
 import sys
+import logging
 
 class Investmentdecision(DefaultModule):
     """
@@ -30,17 +30,34 @@ class Investmentdecision(DefaultModule):
         self.operationalCapacityOfTechnology = 0
         self.capacityInPipelineInMarket = 0
         self.viableInvestment = False
+        self.investmentCashFlow =[]
         # self.node = None
         # self.pgtNodeLimit = Double.MAX_VALUE
-        #agent = ENERGY PRODUCER
-        self.agent = "Producer1"
+# from AbstractInvestInPowerGenerationTechnologiesRole
+        self.useFundamentalCO2Forecast = False
+        self.futureTimePoint = 0
+        self.futureInvestmentyear = 0
+        self.expectedCO2Price = None
+        self.expectedFuelPrices = None
+        self.expectedDemand = None
+        self.market = None
+        self.marketInformation = None
+        self.agent = None
         self.budget_year0 = 0
-        self.investmentCashFlow =[]
 
     def act(self):
+        setAgent(self, "Producer1")
+        setTimeHorizon(self)
+
+        for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
+            #TODO finalize
+            #setPowerPlantExpectations(self, candidatepowerplant,self.futureTimePoint )
+            futurecapacity = FutureCapacityExpectation(self.reps)
+            futurecapacity.calculate(candidatepowerplant)
+
         bestPlant = None
         highestValue = 0
-        for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent):
+        for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
             agent = self.reps.energy_producers[self.agent]
             projectvalue = getProjectValue(self, candidatepowerplant, agent)
@@ -49,6 +66,11 @@ class Investmentdecision(DefaultModule):
                 highestValue = projectvalue / candidatepowerplant.capacity
                 bestPlant = candidatepowerplant
         print("bestPlant is " , bestPlant )
+
+def setTimeHorizon(self):
+    logging.info(self.agent.name + " is considering investment with horizon " )
+    self.futureTimePoint = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
+    self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTimePoint
 
 def getProjectValue(self, candidatepowerplant,agent):
     #technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
@@ -80,11 +102,6 @@ def getActualInvestedCapital(self, candidatepowerplant, technology):
 def getinvestmentcosts(investmentCostperTechnology,time):
     return pow(1.05, time) * investmentCostperTechnology
 
-
-
-
-
-
 def checkAllBudget(downPayment, budget, year):
 
     if year == 1:
@@ -103,6 +120,57 @@ def createSpreadOutDownPayments(agent, downPayment, plant):
     downpayment = getReps().createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1, getCurrentTick(), plant)
     plant.createOrUpdateDownPayment(downpayment)
 
+def setPowerPlantExpectations(self, powerplant, time):
+    powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
+
+# def setExpectations(self):
+#     expectedFuelPrices = self.agent.predictFuelPrices(agent, futureTimePoint)
+#     if not useFundamentalCO2Forecast:
+#         expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick())
+#     else:
+#         expectedCO2Price = determineExpectedCO2PriceInclTax(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), getCurrentTick())
+#     expectedDemand = {}
+#     for elm in getReps().electricitySpotMarkets:
+#         gtr = GeometricTrendRegression()
+#         time = getCurrentTick()
+#         while time > getCurrentTick() - agent.getNumberOfYearsBacklookingForForecasting() and time >= 0:
+#             gtr.addData(time, elm.getDemandGrowthTrend().getValue(time))
+#             time = time - 1
+#         expectedDemand.put(elm, gtr.predict(futureTimePoint))
+#     marketInformation = MarketInformation(market, expectedDemand, expectedFuelPrices, expectedCO2Price.get(market).doubleValue(), futureTimePoint)
+
+
+def getAgent(self):
+    return agent
+
+def setAgent(self, agent):
+    self.agent = self.reps.energy_producers[agent]
+
+#	 * Returns the tick for which the investor currently evaluates the technology
+def getFutureTimePoint(self):
+    return futureTimePoint
+
+def setFutureTimePoint(self, futureTimePoint):
+    self.futureTimePoint = futureTimePoint
+
+def isUseFundamentalCO2Forecast(self):
+    return useFundamentalCO2Forecast
+
+def setUseFundamentalCO2Forecast(self, useFundamentalCO2Forecast):
+    self.useFundamentalCO2Forecast = useFundamentalCO2Forecast
+
+def getMarket(self):
+    return market
+
+def setMarket(self, market):
+    self.market = market
+
+def getMarketInformation(self):
+    return marketInformation
+
+def setMarketInformation(self, marketInformation):
+    self.marketInformation = marketInformation
+
     # projectValue = calculateProjectValue();
     # projectCost = calculateProjectCost();
     #
@@ -116,13 +184,11 @@ def createSpreadOutDownPayments(agent, downPayment, plant):
 
 
 class FutureCapacityExpectation(Investmentdecision):
-
-    def __init__(self, technology, plant):
-        super().__init__(technology, plant)
-        #instance fields found by Java to Python Converter:
-        self.technology = technology
-        self.plant = plant
-        self.node = "DE"
+    def __init__(self, reps):
+        super().__init__(reps)
+        # self.technology = technology
+        # self.plant = plant
+        # self.location = None
         self.expectedInstalledCapacityOfTechnology = 0
         self.expectedInstalledCapacityOfTechnologyInNode = 0
         self.expectedOwnedTotalCapacityInMarket = 0
@@ -130,40 +196,39 @@ class FutureCapacityExpectation(Investmentdecision):
         self.capacityOfTechnologyInPipeline = 0
         self.operationalCapacityOfTechnology = 0
         self.capacityInPipelineInMarket = 0
-        self.viableInvestment = False
+        self.reps = reps
 
-    def findLimitsByTechnologyAndNode():
-        LimitinCountry = self.technology.maximum_installed_capacity_fraction_in_country
+    def findLimitsByTechnologyAndNode(self, candidatepowerplant):
+        LimitinCountry = candidatepowerplant.technology.maximum_installed_capacity_fraction_in_country
         if LimitinCountry:
             return LimitinCountry
         else:
             return None
 
-    def act(self):
-        self.findLimitsByTechnologyAndNode()
+    def calculate(self, candidatepowerplant):
+            CandidatePowerPlant.specifyTemporaryPowerPlant(candidatepowerplant, self.reps.current_year, self.agent, "DE")
+            print(candidatepowerplant)
+            self.findLimitsByTechnologyAndNode(candidatepowerplant)
+            self.expectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(candidatepowerplant.technology, self.futureInvestmentyear)
 
-        self.expectedInstalledCapacityOfTechnology = getReps().calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, technology, futureTimePoint)
+        # technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnologyAndMarket(technology, market)
+        # if technologyTarget is not None:
+        #     technologyTargetCapacity = technologyTarget.getTrend().getValue(futureTimePoint)
+        #     self.expectedInstalledCapacityOfTechnology = technologyTargetCapacity if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology) else self.expectedInstalledCapacityOfTechnology
+        # #
+        # self.expectedInstalledCapacityOfTechnologyInNode = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(plant.getLocation(),technology, futureTimePoint)
+        #
+        # self.expectedOwnedTotalCapacityInMarket = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsInMarketByOwner(market, futureTimePoint, agent)
+        #
+        # self.expectedOwnedCapacityInMarketOfThisTechnology = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsInMarketByOwnerAndTechnology(market, technology, futureTimePoint, agent)
+        #
+        # self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology, getCurrentTick())
+        #
+        # self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(technology, getCurrentTick())
+        #
+        # self.capacityInPipelineInMarket = self.reps.calculateCapacityOfPowerPlantsByMarketInPipeline(market, getCurrentTick())
 
-        technologyTarget = getReps().findPowerGeneratingTechnologyTargetByTechnologyAndMarket(technology, market)
-        if technologyTarget is not None:
-            technologyTargetCapacity = technologyTarget.getTrend().getValue(futureTimePoint)
-            self.expectedInstalledCapacityOfTechnology = technologyTargetCapacity if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology) else self.expectedInstalledCapacityOfTechnology
-
-
-        self.expectedInstalledCapacityOfTechnologyInNode = getReps().calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(plant.getLocation(),technology, futureTimePoint)
-
-        self.expectedOwnedTotalCapacityInMarket = getReps().calculateCapacityOfExpectedOperationalPowerPlantsInMarketByOwner(market, futureTimePoint, agent)
-
-        self.expectedOwnedCapacityInMarketOfThisTechnology = getReps().calculateCapacityOfExpectedOperationalPowerPlantsInMarketByOwnerAndTechnology(market, technology, futureTimePoint, agent)
-
-        self.capacityOfTechnologyInPipeline = getReps().calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology, getCurrentTick())
-
-        self.operationalCapacityOfTechnology = getReps().calculateCapacityOfOperationalPowerPlantsByTechnology(technology, getCurrentTick())
-
-        self.capacityInPipelineInMarket = getReps().calculateCapacityOfPowerPlantsByMarketInPipeline(market, getCurrentTick())
-
-
-        self.check()
+        # self.check()
 
 
 
@@ -199,15 +264,6 @@ class FutureCapacityExpectation(Investmentdecision):
             logger.log(Level.FINER, self.technology + " passes capacity limit. " + agent + " will now calculate financial viability.")
             self.setViableInvestment(True)
 
-
-
-
-
-    #        *
-    #         * Return true if the checks in this class have all been passed.
-    #         * This means that future capacity expansion is viable.
-    #         * @return
-    #
     def isViableInvestment(self):
         return self.viableInvestment
 

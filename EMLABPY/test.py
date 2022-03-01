@@ -1,7 +1,7 @@
 # it is the sum of the revenues minus the debt
 # once an investment is done, decrease the amount from the investment budget
 from emlabpy.domain.energyproducer import EnergyProducer
-from emlabpy.domain.energy import PowerGeneratingTechnology
+from emlabpy.domain.technologies import PowerGeneratingTechnology
 from emlabpy.modules.defaultmodule import DefaultModule
 from emlabpy.util.repository import Repository
 from emlabpy.util.spinedb import SpineDB

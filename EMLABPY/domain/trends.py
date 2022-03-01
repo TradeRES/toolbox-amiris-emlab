@@ -26,7 +26,7 @@ class GeometricTrend(Trend):
     def __init__(self, name):
         super().__init__(name)
         self.start = 0
-        self.growth_rate = 0.05
+        self.growth_rate = 0.0
         # the start can be taken the fixed costs
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -116,3 +116,54 @@ class HourlyLoad(ImportObject):
 
     def get_hourly_demand_by_year(self, year):
         return self.demand_map[str(year)]
+
+
+class TimeSeriesImpl():
+
+    def __init__(self):
+        self.timeSeries = []
+        self.startingYear = 0
+
+    #     * Index of double array corresponds to the tick, unless a
+    #     * {@link startingYear} is defined to shift the index.
+    #     * Gives the starting year of the time series (probably a negative number) ,
+    #     * is relevant for all implementations with an array.
+
+    def getValue(self, time):
+        return self.timeSeries[int(time) - int(self.startingYear)]
+
+    def setValue(self, time, value):
+        self.timeSeries[int(time) - int(self.startingYear)] = value
+
+    def getTimeSeries(self):
+        return self.timeSeries
+
+    def setTimeSeries(self, timeSeries):
+        self.timeSeries = timeSeries
+
+    def getStartingYear(self):
+        return self.startingYear
+
+    def setStartingYear(self, startingYear):
+        self.startingYear = startingYear
+
+class GeometricTrendRegression():
+
+    def addData(self, x, y):
+        super().addData(x, math.log(y))
+
+    def removeData(self, x, y):
+        super().removeData(x, math.log(y))
+
+    def addData(self, data):
+        for d in data:
+            self.addData(d[0], d[1])
+
+    def removeData(self, data):
+        i = 0
+        while i < len(data) and super().getN() > 0:
+            self.removeData(data[i][0], math.log(data[i][1]))
+            i += 1
+
+    def predict(self, x):
+        return math.exp(super().predict(x))
