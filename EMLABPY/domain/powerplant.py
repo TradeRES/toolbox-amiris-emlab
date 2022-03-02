@@ -197,7 +197,6 @@ class PowerPlant(ImportObject):
         self.efficiency
 
     def calculateEmissionIntensity(self):
-
         emission = 0
         for sub in self.getFuelMix():
             substance = sub.getSubstance()
@@ -342,11 +341,7 @@ class PowerPlant(ImportObject):
     def setActualInvestedCapital(self, actualInvestedCapital):
         self.actualInvestedCapital = actualInvestedCapital
 
-    def getFuelMix(self):
-        return self.fuelMix
 
-    def setFuelMix(self, fuelMix):
-        self.fuelMix = fuelMix
 
     def getLoan(self):
         return self.loan
@@ -381,6 +376,12 @@ class PowerPlant(ImportObject):
 
     def setExpectedEndOfLife(self, expectedEndOfLife):
         self.expectedEndOfLife = expectedEndOfLife
+
+    def getFuelMix(self):
+        return self.fuelMix
+
+    def setFuelMix(self, fuelMix):
+        self.fuelMix = fuelMix
 
     def updateFuelMix(self, fuelMix):
         self.setFuelMix(fuelMix)

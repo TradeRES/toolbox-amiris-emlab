@@ -542,8 +542,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -961.7067341920999,
-            "y": -710.4365542898643,
+            "x": -975.2466655854813,
+            "y": -733.6478652499464,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -870,8 +870,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -921.5726953112744,
-            "y": -40.7967128675418,
+            "x": -918.8729701861433,
+            "y": -69.14382668141852,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -921,7 +921,7 @@
             "type": "Data Store",
             "description": "",
             "x": -539.9602678380234,
-            "y": -383.0268608374008,
+            "y": -383.0268608374009,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

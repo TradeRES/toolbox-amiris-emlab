@@ -429,8 +429,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name",
-                                "value": "FuelPriceTrends"
+                                "position": "hidden",
+                                "value": "trends"
                             },
                             {
                                 "map_type": "Object",
@@ -490,11 +490,6 @@
                                 "position": "table_name",
                                 "value": "TechnologiesEmlab",
                                 "skip_columns": [
-                                    5,
-                                    6,
-                                    7,
-                                    8,
-                                    9,
                                     10,
                                     11,
                                     12,
@@ -777,7 +772,9 @@
                 "14": "float",
                 "15": "float",
                 "16": "float",
-                "17": "float"
+                "17": "float",
+                "18": "string",
+                "19": "string"
             },
             "Fuels": {
                 "0": "string",

@@ -75,6 +75,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.investment_cost = float(parameter_value)
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
+        elif parameter_name == 'traderesfuels':
+            self.fuel = reps.substances[parameter_value]
         # elif parameter_name == 'maximumInstalledCapacityFractionPerAgent':
         #     self.maximum_installed_capacity_fraction_per_agent = float(parameter_value)
         # elif parameter_name == 'minimumFuelQuality':

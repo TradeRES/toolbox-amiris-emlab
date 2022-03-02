@@ -3,6 +3,7 @@ from emlabpy.domain.import_object import *
 class Substance(ImportObject):
     def __init__(self, name):
         super().__init__(name)
+        print(name)
         self.co2_density = 0
         self.energy_density = 1
         self.quality = 0

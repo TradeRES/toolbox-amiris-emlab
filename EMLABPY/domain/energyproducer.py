@@ -85,6 +85,8 @@ class EnergyProducer(ImportObject):
     # Loan
     #    @SimulationParameter(label = "Loan Interest Rate", from = 0, to = 1)
 
+
+
     def isWillingToInvest(self):
         return self.willingToInvest
 

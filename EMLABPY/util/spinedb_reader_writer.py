@@ -65,7 +65,7 @@ class SpineDBReaderWriter:
                                         key=lambda item: parameter_priorities[item[0]]
                                         if item[0] in parameter_priorities.keys() else 0, reverse=True)
         object_parameter_values = db_data['object_parameter_values']
-
+        print(sorted_parameter_names)
         for (object_class_name, parameter_name, _, _, _) in sorted_parameter_names:
             for (_, object_name, _) in [i for i in db_data['objects'] if i[0] == object_class_name]:
                 try:
@@ -255,7 +255,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
 
     object_class_name = db_line[0]
     object_name = db_line[1]
-    if object_class_name == 'FuelPriceTrends':
+    if object_class_name == 'trends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
@@ -273,10 +273,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'electricity':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    # elif object_class_name == 'node':
-    #     add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'Fuels':
-        add_parameter_value_to_repository(reps, db_line, reps.zones, Substance)
+        add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'EnergyProducers':
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     else:
@@ -304,7 +302,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     #     add_parameter_value_to_repository(reps, db_line, reps.governments, Government)
     # elif object_class_name == 'MarketStabilityReserve':
     #     add_parameter_value_to_repository(reps, db_line, reps.market_stability_reserves, MarketStabilityReserve)
-    # elif object_class_name == 'PowerGeneratingTechnologyFuel':
+    #elif object_class_name == 'PowerGeneratingTechnologyFuel':
     #     add_parameter_value_to_repository(reps, db_line, reps.power_plants_fuel_mix, SubstanceInFuelMix)
     # elif object_class_name == 'YearlyEmissions':
     #     add_parameter_value_to_repository(reps, db_line, reps.emissions, YearlyEmissions)
