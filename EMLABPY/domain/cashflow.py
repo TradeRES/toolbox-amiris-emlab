@@ -2,12 +2,12 @@
 """
 This file contains Loans, CashFlow
 """
-from technologies import PowerPlant
+
 
 class CashFlow:
 
     def __init__(self):
-        #instance fields found by Java to Python Converter:
+
         self.__from_keyword_conflict = None
         self.__to = None
         self.__regardingPowerPlant = None
@@ -53,3 +53,4 @@ class CashFlow:
 
     def setRegardingPowerPlant(self, regardingPowerPlant):
         self.__regardingPowerPlant = regardingPowerPlant
+

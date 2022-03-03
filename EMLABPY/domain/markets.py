@@ -111,3 +111,4 @@ class MarketStabilityReserve(ImportObject):
             self.release_trend = reps.trends[parameter_value]
         elif parameter_name == 'Zone':
             self.zone = reps.zones[parameter_value]
+

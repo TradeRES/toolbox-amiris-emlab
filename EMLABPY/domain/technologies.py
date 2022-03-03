@@ -16,9 +16,10 @@ class PowerGeneratingTechnology(ImportObject):
         super().__init__(name)
         self.capacity = 0
         self.annuity = 0
-        self.variable_operating_costs = None
         self.investment_cost = None
         self.fixed_operating_costs = None
+        self.variable_operating_costs = None
+        self.efficiency = 0
         self.depreciation_time = 0
         self.minimum_running_hours = 0
         self.fixed_operating_cost_modifier_after_lifetime = 0
@@ -29,10 +30,11 @@ class PowerGeneratingTechnology(ImportObject):
         self.intermittent = False
         self.fuel = ''
         # here are missing info
-        self.efficiency_time_series = None
+
         self.applicable_for_long_term_contract = False
         self.co2_capture_efficiency = 0
         self.techtype = ''
+        self.efficiency_time_series = None
         self.investment_cost_time_series = None
         self.fixed_operating_cost_time_series = None
         self.minimum_fuel_quality = 0
@@ -68,31 +70,39 @@ class PowerGeneratingTechnology(ImportObject):
             self.interest_rate = int(parameter_value)
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
-            self.initializetrend()
+            self.initializeFixedCostsTrend()
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
         elif parameter_name == 'investment_cost': # these are in eur/kw -> *1000 eur /MW
             self.investment_cost = float(parameter_value)
+            self.initializeInvestmenttrend()
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':
             self.fuel = reps.substances[parameter_value]
+        elif parameter_name == 'efficiency_full_load':
+            self.efficiency = float(parameter_value)
+            self.initializeEfficiencytrend()
+
         # elif parameter_name == 'maximumInstalledCapacityFractionPerAgent':
         #     self.maximum_installed_capacity_fraction_per_agent = float(parameter_value)
         # elif parameter_name == 'minimumFuelQuality':
         #     self.minimum_fuel_quality = float(parameter_value)
         # elif parameter_name == 'minimumRunningHours':
         #     self.minimum_running_hours = int(parameter_value)
-        # elif parameter_name == 'efficiencyTimeSeries':
-        #     self.efficiency_time_series = reps.trends[parameter_value]
-        # FOR THE FIXED OPERATING COSTS TIME SERIES IT COULD BE ENOUGH TO PUT AS A START THE INITIAL VALUES AND THEN GROWTH TREND 0.05
-        # elif parameter_name == 'fixedOperatingCostTimeSeries':
-        #     self.fixed_operating_cost_time_series = reps.trends[parameter_value]
-        # elif parameter_name == 'investmentCostTimeSeries':
-        #     self.investment_cost_time_series = reps.trends[parameter_value]
 
-    def initializetrend(self):
-        self.fixed_operating_cost_time_series = GeometricTrend("geometrictrend"+ self.name)
+    def initializeEfficiencytrend(self):
+        self.efficiency_time_series = GeometricTrend("geometrictrend" + self.name)
+        self.efficiency_time_series.start = self.efficiency
+        self.efficiency_time_series.growth_rate = 0.00
+
+    def initializeInvestmenttrend(self):
+        self.investment_cost_time_series = GeometricTrend("geometrictrend" + self.name)
+        self.investment_cost_time_series.start = self.investment_cost
+        self.investment_cost_time_series.growth_rate = 0.00
+
+    def initializeFixedCostsTrend(self):
+        self.fixed_operating_cost_time_series = GeometricTrend("geometrictrend" + self.name)
         self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         self.fixed_operating_cost_time_series.growth_rate = 0.05
 
@@ -161,7 +171,8 @@ class PowerGeneratingTechnology(ImportObject):
         self.capacity = capacity
 
     def getEfficiency(self, time):
-        return self.efficiencyTimeSeries.getValue(time)
+      #  print(help(self.efficiency_time_series))
+        return self.efficiency_time_series.get_value(time)
 
     def getInvestmentCostTimeSeries(self):
         return self.investmentCostTimeSeries
@@ -170,10 +181,10 @@ class PowerGeneratingTechnology(ImportObject):
         self.investmentCostTimeSeries = investmentCostTrend
 
     def getEfficiencyTimeSeries(self):
-        return self.efficiencyTimeSeries
+        return self.efficiency_time_series
 
     def setEfficiencyTimeSeries(self, efficiencyTrend):
-        self.efficiencyTimeSeries = efficiencyTrend
+        self.efficiency_time_series = efficiencyTrend
 
     def getCo2CaptureEffciency(self):
         return self.co2CaptureEffciency
@@ -227,9 +238,8 @@ class PowerGeneratingTechnology(ImportObject):
         self.applicableForLongTermContract = applicableForLongTermContract
 
     def getInvestmentCost(self, time):
-        return self.investmentCostTimeSeries.getValue(time)
-
-
+     #   print(help(self.investment_cost_time_series))
+        return self.investment_cost_time_series.get_value(time)
 
     def isIntermittent(self):
         return self.intermittent

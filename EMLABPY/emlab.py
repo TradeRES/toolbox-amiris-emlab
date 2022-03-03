@@ -10,6 +10,7 @@ import logging
 import os
 import time
 
+from emlabpy.modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from util.spinedb_reader_writer import *
@@ -87,7 +88,10 @@ try:    # Try statement to always close DB properly
     payment_and_bank_co2 = PayAndBankCO2Allowances(reps)
     use_co2_allowances = UseCO2Allowances(reps)
     market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
-
+    for p, v in reps.power_plants.items():
+        v.specifyPowerPlantsforFirstTick( 0 , "Producer1", "DE")
+    financial_report = CreatingFinancialReports(reps)
+    financial_report.act()
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('End Initialization Modules')
 

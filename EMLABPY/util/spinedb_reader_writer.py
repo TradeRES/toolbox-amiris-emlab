@@ -54,6 +54,7 @@ class SpineDBReaderWriter:
                 reps.start_simulation_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'End Year':
                 reps.end_simulation_year = int(row['parameter_value'])
+                reps.simulation_length = reps.end_simulation_year - reps.start_simulation_year
             elif row['parameter_name'] == 'Look Ahead':
                 reps.lookAhead = int(row['parameter_value'])
             elif row['parameter_name'] == 'CurrentYear':
@@ -65,7 +66,7 @@ class SpineDBReaderWriter:
                                         key=lambda item: parameter_priorities[item[0]]
                                         if item[0] in parameter_priorities.keys() else 0, reverse=True)
         object_parameter_values = db_data['object_parameter_values']
-        print(sorted_parameter_names)
+
         for (object_class_name, parameter_name, _, _, _) in sorted_parameter_names:
             for (_, object_name, _) in [i for i in db_data['objects'] if i[0] == object_class_name]:
                 try:
@@ -158,7 +159,13 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.powerplant_dispatch_plan_classname)
         self.stage_object_parameters(self.powerplant_dispatch_plan_classname,
                                      ['Plant', 'Market', 'Price', 'Capacity', 'EnergyProducer', 'AcceptedAmount',
-                                      'Status'])
+                                      'powerPlantStatus'])
+
+    def stage_init_financial_results_structure(self):
+        self.stage_object_class("financialPowerPlantReports")
+        self.stage_object_parameters("financialPowerPlantReports",
+                                 ['PowerPlant', 'spotMarketRevenue', 'production', 'powerPlantStatus', 'EnergyProducer', 'AcceptedAmount',
+                                  'Status'])
 
     def stage_init_alternative(self, current_tick: int):
         self.db.import_alternatives([str(current_tick)])
@@ -307,14 +314,17 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     # elif object_class_name == 'YearlyEmissions':
     #     add_parameter_value_to_repository(reps, db_line, reps.emissions, YearlyEmissions)
 
-
-
 def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata, candidatePowerPlants):
-    for candidateplant in candidatePowerPlants:
-        for db_line_amiris in db_amirisdata['object_parameter_values']:
-            object_class_name = db_line_amiris[0]
-            object_name = db_line_amiris[1]
-            if object_class_name == self.ConventionalOperator_classname and object_name == candidateplant:
+    for db_line_amiris in db_amirisdata['object_parameter_values']:
+        object_class_name = db_line_amiris[0]
+        object_name = db_line_amiris[1]
+        if object_class_name == self.ConventionalOperator_classname:
+            if object_name in candidatePowerPlants:
                 add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
-            if object_class_name == self.VariableRenewableOperator_classname and object_name == candidateplant:
+            else:
+                add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)
+        elif object_class_name == self.VariableRenewableOperator_classname:
+            if object_name in candidatePowerPlants:
                 add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
+            else:
+                add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)

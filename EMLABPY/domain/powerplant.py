@@ -38,6 +38,13 @@ class PowerPlant(ImportObject):
         self.electricityOutput = 0
         self.flagOutputChanged = True
 
+        # results from Amiris
+        self.AwardedPowerinMWh = 0
+        self.CostsinEUR = 0
+        self.OfferedPowerinMWH = 0
+        self.ReceivedMoneyinEUR = 0
+        self.Profit = 0
+
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'Id':
             self.name = parameter_value
@@ -52,6 +59,34 @@ class PowerPlant(ImportObject):
             self.commissionedYear = int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
+        elif parameter_name == 'AwardedPowerInMWH':
+            self.AwardedPowerinMWh = parameter_value
+        elif parameter_name == 'CostsInEUR':
+            self.CostsinEUR = float(parameter_value)
+        elif parameter_name == 'OfferedPowerInMW':
+            self.OfferedPowerinMW = float(parameter_value)
+        elif parameter_name == 'ReceivedMoneyInEUR':
+            self.ReceivedMoneyinEUR = float(parameter_value)
+
+    #createPowerPlant
+    def specifyPowerPlantsforFirstTick(self, tick, energyProducer, location):
+        self.setOwner(energyProducer)
+        self.setLocation(location)
+        self.setConstructionStartTime()
+        self.setActualLeadtime(self.technology.getExpectedLeadtime())
+        self.setActualPermittime(self.technology.getExpectedPermittime())
+        #self.setHistoricalCvarDummyPlant(False)
+        self.setActualNominalCapacity(self.getCapacity())
+        self.setDismantleTime(1000)
+        self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
+        self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
+        self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
+        if self.dismantleTime < 1000:
+            self.setExpectedEndOfLife = self.dismantleTime
+        else:
+            self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+        self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
+        return self
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
@@ -183,18 +218,18 @@ class PowerPlant(ImportObject):
         return True
 
     def calculateAndSetActualInvestedCapital(self, timeOfPermitorBuildingStart):
-        self.setActualInvestedCapital(self.technology.getInvestmentCost(timeOfPermitorBuildingStart + \
-                                                                   self.actualPermittime + \
-                                                                   self.actualLeadtime ) * self.actualNominalCapacity)
+
+        self.setActualInvestedCapital(self.technology.getInvestmentCost(timeOfPermitorBuildingStart + self.getActualPermittime() + self.getActualLeadtime()) * self.get_actual_nominal_capacity())
+
 # the growth trend
-    def calculateAndSetActualFixedOperatingCosts(self, timesinceBuildingStart):
+    def calculateAndSetActualFixedOperatingCosts(self, timesinceBuildingStart): # tick = timesinceBuildingStart
         self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_cost_trend(timesinceBuildingStart \
                                          + self.getActualLeadtime() + self.getActualPermittime())\
                                          * self.getActualNominalCapacity())
 
-    def calculateAndSetActualEfficiency(self):
-        #self.setActualEfficiency(self.getTechnology().getEfficiency(timeOfPermitorBuildingStart + getActualLeadtime() + getActualPermittime()))
-        self.efficiency
+    def calculateAndSetActualEfficiency(self, timeOfPermitorBuildingStart):
+        self.setActualEfficiency(self.getTechnology().getEfficiency(timeOfPermitorBuildingStart + self.getActualLeadtime() + self.getActualPermittime()))
+
 
     def calculateEmissionIntensity(self):
         emission = 0
@@ -211,17 +246,14 @@ class PowerPlant(ImportObject):
 
     #TODO expensive method!!
     def calculateElectricityOutputAtTime(self, time, forecast):
-
         if (not forecast) and not flagOutputChanged:
             return electricityOutput
         else:
             electricityOutput = reps.calculateElecitricityOutputForPlantForTime(self, time, forecast)
             return electricityOutput
-        # TODO This is in MWh (so hours of segment included!!)
-        #         double amount = 0d
+        # TODO This is in MWh (so hours of segment included!!) double amount = 0d
 
         #        Logger.getGlobal().warning("Finding electricity output for " + this + "  reps " + reps)
-
         #        return reps.findAllPowerPlantDispatchPlansForPowerPlantForTime(this, time, forecast).stream().mapToDouble(p -> calculateElectricityOutputForPlan(p)).sum()
         #        for (PowerPlantDispatchPlan plan : reps.findAllPowerPlantDispatchPlansForPowerPlantForTime(this, time, forecast)) {
         #//            Logger.getGlobal().warning("plant; " + plan)
@@ -293,7 +325,7 @@ class PowerPlant(ImportObject):
     def setConstructionStartTime(self):
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
-                                        round(random() * self.technology.expected_lifetime)) + 2
+                                        self.age)
 
     def getCapacity(self):
         return self.capacity
@@ -341,8 +373,6 @@ class PowerPlant(ImportObject):
     def setActualInvestedCapital(self, actualInvestedCapital):
         self.actualInvestedCapital = actualInvestedCapital
 
-
-
     def getLoan(self):
         return self.loan
 
@@ -356,8 +386,7 @@ class PowerPlant(ImportObject):
         self.downpayment = downpayment
 
     def getActualEfficiency(self):
-        self.efficiency
-        #return self.actualEfficiency
+        return self.actualEfficiency
 
     def setActualEfficiency(self, actualEfficiency):
         self.actualEfficiency = actualEfficiency
@@ -403,6 +432,21 @@ class PowerPlant(ImportObject):
 
     def getIntermittentTechnologyNodeLoadFactor(self):
         return reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(), self.getTechnology())
+
+    def getAwardedPowerinMWh(self):
+        return self.AwardedPowerinMWh
+
+    def getCostsinEUR(self):
+        return self.CostsinEUR
+
+    def getOfferedPowerinMWH(self):
+        return self.OfferedPowerinMWH
+
+    def getReceivedMoneyinEUR(self):
+        return self.ReceivedMoneyinEUR
+
+    def getProfit(self):
+        return self.Profit
 
     '''
      # FROM HERE EQUATIONS ARE OLD   

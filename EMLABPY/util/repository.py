@@ -38,6 +38,7 @@ class Repository:
         self.end_simulation_year = 0
         self.lookAhead = 0
         self.current_year = 0
+        self.simulation_length = 0
 
         self.energy_producers = dict()
         self.power_plants = dict()
@@ -73,16 +74,15 @@ class Repository:
         self.loansToAgent = {}
         self.powerPlantsForAgent = {}
         self.loanList = []
-
-
+        self.financialPowerPlantReports = None
     """
     This part is new 
     """
 
-
     def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values()
                 if i.owner == owner]
+
     # PowerPlants
     def createLoan(self, from_keyword_conflict, to, amount, numberOfPayments, loanStartTime, plant):
         loan = Loan()
@@ -105,7 +105,6 @@ class Repository:
 
     def findLoansFromAgent(self, agent):
         return self.loansFromAgent.get(agent)
-
 
     def findLoansToAgent(self, agent):
         return self.loansToAgent.get(agent)
@@ -152,10 +151,17 @@ class Repository:
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
 
+    def getCashFlowsForPowerPlant(self, plant, tick):
+        pass
+         # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
+        #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
+
+
     """
     Repository functions:
     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
     """
+
     # PowerPlants
     def calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(self, technology, futuretick):
         expectedOperationalcapacity = 0
@@ -166,8 +172,11 @@ class Repository:
 
         return expectedOperationalcapacity
 
+    def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
+        return [i for i in self.power_plants if i.getConstructionStartTime() == tick]
 
-
+    def findAllPowerPlantsWhichAreNotDismantledBeforeTick(self, tick):
+        return [i for i in self.power_plants.values() if i.isWithinTechnicalLifetime(tick)]
 
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -178,7 +187,8 @@ class Repository:
         for power_plant in [i for i in self.power_plants.values() if i.status == self.power_plant_status_operational]:
             revenues = self.get_power_plant_electricity_spot_market_revenues_by_tick(power_plant, time)
             mc = power_plant.calculate_marginal_cost_excl_co2_market_cost(self, time)
-            total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time, market)
+            total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time,
+                                                                                                market)
             res[power_plant.name] = revenues - mc * total_capacity
         return res
 
@@ -188,14 +198,14 @@ class Repository:
                                          if i.tick == current_tick])
         return plant.capacity - ppdps_sum_accepted_amount
 
-
     def get_power_plant_electricity_spot_market_revenues_by_tick(self, power_plant: PowerPlant, time: int) -> float:
         # Accepted Amount is in MW
         # MCP Price is in Euro / MWh
         return sum([float(i.accepted_amount * i.price)
                     for i in self.get_power_plant_dispatch_plans_by_plant_and_tick(power_plant, time)])
 
-    def get_total_accepted_amounts_by_power_plant_and_tick_and_market(self, power_plant: PowerPlant, time: int, market: Market) -> float:
+    def get_total_accepted_amounts_by_power_plant_and_tick_and_market(self, power_plant: PowerPlant, time: int,
+                                                                      market: Market) -> float:
         return sum([i.accepted_amount for i in self.power_plant_dispatch_plans.values() if i.tick == time and
                     i.plant == power_plant and i.bidding_market == market])
 
@@ -213,17 +223,16 @@ class Repository:
             res = self.emissions['YearlyEmissions'].emissions[time]
         else:
             res = {}
-        for power_plant in [i for i in self.power_plants.values() if i.status == self.power_plant_status_operational and i.name not in res.keys()]:
+        for power_plant in [i for i in self.power_plants.values() if
+                            i.status == self.power_plant_status_operational and i.name not in res.keys()]:
             # Total Capacity is in MWh
             total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time,
-                                                                                                self.electricity_spot_markets['DutchElectricitySpotMarket'])
+                                                                                                self.electricity_spot_markets[
+                                                                                                    'DutchElectricitySpotMarket'])
             # Emission intensity is in ton CO2 / MWh
             emission_intensity = power_plant.calculate_emission_intensity(self)
             res[power_plant.name] = total_capacity * emission_intensity
         return res
-
-
-
 
     # PowerPlantDispatchPlans
     def get_power_plant_dispatch_plan_price_by_plant_and_time_and_market(self, plant: PowerPlant, time: int,
@@ -247,11 +256,9 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.plant == plant and i.tick == time]
 
-
     """
     SET => AD INFO TO DB 
     """
-
 
     def set_power_plant_dispatch_plan_production(self,
                                                  ppdp: PowerPlantDispatchPlan,
@@ -284,7 +291,6 @@ class Repository:
         self.power_plant_dispatch_plans[ppdp.name] = ppdp
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
-
 
     # Markets
     def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:
@@ -329,10 +335,12 @@ class Repository:
         else:
             return None
 
-    def findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(self, substance, timeFrom, timeTo,  forecast):
-        #return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
+    def findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(self, substance, timeFrom, timeTo,
+                                                                             forecast):
+        # return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
         # filter(lambda p : p.getAbstractMarket().getSubstance() is substance).filter(p -(> p.isForecast()) == forecast).collect(Collectors.toList())
         return
+
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:

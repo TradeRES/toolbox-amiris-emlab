@@ -48,7 +48,6 @@ class Investmentdecision(DefaultModule):
     def act(self):
         setAgent(self, "Producer1")
         setTimeHorizon(self)
-
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             #TODO finalize
             #setPowerPlantExpectations(self, candidatepowerplant,self.futureTimePoint )

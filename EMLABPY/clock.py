@@ -28,6 +28,10 @@ try:
             StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                              if i['parameter_name'] == 'Start Year')
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
+            db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
+            #todo ERASE this when DB is complete
+            db_emlab.import_data({'object_parameters': [["unit",  "efficiency_full_load"]]})
+            db_emlab.import_object_parameter_values([("unit", "Hydropower_ROR", "efficiency_full_load", 0.7, '0')])
 
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')

@@ -86,6 +86,10 @@ class CandidatePowerPlant(PowerPlant):
         print("setExpectedEndOfLife", self.expectedEndOfLife)
         return self
 
+    def setConstructionStartTime(self):
+        self.constructionStartTime = - (self.technology.expected_leadtime +
+                                        self.technology.expected_permittime +
+                                        round(random() * self.technology.expected_lifetime)) + 2
 
 
 class FutureStorageTrader(ImportObject):
@@ -111,4 +115,5 @@ class FutureStorageTrader(ImportObject):
             self.StoredMWh = float(parameter_value)
         elif parameter_name == 'Profit':
             self.Profit = float(parameter_value)
+
 
