@@ -25,6 +25,7 @@ class SpineDBReaderWriter:
         self.run_module = run_module
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
+        self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
         self.ConventionalOperator_classname = "ConventionalPlantOperator"
@@ -141,15 +142,22 @@ class SpineDBReaderWriter:
         import_arr = [(object_class_name, object_name, i[0], i[1], str(alternative)) for i in arr_of_tuples]
         self.db.import_object_parameter_values(import_arr)
 
+    def stage_object_parameter_time_series(self,
+                                      object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
+
+        import_arr = [(object_class_name, object_name, i[0],  '{"type":"time_series", "data":' + str(i[1]) + '}' , str(alternative)) for i in arr_of_tuples]
+        print(import_arr)
+        self.db.import_object_parameter_values(import_arr)
+        # object_parameter_values = [('object_class_name', 'object_name', 'parameter_name2',
+        #                             '{"type":"time_series", "data": [1,2,3]}')]
+
     def commit(self, commit_message: str):
         self.db.commit(commit_message)
 
     """
     Element specific initialization staging functions
     TO ADD SPECIFICALLY TO DB
-    
     """
-
 
     def stage_init_market_clearing_point_structure(self):
         self.stage_object_class(self.market_clearing_point_object_classname)
@@ -162,10 +170,9 @@ class SpineDBReaderWriter:
                                       'powerPlantStatus'])
 
     def stage_init_financial_results_structure(self):
-        self.stage_object_class("financialPowerPlantReports")
-        self.stage_object_parameters("financialPowerPlantReports",
-                                 ['PowerPlant', 'spotMarketRevenue', 'production', 'powerPlantStatus', 'EnergyProducer', 'AcceptedAmount',
-                                  'Status'])
+        self.stage_object_class(self.financial_reports_object_classname)
+        self.stage_object_parameters(self.financial_reports_object_classname,
+                                 ['PowerPlant', 'spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
 
     def stage_init_alternative(self, current_tick: int):
         self.db.import_alternatives([str(current_tick)])
@@ -187,6 +194,24 @@ class SpineDBReaderWriter:
                                             ('EnergyProducer', ppdp.bidder.name),
                                             ('AcceptedAmount', ppdp.accepted_amount),
                                             ('Status', ppdp.status)], current_tick)
+
+    def stage_financial_results(self, fr):
+
+        object_name = fr.name
+        print(object_name)
+        self.stage_object(self.financial_reports_object_classname, object_name)
+        self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
+                                           [('PowerPlant', fr.powerPlant)
+                                            ], '0')
+        self.stage_object_parameter_time_series(self.financial_reports_object_classname, object_name,
+                                           [('spotMarketRevenue', (fr.spotMarketRevenue)),
+                                            ('overallRevenue', (fr.overallRevenue)),
+                                            ('production', (fr.production)),
+                                            ('powerPlantStatus', (fr.powerPlantStatus)),
+                                            ('profit', (fr.profit))
+                                            ], '0')
+
+
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name
@@ -218,20 +243,13 @@ class SpineDBReaderWriter:
 
 
 def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: dict, class_to_create):
-
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
     parameter_alt = db_line[4]
-    # logging.info('Adding parameter value: {object_name: ' + str(object_name)
-    #              + ', parameter_name: ' + str(parameter_name)
-    #              + ', parameter_value: ' + str(parameter_value)
-    #              + ', parameter_alt: ' + str(parameter_alt) + '}')
     if object_name not in to_dict.keys():
         to_dict[object_name] = class_to_create(object_name)
-
     to_dict[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
-
 
 def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationship_class_name: str):
     """
@@ -247,10 +265,6 @@ def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationsh
         else:
             to_arr.append((unit[1][0], unit[1][1], unit[1][2]))
 
-
-
-
-
 def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, candidatePowerPlants):
     """
     Function used to translate an object_parameter_value from SpineDB to a Repository dict entry.
@@ -259,7 +273,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     :param reps: Repository
     :param db_line: Line from exported data from spinedb_api
     """
-
     object_class_name = db_line[0]
     object_name = db_line[1]
     if object_class_name == 'trends':
@@ -286,7 +299,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
-
     # elif object_class_name == 'Zones':
     #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
     # elif object_class_name == 'ElectricitySpotMarkets':

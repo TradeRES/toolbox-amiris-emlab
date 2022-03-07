@@ -10,6 +10,7 @@ import logging
 class PowerPlant(ImportObject):
     def __init__(self, name):
         super().__init__(name)
+        self.name = name
         self.technology = None
         self.location = None
         self.age = 0
@@ -27,7 +28,6 @@ class PowerPlant(ImportObject):
         self.actualPermittime = 0
         self.actualLifetime = 0
         self.commissionedYear = 0
-        self.name = ""
         self.label = ""
         self.actualInvestedCapital = 0
         self.actualFixedOperatingCost = 0
@@ -113,7 +113,7 @@ class PowerPlant(ImportObject):
             return False
 
     def isInPipeline(self, currentTick):
-        finishedConstruction = self.constructionStartTime() + self.actualPermittime() + self.actualLeadtime()
+        finishedConstruction = self.constructionStartTime + self.actualPermittime + self.actualLeadtime
         if finishedConstruction <= currentTick:
             return False
         else:

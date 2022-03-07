@@ -83,7 +83,7 @@ class Repository:
         return [i for i in self.candidatePowerPlants.values()
                 if i.owner == owner]
 
-    # PowerPlants
+    # loans
     def createLoan(self, from_keyword_conflict, to, amount, numberOfPayments, loanStartTime, plant):
         loan = Loan()
         loan.setFrom(from_keyword_conflict)
@@ -156,6 +156,26 @@ class Repository:
          # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
         #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
 
+    def create_or_update_financial_reports(self, PowerPlant: str,
+                                           spotMarketRevenue: float,
+                                           overallRevenue: float,
+                                           production: float,
+                                           powerPlantStatus: float,
+                                           profit: int) -> PowerPlantDispatchPlan:
+        fr = next((fr for fr in self.financialPowerPlantReports.values() if fr.plant == PowerPlant), None)
+        # if fr is None:
+        #     name = 'PowerPlantDispatchPlan ' + str(datetime.now())
+        #     ppdp = PowerPlantDispatchPlan(name)
+        fr.name = PowerPlant
+        fr.bidder = bidder
+        fr.bidding_market = bidding_market
+        fr.amount = amount
+        fr.price = price
+        fr.status = self.power_plant_dispatch_plan_status_awaiting
+        fr.accepted_amount = 0
+        fr.tick = time
+        self.dbrw.stage_financial_results(fr)
+        return fr
 
     """
     Repository functions:
@@ -291,6 +311,7 @@ class Repository:
         self.power_plant_dispatch_plans[ppdp.name] = ppdp
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
+
 
     # Markets
     def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:

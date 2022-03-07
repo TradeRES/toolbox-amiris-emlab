@@ -4,20 +4,22 @@ from emlabpy.util.repository import Repository
 from emlabpy.domain.technologies import *
 
 import logging
-class FinancialPowerPlantReport(DefaultModule):
+class FinancialPowerPlantReport(ImportObject):
 
-    def __init__(self, reps):
-        super().__init__(reps)
-        self.reps = reps
-        self.__powerPlant = None
+    def __init__(self, name, reps):
+
+        super().__init__(name)
+        self.powerPlant = None
+        self.spotMarketRevenue = [0 for i in range(reps.simulation_length)]
+        self.overallRevenue = [0 for i in range(reps.simulation_length)]
+        self.production = [0 for i in range(reps.simulation_length)]
+        self.powerPlantStatus = [0 for i in range(reps.simulation_length)]
+        self.profit = [0 for i in range(reps.simulation_length)]
+
         self.time = 0
         self.iteration = 0
         self.schedule = None
-        self.spotMarketRevenue = [0 for i in range(self.simulation_length)]
-        self.overallRevenue = [0 for i in range(self.simulation_length)]
-        self.fullLoadHours = [0 for i in range(self.simulation_length)]
-        self.production = [0 for i in range(self.simulation_length)]
-        self.powerPlantStatus = [0 for i in range(self.simulation_length)]
+        self.fullLoadHours = [0 for i in range(reps.simulation_length)]
         self.longTermMarketRevenue = 0
         self.capacityMarketRevenue = 0
         self.strategicReserveRevenue = 0
@@ -46,10 +48,10 @@ class FinancialPowerPlantReport(DefaultModule):
         self.iteration = iteration
 
     def getPowerPlant(self):
-        return self.__powerPlant
+        return self.powerPlant
 
     def setPowerPlant(self, powerPlant):
-        self.__powerPlant = powerPlant
+        self.powerPlant = powerPlant
 
     def getSpotMarketRevenue(self, tick):
         return self.spotMarketRevenue[tick]

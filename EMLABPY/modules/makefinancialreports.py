@@ -9,14 +9,15 @@ import logging
 class CreatingFinancialReports(DefaultModule):
 
     def __init__(self, reps):
-        super().__init__("Creating Financial Reports",reps)
-        reps.dbrw.stage_init_power_plant_dispatch_plan_structure()
+        super().__init__("Creating Financial Reports", reps)
+        reps.dbrw.stage_init_financial_results_structure()
 
     def act(self):
         # fuelPriceMap = {}
         # for substance in self.reps.substances:
         #     fuelPriceMap.update({substance: findLastKnownPriceForSubstance(substance)})
         #TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
+
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick), self.reps.current_tick)
 
     def createFinancialReportsForNewInvestments(self):
@@ -24,7 +25,8 @@ class CreatingFinancialReports(DefaultModule):
 
     def createFinancialReportsForPowerPlantsAndTick(self, plants, tick):
         for plant in plants:
-            financialPowerPlantReport = FinancialPowerPlantReport()
+            print(plant.name)
+            financialPowerPlantReport = FinancialPowerPlantReport("financials"+ plant.name, self.reps)
 
             #financialPowerPlantReport.setTime(tick)
             financialPowerPlantReport.setPowerPlant(plant.name)
@@ -57,15 +59,15 @@ class CreatingFinancialReports(DefaultModule):
 
             operationalStatus = None
             if plant.isOperational(tick):
-                operationalStatus = 1
+                operationalStatus = "operational"
             elif plant.isInPipeline(tick):
-                operationalStatus = 0
+                operationalStatus = "inPipeline"
             else:
-                operationalStatus = 2
+                operationalStatus = "decommissioned"
 
             financialPowerPlantReport.setPowerPlantStatus(operationalStatus, tick)
-
-            self.reps.financialPowerPlantReports.add(financialPowerPlantReport)
+            print(financialPowerPlantReport)
+            self.reps.dbrw.stage_financial_results(financialPowerPlantReport)
 
     #
     # def calculateSpotMarketRevenueOfPowerPlant(self, cashFlows):

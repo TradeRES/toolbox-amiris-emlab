@@ -776,13 +776,7 @@
             "description": "",
             "x": -1049.343191689003,
             "y": -176.063337827981,
-            "references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "data/EMLAB parameters.xlsx"
-                }
-            ]
+            "references": []
         },
         "Import EMLAB Init": {
             "type": "Importer",
@@ -793,12 +787,7 @@
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "<project>/data/EMLAB parameters.xlsx",
-                    true
-                ]
-            ]
+            "file_selection": []
         },
         "Traderes CommonDB": {
             "type": "Data Connection",
@@ -920,8 +909,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -539.9602678380234,
-            "y": -383.0268608374009,
+            "x": -546.9065770853559,
+            "y": -380.7114244216233,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
