@@ -118,6 +118,7 @@ class PowerGeneratingTechnology(ImportObject):
     def get_fixed_operating_cost_trend(self, time):
         return self.fixed_operating_cost_time_series.get_value(time)
 
+
     def getFixedOperatingCost(self, time):
         return self.fixedOperatingCostTimeSeries.getValue(time)
     #--------------------------------------------------------------------------------------------------------------------------------------------------------

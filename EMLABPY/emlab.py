@@ -4,19 +4,17 @@ Commandline arguments provide which modules are run and which aren't.
 Ingrid Sanchez 28-3-2022
 Jim Hommes - 25-3-2021
 """
-
 import sys
 import logging
 import os
 import time
-
-from emlabpy.modules.makefinancialreports import CreatingFinancialReports
+from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.co2market import *
-from modules.invest import *
+from emlabpy.modules.Invest import *
 from modules.dismantle import *
 
 # Initialize Logging
@@ -24,10 +22,8 @@ if not os.path.isdir('logs'):
     os.makedirs('logs')
 logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.txt', level=logging.DEBUG)
 # Log to console? Uncomment next line
-# logging.getLogger().addHandler(logging.StreamHandler())
-
+logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
-
 run_capacity_market = False
 run_electricity_spot_market = False
 run_co2_market = False
@@ -40,16 +36,12 @@ for arg in sys.argv[3:]:
     if arg == 'run_capacity_market':
         run_electricity_spot_market = True
         run_capacity_market = True
-
     if arg == 'run_electricity_spot_market':
         run_electricity_spot_market = True
-
     if arg == 'run_co2_market':
         run_co2_market = True
-
     if arg == 'run_investment_module':
         run_investment_module = True
-
     if arg == 'run_decommission_module':
         run_decommission_module = True
 
@@ -94,18 +86,21 @@ try:    # Try statement to always close DB properly
     financial_report.act_and_commit()
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('End Initialization Modules')
-
-    # Commit Initialization changes to SpineDB
     logging.info('Commit Initialization Modules')
-
-
     # From here on modules will be run according to the previously set booleans
     logging.info('Start Run Modules')
-    if run_investment_module:
-        investing = Investmentdecision(reps)
-        logging.info('Start Run Investment')
+
+    if run_decommission_module:
+        logging.info('Start Run dismantle')
+        dismantling = Dismantle(reps)
+        dismantling.act_and_commit()
+        logging.info('End Run dismantle')
+
+    if run_electricity_spot_market:
+        clearing_market = Investmentdecision(reps)
+        logging.info('Start Run market clearing')
    #     investing.act_and_commit()
-        logging.info('End Run Investment')
+        logging.info('End Run market clearing')
 
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
@@ -121,11 +116,11 @@ try:    # Try statement to always close DB properly
         # use_co2_allowances.act_and_commit(reps.current_tick)
         logging.info('End Run CO2 Market')
 
-    if run_decommission_module:
-        logging.info('Start Run dismantle')
-        dismantling = Dismantle(reps)
-        dismantling.act_and_commit()
-        logging.info('End Run dismantle')
+    if run_investment_module:
+        investing = Investmentdecision(reps)
+        logging.info('Start Run Investment')
+        #     investing.act_and_commit()
+        logging.info('End Run Investment')
     logging.info('End Run Modules')
 
 

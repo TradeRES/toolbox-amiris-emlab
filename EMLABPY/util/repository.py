@@ -156,26 +156,6 @@ class Repository:
          # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
         #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
 
-    def create_or_update_financial_reports(self, PowerPlant: str,
-                                           spotMarketRevenue: float,
-                                           overallRevenue: float,
-                                           production: float,
-                                           powerPlantStatus: float,
-                                           profit: int) -> PowerPlantDispatchPlan:
-        fr = next((fr for fr in self.financialPowerPlantReports.values() if fr.plant == PowerPlant), None)
-        # if fr is None:
-        #     name = 'PowerPlantDispatchPlan ' + str(datetime.now())
-        #     ppdp = PowerPlantDispatchPlan(name)
-        fr.name = PowerPlant
-        fr.bidder = bidder
-        fr.bidding_market = bidding_market
-        fr.amount = amount
-        fr.price = price
-        fr.status = self.power_plant_dispatch_plan_status_awaiting
-        fr.accepted_amount = 0
-        fr.tick = time
-        self.dbrw.stage_financial_results(fr)
-        return fr
 
     """
     Repository functions:
@@ -197,6 +177,7 @@ class Repository:
 
     def findAllPowerPlantsWhichAreNotDismantledBeforeTick(self, tick):
         return [i for i in self.power_plants.values() if i.isWithinTechnicalLifetime(tick)]
+
 
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -356,8 +337,8 @@ class Repository:
         else:
             return None
 
-    def findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(self, substance, timeFrom, timeTo,
-                                                                             forecast):
+    def findAllClearingPointsForSubstanceAndTimeRange(self, substance, timeFrom, timeTo, forecast):
+
         # return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
         # filter(lambda p : p.getAbstractMarket().getSubstance() is substance).filter(p -(> p.isForecast()) == forecast).collect(Collectors.toList())
         return

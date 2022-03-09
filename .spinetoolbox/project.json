@@ -96,6 +96,16 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/config_import.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/example_timeseries.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_time_series_example.json"
                 }
             ],
             "Exporter": [
@@ -440,6 +450,39 @@
                 "options": {
                     "use_memory_db": false
                 }
+            },
+            {
+                "name": "from importer time series to test",
+                "from": [
+                    "importer time series",
+                    "right"
+                ],
+                "to": [
+                    "test",
+                    "left"
+                ]
+            },
+            {
+                "name": "from example time series to importer time series",
+                "from": [
+                    "example time series",
+                    "right"
+                ],
+                "to": [
+                    "importer time series",
+                    "left"
+                ]
+            },
+            {
+                "name": "from add to scenario yaml to Scenario_gas",
+                "from": [
+                    "add to scenario yaml",
+                    "right"
+                ],
+                "to": [
+                    "Scenario_gas",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -526,8 +569,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 775.5361480731398,
-            "y": -73.63523292171111,
+            "x": 745.0473727418292,
+            "y": -129.06936988773055,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -583,8 +626,8 @@
         "Scenario_gas": {
             "type": "Data Connection",
             "description": "",
-            "x": -454.9540819792751,
-            "y": -60.86418166315892,
+            "x": -346.8575148955372,
+            "y": -44.233940573353095,
             "references": [
                 {
                     "type": "path",
@@ -609,7 +652,7 @@
         "run config gas": {
             "type": "Tool",
             "description": "",
-            "x": -289.5108244957141,
+            "x": -217.4464464398888,
             "y": -51.33546566878924,
             "specification": "run config2",
             "execute_in_work": false,
@@ -751,8 +794,8 @@
         "amiris importer gas": {
             "type": "Importer",
             "description": "",
-            "x": 515.2720923070257,
-            "y": -77.99642863837303,
+            "x": 495.87014436891883,
+            "y": -36.42082591385845,
             "specification": "amiris importer gas",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -763,13 +806,6 @@
                     true
                 ]
             ]
-        },
-        "rename conventional": {
-            "type": "Data Transformer",
-            "description": "",
-            "x": 641.8053132083493,
-            "y": -736.055059614638,
-            "specification": ""
         },
         "EmlabParameters": {
             "type": "Data Connection",
@@ -828,8 +864,8 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 956.1962804523912,
-            "y": -376.13581674225503,
+            "x": 209.07259225147646,
+            "y": -510.7936064204041,
             "specification": "Best Investment",
             "execute_in_work": true,
             "cmd_line_args": [
@@ -875,8 +911,8 @@
         "test": {
             "type": "Data Store",
             "description": "",
-            "x": -747.8785950945078,
-            "y": 27.42416916126415,
+            "x": -747.8785950945077,
+            "y": 27.424169161264146,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -891,8 +927,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -177.55390552764314,
-            "y": -533.5107686186802,
+            "x": -440.8660561162354,
+            "y": -497.4785795907677,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -962,6 +998,53 @@
                 }
             ],
             "specification": ""
+        },
+        "example time series": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -1169.66028998301,
+            "y": 299.344339616505,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "scripts/ConventionalPlantOperator exampletimeseries.xlsx"
+                }
+            ]
+        },
+        "importer time series": {
+            "type": "Importer",
+            "description": "",
+            "x": -899.4382071993654,
+            "y": 194.9188451046748,
+            "specification": "import time series example",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "<project>/scripts/ConventionalPlantOperator exampletimeseries.xlsx",
+                    true
+                ]
+            ]
+        },
+        "add to scenario yaml": {
+            "type": "Tool",
+            "description": "",
+            "x": -565.4281970533982,
+            "y": -74.83608490412618,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "Prepare Data Amiris": {
+            "type": "Tool",
+            "description": "",
+            "x": -424.0711477900487,
+            "y": -213.42142731917477,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
         }
     }
 }

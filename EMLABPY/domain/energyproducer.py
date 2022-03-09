@@ -88,7 +88,6 @@ class EnergyProducer(ImportObject):
     #    @SimulationParameter(label = "Loan Interest Rate", from = 0, to = 1)
 
     def calculateAveragePastOperatingProfit(self, pp, horizon):
-
         averagePastOperatingProfit = 0
         for i in range(-horizon, 1):
             #JAVA TO PYTHON CONVERTER TODO TASK: Java to Python Converter cannot determine whether both operands of this division are integer types - if they are then you should change 'lhs / rhs' to 'math.trunc(lhs / float(rhs))':
@@ -96,15 +95,13 @@ class EnergyProducer(ImportObject):
         logging.INFO(pp + " has had an average operating profit of " + averagePastOperatingProfit)
         return averagePastOperatingProfit
 
-def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):
-    rep = self.reps.findFinancialPowerPlantReportsForPlantForTime(plant, clearingTick)
-    if rep is not None:
-        logger.finer(plant + " report: tick " + clearingTick + " revenue: " + rep.getOverallRevenue() + " var cost: " + rep.getVariableCosts() + " fixed om cost: " + rep.getFixedOMCosts())
-        return rep.getOverallRevenue() - rep.getVariableCosts() - rep.getFixedOMCosts()
-    logging.INFO("No financial report for " + plant + " for tick " + clearingTick + " so returning 0")
-    return Double.MAX_VALUE #TODO avoid dismantling simply becuase you have no data for the full horizon?
-
-
+    def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):
+        rep = self.reps.findFinancialPowerPlantReportsForPlantForTime(plant, clearingTick)
+        if rep is not None:
+            logger.finer(plant + " report: tick " + clearingTick + " revenue: " + rep.getOverallRevenue() + " var cost: " + rep.getVariableCosts() + " fixed om cost: " + rep.getFixedOMCosts())
+            return rep.getOverallRevenue() - rep.getVariableCosts() - rep.getFixedOMCosts()
+        logging.INFO("No financial report for " + plant + " for tick " + clearingTick + " so returning 0")
+        return Double.MAX_VALUE #TODO avoid dismantling simply becuase you have no data for the full horizon?
 
     def isWillingToInvest(self):
         return self.willingToInvest
@@ -195,3 +192,6 @@ def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):
 
     def setInvestorMarket(self, investorMarket):
         self.investorMarket = investorMarket
+
+    def getNumberOfYearsBacklookingForForecasting(self):
+        return self.numberOfYearsBacklookingForForecasting

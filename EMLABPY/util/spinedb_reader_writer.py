@@ -142,14 +142,11 @@ class SpineDBReaderWriter:
         import_arr = [(object_class_name, object_name, i[0], i[1], str(alternative)) for i in arr_of_tuples]
         self.db.import_object_parameter_values(import_arr)
 
-    def stage_object_parameter_time_series(self,
-                                      object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
-
-        import_arr = [(object_class_name, object_name, i[0],  '{"type":"time_series", "data":' + str(i[1]) + '}' , str(alternative)) for i in arr_of_tuples]
-        print(import_arr)
-        self.db.import_object_parameter_values(import_arr)
-        # object_parameter_values = [('object_class_name', 'object_name', 'parameter_name2',
-        #                             '{"type":"time_series", "data": [1,2,3]}')]
+    # def stage_object_parameter_time_series(self,
+    #                                   object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
+    #     # ('object_class_name', 'object_name', 'parameter_name', '{"type":"time_series", "data": [1,2,3]}', 'alternative')]
+    #     import_arr = [(object_class_name, object_name, i[0],  '{"type":"time_series", "data":' + str(i[1]) + '}' , str(alternative)) for i in arr_of_tuples]
+    #     self.db.import_object_parameter_values(import_arr)
 
     def commit(self, commit_message: str):
         self.db.commit(commit_message)
@@ -172,7 +169,7 @@ class SpineDBReaderWriter:
     def stage_init_financial_results_structure(self):
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
-                                 ['PowerPlant', 'spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
+                                 ['PowerPlant', 'latestTick','spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
 
     def stage_init_alternative(self, current_tick: int):
         self.db.import_alternatives([str(current_tick)])
@@ -196,21 +193,17 @@ class SpineDBReaderWriter:
                                             ('Status', ppdp.status)], current_tick)
 
     def stage_financial_results(self, fr):
-
         object_name = fr.name
-        print(object_name)
         self.stage_object(self.financial_reports_object_classname, object_name)
         self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
-                                           [('PowerPlant', fr.powerPlant)
-                                            ], '0')
-        self.stage_object_parameter_time_series(self.financial_reports_object_classname, object_name,
-                                           [('spotMarketRevenue', (fr.spotMarketRevenue)),
+                                           [('PowerPlant', fr.powerPlant),
+                                            ('latestTick', (fr.time)),
+                                            ('spotMarketRevenue', (fr.spotMarketRevenue)),
                                             ('overallRevenue', (fr.overallRevenue)),
                                             ('production', (fr.production)),
                                             ('powerPlantStatus', (fr.powerPlantStatus)),
                                             ('profit', (fr.profit))
                                             ], '0')
-
 
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):

@@ -1,0 +1,78 @@
+{
+    "name": "import time series example",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "ConventionalPlantOperator examp": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "ConventionalPlantOperator examp",
+                                "skip_columns": [
+                                    0
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden",
+                                "value": "501"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "time_series"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "ConventionalPlantOperator examp"
+        ],
+        "table_options": {
+            "ConventionalPlantOperator examp": {}
+        },
+        "table_types": {
+            "ConventionalPlantOperator examp": {
+                "0": "string",
+                "1": "datetime",
+                "2": "string"
+            }
+        },
+        "table_row_types": {},
+        "source_type": "ExcelConnector"
+    },
+    "description": ""
+}

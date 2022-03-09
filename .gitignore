@@ -3,6 +3,5 @@
 amiris/
 scripts/amiris-jar-with-dependencies.jar
 scripts/amiris-jar-with-dependencies2.jar
-emlabpy/logs
 test.py
 test2.py

@@ -5,6 +5,7 @@
 from emlabpy.domain.energyproducer import EnergyProducer
 from emlabpy.domain.technologies import PowerGeneratingTechnology
 from emlabpy.modules.defaultmodule import DefaultModule
+from emlabpy.domain.trends import GeometricTrendRegression
 from emlabpy.domain.powerplant import *
 from emlabpy.domain.CandidatePowerPlant import *
 import numpy_financial as npf
@@ -47,7 +48,9 @@ class Investmentdecision(DefaultModule):
 
     def act(self):
         setAgent(self, "Producer1")
-        setTimeHorizon(self)
+        self.setTimeHorizon()
+        self.setExpectations()
+
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             #TODO finalize
             #setPowerPlantExpectations(self, candidatepowerplant,self.futureTimePoint )
@@ -122,8 +125,32 @@ def createSpreadOutDownPayments(agent, downPayment, plant):
 def setPowerPlantExpectations(self, powerplant, time):
     powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
 
-# def setExpectations(self):
-#     expectedFuelPrices = self.agent.predictFuelPrices(agent, futureTimePoint)
+def findAllClearingPointsForSubstanceAndTimeRange( substance,  timeFrom, timeTo):
+    pass
+
+def predictFuelPrices(self, agent, futureTimePoint):
+    # Fuel Prices
+    expectedFuelPrices = {}
+    for substance in self.reps.substances:
+        #Find Clearing Points for the last 5 years (counting current year as one of the last 5 years).
+        cps = self.reps.findAllClearingPointsForSubstanceAndTimeRange(substance, self.reps.current_tick - (agent.getNumberOfYearsBacklookingForForecasting() - 1) , self.reps.current_tick, False)
+        #Create regression object
+        gtr = GeometricTrendRegression()
+        for clearingPoint in cps:
+            #logger.warn("CP {}: {} , in" + clearingPoint.getTime(), substance.getName(), clearingPoint.getPrice())
+            gtr.addData(clearingPoint.getTime(), clearingPoint.getPrice())
+        expectedFuelPrices.update({substance: gtr.predict(futureTimePoint)})
+        #logger.warn("Forecast {}: {}, in Step " +  futureTimePoint, substance, expectedFuelPrices.get(substance))
+    return expectedFuelPrices
+
+
+
+def setExpectations(self):
+    if self.reps.current_tick >= 2:
+        expectedFuelPrices = predictFuelPrices(agent, futureTimePoint)
+    else:
+        pass
+
 #     if not useFundamentalCO2Forecast:
 #         expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick())
 #     else:

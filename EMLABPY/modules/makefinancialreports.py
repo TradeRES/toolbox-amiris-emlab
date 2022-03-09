@@ -17,18 +17,16 @@ class CreatingFinancialReports(DefaultModule):
         # for substance in self.reps.substances:
         #     fuelPriceMap.update({substance: findLastKnownPriceForSubstance(substance)})
         #TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
-
-        self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick), self.reps.current_tick)
+        self.createFinancialReportsForPowerPlantsAndTick(self.reps.power_plants, self.reps.current_tick)
 
     def createFinancialReportsForNewInvestments(self):
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWithConstructionStartTimeInTick(self.reps.current_tick), self.reps.current_tick)
 
     def createFinancialReportsForPowerPlantsAndTick(self, plants, tick):
-        for plant in plants:
+        for plant in plants.values():
             print(plant.name)
-            financialPowerPlantReport = FinancialPowerPlantReport("financials"+ plant.name, self.reps)
-
-            #financialPowerPlantReport.setTime(tick)
+            financialPowerPlantReport = FinancialPowerPlantReport(plant.name, self.reps)
+            financialPowerPlantReport.setTime(tick)
             financialPowerPlantReport.setPowerPlant(plant.name)
             totalSupply = plant.getAwardedPowerinMWh()
             financialPowerPlantReport.setProduction(totalSupply, tick)
@@ -66,7 +64,6 @@ class CreatingFinancialReports(DefaultModule):
                 operationalStatus = "decommissioned"
 
             financialPowerPlantReport.setPowerPlantStatus(operationalStatus, tick)
-            print(financialPowerPlantReport)
             self.reps.dbrw.stage_financial_results(financialPowerPlantReport)
 
     #

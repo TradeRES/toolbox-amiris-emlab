@@ -6,12 +6,15 @@ Jim Hommes - 13-5-2021
 from emlabpy.domain.import_object import *
 import random
 import math
+import numpy as np
+from sklearn import linear_model
 
 
 class Trend(ImportObject):
     """
     This class is the parent class of all Trend classes.
     """
+
     def __init__(self, name):
         super().__init__(name)
 
@@ -23,6 +26,7 @@ class GeometricTrend(Trend):
     """
     The GeometricTrend is an exponential growth trend. It requires a start value and the growth percentage (0 - 1)
     """
+
     def __init__(self, name):
         super().__init__(name)
         self.start = 0
@@ -43,6 +47,7 @@ class StepTrend(Trend):
     """
     The StepTrend is a linear growth trend. It will grow by a fixed increment.
     """
+
     def __init__(self, name):
         super().__init__(name)
         self.duration = 0
@@ -70,6 +75,7 @@ class TriangularTrend(Trend):
     Because of the random nature of this trend, values are saved in self.values so that once generated, the value \
     does not change.
     """
+
     def __init__(self, name):
         super().__init__(name)
         self.top = 0
@@ -102,6 +108,7 @@ class HourlyLoad(ImportObject):
     """
     The hourly demand per year. The object name is the same as the bus.
     """
+
     def __init__(self, name: str):
         super().__init__(name)
         self.demand_map = dict()
@@ -147,23 +154,37 @@ class TimeSeriesImpl():
     def setStartingYear(self, startingYear):
         self.startingYear = startingYear
 
+
 class GeometricTrendRegression():
+    def __init__(self):
+        self.X = None
+        self.Y = None
 
     def addData(self, x, y):
-        super().addData(x, math.log(y))
+        self.X = np.array(x).reshape(-1, 1)
+        self.Y = np.array(math.log(y)).reshape(-1, 1)
 
-    def removeData(self, x, y):
-        super().removeData(x, math.log(y))
+    def predict(self, X_test):
+        regr = linear_model.LinearRegression()
+        regr.fit(self.X, self.Y)
+        y_pred = regr.predict(X_test)
+        return math.exp(y_pred)
 
-    def addData(self, data):
-        for d in data:
-            self.addData(d[0], d[1])
+    # def removeData(self, x, y):
+    #     list.remove(x, math.log(y))
 
-    def removeData(self, data):
-        i = 0
-        while i < len(data) and super().getN() > 0:
-            self.removeData(data[i][0], math.log(data[i][1]))
-            i += 1
+    # def addData(self, x, y):
+    #     super().addData(x, math.log(y))
+    #
+    # def removeData(self, x, y):
+    #     super().removeData(x, math.log(y))
 
-    def predict(self, x):
-        return math.exp(super().predict(x))
+    # def addData(self, data):
+    #     for d in data:
+    #         self.addData(d[0], d[1])
+    #
+    # def removeData(self, data):
+    #     i = 0
+    #     while i < len(data) and super().getN() > 0:
+    #         self.removeData(data[i][0], math.log(data[i][1]))
+    #         i += 1
