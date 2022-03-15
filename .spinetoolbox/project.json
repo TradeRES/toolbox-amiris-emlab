@@ -64,6 +64,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/initialize_clock.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/convert_from_common_db_to_bb_db.json"
                 }
             ],
             "Importer": [
@@ -483,6 +488,28 @@
                     "Scenario_gas",
                     "left"
                 ]
+            },
+            {
+                "name": "from TraderesDB to convert_from_common_db_to_bb_db",
+                "from": [
+                    "TraderesDB",
+                    "right"
+                ],
+                "to": [
+                    "convert_from_common_db_to_bb_db",
+                    "left"
+                ]
+            },
+            {
+                "name": "from convert_from_common_db_to_bb_db to traderesLocal",
+                "from": [
+                    "convert_from_common_db_to_bb_db",
+                    "right"
+                ],
+                "to": [
+                    "traderesLocal",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -585,8 +612,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -975.2466655854813,
-            "y": -733.6478652499464,
+            "x": -1206.39674634275,
+            "y": -869.6185009895166,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -597,8 +624,8 @@
         "ScenarioImporter": {
             "type": "Importer",
             "description": "",
-            "x": -968.6764377651673,
-            "y": -367.6320858071019,
+            "x": -965.9570250503759,
+            "y": -416.581514673347,
             "specification": "Scenario import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -810,9 +837,15 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1049.343191689003,
-            "y": -176.063337827981,
-            "references": []
+            "x": -1128.2061604179535,
+            "y": -189.66040140193803,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/EMLAB parameters.xls.xlsx"
+                }
+            ]
         },
         "Import EMLAB Init": {
             "type": "Importer",
@@ -823,13 +856,18 @@
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": []
+            "file_selection": [
+                [
+                    "<project>/data/EMLAB parameters.xls.xlsx",
+                    true
+                ]
+            ]
         },
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1062.971599073846,
-            "y": -530.2322853535984,
+            "x": -1196.2228220986242,
+            "y": -652.6058575192113,
             "references": [
                 {
                     "type": "path",
@@ -848,8 +886,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -899.1475719136733,
-            "y": -464.80828102464034,
+            "x": -939.9387626355443,
+            "y": -559.9877260423393,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -911,8 +949,8 @@
         "test": {
             "type": "Data Store",
             "description": "",
-            "x": -747.8785950945077,
-            "y": 27.424169161264146,
+            "x": -796.8280239607528,
+            "y": 364.6313457953976,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -961,8 +999,8 @@
         "traderesLocal": {
             "type": "Data Store",
             "description": "",
-            "x": -755.776302031296,
-            "y": -617.1686263301129,
+            "x": -685.0715714467196,
+            "y": -636.2045153336526,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -977,8 +1015,8 @@
         "exporterTraderes": {
             "type": "Exporter",
             "description": "",
-            "x": -722.6329344434837,
-            "y": -707.984969556116,
+            "x": -861.322982897845,
+            "y": -871.1497324435998,
             "output_time_stamps": false,
             "cancel_on_error": true,
             "output_labels": [],
@@ -987,8 +1025,8 @@
         "fromTraderestoEmlab": {
             "type": "Exporter",
             "description": "",
-            "x": -537.3454605640579,
-            "y": -620.3755171526732,
+            "x": -257.2459509405438,
+            "y": -761.7849783218257,
             "output_time_stamps": false,
             "cancel_on_error": true,
             "output_labels": [
@@ -1015,8 +1053,8 @@
         "importer time series": {
             "type": "Importer",
             "description": "",
-            "x": -899.4382071993654,
-            "y": 194.9188451046748,
+            "x": -1002.7758903614385,
+            "y": 363.52243342174154,
             "specification": "import time series example",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1045,6 +1083,24 @@
             "specification": "",
             "execute_in_work": true,
             "cmd_line_args": []
+        },
+        "convert_from_common_db_to_bb_db": {
+            "type": "Tool",
+            "description": "",
+            "x": -940.916799317824,
+            "y": -747.8384965676345,
+            "specification": "convert_from_common_db_to_bb_db",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@TraderesDB"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@traderesLocal"
+                }
+            ]
         }
     }
 }

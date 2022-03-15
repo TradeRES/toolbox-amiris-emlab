@@ -337,6 +337,9 @@ class Repository:
         else:
             return None
 
+
+
+
     def findAllClearingPointsForSubstanceAndTimeRange(self, substance, timeFrom, timeTo, forecast):
 
         # return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).

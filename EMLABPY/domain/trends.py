@@ -4,7 +4,7 @@ This file contains all Trend classes: mathematical definitions of functions.
 Jim Hommes - 13-5-2021
 """
 from emlabpy.domain.import_object import *
-import random
+
 import math
 import numpy as np
 from sklearn import linear_model
@@ -90,17 +90,27 @@ class TriangularTrend(Trend):
             self.max = float(parameter_value)
         elif parameter_name == 'Min':
             self.min = float(parameter_value)
-        elif parameter_name == 'Start':
-            self.values.append(float(parameter_value))
+        #elif parameter_name == 'Start': # the EMLAB value was  the start in the Fuel Price Trends table
+        #    self.values.append(float(parameter_value))
 
-    def get_value(self, time):
+    def get_value(self, time, substance):
+        try:
+            fuels =  self.dbrw.query_object_parameter_values_by_object_class("node")
+            self.values = [i['parameter_value'] for i in fuels
+                       if i['object_name'] == substance
+                       and i['parameter_name'] == "expected price"]
+        except StopIteration:
+            return None
+
         while len(self.values) <= time:
             last_value = self.values[-1]
-            random_number = random.triangular(-1, 1, 0)
+            random_number = random.triangular(-1, 0, 1) # TODO this was (-1,  1, 0 ) for competes integration
             if random_number < 0:
                 self.values.append(last_value * (self.top + (random_number * (self.top - self.min))))
             else:
                 self.values.append(last_value * (self.top + (random_number * (self.max - self.top))))
+
+        self.reps.dbrw.stage_fuel_prices(self.values)
         return self.values[time]
 
 
@@ -155,7 +165,7 @@ class TimeSeriesImpl():
         self.startingYear = startingYear
 
 
-class GeometricTrendRegression():
+class GeometricTrendRegression:
     def __init__(self):
         self.X = None
         self.Y = None

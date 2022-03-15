@@ -92,6 +92,7 @@ class CandidatePowerPlant(PowerPlant):
                                         round(random() * self.technology.expected_lifetime)) + 2
 
 
+
 class FutureStorageTrader(ImportObject):
     def __init__(self, name):
         super().__init__(name)

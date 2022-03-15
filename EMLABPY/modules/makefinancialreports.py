@@ -18,19 +18,30 @@ class CreatingFinancialReports(DefaultModule):
         #     fuelPriceMap.update({substance: findLastKnownPriceForSubstance(substance)})
         #TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.power_plants, self.reps.current_tick)
+        print("finished financial report")
 
     def createFinancialReportsForNewInvestments(self):
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWithConstructionStartTimeInTick(self.reps.current_tick), self.reps.current_tick)
 
     def createFinancialReportsForPowerPlantsAndTick(self, plants, tick):
         for plant in plants.values():
-            print(plant.name)
             financialPowerPlantReport = FinancialPowerPlantReport(plant.name, self.reps)
             financialPowerPlantReport.setTime(tick)
             financialPowerPlantReport.setPowerPlant(plant.name)
             totalSupply = plant.getAwardedPowerinMWh()
             financialPowerPlantReport.setProduction(totalSupply, tick)
-            # #TODO fix this:
+            financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR, tick)
+            financialPowerPlantReport.setProfit(plant.Profit, tick)
+            if plant.isOperational(tick):
+                operationalStatus = "operational"
+            elif plant.isInPipeline(tick):
+                operationalStatus = "inPipeline"
+            else:
+                operationalStatus = "decommissioned"
+
+            financialPowerPlantReport.setPowerPlantStatus(operationalStatus, tick)
+            self.reps.dbrw.stage_financial_results(financialPowerPlantReport)
+
             # if plant.getFuelMix() is None:
             #     plant.setFuelMix(java.util.HashSet())
             # for share in plant.getFuelMix():
@@ -45,26 +56,14 @@ class CreatingFinancialReports(DefaultModule):
             #Determine fixed costs
             #financialPowerPlantReport.setFixedCosts(self.calculateFixedCostsOfPowerPlant(cashFlows))
             #financialPowerPlantReport.setFixedOMCosts(self.calculateFixedOMCostsOfPowerPlant(cashFlows))
-            financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR, tick)
-            financialPowerPlantReport.setProfit(plant.Profit, tick)
             #financialPowerPlantReport.setStrategicReserveRevenue(self.calculateStrategicReserveRevenueOfPowerPlant(cashFlows))
             #financialPowerPlantReport.setCapacityMarketRevenue(self.calculateCapacityMarketRevenueOfPowerPlant(cashFlows))
             #financialPowerPlantReport.setCo2HedgingRevenue(self.calculateCO2HedgingRevenueOfPowerPlant(cashFlows))
             #financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.getCapacityMarketRevenue() + financialPowerPlantReport.getCo2HedgingRevenue() + financialPowerPlantReport.getSpotMarketRevenue() + financialPowerPlantReport.getStrategicReserveRevenue())
-
             # Calculate Full load hours
             #financialPowerPlantReport.setFullLoadHours(self.reps.calculateFullLoadHoursOfPowerPlant(plant, tick))
 
-            operationalStatus = None
-            if plant.isOperational(tick):
-                operationalStatus = "operational"
-            elif plant.isInPipeline(tick):
-                operationalStatus = "inPipeline"
-            else:
-                operationalStatus = "decommissioned"
 
-            financialPowerPlantReport.setPowerPlantStatus(operationalStatus, tick)
-            self.reps.dbrw.stage_financial_results(financialPowerPlantReport)
 
     #
     # def calculateSpotMarketRevenueOfPowerPlant(self, cashFlows):

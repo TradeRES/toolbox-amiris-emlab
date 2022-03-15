@@ -15,29 +15,29 @@ from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.co2market import *
 from emlabpy.modules.Invest import *
+from modules.futurePowerPlants import *
 from modules.dismantle import *
-
 # Initialize Logging
 if not os.path.isdir('logs'):
     os.makedirs('logs')
 logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.txt', level=logging.DEBUG)
 # Log to console? Uncomment next line
-logging.getLogger().addHandler(logging.StreamHandler())
+#logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
 run_capacity_market = False
 run_electricity_spot_market = False
+run_new_power_plants = False
 run_co2_market = False
 run_investment_module = False
 run_decommission_module = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
-logging.info('Selected modules: ' + str(sys.argv[2:]))
+#logging.info('Selected modules: ' + str(sys.argv[2:]))
 for arg in sys.argv[3:]:
     if arg == 'run_capacity_market':
-        run_electricity_spot_market = True
         run_capacity_market = True
-    if arg == 'run_electricity_spot_market':
-        run_electricity_spot_market = True
+    if arg == 'run_new_power_plants':
+        run_new_power_plants = True
     if arg == 'run_co2_market':
         run_co2_market = True
     if arg == 'run_investment_module':
@@ -48,25 +48,14 @@ for arg in sys.argv[3:]:
 if run_investment_module:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
-    # Second argumant always has to be the Config Excel file
     amiris_url = sys.argv[2]
     logging.info('amiris database: ' + str(amiris_url))
     spinedb_reader_writer = SpineDBReaderWriter("run_investment_module", emlab_url, amiris_url)
-elif run_decommission_module:
+else:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
-    # Second argumant always has to be the Config Excel file
-    spinedb_reader_writer = SpineDBReaderWriter("run_decommission_module", emlab_url)
-else:
-    # First argument always has to be the Database URL
-    # For manual insertion, it's of the form sqlite:///C:\path\to\db\db.sqlite
-    db_url = sys.argv[1]
-    logging.info('Selected database: ' + str(db_url))
-    # Second argumant always has to be the Config Excel file
-    config_spinedb_url = sys.argv[2]
-    logging.info('Selected simulation parameter database: ' + str(config_spinedb_url))
-    # Initialize SpineDB Reader Writer (also initializes DB connection)
-    spinedb_reader_writer = SpineDBReaderWriter("other_module", db_url, config_spinedb_url)
+    spinedb_reader_writer = SpineDBReaderWriter("run_other_module", emlab_url)
+
 
 try:    # Try statement to always close DB properly
     # Load repository
@@ -84,9 +73,9 @@ try:    # Try statement to always close DB properly
         v.specifyPowerPlantsforFirstTick( 0 , "Producer1", "DE")
     financial_report = CreatingFinancialReports(reps)
     financial_report.act_and_commit()
-    spinedb_reader_writer.commit('Initialize all module import structures')
+
     logging.info('End Initialization Modules')
-    logging.info('Commit Initialization Modules')
+
     # From here on modules will be run according to the previously set booleans
     logging.info('Start Run Modules')
 
@@ -96,11 +85,11 @@ try:    # Try statement to always close DB properly
         dismantling.act_and_commit()
         logging.info('End Run dismantle')
 
-    if run_electricity_spot_market:
-        clearing_market = Investmentdecision(reps)
-        logging.info('Start Run market clearing')
-   #     investing.act_and_commit()
-        logging.info('End Run market clearing')
+    if run_new_power_plants:
+        creating_power_plants = FuturePowerPlants(reps)
+        logging.info('Start definition of PP')
+        creating_power_plants.act_and_commit()
+        logging.info('End Run definition of PP')
 
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
@@ -123,13 +112,15 @@ try:    # Try statement to always close DB properly
         logging.info('End Run Investment')
     logging.info('End Run Modules')
 
+    spinedb_reader_writer.commit('Initialize all module import structures')
+    logging.info('Commit Initialization Modules')
 
 except Exception as e:
     logging.error('Exception occurred: ' + str(e))
     raise
 finally:
     logging.info('Closing database connections...')
-    #spinedb_reader_writer.db.commit()
+    print("finished")
     spinedb_reader_writer.db.close_connection()
     if run_investment_module:
         spinedb_reader_writer.amirisdb.close_connection()

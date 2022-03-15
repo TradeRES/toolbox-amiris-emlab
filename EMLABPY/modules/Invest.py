@@ -36,7 +36,6 @@ class Investmentdecision(DefaultModule):
         # self.pgtNodeLimit = Double.MAX_VALUE
 # from AbstractInvestInPowerGenerationTechnologiesRole
         self.useFundamentalCO2Forecast = False
-        self.futureTimePoint = 0
         self.futureInvestmentyear = 0
         self.expectedCO2Price = None
         self.expectedFuelPrices = None
@@ -46,10 +45,14 @@ class Investmentdecision(DefaultModule):
         self.agent = None
         self.budget_year0 = 0
 
-    def act(self):
+    def prepare(self):
         setAgent(self, "Producer1")
         self.setTimeHorizon()
         self.setExpectations()
+        self.createCandidatePowerPlants()
+
+    def act(self):
+        setAgent(self, "Producer1")
 
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             #TODO finalize
@@ -69,10 +72,31 @@ class Investmentdecision(DefaultModule):
                 bestPlant = candidatepowerplant
         print("bestPlant is " , bestPlant )
 
-def setTimeHorizon(self):
-    logging.info(self.agent.name + " is considering investment with horizon " )
-    self.futureTimePoint = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
-    self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTimePoint
+
+
+
+    def setTimeHorizon(self):
+        self.futureTimePoint = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
+        logging.info(self.agent.name + " is considering investment with horizon "  + self.futureTimePoint)
+        self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTimePoint
+
+    def setExpectations(self, substance):
+        for substance in self.reps.substances:
+            self.predictFuelPrices(substance)
+        self.predictDemand()
+
+    def predictFuelPrices(self, future_simulation_tick, substance):
+        """
+        """
+        if self.reps.current_tick >= 2:
+            self.expectedFuelPrices = self.predictFuelPrices(self.futureTimePoint)
+            substance.expectedFuelPrices = GeometricTrendRegression.predict()
+        else:
+            xp = [20, 40]
+            fp = [substance.initialprice2020, substance.initialprice2040]
+            substance.expectedFuelPrices = np.interp(self.futureInvestmentyear - 2000, xp, fp)
+
+
 
 def getProjectValue(self, candidatepowerplant,agent):
     #technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
@@ -145,11 +169,7 @@ def predictFuelPrices(self, agent, futureTimePoint):
 
 
 
-def setExpectations(self):
-    if self.reps.current_tick >= 2:
-        expectedFuelPrices = predictFuelPrices(agent, futureTimePoint)
-    else:
-        pass
+
 
 #     if not useFundamentalCO2Forecast:
 #         expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick())

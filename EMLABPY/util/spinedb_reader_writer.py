@@ -26,6 +26,7 @@ class SpineDBReaderWriter:
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
+        self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
         self.ConventionalOperator_classname = "ConventionalPlantOperator"
@@ -44,8 +45,9 @@ class SpineDBReaderWriter:
         reps.dbrw = self
         db_data = self.db.export_data()
         self.stage_init_alternative("0")
-        db_amirisdata = self.amirisdb.export_data()
-        candidatePowerPlants = [i[0] for i in db_amirisdata["alternatives"]]
+        # todo: later this should not be hardcoded
+        #candidatePowerPlants = [i[0] for i in db_amirisdata["alternatives"]]
+        candidatePowerPlants = [503, 49]
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
@@ -80,6 +82,7 @@ class SpineDBReaderWriter:
                                     ', parameter: ' + parameter_name)
 
         if self.run_module == "run_investment_module":
+            db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata, candidatePowerPlants)
 
         return reps
@@ -171,11 +174,13 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                  ['PowerPlant', 'latestTick','spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
 
+    def stage_init_expected_prices_structure(self):
+        self.stage_object_class(self.fuel_classname)
+        self.stage_object_parameters(self.fuel_classname, ['simulatedPrice'])
+
     def stage_init_alternative(self, current_tick: int):
         self.db.import_alternatives([str(current_tick)])
 
-    def stage_init_(self, current_tick: int):
-        self.db.import_alternatives([str(current_tick)])
     """
     Element specific staging functions
     
@@ -205,6 +210,10 @@ class SpineDBReaderWriter:
                                             ('profit', (fr.profit))
                                             ], '0')
 
+    def stage_fuel_prices(self, substance):
+        object_name = substance.name
+        self.stage_object(self.fuel_classname, object_name)
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice",  substance.simulatedPrice, '0')])
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name
@@ -244,6 +253,12 @@ def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: 
         to_dict[object_name] = class_to_create(object_name)
     to_dict[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
 
+def add_type_to_power_plant(reps: Repository, db_line: list, to_dict: dict):
+    classname = db_line[0]
+    object_name = db_line[1]
+    parameter_alt = db_line[4]
+    to_dict[object_name].add_parameter_value(reps, "label", classname, parameter_alt)
+
 def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationship_class_name: str):
     """
     Function used to translate SpineDB relationships to an array of tuples
@@ -275,6 +290,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     elif object_class_name in ['ConventionalPlantOperator', 'VariableRenewableOperator']:
         if object_name not in candidatePowerPlants:
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+            add_type_to_power_plant(reps, db_line, reps.power_plants)
         else:
             add_parameter_value_to_repository(reps, db_line, reps.candidatePowerPlants, CandidatePowerPlant)
     elif object_class_name == 'CapacityMarkets':
@@ -286,7 +302,9 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'electricity':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    elif object_class_name == 'Fuels':
+    elif object_class_name == 'Fuels': # Fuels contain CO2 density energy density, quality
+        add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
+    elif object_class_name == 'node': # node contain the # TODO complete this to the scenario
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'EnergyProducers':
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)

@@ -67,6 +67,9 @@ class PowerPlant(ImportObject):
             self.OfferedPowerinMW = float(parameter_value)
         elif parameter_name == 'ReceivedMoneyInEUR':
             self.ReceivedMoneyinEUR = float(parameter_value)
+        elif parameter_name == 'label':
+            self.label = parameter_value
+
 
     #createPowerPlant
     def specifyPowerPlantsforFirstTick(self, tick, energyProducer, location):

@@ -47,7 +47,7 @@ class PowerGeneratingTechnology(ImportObject):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
         #From here are the inputs from TechnologyEmlab
         if parameter_name == 'Intermittent':
-            self.intermittent = parameter_value
+            self.intermittent = bool(parameter_value)
         elif parameter_name == 'expectedPermittime':
             self.expected_permittime = int(parameter_value)
         elif parameter_name == 'expectedLeadtime':
