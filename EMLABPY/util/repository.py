@@ -39,7 +39,7 @@ class Repository:
         self.lookAhead = 0
         self.current_year = 0
         self.simulation_length = 0
-
+        self.newTechnology = dict()
         self.energy_producers = dict()
         self.power_plants = dict()
         self.candidatePowerPlants = dict()

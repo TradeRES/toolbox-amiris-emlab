@@ -29,6 +29,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.maximum_installed_capacity_fraction_in_country = 0
         self.intermittent = False
         self.fuel = ''
+        self.type= ''
         # here are missing info
 
         self.applicable_for_long_term_contract = False
@@ -56,7 +57,10 @@ class PowerGeneratingTechnology(ImportObject):
             self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicableForLongTermContract = parameter_value
+        elif parameter_name == 'type':
+            self.type = parameter_value
         #From here are the inputs from emlab electricity = traderes
+
         elif parameter_name == 'annuity':
             self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':

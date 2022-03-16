@@ -23,6 +23,7 @@ class PowerPlant(ImportObject):
         self.loan = None
         self.downpayment = None
         self.dismantleTime = 0
+        # scenario from artificial emlab parameters
         self.constructionStartTime = 0
         self.actualLeadtime = 0
         self.actualPermittime = 0
@@ -37,13 +38,20 @@ class PowerPlant(ImportObject):
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True
-
-        # results from Amiris
+        # from Amiris
+        self.chargingEfficiency = 0
+        # from Amiris results
         self.AwardedPowerinMWh = 0
         self.CostsinEUR = 0
         self.OfferedPowerinMWH = 0
         self.ReceivedMoneyinEUR = 0
         self.Profit = 0
+        self.chargingEfficiency = 0
+        self.dischargingEfficiency = 0
+        self.energyToPowerRatio = 0
+        self.initialEnergyLevelInMWH = 0
+        self.selfDischargeRatePerHour = 0
+
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'Id':
@@ -69,7 +77,16 @@ class PowerPlant(ImportObject):
             self.ReceivedMoneyinEUR = float(parameter_value)
         elif parameter_name == 'label':
             self.label = parameter_value
-
+        elif parameter_name == 'ChargingEfficiency':
+            self.chargingEfficiency = float(parameter_value)
+        elif parameter_name == 'DischargingEfficiency':
+            self.dischargingEfficiency = float(parameter_value)
+        elif parameter_name == 'EnergyToPowerRatio':
+            self.energyToPowerRatio = float(parameter_value)
+        elif parameter_name == 'InitialEnergyLevelInMWH':
+            self.initialEnergyLevelInMWH = float(parameter_value)
+        elif parameter_name == 'SelfDischargeRatePerHour':
+            self.selfDischargeRatePerHour = float(parameter_value)
 
     #createPowerPlant
     def specifyPowerPlantsforFirstTick(self, tick, energyProducer, location):

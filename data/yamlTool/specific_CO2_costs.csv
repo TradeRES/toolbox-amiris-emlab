@@ -1,0 +1,4 @@
+indicator;accNodesModel;accYears;techs;commodity;Value
+CO2;GER;2030;FuelImport;Coal;0.36
+CO2;GER;2030;FuelImport;Lignite;0.4
+CO2;GER;2030;FuelImport;NGas;0.187

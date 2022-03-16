@@ -1,7 +1,5 @@
-
 from emlabpy.domain.powerplant import *
 import logging
-
 
 class CandidatePowerPlant(PowerPlant):
     def __init__(self, name):
@@ -13,14 +11,14 @@ class CandidatePowerPlant(PowerPlant):
         self.ReceivedMoneyinEUR = 0
         self.Profit = 0
         # scenario from amiris
-        self.technology = None
-        self.location = None
-        self.age = 0
-        self.owner = None
-        self.efficiency = 0
-        self.capacity = 0
-        # scenario from artificial
-        self.constructionStartTime = 0
+        # self.technology = None
+        # self.location = None
+        # self.age = 0
+        # self.owner = None
+        # self.efficiency = 0
+        # self.capacity = 0
+        # self.constructionStartTime = 0
+        # scenario from artificial emlab parameters
         self.Leadtime = 0
         self.Permittime = 0
         self.Lifetime = 0
@@ -28,7 +26,6 @@ class CandidatePowerPlant(PowerPlant):
         self.FixedOperatingCost = 0
 
         self.viableInvestment = False
-
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
         self.historicalCvarDummyPlant = 0
@@ -57,6 +54,7 @@ class CandidatePowerPlant(PowerPlant):
             self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
+
 
     def get_technology(self, time):
         return self.technology

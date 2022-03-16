@@ -73,7 +73,7 @@ try:    # Try statement to always close DB properly
         v.specifyPowerPlantsforFirstTick( 0 , "Producer1", "DE")
     financial_report = CreatingFinancialReports(reps)
     financial_report.act_and_commit()
-
+    spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('End Initialization Modules')
 
     # From here on modules will be run according to the previously set booleans
@@ -120,7 +120,7 @@ except Exception as e:
     raise
 finally:
     logging.info('Closing database connections...')
-    print("finished")
+    print("finished emlab")
     spinedb_reader_writer.db.close_connection()
     if run_investment_module:
         spinedb_reader_writer.amirisdb.close_connection()

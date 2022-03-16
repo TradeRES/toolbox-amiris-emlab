@@ -837,8 +837,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1128.2061604179535,
-            "y": -189.66040140193803,
+            "x": -1169.5741517998324,
+            "y": -277.91211634994556,
             "references": [
                 {
                     "type": "path",
@@ -850,8 +850,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -878.2105222413477,
-            "y": -235.00358189804066,
+            "x": -878.2105222413478,
+            "y": -236.61137391727382,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,

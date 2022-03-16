@@ -5,10 +5,9 @@ Ingrid Sanchez 18-2-2022 modified
 Jim Hommes - 25-3-2021
 """
 import logging
-
 from twine.repository import Repository
 
-from emlabpy.domain.CandidatePowerPlant import CandidatePowerPlant
+from emlabpy.domain.newTechnology import NewTechnology
 from emlabpy.util.repository import *
 from emlabpy.util.spinedb import SpineDB
 
@@ -287,12 +286,14 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
-    elif object_class_name in ['ConventionalPlantOperator', 'VariableRenewableOperator']:
+    elif object_class_name in ['ConventionalPlantOperator', 'VariableRenewableOperator']:# TODO add  'StorageTrader'
         if object_name not in candidatePowerPlants:
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
             add_type_to_power_plant(reps, db_line, reps.power_plants)
         else:
             add_parameter_value_to_repository(reps, db_line, reps.candidatePowerPlants, CandidatePowerPlant)
+    elif object_class_name == 'NewTechnologies':
+        add_parameter_value_to_repository(reps, db_line, reps.newTechnology, NewTechnology)
     elif object_class_name == 'CapacityMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
     elif object_class_name == 'TechnologiesEmlab':

@@ -1,4 +1,4 @@
-from emlabpy.domain import CandidatePowerPlant
+from emlabpy.domain.CandidatePowerPlant import *
 from emlabpy.domain.trends import TriangularTrend
 from emlabpy.modules.defaultmodule import DefaultModule
 from emlabpy.domain.substances import Substance
@@ -13,6 +13,14 @@ class FuturePowerPlants(DefaultModule):
         self.futureInvestmentyear = 0
         self.expectedFuelPrices = None
         self.expectedDemand = None
+        self.newTechnologies = None
+        self.lastrenewableId = 0
+        self.lastconventionalId = 0
+        self.laststorageId = 0
+        self.RESLabel = "VariableRenewableOperator"
+        self.conventionalLabel = "ConventionalPlantOperator"
+        self.storageLabel = "StorageTrader"
+
         reps.dbrw.stage_init_expected_prices_structure()
 
     def act(self):
@@ -30,45 +38,40 @@ class FuturePowerPlants(DefaultModule):
         #self.nextDemand()
 
     def createCandidatePowerPlants(self):
+        self.getlastIds()
+        for key, candidateTechnology in self.reps.newTechnology.items():
+            if candidateTechnology.type == self.RESLabel:
+                self.lastrenewableId+=1
+                object_name = self.lastrenewableId
+            elif candidateTechnology.type == self.conventionalLabel:
+                self.lastconventionalId+=1
+                object_name = self.lastconventionalId
+            elif candidateTechnology.type == self.storageLabel:
+                self.laststorageId+=1
+                object_name = self.laststorageId
+            self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type, 0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology", candidateTechnology.technology, 0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW", candidateTechnology.InstalledPowerInMW, 0)
+            # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
+
+    def getlastIds(self):
         # get maximum number of power plan
-        lastrenewable = []
-        lastconventional = []
-        for powerplant, info in self.reps.power_plants.items():
-            if info.label == "VariableRenewableOperator":
-                lastrenewable.append(int(powerplant))
-            else:
-                lastconventional.append(int(powerplant))
-        # 
-        # newrenewable = max(lastrenewable) + 1
-        # print(newrenewable)
-        # newConventional = max(lastconventional) + 1
-        # print(newConventional)
+        lastbuiltrenewable = []
+        lastbuiltconventional = []
+        lastbuiltstorage = []
+        for id, pp in self.reps.power_plants.items():
+            if pp.label == self.RESLabel:
+                lastbuiltrenewable.append(int(id))
+            elif pp.label == self.conventionalLabel:
+                lastbuiltconventional.append(int(id))
+            elif pp.label == self.storageLabel:
+                lastbuiltstorage.append(int(id))
+        lastbuiltrenewable.sort()
+        lastbuiltconventional.sort()
+        lastbuiltstorage.sort()
+        self.lastrenewableId = lastbuiltrenewable[-1]
+        self.lastconventionalId = lastbuiltconventional[-1]
+        if len(lastbuiltstorage) >0: # TODO: give numeration to storage so that it doesnt overlap with renewables
+            self.laststorageId = lastbuiltstorage[-1]
 
-        # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, Label ]
-        # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
-        #
-        # parameter_alt = 0
-        # for candidateTechnology in candidateTechnologies:
-        #     if candidateTechnology.label == "VariableRenewableOperator":
-        #         object_name = newrenewable
-        #         parameter_name
-        #         self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name)
-        #         self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, parameter_name, parameter_value, parameter_alt)
-        #
-        #         to_dict[object_name] = class_to_create(object_name)
-        #
-        #         newrenewable+=1
-
-
-           # self.add_parameter_value_to_repository(self.reps, db_line, self.reps.candidatePowerPlants, CandidatePowerPlant)
-
-
-        def add_parameter_value_to_repository(self, reps , db_line , to_dict , class_to_create):
-            object_name = db_line[1]
-            parameter_name = db_line[2]
-            parameter_value = db_line[3]
-            parameter_alt = db_line[4]
-            if object_name not in to_dict.keys():
-                to_dict[object_name] = class_to_create(object_name)
-            to_dict[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
-    #

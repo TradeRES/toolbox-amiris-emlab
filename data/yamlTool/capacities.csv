@@ -1,0 +1,9 @@
+accNodesModel;technology;commodity;capType;Value
+GER;CCGT;Elec;total;18877.000035867604
+GER;GT_NGas;Elec;total;12614.0
+GER;HydroRunOfRiver;Elec;total;5086.00151161088
+GER;Photovoltaic;Elec;total;44011.00000669511
+GER;ST_Coal;Elec;total;8715.0
+GER;ST_Lignite;Elec;total;6624.0
+GER;WindOffshore;Elec;total;45105.000620528815
+GER;WindOnshore;Elec;total;42202.0000044208

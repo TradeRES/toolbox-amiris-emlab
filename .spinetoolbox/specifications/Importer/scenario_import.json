@@ -80,18 +80,100 @@
                         ]
                     }
                 }
+            ],
+            "explanation": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "StorageTrader": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": 0
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Sheet1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "PredefinedPlantBuilder",
-            "VariableRenewableOperator"
+            "VariableRenewableOperator",
+            "StorageTrader"
         ],
         "table_options": {
             "PredefinedPlantBuilder": {
                 "header": true,
                 "column": 1
             },
-            "VariableRenewableOperator": {}
+            "VariableRenewableOperator": {},
+            "explanation": {},
+            "StorageTrader": {},
+            "Sheet1": {}
         },
         "table_types": {
             "PredefinedPlantBuilder": {
@@ -112,7 +194,20 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "float"
+                "9": "float",
+                "10": "string",
+                "11": "string",
+                "12": "string"
+            },
+            "StorageTrader": {
+                "0": "string",
+                "1": "float"
+            },
+            "Sheet1": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string"
             }
         },
         "table_row_types": {
