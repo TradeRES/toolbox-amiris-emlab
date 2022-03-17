@@ -173,9 +173,13 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                  ['PowerPlant', 'latestTick','spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
 
-    def stage_init_expected_prices_structure(self):
+    def stage_init_next_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
-        self.stage_object_parameters(self.fuel_classname, ['simulatedPrice'])
+        self.stage_object_parameters(self.fuel_classname, ['nextPrice'])
+
+    def stage_init_future_prices_structure(self):
+        self.stage_object_class(self.fuel_classname)
+        self.stage_object_parameters(self.fuel_classname, ['futurePrice'])
 
     def stage_init_alternative(self, current_tick: int):
         self.db.import_alternatives([str(current_tick)])
@@ -209,10 +213,15 @@ class SpineDBReaderWriter:
                                             ('profit', (fr.profit))
                                             ], '0')
 
-    def stage_fuel_prices(self, substance):
+    def stage_next_fuel_prices(self, substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice",  substance.simulatedPrice, '0')])
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "nextPrice", substance.nextPrice, '0')])
+
+    def stage_future_fuel_prices(self, substance):
+        object_name = substance.name
+        self.stage_object(self.fuel_classname, object_name)
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", substance.futurePrice, '0')])
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name

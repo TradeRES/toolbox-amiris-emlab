@@ -36,27 +36,19 @@ class Investmentdecision(DefaultModule):
         # self.pgtNodeLimit = Double.MAX_VALUE
 # from AbstractInvestInPowerGenerationTechnologiesRole
         self.useFundamentalCO2Forecast = False
+        self.futureTimePoint = 0
         self.futureInvestmentyear = 0
-        self.expectedCO2Price = None
-        self.expectedFuelPrices = None
-        self.expectedDemand = None
         self.market = None
         self.marketInformation = None
         self.agent = None
         self.budget_year0 = 0
 
-    def prepare(self):
-        setAgent(self, "Producer1")
-        self.setTimeHorizon()
-        self.setExpectations()
-        self.createCandidatePowerPlants()
-
     def act(self):
-        setAgent(self, "Producer1")
-
+        self.setAgent( "Producer1")
+        self.setTimeHorizon()
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             #TODO finalize
-            #setPowerPlantExpectations(self, candidatepowerplant,self.futureTimePoint )
+            #self.setPowerPlantExpectations(candidatepowerplant,self.futureTimePoint )
             futurecapacity = FutureCapacityExpectation(self.reps)
             futurecapacity.calculate(candidatepowerplant)
 
@@ -65,169 +57,100 @@ class Investmentdecision(DefaultModule):
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
             agent = self.reps.energy_producers[self.agent]
-            projectvalue = getProjectValue(self, candidatepowerplant, agent)
+            projectvalue = self.getProjectValue( candidatepowerplant, agent)
             print("projectvalue", projectvalue)
             if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                 highestValue = projectvalue / candidatepowerplant.capacity
                 bestPlant = candidatepowerplant
         print("bestPlant is " , bestPlant )
 
-
-
-
     def setTimeHorizon(self):
         self.futureTimePoint = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
-        logging.info(self.agent.name + " is considering investment with horizon "  + self.futureTimePoint)
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTimePoint
 
-    def setExpectations(self, substance):
-        for substance in self.reps.substances:
-            self.predictFuelPrices(substance)
-        self.predictDemand()
+    def getProjectValue(self, candidatepowerplant,agent):
+        #technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
+        technology = candidatepowerplant.technology
+        totalInvestment = self.getActualInvestedCapital( candidatepowerplant, technology)
+        depriacationTime = technology.depreciation_time
+        interestRate = technology.interest_rate
+        buildingTime = technology.expected_leadtime
+        operatingProfit = candidatepowerplant.get_Profit()
+        return self.calculateDiscountedCashFlowForPlant( depriacationTime, buildingTime, totalInvestment, operatingProfit, agent)
 
-    def predictFuelPrices(self, future_simulation_tick, substance):
-        """
-        """
-        if self.reps.current_tick >= 2:
-            self.expectedFuelPrices = self.predictFuelPrices(self.futureTimePoint)
-            substance.expectedFuelPrices = GeometricTrendRegression.predict()
-        else:
-            xp = [20, 40]
-            fp = [substance.initialprice2020, substance.initialprice2040]
-            substance.expectedFuelPrices = np.interp(self.futureInvestmentyear - 2000, xp, fp)
+    def calculateDiscountedCashFlowForPlant(self, depriacationTime, buildingTime, totalInvestment, operatingProfit,agent):
+        wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate \
+               + agent.debtRatioOfInvestments * agent.loanInterestRate
+        equalTotalDownPaymentInstallement = totalInvestment / buildingTime
+        investmentCashFlow = [0 for i in range(depriacationTime + buildingTime)]
+        for i in range(0, buildingTime):
+            investmentCashFlow[i] = - equalTotalDownPaymentInstallement
+        for i in range(buildingTime, depriacationTime + buildingTime):
+            investmentCashFlow[i] = operatingProfit
+        discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
+        return discountedprojectvalue
 
+    def getActualInvestedCapital(self, candidatepowerplant, technology):
+        investmentCostperTechnology = technology.investment_cost
+        investmentCostperMW = self.getinvestmentcosts(investmentCostperTechnology, (technology.expected_permittime + technology.expected_leadtime))
+        return  investmentCostperMW * candidatepowerplant.capacity
 
+    def getinvestmentcosts(self, investmentCostperTechnology,time):
+        return pow(1.05, time) * investmentCostperTechnology
 
-def getProjectValue(self, candidatepowerplant,agent):
-    #technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
-    technology = candidatepowerplant.technology
-    totalInvestment = getActualInvestedCapital(self, candidatepowerplant, technology)
-    depriacationTime = technology.depreciation_time
-    interestRate = technology.interest_rate
-    buildingTime = technology.expected_leadtime
-    operatingProfit = candidatepowerplant.get_Profit()
-    return calculateDiscountedCashFlowForPlant(self, depriacationTime, buildingTime, totalInvestment, operatingProfit, agent)
-
-def calculateDiscountedCashFlowForPlant(self, depriacationTime, buildingTime, totalInvestment, operatingProfit,agent):
-    wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate \
-           + agent.debtRatioOfInvestments * agent.loanInterestRate
-    equalTotalDownPaymentInstallement = totalInvestment / buildingTime
-    investmentCashFlow = [0 for i in range(depriacationTime + buildingTime)]
-    for i in range(0, buildingTime):
-        investmentCashFlow[i] = - equalTotalDownPaymentInstallement
-    for i in range(buildingTime, depriacationTime + buildingTime):
-        investmentCashFlow[i] = operatingProfit
-    discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
-    return discountedprojectvalue
-
-def getActualInvestedCapital(self, candidatepowerplant, technology):
-    investmentCostperTechnology = technology.investment_cost
-    investmentCostperMW = getinvestmentcosts(investmentCostperTechnology, (technology.expected_permittime + technology.expected_leadtime))
-    return  investmentCostperMW * candidatepowerplant.capacity
-
-def getinvestmentcosts(investmentCostperTechnology,time):
-    return pow(1.05, time) * investmentCostperTechnology
-
-def checkAllBudget(downPayment, budget, year):
-
-    if year == 1:
-        budget_number = budget + budget_year0
-        budget_number = budget_number - df_debt.loc[year].sum()
-    else:
-        budget_number += budget
-        tot_debt = sum(df_debt.sum(1))
-        if tot_debt > 0:
+    def checkAllBudget(self, downPayment, budget, year):
+        if year == 1:
+            budget_number = budget + budget_year0
             budget_number = budget_number - df_debt.loc[year].sum()
-    return budget_number
+        else:
+            budget_number += budget
+            tot_debt = sum(df_debt.sum(1))
+            if tot_debt > 0:
+                budget_number = budget_number - df_debt.loc[year].sum()
+        return budget_number
 
-def createSpreadOutDownPayments(agent, downPayment, plant):
-    buildingTime = plant.actualLeadtime()
-    getReps().createCashFlow(agent,  totalDownPayment / buildingTime, CashFlow.DOWNPAYMENT, getCurrentTick(), plant)
-    downpayment = getReps().createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1, getCurrentTick(), plant)
-    plant.createOrUpdateDownPayment(downpayment)
+    def createSpreadOutDownPayments(self, agent, downPayment, plant):
+        buildingTime = plant.actualLeadtime()
+        getReps().createCashFlow(agent,  totalDownPayment / buildingTime, CashFlow.DOWNPAYMENT, getCurrentTick(), plant)
+        downpayment = getReps().createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1, getCurrentTick(), plant)
+        plant.createOrUpdateDownPayment(downpayment)
 
-def setPowerPlantExpectations(self, powerplant, time):
-    powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
+    def setPowerPlantExpectations(self, powerplant, time):
+        powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
 
-def findAllClearingPointsForSubstanceAndTimeRange( substance,  timeFrom, timeTo):
-    pass
+    def findAllClearingPointsForSubstanceAndTimeRange( self, substance,  timeFrom, timeTo):
+        pass
 
-def predictFuelPrices(self, agent, futureTimePoint):
-    # Fuel Prices
-    expectedFuelPrices = {}
-    for substance in self.reps.substances:
-        #Find Clearing Points for the last 5 years (counting current year as one of the last 5 years).
-        cps = self.reps.findAllClearingPointsForSubstanceAndTimeRange(substance, self.reps.current_tick - (agent.getNumberOfYearsBacklookingForForecasting() - 1) , self.reps.current_tick, False)
-        #Create regression object
-        gtr = GeometricTrendRegression()
-        for clearingPoint in cps:
-            #logger.warn("CP {}: {} , in" + clearingPoint.getTime(), substance.getName(), clearingPoint.getPrice())
-            gtr.addData(clearingPoint.getTime(), clearingPoint.getPrice())
-        expectedFuelPrices.update({substance: gtr.predict(futureTimePoint)})
-        #logger.warn("Forecast {}: {}, in Step " +  futureTimePoint, substance, expectedFuelPrices.get(substance))
-    return expectedFuelPrices
+    def getAgent(self):
+        return self.agent
 
+    def setAgent(self, agent):
+        self.agent = self.reps.energy_producers[agent]
 
+    #	 * Returns the tick for which the investor currently evaluates the technology
+    def getFutureTimePoint(self):
+        return futureTimePoint
 
+    def setFutureTimePoint(self, futureTimePoint):
+        self.futureTimePoint = futureTimePoint
 
+    def isUseFundamentalCO2Forecast(self):
+        return useFundamentalCO2Forecast
 
-#     if not useFundamentalCO2Forecast:
-#         expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick())
-#     else:
-#         expectedCO2Price = determineExpectedCO2PriceInclTax(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), getCurrentTick())
-#     expectedDemand = {}
-#     for elm in getReps().electricitySpotMarkets:
-#         gtr = GeometricTrendRegression()
-#         time = getCurrentTick()
-#         while time > getCurrentTick() - agent.getNumberOfYearsBacklookingForForecasting() and time >= 0:
-#             gtr.addData(time, elm.getDemandGrowthTrend().getValue(time))
-#             time = time - 1
-#         expectedDemand.put(elm, gtr.predict(futureTimePoint))
-#     marketInformation = MarketInformation(market, expectedDemand, expectedFuelPrices, expectedCO2Price.get(market).doubleValue(), futureTimePoint)
+    def setUseFundamentalCO2Forecast(self, useFundamentalCO2Forecast):
+        self.useFundamentalCO2Forecast = useFundamentalCO2Forecast
 
+    def getMarket(self):
+        return self.market
 
-def getAgent(self):
-    return agent
+    def setMarket(self, market):
+        self.market = market
 
-def setAgent(self, agent):
-    self.agent = self.reps.energy_producers[agent]
+    def getMarketInformation(self):
+        return marketInformation
 
-#	 * Returns the tick for which the investor currently evaluates the technology
-def getFutureTimePoint(self):
-    return futureTimePoint
-
-def setFutureTimePoint(self, futureTimePoint):
-    self.futureTimePoint = futureTimePoint
-
-def isUseFundamentalCO2Forecast(self):
-    return useFundamentalCO2Forecast
-
-def setUseFundamentalCO2Forecast(self, useFundamentalCO2Forecast):
-    self.useFundamentalCO2Forecast = useFundamentalCO2Forecast
-
-def getMarket(self):
-    return market
-
-def setMarket(self, market):
-    self.market = market
-
-def getMarketInformation(self):
-    return marketInformation
-
-def setMarketInformation(self, marketInformation):
-    self.marketInformation = marketInformation
-
-    # projectValue = calculateProjectValue();
-    # projectCost = calculateProjectCost();
-    #
-    # discountedCapitalCosts = calculateDiscountedCashFlowForPlant(
-    #     technology.getDepreciationTime(), plant.getActualInvestedCapital(), 0)
-    #
-    # calculateDiscountedOperatingProfit
-    # operatingProfit = expectedGrossProfit - fixedOMCost
-    # discountedOperatingProfit = calculateDiscountedCashFlowForPlant(
-#     technology.getDepreciationTime(), 0, operatingProfit)
-
+    def setMarketInformation(self, marketInformation):
+        self.marketInformation = marketInformation
 
 class FutureCapacityExpectation(Investmentdecision):
     def __init__(self, reps):
@@ -302,7 +225,7 @@ class FutureCapacityExpectation(Investmentdecision):
         elif (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) and self.capacityOfTechnologyInPipeline > 9000:
             logger.log(Level.FINER, agent +" will not invest in {} technology because there's too much capacity in the pipeline", self.technology)
 
-        elif self.plant.getActualInvestedCapital() * (1 - agent.getDebtRatioOfInvestments()) > agent.getDownpaymentFractionOfCash() * agent.getCash():
+        elif self.getActualInvestedCapital(plant, technology) * (1 - agent.getDebtRatioOfInvestments()) > agent.getDownpaymentFractionOfCash() * agent.getCash():
             logger.log(Level.FINER, agent +" will not invest in {} technology as he does not have enough money for downpayment", self.technology)
 
         else:

@@ -7,21 +7,22 @@ import logging
 class FuturePowerPlants(DefaultModule):
 
     def __init__(self, reps):
-        super().__init__("Clearing the market", reps)
+        super().__init__("Define Future Power Plants", reps)
         self.newPowerPlant = None
-        self.nextTimePoint = 0
-        self.futureInvestmentyear = 0
-        self.expectedFuelPrices = None
-        self.expectedDemand = None
         self.newTechnologies = None
         self.lastrenewableId = 0
         self.lastconventionalId = 0
         self.laststorageId = 0
+        self.futureDemand = None
+        self.futureTimePoint = 0
+        self.futureInvestmentyear = 0
+        self.futureDemand = None
         self.RESLabel = "VariableRenewableOperator"
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
-
-        reps.dbrw.stage_init_expected_prices_structure()
+        reps.dbrw.stage_init_next_prices_structure()
+        reps.dbrw.stage_init_future_prices_structure()
+        self.agent = "Producer1"
 
     def act(self):
         self.setTimeHorizon()
@@ -29,12 +30,15 @@ class FuturePowerPlants(DefaultModule):
         self.createCandidatePowerPlants()
 
     def setTimeHorizon(self):
-        self.nextTimePoint = self.reps.current_tick
+        self.futureTimePoint = self.reps.current_tick + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            substance.get_price_for_tick(self.nextTimePoint, substance)
-            self.reps.dbrw.stage_fuel_prices(substance)
+            substance.get_price_for_future_tick(self.reps.current_tick , self.futureTimePoint, substance)
+            self.reps.dbrw.stage_future_fuel_prices(substance)
+
+        #self.predictDemand()
+
         #self.nextDemand()
 
     def createCandidatePowerPlants(self):
@@ -75,3 +79,31 @@ class FuturePowerPlants(DefaultModule):
         if len(lastbuiltstorage) >0: # TODO: give numeration to storage so that it doesnt overlap with renewables
             self.laststorageId = lastbuiltstorage[-1]
 
+# def predictFuelPrices(self, agent, futureTimePoint):
+#     # Fuel Prices
+#     expectedFuelPrices = {}
+#     for substance in self.reps.substances:
+#         #Find Clearing Points for the last 5 years (counting current year as one of the last 5 years).
+#         cps = self.reps.findAllClearingPointsForSubstanceAndTimeRange(substance, self.reps.current_tick - (agent.getNumberOfYearsBacklookingForForecasting() - 1) , self.reps.current_tick, False)
+#         #Create regression object
+#         gtr = GeometricTrendRegression()
+#         for clearingPoint in cps:
+#             #logger.warn("CP {}: {} , in" + clearingPoint.getTime(), substance.getName(), clearingPoint.getPrice())
+#             gtr.addData(clearingPoint.getTime(), clearingPoint.getPrice())
+#         expectedFuelPrices.update({substance: gtr.predict(futureTimePoint)})
+#         #logger.warn("Forecast {}: {}, in Step " +  futureTimePoint, substance, expectedFuelPrices.get(substance))
+#     return expectedFuelPrices
+
+#     if not useFundamentalCO2Forecast:
+#         expectedCO2Price = determineExpectedCO2PriceInclTaxAndFundamentalForecast(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), 0, getCurrentTick())
+#     else:
+#         expectedCO2Price = determineExpectedCO2PriceInclTax(futureTimePoint, agent.getNumberOfYearsBacklookingForForecasting(), getCurrentTick())
+#     expectedDemand = {}
+#     for elm in getReps().electricitySpotMarkets:
+#         gtr = GeometricTrendRegression()
+#         time = getCurrentTick()
+#         while time > getCurrentTick() - agent.getNumberOfYearsBacklookingForForecasting() and time >= 0:
+#             gtr.addData(time, elm.getDemandGrowthTrend().getValue(time))
+#             time = time - 1
+#         expectedDemand.put(elm, gtr.predict(futureTimePoint))
+#     marketInformation = MarketInformation(market, expectedDemand, expectedFuelPrices, expectedCO2Price.get(market).doubleValue(), futureTimePoint)

@@ -965,8 +965,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -440.8660561162354,
-            "y": -497.4785795907677,
+            "x": -300.36901946301214,
+            "y": -584.0863419112479,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [

@@ -108,7 +108,7 @@ try:    # Try statement to always close DB properly
     if run_investment_module:
         investing = Investmentdecision(reps)
         logging.info('Start Run Investment')
-        #     investing.act_and_commit()
+        investing.act_and_commit()
         logging.info('End Run Investment')
     logging.info('End Run Modules')
 
