@@ -1,4 +1,0 @@
-INFO:root:Starting EM-Lab Run
-INFO:root:emlab database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite
-INFO:root:SpineDBRW: Start Read Repository
-INFO:root:Closing database connections...

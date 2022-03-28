@@ -1,0 +1,26 @@
+{
+    "name": "Future power plants",
+    "tooltype": "python",
+    "includes": [
+        "emlab.py"
+    ],
+    "description": "prepares year prices and adds new technologies to yaml files for amiris",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "scenario_river.yaml",
+        "scenario_gas.yaml"
+    ],
+    "cmdline_args": [
+        "run_new_power_plants"
+    ],
+    "execute_in_work": true,
+    "includes_main_path": "../../../emlabpy",
+    "execution_settings": {
+        "env": "",
+        "kernel_spec_name": "python3",
+        "use_jupyter_console": true,
+        "executable": "",
+        "fail_on_stderror": false
+    }
+}

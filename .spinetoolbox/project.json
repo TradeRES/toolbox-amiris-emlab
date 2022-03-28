@@ -69,6 +69,16 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/convert_from_common_db_to_bb_db.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/future_power_plants.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/test_tool.json"
                 }
             ],
             "Importer": [
@@ -123,6 +133,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Exporter/exportscenrio.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/emlab_to_amiris.json"
                 }
             ],
             "Data Transformer": [
@@ -443,20 +458,6 @@
                 ]
             },
             {
-                "name": "from EmlabDB to BestInvestment",
-                "from": [
-                    "EmlabDB",
-                    "right"
-                ],
-                "to": [
-                    "BestInvestment",
-                    "left"
-                ],
-                "options": {
-                    "use_memory_db": false
-                }
-            },
-            {
                 "name": "from importer time series to test",
                 "from": [
                     "importer time series",
@@ -479,17 +480,6 @@
                 ]
             },
             {
-                "name": "from add to scenario yaml to Scenario_gas",
-                "from": [
-                    "add to scenario yaml",
-                    "right"
-                ],
-                "to": [
-                    "Scenario_gas",
-                    "left"
-                ]
-            },
-            {
                 "name": "from TraderesDB to convert_from_common_db_to_bb_db",
                 "from": [
                     "TraderesDB",
@@ -508,6 +498,28 @@
                 ],
                 "to": [
                     "traderesLocal",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to Prepare Data Amiris",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "Prepare Data Amiris",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to BestInvestment",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "BestInvestment",
                     "left"
                 ]
             }
@@ -585,19 +597,20 @@
             "description": "",
             "x": -281.7423842137391,
             "y": 306.5747937408076,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "amiris/fameSetup.yaml"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 745.0473727418292,
-            "y": -129.06936988773055,
+            "x": 632.8336540433168,
+            "y": 14.182185897604455,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -642,45 +655,48 @@
             "description": "",
             "x": -1162.8207006330458,
             "y": -433.8646237457562,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "data/scenariofromAMIRIS.xlsx"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "Scenario_gas": {
             "type": "Data Connection",
             "description": "",
             "x": -346.8575148955372,
             "y": -44.233940573353095,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "amiris/input/Austria2019/scenario_gas.yaml"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "Scenario": {
             "type": "Data Connection",
             "description": "",
             "x": -453.79519435423845,
             "y": 439.8484299191585,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "amiris/input/Austria2019/scenario.yaml"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "run config gas": {
             "type": "Tool",
             "description": "",
-            "x": -217.4464464398888,
-            "y": -51.33546566878924,
+            "x": -181.63355749355506,
+            "y": -46.560413809278074,
             "specification": "run config2",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -695,13 +711,14 @@
             "description": "",
             "x": -136.1140290416734,
             "y": -158.41593181296201,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "scripts/fameSetup2.yaml"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "Amiris Gas": {
             "type": "Tool",
@@ -741,15 +758,16 @@
         "ScenarioRiver": {
             "type": "Data Connection",
             "description": "",
-            "x": -533.719110635959,
-            "y": 162.379390549235,
-            "references": [
+            "x": -462.12565199896983,
+            "y": 162.37939054923498,
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "amiris/input/Austria2019/scenario_river.yaml"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "run config river": {
             "type": "Tool",
@@ -770,13 +788,14 @@
             "description": "",
             "x": -166.90881182876973,
             "y": 77.30513389964074,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "scripts/NewPowerPlants/River/fameSetupRiver.yaml"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "Amiris River": {
             "type": "Tool",
@@ -839,13 +858,14 @@
             "description": "",
             "x": -1169.5741517998324,
             "y": -277.91211634994556,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "data/EMLAB parameters.xls.xlsx"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "Import EMLAB Init": {
             "type": "Importer",
@@ -866,21 +886,22 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1196.2228220986242,
-            "y": -652.6058575192113,
-            "references": [
+            "x": -1152.9391295052194,
+            "y": -640.2390882068099,
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "data/exported_toward_bb.xlsx"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "transform Traderes": {
             "type": "Data Transformer",
             "description": "",
-            "x": 863.9336663177695,
-            "y": -749.4494868898191,
+            "x": 778.9585338529927,
+            "y": -884.7289974737779,
             "specification": ""
         },
         "traderesCommon to Amiris": {
@@ -902,10 +923,10 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 209.07259225147646,
-            "y": -510.7936064204041,
+            "x": 215.13487237953564,
+            "y": -511.13943530093763,
             "specification": "Best Investment",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -914,6 +935,10 @@
                 {
                     "type": "resource",
                     "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_investment_module"
                 }
             ]
         },
@@ -922,13 +947,14 @@
             "description": "",
             "x": -1063.0599288793314,
             "y": -35.98632668014923,
-            "references": [
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "data/Coupling Config.xlsx"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "Config Importer": {
             "type": "Importer",
@@ -949,8 +975,8 @@
         "test": {
             "type": "Data Store",
             "description": "",
-            "x": -796.8280239607528,
-            "y": 364.6313457953976,
+            "x": -963.879427447061,
+            "y": 531.6827492817056,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -983,8 +1009,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -546.9065770853559,
-            "y": -380.7114244216233,
+            "x": -544.2549675062081,
+            "y": -380.71142442162335,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -999,8 +1025,8 @@
         "traderesLocal": {
             "type": "Data Store",
             "description": "",
-            "x": -685.0715714467196,
-            "y": -636.2045153336526,
+            "x": -608.2075010436032,
+            "y": -730.1447104701625,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1040,21 +1066,22 @@
         "example time series": {
             "type": "Data Connection",
             "description": "",
-            "x": -1169.66028998301,
-            "y": 299.344339616505,
-            "references": [
+            "x": -1334.0600838901703,
+            "y": 530.034373002359,
+            "file_references": [
                 {
                     "type": "path",
                     "relative": true,
                     "path": "scripts/ConventionalPlantOperator exampletimeseries.xlsx"
                 }
-            ]
+            ],
+            "db_references": []
         },
         "importer time series": {
             "type": "Importer",
             "description": "",
-            "x": -1002.7758903614385,
-            "y": 363.52243342174154,
+            "x": -1135.3563693188257,
+            "y": 533.2254464871972,
             "specification": "import time series example",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1066,29 +1093,20 @@
                 ]
             ]
         },
-        "add to scenario yaml": {
-            "type": "Tool",
-            "description": "",
-            "x": -565.4281970533982,
-            "y": -74.83608490412618,
-            "specification": "",
-            "execute_in_work": true,
-            "cmd_line_args": []
-        },
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -424.0711477900487,
-            "y": -213.42142731917477,
-            "specification": "",
-            "execute_in_work": true,
+            "x": -531.2531174375733,
+            "y": -45.39710401892104,
+            "specification": "Future power plants",
+            "execute_in_work": false,
             "cmd_line_args": []
         },
         "convert_from_common_db_to_bb_db": {
             "type": "Tool",
             "description": "",
             "x": -940.916799317824,
-            "y": -747.8384965676345,
+            "y": -750.9011057567039,
             "specification": "convert_from_common_db_to_bb_db",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1101,6 +1119,25 @@
                     "arg": "db_url@traderesLocal"
                 }
             ]
+        },
+        "export_to_amiris": {
+            "type": "Exporter",
+            "description": "",
+            "x": -869.7279419604608,
+            "y": 188.26428011949,
+            "output_time_stamps": false,
+            "cancel_on_error": true,
+            "output_labels": [],
+            "specification": "Emlab to Amiris"
+        },
+        "testtool": {
+            "type": "Tool",
+            "description": "",
+            "x": -1524.5947105166292,
+            "y": 443.8693460997781,
+            "specification": "test tool",
+            "execute_in_work": true,
+            "cmd_line_args": []
         }
     }
 }

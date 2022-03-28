@@ -1,0 +1,25 @@
+{
+    "item_type": "Exporter",
+    "output_format": "Excel",
+    "name": "Emlab to Amiris",
+    "description": "",
+    "mappings": {
+        "Mapping 1": {
+            "type": "objects",
+            "mapping": [
+                {
+                    "map_type": "ObjectClass",
+                    "position": 0
+                },
+                {
+                    "map_type": "Object",
+                    "position": 1
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "group_fn": "no_group",
+            "use_fixed_table_name": false
+        }
+    }
+}

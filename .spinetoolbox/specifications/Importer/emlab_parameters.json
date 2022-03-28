@@ -619,7 +619,7 @@
                                 "value": "NewTechnologies",
                                 "skip_columns": [
                                     4,
-                                    7
+                                    8
                                 ]
                             },
                             {
@@ -636,7 +636,7 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": 5
+                                "position": 6
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -839,7 +839,8 @@
                 "16": "float",
                 "17": "float",
                 "18": "string",
-                "19": "string"
+                "19": "string",
+                "20": "string"
             },
             "Fuels": {
                 "0": "string",
@@ -864,9 +865,10 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "string",
-                "6": "float",
-                "7": "float"
+                "5": "float",
+                "6": "string",
+                "7": "float",
+                "8": "float"
             }
         },
         "table_row_types": {

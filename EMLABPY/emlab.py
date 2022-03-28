@@ -11,6 +11,7 @@ import time
 from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
+from modules.prepareMarketClearing import PrepareMarket
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.co2market import *
@@ -33,6 +34,7 @@ run_decommission_module = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 #logging.info('Selected modules: ' + str(sys.argv[2:]))
+
 for arg in sys.argv[3:]:
     if arg == 'run_capacity_market':
         run_capacity_market = True
@@ -84,6 +86,12 @@ try:    # Try statement to always close DB properly
         dismantling = Dismantle(reps)
         dismantling.act_and_commit()
         logging.info('End Run dismantle')
+
+    # if run_prepare_market_module:
+    #     logging.info('Start Run dismantle')
+    #     preparingmarket = PrepareMarket(reps)
+    #     preparingmarket.act_and_commit()
+    #     logging.info('End Run dismantle')
 
     if run_new_power_plants:
         creating_power_plants = FuturePowerPlants(reps)

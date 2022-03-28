@@ -1,6 +1,0 @@
-INFO:root:Starting EM-Lab Run
-INFO:root:Selected modules: ['sqlite:///C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\.spinetoolbox\\items\\amrisdb\\AMRISDB.sqlite', 'run_electricity_spot_market']
-INFO:root:emlab database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite
-INFO:root:SpineDBRW: Start Read Repository
-ERROR:root:Exception occurred: 'SpineDBReaderWriter' object has no attribute 'amirisdb'
-INFO:root:Closing database connections...
