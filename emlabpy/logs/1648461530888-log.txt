@@ -1,49 +1,5 @@
 INFO:root:Starting EM-Lab Run
-INFO:root:emlab database: http://127.0.0.1:54037
-INFO:root:amiris database: http://127.0.0.1:54038
-INFO:root:SpineDBRW: Start Read Repository
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: ConventionalTrader
-INFO:root:Object Class not defined: DemandTrader
-INFO:root:Object Class not defined: DemandTrader
-INFO:root:Object Class not defined: EnergyExchange
-INFO:root:Object Class not defined: EnergyExchange
-INFO:root:Object Class not defined: EnergyExchange
-INFO:root:Object Class not defined: MeritOrderForecaster
-INFO:root:Object Class not defined: MeritOrderForecaster
-INFO:root:Object Class not defined: NoSupportTrader
-INFO:root:Object Class not defined: NoSupportTrader
-INFO:root:Object Class not defined: NoSupportTrader
-INFO:root:Object Class not defined: NoSupportTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: StorageTrader
-INFO:root:Object Class not defined: SystemOperatorTrader
-INFO:root:Object Class not defined: SystemOperatorTrader
-INFO:root:Object Class not defined: SystemOperatorTrader
-INFO:root:Object Class not defined: SystemOperatorTrader
-INFO:root:Object Class not defined: SystemOperatorTrader
-INFO:root:Object Class not defined: SystemOperatorTrader
-ERROR:root:Exception occurred: 'OCGT'
-INFO:root:Closing database connections...
-INFO:root:Starting EM-Lab Run
-INFO:root:emlab database: http://127.0.0.1:56253
-INFO:root:amiris database: http://127.0.0.1:56252
+INFO:root:emlab database: sqlite:///C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite
 INFO:root:SpineDBRW: Start Read Repository
 WARNING:root:No value found for class: node, object: LNG, parameter: annual_resource_limit
 WARNING:root:No value found for class: node, object: bioliquids, parameter: annual_resource_limit
@@ -92,6 +48,21 @@ WARNING:root:No value found for class: node, object: nuclear, parameter: price
 WARNING:root:No value found for class: node, object: oil_shale, parameter: price
 WARNING:root:No value found for class: node, object: electricity, parameter: price2020
 WARNING:root:No value found for class: node, object: electricity, parameter: price2040
+WARNING:root:No value found for class: node, object: LNG, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: bioliquids, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: biomethane, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: collectable_residues, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: electricity, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: hard_coal, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: heavy_oil, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: hydrogen, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: light_oil, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: lignite, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: natural_gas, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: nuclear, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: oil_shale, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: processing_residues, parameter: simulatedPrice
+WARNING:root:No value found for class: node, object: wood_pellets, parameter: simulatedPrice
 WARNING:root:No value found for class: Fuels, object: bioliquids, parameter: co2Density
 WARNING:root:No value found for class: Fuels, object: biomethane, parameter: co2Density
 WARNING:root:No value found for class: Fuels, object: electricity, parameter: co2Density
@@ -968,11 +939,7 @@ INFO:root:Initializing Module: Creating Financial Reports
 WARNING:root:Nothing to commit.
 INFO:root:End Initialization Modules
 INFO:root:Start Run Modules
-INFO:root:Initializing Module: EM-Lab Investment decisions
-INFO:root:Start Run Investment
-WARNING:root:Nothing to commit.
-INFO:root:End Run Investment
-INFO:root:End Run Modules
-WARNING:root:Nothing to commit.
-INFO:root:Commit Initialization Modules
+INFO:root:Initializing Module: Define Future Power Plants
+INFO:root:Start definition of PP
+ERROR:root:Exception occurred: 'dict' object has no attribute 'append'
 INFO:root:Closing database connections...

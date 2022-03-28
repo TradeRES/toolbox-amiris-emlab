@@ -66,7 +66,7 @@ class Substance(ImportObject):
         else:
             xp = [20, 40]
             fp = [substance.initialprice2020, substance.initialprice2040]
-            self.futurePrice.append(np.interp(futuretick, xp, fp))
+            self.futurePrice = np.interp(futuretick, xp, fp)
             return
 
     def initializeGeometricTrendRegression(self):

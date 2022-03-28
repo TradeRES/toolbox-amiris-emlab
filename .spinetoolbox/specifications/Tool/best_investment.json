@@ -12,8 +12,8 @@
     "execute_in_work": false,
     "includes_main_path": "../../../emlabpy",
     "execution_settings": {
-        "env": "conda",
-        "kernel_spec_name": "conda-env-spinetoolbox-py",
+        "env": "",
+        "kernel_spec_name": "amiris",
         "use_jupyter_console": true,
         "executable": ""
     }

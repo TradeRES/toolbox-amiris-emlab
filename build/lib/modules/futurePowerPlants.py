@@ -1,5 +1,6 @@
 from emlabpy.domain.CandidatePowerPlant import *
 from emlabpy.modules.defaultmodule import DefaultModule
+import pandas as pd
 
 class FuturePowerPlants(DefaultModule):
     """Ths function creates the power plants that will be analyzed as possible investments"""
@@ -22,7 +23,7 @@ class FuturePowerPlants(DefaultModule):
         self.agent = "Producer1"
 
     def act(self):
-
+        print("here")
         self.setTimeHorizon()
         self.setExpectations()
         self.createCandidatePowerPlants()
@@ -36,7 +37,6 @@ class FuturePowerPlants(DefaultModule):
             self.reps.dbrw.stage_future_fuel_prices(substance) # todo: save this as a map in DB
 
         #self.predictDemand()
-
         #self.nextDemand()
 
     def createCandidatePowerPlants(self):
@@ -54,8 +54,11 @@ class FuturePowerPlants(DefaultModule):
                 object_name = self.laststorageId
             self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type, 0)
-            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology", candidateTechnology.technology, 0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology", candidateTechnology.name, 0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW", candidateTechnology.InstalledPowerInMW, 0)
+            df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
+            df.to_excel('forYaml.xlsx')
+            print("New technology " , object_name ,  candidateTechnology.type ,  candidateTechnology.name  , candidateTechnology.InstalledPowerInMW)
             # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
 
     def getlastIds(self):

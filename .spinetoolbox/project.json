@@ -502,17 +502,6 @@
                 ]
             },
             {
-                "name": "from EmlabDB to Prepare Data Amiris",
-                "from": [
-                    "EmlabDB",
-                    "right"
-                ],
-                "to": [
-                    "Prepare Data Amiris",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB to BestInvestment",
                 "from": [
                     "EmlabDB",
@@ -520,6 +509,17 @@
                 ],
                 "to": [
                     "BestInvestment",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to Prepare Data Amiris",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "Prepare Data Amiris",
                     "left"
                 ]
             }
@@ -667,8 +667,8 @@
         "Scenario_gas": {
             "type": "Data Connection",
             "description": "",
-            "x": -346.8575148955372,
-            "y": -44.233940573353095,
+            "x": -346.85751489553724,
+            "y": -45.60870056497105,
             "file_references": [
                 {
                     "type": "path",
@@ -772,8 +772,8 @@
         "run config river": {
             "type": "Tool",
             "description": "",
-            "x": -344.35923282567245,
-            "y": 165.1518769674142,
+            "x": -289.3688331609542,
+            "y": 167.90139695065017,
             "specification": "Run Config River",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -930,11 +930,11 @@
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@AMRISDB"
+                    "arg": "db_url@EmlabDB"
                 },
                 {
                     "type": "resource",
-                    "arg": "db_url@EmlabDB"
+                    "arg": "db_url@AMRISDB"
                 },
                 {
                     "type": "literal",
@@ -1009,8 +1009,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -544.2549675062081,
-            "y": -380.71142442162335,
+            "x": -546.2249200125998,
+            "y": -382.6813769280151,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1096,11 +1096,24 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -531.2531174375733,
-            "y": -45.39710401892104,
+            "x": -527.3132124247899,
+            "y": -47.36705652531278,
             "specification": "Future power plants",
-            "execute_in_work": false,
-            "cmd_line_args": []
+            "execute_in_work": true,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_new_power_plants"
+                }
+            ]
         },
         "convert_from_common_db_to_bb_db": {
             "type": "Tool",
