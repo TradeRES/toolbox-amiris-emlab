@@ -17,4 +17,4 @@ class PrepareMarket(DefaultModule):
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
             substance.get_price_for_next_tick(self.tick, substance)
-            self.reps.dbrw.stage_simulated_fuel_prices(substance)
+            self.reps.dbrw.stage_simulated_fuel_prices(self.tick, substance)

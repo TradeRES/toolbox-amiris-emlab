@@ -33,7 +33,7 @@ class FuturePowerPlants(DefaultModule):
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            substance.get_price_for_future_tick(self.reps.current_tick , self.futureTimePoint, substance)
+            substance.get_price_for_future_tick(self.reps, self.reps.current_tick , self.futureTimePoint, substance)
             self.reps.dbrw.stage_future_fuel_prices(substance) # todo: save this as a map in DB
 
         #self.predictDemand()
@@ -58,7 +58,7 @@ class FuturePowerPlants(DefaultModule):
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW", candidateTechnology.InstalledPowerInMW, 0)
             df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
             df.to_excel('forYaml.xlsx')
-            print("New technology " , object_name ,  candidateTechnology.type ,  candidateTechnology.name  , candidateTechnology.InstalledPowerInMW)
+            #print("New technology " , object_name ,  candidateTechnology.type ,  candidateTechnology.name  , candidateTechnology.InstalledPowerInMW)
             # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
 
     def getlastIds(self):

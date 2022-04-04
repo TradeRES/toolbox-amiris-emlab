@@ -1,5 +1,6 @@
 from emlabpy.domain.import_object import *
 from emlabpy.domain.trends import GeometricTrendRegression
+
 import numpy as np
 import random
 
@@ -46,7 +47,7 @@ class Substance(ImportObject):
         if tick == 0 :
             xp = [20, 40] # TODO avoid this to be hardcoded
             fp = [substance.initialprice2020, substance.initialprice2040]
-            self.simulatedPrice.append(np.interp(tick, xp, fp))
+            self.simulatedPrice.append(np.interp(tick + xp[0], xp, fp))
             return
         else:
             while len(self.simulatedPrice) <= tick:
@@ -58,21 +59,29 @@ class Substance(ImportObject):
                     self.simulatedPrice.append(last_value * (self.trend.top + (random_number * (self.trend.max - self.trend.top))))
         return
 
-    def get_price_for_future_tick(self, currenttick, futuretick, substance):
-        if currenttick >= 2:
-            self.initializeGeometricTrendRegression()
+    def get_price_for_future_tick(self, reps, futuretick, substance):
+        futuretick
+        print(substance.name , " future tick ", futuretick )
+        if reps.current_tick >= 2:
+            self.initializeGeometricTrendRegression(reps, substance)
             self.futurePrice = self.geometricRegression.predict(futuretick)
             return
         else:
-            xp = [20, 40]
+            xp = [0, 20] # this is the difference between 2020 and 2040
             fp = [substance.initialprice2020, substance.initialprice2040]
             self.futurePrice = np.interp(futuretick, xp, fp)
             return
 
-    def initializeGeometricTrendRegression(self):
+    def initializeGeometricTrendRegression(self, reps, substance):
         self.geometricRegression = GeometricTrendRegression("geometrictrendRegression" + self.name)
-        for index, simulatedPrices in enumerate(self.simulatedPrice):
-            self.geometricRegression.addData(index, simulatedPrices)
+        calculatedfuturePrices =  reps.dbrw.get_calculated_future_fuel_prices(substance)
+        x = []
+        y = []
+        for i in calculatedfuturePrices['data']:
+            x.append(int(i[0]))
+            y.append(i[1])
+        self.geometricRegression.addData(x,y)
+
 
 class SubstanceInFuelMix(ImportObject):
     def __init__(self, name: str):

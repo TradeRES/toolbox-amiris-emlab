@@ -29,9 +29,9 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setTime(tick)
             financialPowerPlantReport.setPowerPlant(plant.name)
             totalSupply = plant.getAwardedPowerinMWh()
-            financialPowerPlantReport.setProduction(totalSupply, tick)
-            financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR, tick)
-            financialPowerPlantReport.setProfit(plant.Profit, tick)
+            financialPowerPlantReport.setProduction(totalSupply)
+            financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR)
+            financialPowerPlantReport.setProfit(plant.Profit)
             if plant.isOperational(tick):
                 operationalStatus = "operational"
             elif plant.isInPipeline(tick):
@@ -39,7 +39,7 @@ class CreatingFinancialReports(DefaultModule):
             else:
                 operationalStatus = "decommissioned"
 
-            financialPowerPlantReport.setPowerPlantStatus(operationalStatus, tick)
+            financialPowerPlantReport.setPowerPlantStatus(operationalStatus)
             self.reps.dbrw.stage_financial_results(financialPowerPlantReport)
 
             # if plant.getFuelMix() is None:

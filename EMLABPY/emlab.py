@@ -74,7 +74,7 @@ try:    # Try statement to always close DB properly
     for p, v in reps.power_plants.items():
         v.specifyPowerPlantsforFirstTick( 0 , "Producer1", "DE")
     financial_report = CreatingFinancialReports(reps)
-    financial_report.act_and_commit()
+ #   financial_report.act_and_commit()
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('End Initialization Modules')
 

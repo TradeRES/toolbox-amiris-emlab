@@ -165,20 +165,26 @@ class TimeSeriesImpl():
         self.startingYear = startingYear
 
 
-class GeometricTrendRegression:
-    def __init__(self):
+class GeometricTrendRegression(Trend):
+    def __init__(self, name):
+        super().__init__(name)
         self.X = None
         self.Y = None
 
     def addData(self, x, y):
+        #logy = [math.log(y2) for y2 in y] # this was causing error
         self.X = np.array(x).reshape(-1, 1)
-        self.Y = np.array(math.log(y)).reshape(-1, 1)
+        self.Y = np.array(y).reshape(-1, 1)
+        #self.X = np.array(x)
+        #self.Y = np.array(logy)
 
     def predict(self, X_test):
         regr = linear_model.LinearRegression()
         regr.fit(self.X, self.Y)
-        y_pred = regr.predict(X_test)
-        return math.exp(y_pred)
+        y_pred = regr.predict([[X_test]])
+
+        print('y_pred', y_pred[0][0])
+        return y_pred[0][0] # todo before it was math.exp(y)
 
     # def removeData(self, x, y):
     #     list.remove(x, math.log(y))

@@ -23,26 +23,23 @@ class FuturePowerPlants(DefaultModule):
         self.agent = "Producer1"
 
     def act(self):
-        print("here")
         self.setTimeHorizon()
         self.setExpectations()
-        self.createCandidatePowerPlants()
+     #   self.createCandidatePowerPlants()
 
     def setTimeHorizon(self):
         self.futureTimePoint = self.reps.current_tick + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            substance.get_price_for_future_tick(self.reps.current_tick , self.futureTimePoint, substance)
-            self.reps.dbrw.stage_future_fuel_prices(substance) # todo: save this as a map in DB
-
+            substance.get_price_for_future_tick( self.reps, self.futureTimePoint, substance)
+            self.reps.dbrw.stage_future_fuel_prices(self.futureTimePoint, substance) # todo: save this as a map in DB
         #self.predictDemand()
         #self.nextDemand()
 
     def createCandidatePowerPlants(self):
         self.getlastIds()
         for key, candidateTechnology in self.reps.newTechnology.items():
-            print(candidateTechnology.type )
             if candidateTechnology.type == self.RESLabel:
                 self.lastrenewableId+=1
                 object_name = self.lastrenewableId
@@ -52,7 +49,7 @@ class FuturePowerPlants(DefaultModule):
             elif candidateTechnology.type == self.storageLabel:
                 self.laststorageId+=1
                 object_name = self.laststorageId
-            self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name)
+            self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name, self.reps)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type, 0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology", candidateTechnology.name, 0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW", candidateTechnology.InstalledPowerInMW, 0)

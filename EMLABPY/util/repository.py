@@ -230,7 +230,7 @@ class Repository:
             total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time,
                                                                                                 self.electricity_spot_markets[
                                                                                                     'DutchElectricitySpotMarket'])
-            # Emission intensity is in ton CO2 / MWh
+            # Emission intensity is in ton CO2 / MWh☺
             emission_intensity = power_plant.calculate_emission_intensity(self)
             res[power_plant.name] = total_capacity * emission_intensity
         return res

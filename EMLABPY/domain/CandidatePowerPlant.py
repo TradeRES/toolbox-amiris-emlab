@@ -2,7 +2,7 @@ from emlabpy.domain.powerplant import *
 import logging
 
 class CandidatePowerPlant(PowerPlant):
-    def __init__(self, name):
+    def __init__(self, name, reps):
         super().__init__(name)
         # results from Amiris
         self.AwardedPowerinMWh = 0

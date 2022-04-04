@@ -42,12 +42,13 @@ try:
                         in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                         if i['parameter_name'] == 'Time Step')
 
-            print('Incrementing Clock (tick +' + str(step) + ')')
+
             previous_tick = next(int(i['parameter_value']) for i
                                  in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                  if i['parameter_name'] == object_parameter_value_name)
-
             new_tick = step + previous_tick
+            print('Incrementing Clock to ' + str(new_tick))
+
             Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
@@ -55,7 +56,6 @@ try:
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
             db_emlab.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + ')')
-
 
     else:
         print('No mode specified.')

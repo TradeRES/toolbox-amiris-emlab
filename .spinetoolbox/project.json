@@ -521,7 +521,10 @@
                 "to": [
                     "Prepare Data Amiris",
                     "left"
-                ]
+                ],
+                "options": {
+                    "use_memory_db": false
+                }
             }
         ],
         "jumps": []
@@ -991,7 +994,7 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -300.36901946301214,
+            "x": -297.699010437977,
             "y": -584.0863419112479,
             "specification": "Initialize clock",
             "execute_in_work": false,
@@ -1002,7 +1005,7 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "initialize_clock"
+                    "arg": "increment_clock"
                 }
             ]
         },
@@ -1096,10 +1099,10 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -527.3132124247899,
-            "y": -47.36705652531278,
+            "x": -524.6432033997546,
+            "y": -48.49659876478984,
             "specification": "Future power plants",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",

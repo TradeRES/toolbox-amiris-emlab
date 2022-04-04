@@ -112,9 +112,7 @@ class SpineDBReaderWriter:
     def stage_power_plant_status(self, power_plant_status):
         #self.stage_object_parameter(power_plant_type, 'Status')
         self.db.import_object_parameter_values(power_plant_status)
-    """
-    All functions from here are old
-    """
+
     """
     Staging functions that are the core for communicating with SpineDB
     
@@ -187,7 +185,6 @@ class SpineDBReaderWriter:
 
     """
     Element specific staging functions
-    
     """
 
     def stage_power_plant_dispatch_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
@@ -206,24 +203,27 @@ class SpineDBReaderWriter:
         self.stage_object(self.financial_reports_object_classname, object_name)
         self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
                                            [('PowerPlant', fr.powerPlant),
-                                            ('latestTick', (fr.time)),
+                                            ('latestTick', (fr.tick)),
                                             ('spotMarketRevenue', (fr.spotMarketRevenue)),
-                                            ('overallRevenue', (fr.overallRevenue)),
-                                            ('production', (fr.production)),
-                                            ('powerPlantStatus', (fr.powerPlantStatus)),
-                                            ('profit', (fr.profit))
-                                            ], '0')
+                                            ('overallRevenue',  Map([str(fr.tick)], [fr.overallRevenue])),
+                                            ('production', Map([str(fr.tick)], [fr.production])),
+                                            ('powerPlantStatus', Map([str(fr.tick)], [fr.powerPlantStatus])),
+                                            ('profit', Map([str(fr.tick)], [fr.profit]))],
+                                           '0')
 
-    def stage_simulated_fuel_prices(self, substance):
+    def stage_simulated_fuel_prices(self, tick, substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", substance.simulatedPrice, '0')])
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [substance.simulatedPrice]) , '0')])
 
-    def stage_future_fuel_prices(self, substance):
+    def stage_future_fuel_prices(self, tick, substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
-        #self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", substance.futurePrice, '0')])
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", Map(["key1", "key2"], [2.3, 5.5]), "0")])
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", Map([str(tick)], [substance.futurePrice]), '0')])
+
+    def get_calculated_future_fuel_prices(self, substance):
+        calculated_future_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "futurePrice", 0)
+        return calculated_future_fuel_prices[0]['parameter_value'].to_dict()
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name

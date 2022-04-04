@@ -10,12 +10,11 @@ class FinancialPowerPlantReport(ImportObject):
 
         super().__init__(name)
         self.powerPlant = None
-        self.spotMarketRevenue = [0 for i in range(reps.simulation_length)]
-        self.overallRevenue = [0 for i in range(reps.simulation_length)]
-        self.production = [0 for i in range(reps.simulation_length)]
-        self.powerPlantStatus = [0 for i in range(reps.simulation_length)]
-        self.profit = [0 for i in range(reps.simulation_length)]
-
+        self.spotMarketRevenue = 0
+        self.overallRevenue = 0
+        self.production = 0
+        self.powerPlantStatus = 0
+        self.profit = 0#[0 for i in range(reps.simulation_length)]
         self.time = 0
         self.iteration = 0
         self.schedule = None
@@ -41,8 +40,8 @@ class FinancialPowerPlantReport(ImportObject):
     def getIteration(self):
         return self.iteration
 
-    def setTime(self, time):
-        self.time = time
+    def setTime(self, tick):
+        self.tick = tick
 
     def setIteration(self, iteration):
         self.iteration = iteration
@@ -56,32 +55,32 @@ class FinancialPowerPlantReport(ImportObject):
     def getSpotMarketRevenue(self, tick):
         return self.spotMarketRevenue[tick]
 
-    def setSpotMarketRevenue(self, spotMarketRevenue, tick):
-        self.spotMarketRevenue[tick] = spotMarketRevenue
+    def setSpotMarketRevenue(self, spotMarketRevenue):
+        self.spotMarketRevenue = spotMarketRevenue
 
     def getOverallRevenue(self, tick):
         return self.overallRevenue[tick]
 
-    def setOverallRevenue(self, overallRevenue, tick):
-        self.overallRevenue[tick] = overallRevenue
+    def setOverallRevenue(self, overallRevenue):
+        self.overallRevenue = overallRevenue
 
     def getProduction(self, tick):
         return self.production[tick]
 
-    def setProduction(self, production, tick):
-        self.production[tick] = production
+    def setProduction(self, production):
+        self.production = production
 
     def getPowerPlantStatus(self, tick):
         return self.powerPlantStatus[tick]
 
-    def setPowerPlantStatus(self, powerPlantStatus, tick):
-        self.powerPlantStatus[tick] = powerPlantStatus
+    def setPowerPlantStatus(self, powerPlantStatus):
+        self.powerPlantStatus= powerPlantStatus
 
     def getProfit(self, tick):
-        return self.profit[tick]
+        return self.profit
 
-    def setProfit(self, profit, tick):
-        self.profit[tick] = profit
+    def setProfit(self, profit):
+        self.profit= profit
 
     def getCommodityCosts(self):
         return self.commodityCosts
