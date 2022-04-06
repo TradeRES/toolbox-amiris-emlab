@@ -31,6 +31,7 @@ run_new_power_plants = False
 run_co2_market = False
 run_investment_module = False
 run_decommission_module = False
+run_prepare_market_module = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 #logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -46,6 +47,8 @@ for arg in sys.argv[3:]:
         run_investment_module = True
     if arg == 'run_decommission_module':
         run_decommission_module = True
+    if arg == 'run_prepare_market':
+        run_prepare_market_module = True
 
 if run_investment_module:
     emlab_url = sys.argv[1]
@@ -87,17 +90,17 @@ try:    # Try statement to always close DB properly
         dismantling.act_and_commit()
         logging.info('End Run dismantle')
 
-    # if run_prepare_market_module:
-    #     logging.info('Start Run dismantle')
-    #     preparingmarket = PrepareMarket(reps)
-    #     preparingmarket.act_and_commit()
-    #     logging.info('End Run dismantle')
+    if run_prepare_market_module:
+        logging.info('Start Run preparing market for next year')
+        preparing_market = PrepareMarket(reps)
+        preparing_market.act_and_commit()
+        logging.info('End Run makret preparation ')
 
     if run_new_power_plants:
         creating_power_plants = FuturePowerPlants(reps)
-        logging.info('Start definition of PP')
+        logging.info('Start definition of future PP')
         creating_power_plants.act_and_commit()
-        logging.info('End Run definition of PP')
+        logging.info('End Run definition of future PP')
 
     if run_capacity_market:
         logging.info('Start Run Capacity Market')

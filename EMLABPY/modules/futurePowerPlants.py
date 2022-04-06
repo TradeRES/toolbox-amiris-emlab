@@ -2,8 +2,10 @@ from emlabpy.domain.CandidatePowerPlant import *
 from emlabpy.modules.defaultmodule import DefaultModule
 import pandas as pd
 
+
 class FuturePowerPlants(DefaultModule):
     """Ths function creates the power plants that will be analyzed as possible investments"""
+
     def __init__(self, reps):
         super().__init__("Define Future Power Plants", reps)
         self.newPowerPlant = None
@@ -12,7 +14,7 @@ class FuturePowerPlants(DefaultModule):
         self.lastconventionalId = 0
         self.laststorageId = 0
         self.futureDemand = None
-        self.futureTimePoint = 0
+        self.futureYear = 0
         self.futureInvestmentyear = 0
         self.futureDemand = None
         self.RESLabel = "VariableRenewableOperator"
@@ -25,37 +27,43 @@ class FuturePowerPlants(DefaultModule):
     def act(self):
         self.setTimeHorizon()
         self.setExpectations()
-     #   self.createCandidatePowerPlants()
+
+    #   self.createCandidatePowerPlants()
 
     def setTimeHorizon(self):
-        self.futureTimePoint = self.reps.current_tick + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
+        self.futureYear = self.reps.current_year + self.reps.energy_producers[
+            self.agent].getInvestmentFutureTimeHorizon()
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            substance.get_price_for_future_tick( self.reps, self.futureTimePoint, substance)
-            self.reps.dbrw.stage_future_fuel_prices(self.futureTimePoint, substance) # todo: save this as a map in DB
-        #self.predictDemand()
-        #self.nextDemand()
+            substance.get_price_for_future_tick(self.reps, self.futureYear, substance)
+            self.reps.dbrw.stage_future_fuel_prices(self.futureYear, substance)  # todo: save this as a map in DB
+        # self.predictDemand()
+        # self.nextDemand()
 
     def createCandidatePowerPlants(self):
         self.getlastIds()
         for key, candidateTechnology in self.reps.newTechnology.items():
             if candidateTechnology.type == self.RESLabel:
-                self.lastrenewableId+=1
+                self.lastrenewableId += 1
                 object_name = self.lastrenewableId
             elif candidateTechnology.type == self.conventionalLabel:
-                self.lastconventionalId+=1
+                self.lastconventionalId += 1
                 object_name = self.lastconventionalId
             elif candidateTechnology.type == self.storageLabel:
-                self.laststorageId+=1
+                self.laststorageId += 1
                 object_name = self.laststorageId
             self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name, self.reps)
-            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type, 0)
-            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology", candidateTechnology.name, 0)
-            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW", candidateTechnology.InstalledPowerInMW, 0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type,
+                                                                            0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology",
+                                                                            candidateTechnology.name, 0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW",
+                                                                            candidateTechnology.InstalledPowerInMW, 0)
             df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
             df.to_excel('forYaml.xlsx')
-            print("New technology " , object_name ,  candidateTechnology.type ,  candidateTechnology.name  , candidateTechnology.InstalledPowerInMW)
+            print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name,
+                  candidateTechnology.InstalledPowerInMW)
             # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
 
     def getlastIds(self):
@@ -75,7 +83,7 @@ class FuturePowerPlants(DefaultModule):
         lastbuiltstorage.sort()
         self.lastrenewableId = lastbuiltrenewable[-1]
         self.lastconventionalId = lastbuiltconventional[-1]
-        if len(lastbuiltstorage) >0: # TODO: give numeration to storage so that it doesnt overlap with renewables
+        if len(lastbuiltstorage) > 0:  # TODO: give numeration to storage so that it doesnt overlap with renewables
             self.laststorageId = lastbuiltstorage[-1]
 
 # def predictFuelPrices(self, agent, futureTimePoint):

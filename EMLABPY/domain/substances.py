@@ -1,6 +1,6 @@
 from emlabpy.domain.import_object import *
 from emlabpy.domain.trends import GeometricTrendRegression
-
+import pandas as pd
 import numpy as np
 import random
 
@@ -36,40 +36,41 @@ class Substance(ImportObject):
         #     self.co2_price = float(parameter_value)
         elif parameter_name == 'annual_resource_limit' and alternative == "biopotential_2020":# TODO take out the hardcoded scenario
             self.resource_limit2020 = float(parameter_value)
-        elif parameter_name == 'trend':
+        elif parameter_name == 'trend': # TODO this will change later
             self.trend = reps.trends[parameter_value]
         elif parameter_name == 'futurePrice':
             self.futurePrice = parameter_value
         elif parameter_name == 'simulatedPrice':
             self.simulatedPrice = parameter_value
 
-    def get_price_for_next_tick(self, tick, substance):
-        if tick == 0 :
-            xp = [20, 40] # TODO avoid this to be hardcoded
+    def get_price_for_next_tick(self, reps, tick, year, substance):
+        if tick == 0:
+            xp = [2020, 2040] # TODO avoid this to be hardcoded
             fp = [substance.initialprice2020, substance.initialprice2040]
-            self.simulatedPrice.append(np.interp(tick + xp[0], xp, fp))
+            self.simulatedPrice = np.interp(year, xp, fp)
             return
         else:
-            while len(self.simulatedPrice) <= tick:
-                last_value = self.simulatedPrice[-1]
-                random_number = random.triangular(-1, 0, 1) # TODO this was (-1,  1, 0 ) for competes integration
-                if random_number < 0:
-                    self.simulatedPrice.append(last_value * (self.trend.top + (random_number * (self.trend.top - self.trend.min))))
-                else:
-                    self.simulatedPrice.append(last_value * (self.trend.top + (random_number * (self.trend.max - self.trend.top))))
-        return
+            calculatedfuturePrices= reps.dbrw.get_calculated_simulated_fuel_prices(substance)
+            df = pd.DataFrame(calculatedfuturePrices['data'])
+            df.set_index(0, inplace=True)
+            last_value = df.loc[str(year - 1)][1]
+            random_number = random.triangular(-1, 0, 1) # TODO this was (-1,  1, 0 ) for competes integration
+            if random_number < 0:
+                newsimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.top - self.trend.min)))
+            else:
+                newsimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.max - self.trend.top)))
+            #print(substance.name , 'lastvalue',last_value , "r " , random_number, "simulated", self.simulatedPrice  )
+        return newsimulatedPrice
 
-    def get_price_for_future_tick(self, reps, futuretick, substance):
-        futuretick
-        print(substance.name , " future tick ", futuretick )
+    def get_price_for_future_tick(self, reps, futureYear, substance):
         if reps.current_tick >= 2:
             self.initializeGeometricTrendRegression(reps, substance)
-            self.futurePrice = self.geometricRegression.predict(futuretick)
+            self.futurePrice = self.geometricRegression.predict(futureYear)
             return
         else:
-            xp = [0, 20] # this is the difference between 2020 and 2040
+            xp = [2020, 2040] # todo: hard coded
             fp = [substance.initialprice2020, substance.initialprice2040]
-            self.futurePrice = np.interp(futuretick, xp, fp)
+            self.futurePrice = np.interp(futureYear, xp, fp)
             return
 
     def initializeGeometricTrendRegression(self, reps, substance):

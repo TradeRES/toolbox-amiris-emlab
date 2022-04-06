@@ -79,6 +79,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/test_tool.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/increment_clock.json"
                 }
             ],
             "Importer": [
@@ -522,9 +527,27 @@
                     "Prepare Data Amiris",
                     "left"
                 ],
+                "resource_filters": {
+                    "db_url@EmlabDB": {
+                        "scenario_filter": [
+                            3
+                        ]
+                    }
+                },
                 "options": {
                     "use_memory_db": false
                 }
+            },
+            {
+                "name": "from increment Clock to EmlabDB",
+                "from": [
+                    "increment Clock",
+                    "left"
+                ],
+                "to": [
+                    "EmlabDB",
+                    "right"
+                ]
             }
         ],
         "jumps": []
@@ -994,8 +1017,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -297.699010437977,
-            "y": -584.0863419112479,
+            "x": -389.68976601177417,
+            "y": -659.4705851502417,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1005,15 +1028,15 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "increment_clock"
+                    "arg": "initialize_clock"
                 }
             ]
         },
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -546.2249200125998,
-            "y": -382.6813769280151,
+            "x": -547.5678233995131,
+            "y": -381.3384735411017,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1154,6 +1177,24 @@
             "specification": "test tool",
             "execute_in_work": true,
             "cmd_line_args": []
+        },
+        "increment Clock": {
+            "type": "Tool",
+            "description": "",
+            "x": -207.5401192823474,
+            "y": -659.6410277730823,
+            "specification": "increment clock",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "increment_clock"
+                }
+            ]
         }
     }
 }

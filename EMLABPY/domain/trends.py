@@ -178,12 +178,11 @@ class GeometricTrendRegression(Trend):
         #self.X = np.array(x)
         #self.Y = np.array(logy)
 
-    def predict(self, X_test):
+    def predict(self, predictedYear):
         regr = linear_model.LinearRegression()
         regr.fit(self.X, self.Y)
-        y_pred = regr.predict([[X_test]])
-
-        print('y_pred', y_pred[0][0])
+        y_pred = regr.predict([[predictedYear]])
+        print(self.X, self.Y, "predictedYear", predictedYear, 'y_pred', y_pred[0][0])
         return y_pred[0][0] # todo before it was math.exp(y)
 
     # def removeData(self, x, y):

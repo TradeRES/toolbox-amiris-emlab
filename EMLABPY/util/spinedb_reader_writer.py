@@ -211,10 +211,10 @@ class SpineDBReaderWriter:
                                             ('profit', Map([str(fr.tick)], [fr.profit]))],
                                            '0')
 
-    def stage_simulated_fuel_prices(self, tick, substance):
+    def stage_simulated_fuel_prices(self, tick, price ,substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [substance.simulatedPrice]) , '0')])
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [price]) , '0')])
 
     def stage_future_fuel_prices(self, tick, substance):
         object_name = substance.name
@@ -224,6 +224,10 @@ class SpineDBReaderWriter:
     def get_calculated_future_fuel_prices(self, substance):
         calculated_future_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "futurePrice", 0)
         return calculated_future_fuel_prices[0]['parameter_value'].to_dict()
+
+    def get_calculated_simulated_fuel_prices(self, substance):
+        calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "simulatedPrice", 0)
+        return calculated_fuel_prices[0]['parameter_value'].to_dict()
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name
