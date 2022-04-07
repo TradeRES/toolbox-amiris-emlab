@@ -34,8 +34,6 @@ class SpineDBReaderWriter:
         if run_module == "run_investment_module":
             self.amirisdb = SpineDB(db_urls[1])
 
-
-
     def read_db_and_create_repository(self) -> Repository:
         """
         This function add all info from EMLAB DB to REPOSITORY
@@ -87,8 +85,6 @@ class SpineDBReaderWriter:
 
         return reps
 
-
-
     # def stage_cashflow_PowerPlant(self, current_tick: int):
     #     self.stage_init_alternative("0")
     #     self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
@@ -107,7 +103,6 @@ class SpineDBReaderWriter:
     #             reps.end_simulation_year = int(row['parameter_value'])
     #         elif row['parameter_name'] == 'Look Ahead':
     #             reps.lookAhead = int(row['parameter_value'])
-
 
     def stage_power_plant_status(self, power_plant_status):
         #self.stage_object_parameter(power_plant_type, 'Status')
@@ -211,15 +206,17 @@ class SpineDBReaderWriter:
                                             ('profit', Map([str(fr.tick)], [fr.profit]))],
                                            '0')
 
-    def stage_simulated_fuel_prices(self, tick, price ,substance):
+    def stage_simulated_fuel_prices(self, tick, price, substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
+        #print(self.fuel_classname, substance.name, "simulatedPrice", tick,"-", type(price), price)
         self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [price]) , '0')])
 
-    def stage_future_fuel_prices(self, tick, substance):
+
+    def stage_future_fuel_prices(self, year, substance, futurePrice):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", Map([str(tick)], [substance.futurePrice]), '0')])
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", Map([str(year)], [futurePrice]), '0')])
 
     def get_calculated_future_fuel_prices(self, substance):
         calculated_future_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "futurePrice", 0)

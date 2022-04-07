@@ -4,5 +4,6 @@ amiris/
 scripts/amiris-jar-with-dependencies.jar
 scripts/amiris-jar-with-dependencies2.jar
 data/powerplantsGermany/
+emlabpy/logs
 test.py
 test2.py

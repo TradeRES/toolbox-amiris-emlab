@@ -36,8 +36,8 @@ class FuturePowerPlants(DefaultModule):
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            substance.get_price_for_future_tick(self.reps, self.futureYear, substance)
-            self.reps.dbrw.stage_future_fuel_prices(self.futureYear, substance)  # todo: save this as a map in DB
+            futureprice = substance.get_price_for_future_tick(self.reps, self.futureYear, substance)
+            self.reps.dbrw.stage_future_fuel_prices(self.futureYear, substance, futureprice)  # todo: save this as a map in DB
         # self.predictDemand()
         # self.nextDemand()
 

@@ -9,7 +9,7 @@ class PrepareMarket(DefaultModule):
         self.year = 0
         self.fuel_price = 0
 
-    def act_and_commit(self):
+    def act(self):
         self.setTimeHorizon()
         self.setExpectations()
 
@@ -20,4 +20,4 @@ class PrepareMarket(DefaultModule):
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
             self.fuel_price  = substance.get_price_for_next_tick( self.reps,  self.tick, self.year, substance)
-            self.reps.dbrw.stage_simulated_fuel_prices(self.year, self.fuel_price, substance  )
+            self.reps.dbrw.stage_simulated_fuel_prices(self.year, self.fuel_price, substance)

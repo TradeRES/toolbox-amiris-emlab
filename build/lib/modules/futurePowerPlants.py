@@ -21,6 +21,7 @@ class FuturePowerPlants(DefaultModule):
         reps.dbrw.stage_init_next_prices_structure()
         reps.dbrw.stage_init_future_prices_structure()
         self.agent = "Producer1"
+        self.newFuturePrice = 0
 
     def act(self):
         print("here")
@@ -33,11 +34,8 @@ class FuturePowerPlants(DefaultModule):
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            substance.get_price_for_future_tick(self.reps, self.reps.current_tick , self.futureTimePoint, substance)
-            self.reps.dbrw.stage_future_fuel_prices(substance) # todo: save this as a map in DB
-
-        #self.predictDemand()
-        #self.nextDemand()
+            self.newFuturePrice = substance.get_price_for_future_tick(self.reps, self.reps.current_tick , self.futureTimePoint, substance)
+            self.reps.dbrw.stage_future_fuel_prices(substance, self.newFuturePrice) # todo: save this as a map in DB
 
     def createCandidatePowerPlants(self):
         self.getlastIds()

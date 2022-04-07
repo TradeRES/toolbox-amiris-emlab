@@ -3,6 +3,8 @@ This file contains all Trend classes: mathematical definitions of functions.
 
 Jim Hommes - 13-5-2021
 """
+from random import random
+
 from emlabpy.domain.import_object import *
 
 import math
