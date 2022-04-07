@@ -4,7 +4,9 @@ import pandas as pd
 
 
 class FuturePowerPlants(DefaultModule):
-    """Ths function creates the power plants that will be analyzed as possible investments"""
+    """Ths function creates the power plants that will be analyzed as possible investments
+        creates the Candidate Power Plants
+    """
 
     def __init__(self, reps):
         super().__init__("Define Future Power Plants", reps)
@@ -20,15 +22,15 @@ class FuturePowerPlants(DefaultModule):
         self.RESLabel = "VariableRenewableOperator"
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
-        reps.dbrw.stage_init_next_prices_structure()
         reps.dbrw.stage_init_future_prices_structure()
         self.agent = "Producer1"
+        self.powerPlantsList = []
+        self.iteration = 0
 
     def act(self):
         self.setTimeHorizon()
         self.setExpectations()
-
-    #   self.createCandidatePowerPlants()
+        self.createCandidatePowerPlants()
 
     def setTimeHorizon(self):
         self.futureYear = self.reps.current_year + self.reps.energy_producers[
@@ -43,6 +45,11 @@ class FuturePowerPlants(DefaultModule):
 
     def createCandidatePowerPlants(self):
         self.getlastIds()
+        self.iteration = self.reps.dbrw.get_last_iteration( self.futureYear)
+        if self.iteration > 0: # if there was no iteration before leave it as zero
+            self.iteration += 1
+        self.reps.dbrw.stage_init_power_plants_list(self.iteration)
+
         for key, candidateTechnology in self.reps.newTechnology.items():
             if candidateTechnology.type == self.RESLabel:
                 self.lastrenewableId += 1
@@ -53,17 +60,21 @@ class FuturePowerPlants(DefaultModule):
             elif candidateTechnology.type == self.storageLabel:
                 self.laststorageId += 1
                 object_name = self.laststorageId
-            self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name, self.reps)
+            self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type,
                                                                             0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology",
                                                                             candidateTechnology.name, 0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW",
                                                                             candidateTechnology.InstalledPowerInMW, 0)
-            df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
-            df.to_excel('forYaml.xlsx')
-            print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name,
-                  candidateTechnology.InstalledPowerInMW)
+            print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name, candidateTechnology.InstalledPowerInMW)
+
+            self.powerPlantsList.append(object_name)
+        #df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
+        #df.to_excel('forYaml.xlsx')
+        print(self.powerPlantsList, self.iteration, self.futureYear)
+        self.reps.dbrw.stage_new_power_plants_ids( self.powerPlantsList, self.iteration, self.futureYear)
+
             # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
 
     def getlastIds(self):

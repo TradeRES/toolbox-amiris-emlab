@@ -2,7 +2,7 @@ from emlabpy.domain.powerplant import *
 import logging
 
 class CandidatePowerPlant(PowerPlant):
-    def __init__(self, name, reps):
+    def __init__(self, name):
         super().__init__(name)
         # results from Amiris
         self.AwardedPowerinMWh = 0
@@ -24,7 +24,6 @@ class CandidatePowerPlant(PowerPlant):
         self.Lifetime = 0
         self.InvestedCapital = 0
         self.FixedOperatingCost = 0
-
         self.viableInvestment = False
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
@@ -88,8 +87,6 @@ class CandidatePowerPlant(PowerPlant):
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
                                         round(random() * self.technology.expected_lifetime)) + 2
-
-
 
 class FutureStorageTrader(ImportObject):
     def __init__(self, name):

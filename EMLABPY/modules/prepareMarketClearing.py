@@ -8,6 +8,7 @@ class PrepareMarket(DefaultModule):
         self.tick = 0
         self.year = 0
         self.fuel_price = 0
+        reps.dbrw.stage_init_next_prices_structure()
 
     def act(self):
         self.setTimeHorizon()

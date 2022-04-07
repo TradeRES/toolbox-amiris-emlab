@@ -60,7 +60,6 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'type':
             self.type = parameter_value
         #From here are the inputs from emlab electricity = traderes
-
         elif parameter_name == 'annuity':
             self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':

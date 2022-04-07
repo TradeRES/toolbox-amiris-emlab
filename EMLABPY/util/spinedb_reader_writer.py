@@ -26,6 +26,7 @@ class SpineDBReaderWriter:
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
+        self.candidate_power_plants_list_classname = "CandidatePowerPlantsList"
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
@@ -43,9 +44,7 @@ class SpineDBReaderWriter:
         reps.dbrw = self
         db_data = self.db.export_data()
         self.stage_init_alternative("0")
-        # todo: later this should not be hardcoded
-        #candidatePowerPlants = [i[0] for i in db_amirisdata["alternatives"]]
-        candidatePowerPlants = [503, 49]
+
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
@@ -60,6 +59,10 @@ class SpineDBReaderWriter:
                 reps.lookAhead = int(row['parameter_value'])
             elif row['parameter_name'] == 'CurrentYear':
                 reps.current_year = int(row['parameter_value'])
+
+        candidatePowerPlants = [str(503),  str(49)]         # todo: later this should not be hardcoded
+        # if reps.current_tick > 0:
+        #     candidatePowerPlants = self.getlistofpowerplants()
 
         parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
                                 in self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration", "priority")}
@@ -175,6 +178,10 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.fuel_classname)
         self.stage_object_parameters(self.fuel_classname, ['futurePrice'])
 
+    def stage_init_power_plants_list(self, iteration ):
+        self.stage_object_class(self.candidate_power_plants_list_classname)
+        self.stage_object_parameters(self.candidate_power_plants_list_classname, [str(iteration)]) # parameter name = iteration
+
     def stage_init_alternative(self, current_tick: int):
         self.db.import_alternatives([str(current_tick)])
 
@@ -212,7 +219,6 @@ class SpineDBReaderWriter:
         #print(self.fuel_classname, substance.name, "simulatedPrice", tick,"-", type(price), price)
         self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [price]) , '0')])
 
-
     def stage_future_fuel_prices(self, year, substance, futurePrice):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
@@ -225,6 +231,21 @@ class SpineDBReaderWriter:
     def get_calculated_simulated_fuel_prices(self, substance):
         calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "simulatedPrice", 0)
         return calculated_fuel_prices[0]['parameter_value'].to_dict()
+
+    def stage_new_power_plants_ids(self, powerPlantsList, iteration, futureYear):
+        object_name = str(futureYear)
+        parameter_name = str(iteration)
+        self.stage_object(self.candidate_power_plants_list_classname, object_name)
+        self.db.import_object_parameter_values([(self.candidate_power_plants_list_classname, object_name, parameter_name, powerPlantsList, "0")])
+
+
+    def get_last_iteration(self, year):
+        last = self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year)
+        if not last:
+            lastiteration = 0
+        else:
+            lastiteration = max(int(i['parameter_name']) for i in self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year))
+        return lastiteration
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name

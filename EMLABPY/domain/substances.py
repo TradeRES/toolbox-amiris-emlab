@@ -47,8 +47,8 @@ class Substance(ImportObject):
 
     def get_price_for_next_tick(self, reps, tick, year, substance):
         if tick == 0:
-            if substance.name == "electricity": # set electricity demand change as 1 for the first year.
-                self.newSimulatedPrice = np.float64(1.0)
+            if substance.name == "electricity":
+                self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year.
             else:
                 xp = [2020, 2040] # TODO avoid this to be hardcoded
                 fp = [substance.initialprice2020, substance.initialprice2040]
