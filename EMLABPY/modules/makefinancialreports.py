@@ -24,6 +24,7 @@ class CreatingFinancialReports(DefaultModule):
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWithConstructionStartTimeInTick(self.reps.current_tick), self.reps.current_tick)
 
     def createFinancialReportsForPowerPlantsAndTick(self, plants, tick):
+        financialPowerPlantReports = []
         for plant in plants.values():
             financialPowerPlantReport = FinancialPowerPlantReport(plant.name, self.reps)
             financialPowerPlantReport.setTime(tick)
@@ -40,7 +41,8 @@ class CreatingFinancialReports(DefaultModule):
                 operationalStatus = "decommissioned"
 
             financialPowerPlantReport.setPowerPlantStatus(operationalStatus)
-            self.reps.dbrw.stage_financial_results(financialPowerPlantReport)
+            financialPowerPlantReports.append(financialPowerPlantReport)
+        self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
             # if plant.getFuelMix() is None:
             #     plant.setFuelMix(java.util.HashSet())

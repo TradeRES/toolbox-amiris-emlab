@@ -126,6 +126,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/import_time_series_example.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/technology_potential_and_capacities.json"
                 }
             ],
             "Exporter": [
@@ -195,17 +200,6 @@
                 ],
                 "to": [
                     "AMIRIS",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Scenario_gas to run config gas",
-                "from": [
-                    "Scenario_gas",
-                    "right"
-                ],
-                "to": [
-                    "run config gas",
                     "left"
                 ]
             },
@@ -548,6 +542,39 @@
                     "EmlabDB",
                     "right"
                 ]
+            },
+            {
+                "name": "from Traderes Excel to traderesExcel to DB",
+                "from": [
+                    "Traderes Excel",
+                    "right"
+                ],
+                "to": [
+                    "traderesExcel to DB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from traderesExcel to DB to EmlabDB",
+                "from": [
+                    "traderesExcel to DB",
+                    "right"
+                ],
+                "to": [
+                    "EmlabDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Scenario_gas to run config gas",
+                "from": [
+                    "Scenario_gas",
+                    "right"
+                ],
+                "to": [
+                    "run config gas",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -635,8 +662,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 632.8336540433168,
-            "y": 14.182185897604455,
+            "x": 632.8336540433166,
+            "y": 12.4298464604015,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -882,13 +909,13 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1169.5741517998324,
-            "y": -277.91211634994556,
+            "x": -1184.9253015379356,
+            "y": -299.40372598329026,
             "file_references": [
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/EMLAB parameters.xls.xlsx"
+                    "path": "data/EMLAB parameters.xlsx"
                 }
             ],
             "db_references": []
@@ -896,15 +923,15 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -878.2105222413478,
-            "y": -236.61137391727382,
+            "x": -939.0423224069153,
+            "y": -291.15022923812734,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/data/EMLAB parameters.xls.xlsx",
+                    "<project>/data/EMLAB parameters.xlsx",
                     true
                 ]
             ]
@@ -912,8 +939,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1152.9391295052194,
-            "y": -640.2390882068099,
+            "x": -1219.5280281189316,
+            "y": -717.34202344374,
             "file_references": [
                 {
                     "type": "path",
@@ -933,8 +960,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -939.9387626355443,
-            "y": -559.9877260423393,
+            "x": -976.7378908168064,
+            "y": -649.3570373396901,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -971,8 +998,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1063.0599288793314,
-            "y": -35.98632668014923,
+            "x": -1182.2190106091327,
+            "y": -169.16412390757395,
             "file_references": [
                 {
                     "type": "path",
@@ -985,8 +1012,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -918.8729701861433,
-            "y": -69.14382668141852,
+            "x": -955.6720983674055,
+            "y": -181.2935506624078,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1035,8 +1062,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -547.5678233995131,
-            "y": -381.3384735411017,
+            "x": -556.1344993853858,
+            "y": -390.4534086988996,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1181,8 +1208,8 @@
         "increment Clock": {
             "type": "Tool",
             "description": "",
-            "x": -207.5401192823474,
-            "y": -659.6410277730823,
+            "x": -229.03172891569204,
+            "y": -624.3333833754447,
             "specification": "increment clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1194,6 +1221,36 @@
                     "type": "literal",
                     "arg": "increment_clock"
                 }
+            ]
+        },
+        "Traderes Excel": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -1240.6563215396934,
+            "y": -564.2532987793521,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/TradeRES_D2_1_Scenario_data_Corrected.xlsx"
+                }
+            ],
+            "db_references": []
+        },
+        "traderesExcel to DB": {
+            "type": "Importer",
+            "description": "",
+            "x": -979.5577453964529,
+            "y": -539.7205466585109,
+            "specification": "technology potential and capacities",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "<project>/data/TradeRES_D2_1_Scenario_data_Corrected.xlsx",
+                    true
+                ]
             ]
         }
     }

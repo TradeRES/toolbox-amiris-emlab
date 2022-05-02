@@ -20,11 +20,10 @@ class Investmentdecision(DefaultModule):
     """
     The class that decides to invest in some technologies
     """
-
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Investment decisions', reps)
         self.expectedInstalledCapacityOfTechnology = 0
-        self.expectedInstalledCapacityOfTechnologyInNode = 0
+        #self.expectedInstalledCapacityOfTechnologyInNode = 0
         # self.expectedOwnedTotalCapacityInMarket = 0
         # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
         self.capacityOfTechnologyInPipeline = 0
@@ -48,22 +47,27 @@ class Investmentdecision(DefaultModule):
         self.setTimeHorizon()
         #TODO if there would be more agents, the future capacity should be analyzed per agent
         #for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
-
         bestPlant = None
         highestValue = 0
+        # calculate which is the power plant with the highest NPV
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
-
-            futurecapacity = FutureCapacityExpectation(self.reps)
-            futurecapacity.calculate(candidatepowerplant)
-
+            #futurecapacity = FutureCapacityExpectation(self.reps) # inner class is over complicated so transformed to method
+            self.calculateFutureCapacityExpectation(candidatepowerplant)
             agent = self.reps.energy_producers[self.agent]
             projectvalue = self.getProjectValue( candidatepowerplant, agent)
             print("projectvalue", projectvalue)
             if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                 highestValue = projectvalue / candidatepowerplant.capacity
                 bestPlant = candidatepowerplant
-        print("bestPlant is " , bestPlant )
+        print("bestPlant is " , bestPlant)
+        if bestPlant is not None:
+            # build the power plant
+            milli_sec = int(round(time.time() * 1000))
+            newplant = PowerPlant(milli_sec)
+            plant = PowerPlant.specifyPowerPlant(self.reps.current_tick, self.agent, self.reps.country, bestPlant.actualNominalCapacity , pgt)
+            # todo add it to the traderes db
+
 
     def setTimeHorizon(self):
         self.futureTimePoint = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
@@ -99,7 +103,7 @@ class Investmentdecision(DefaultModule):
     def getinvestmentcosts(self, investmentCostperTechnology,time):
         return pow(1.05, time) * investmentCostperTechnology
 
-    def checkAllBudget(self, downPayment, budget, year): # TODO
+    def checkAllBudget(self, downPayment, budget, year): # TODO check the budget of all power plants
         if year == 1:
             budget_number = budget + budget_year0
             budget_number = budget_number - df_debt.loc[year].sum()
@@ -152,41 +156,40 @@ class Investmentdecision(DefaultModule):
 
     def setMarketInformation(self, marketInformation):
         self.marketInformation = marketInformation
+#
+# class FutureCapacityExpectation():
+#     def __init__(self, reps):
+#         #super().__init__(reps)
+#         self.expectedInstalledCapacityOfTechnology = 0
+#         #self.expectedInstalledCapacityOfTechnologyInNode = 0
+#         self.expectedOwnedTotalCapacityInMarket = 0
+#         self.expectedOwnedCapacityInMarketOfThisTechnology = 0
+#         self.capacityOfTechnologyInPipeline = 0
+#         self.operationalCapacityOfTechnology = 0
+#         self.capacityInPipelineInMarket = 0
+#         self.reps = reps
 
-class FutureCapacityExpectation(Investmentdecision):
-    def __init__(self, reps):
-        super().__init__(reps)
-        # self.technology = technology
-        # self.plant = plant
-        # self.location = None
-        self.expectedInstalledCapacityOfTechnology = 0
-        self.expectedInstalledCapacityOfTechnologyInNode = 0
-        self.expectedOwnedTotalCapacityInMarket = 0
-        self.expectedOwnedCapacityInMarketOfThisTechnology = 0
-        self.capacityOfTechnologyInPipeline = 0
-        self.operationalCapacityOfTechnology = 0
-        self.capacityInPipelineInMarket = 0
-        self.reps = reps
-
-    def findLimitsByTechnologyAndNode(self, candidatepowerplant):
-        LimitinCountry = candidatepowerplant.technology.maximum_installed_capacity_fraction_in_country
-        if LimitinCountry:
-            return LimitinCountry
-        else:
-            return 100000000000 # if there is no declared limit, use a very high number
-
-    def calculate(self, candidatepowerplant):
-            CandidatePowerPlant.specifyTemporaryPowerPlant(candidatepowerplant, self.reps.current_year, self.agent, "DE")
+    def calculateFutureCapacityExpectation(self, candidatepowerplant):
+            # TODO the specification should have happened before
+            CandidatePowerPlant.specifyTemporaryPowerPlant(candidatepowerplant, self.reps.current_year, self.agent, self.reps.node)
             print(candidatepowerplant)
-            technologyCapacityLimit = self.findLimitsByTechnologyAndNode(candidatepowerplant)
-            self.expectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(candidatepowerplant.technology, self.futureInvestmentyear)
+            technology = candidatepowerplant.technology
 
-            technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnologyAndMarket(technology, market)
+            technologyCapacityLimit = self.findLimitsByTechnology(technology)
+            self.expectedInstalledCapacityOfTechnology = \
+                self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(technology, self.futureInvestmentyear)
+
+            technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology, )
             if technologyTarget is not None:
+                #
                 technologyTargetCapacity = technologyTarget.getTrend().getValue(futureTimePoint)
-                self.expectedInstalledCapacityOfTechnology = technologyTargetCapacity if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology) else self.expectedInstalledCapacityOfTechnology
-            #
-            self.expectedInstalledCapacityOfTechnologyInNode = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(plant.getLocation(),technology, futureTimePoint)
+                if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology):
+                    self.expectedInstalledCapacityOfTechnology = technologyTargetCapacity
+                else:
+                    self.expectedInstalledCapacityOfTechnology = self.expectedInstalledCapacityOfTechnology
+
+
+           # self.expectedInstalledCapacityOfTechnologyInNode = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsByNodeAndTechnology(plant.getLocation(),technology, futureTimePoint)
 
             self.expectedOwnedTotalCapacityInMarket = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsInMarketByOwner(market, futureTimePoint, agent)
 
@@ -200,20 +203,9 @@ class FutureCapacityExpectation(Investmentdecision):
 
             self.check()
 
-
-
-#Returns the Node Limit by Technology or the max double numer if none was found
-
-    def calculateNodeLimit(self):
-        pgtLimit = getReps().findOneByTechnologyAndNode(self.technology, self.node)
-        if pgtLimit is not None:
-            self.pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint)
-
     def check(self):
         if (self.expectedInstalledCapacityOfTechnology + self.plant.getActualNominalCapacity()) / (marketInformation.maxExpectedLoad + self.plant.getActualNominalCapacity()) > self.technology.getMaximumInstalledCapacityFractionInCountry():
             logger.log(Level.FINER, agent + " will not invest in {} technology because there's too much of this type in the market", self.technology)
-        elif (self.expectedInstalledCapacityOfTechnologyInNode + self.plant.getActualNominalCapacity()) > self.pgtNodeLimit:
-            pass
         elif self.expectedOwnedCapacityInMarketOfThisTechnology > self.expectedOwnedTotalCapacityInMarket * self.technology.getMaximumInstalledCapacityFractionPerAgent():
             logger.log(Level.FINER, agent + " will not invest in {} technology because there's too much capacity planned by him", self.technology)
         elif self.capacityInPipelineInMarket > 0.2 * marketInformation.maxExpectedLoad:
@@ -225,6 +217,21 @@ class FutureCapacityExpectation(Investmentdecision):
         else:
             logger.log(Level.FINER, self.technology + " passes capacity limit. " + agent + " will now calculate financial viability.")
             self.setViableInvestment(True)
+
+    def findLimitsByTechnology(self, technology):
+        LimitinCountry = technology.getMaximumCapacityinCountry()
+        if LimitinCountry:
+            return LimitinCountry
+        else:
+            return 100000000000 # if there is no declared limit, use a very high number
+
+#Returns the Node Limit by Technology or the max double numer if none was found
+
+    def calculateNodeLimit(self):
+        pgtLimit = getReps().findOneByTechnologyAndNode(self.technology, self.node)
+        if pgtLimit is not None:
+            self.pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint)
+
 
     def isViableInvestment(self):
         return self.viableInvestment

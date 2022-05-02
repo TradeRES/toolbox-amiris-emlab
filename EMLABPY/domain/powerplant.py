@@ -12,14 +12,14 @@ class PowerPlant(ImportObject):
         super().__init__(name)
         self.name = name
         self.technology = None
-        self.location = None
-        self.age = 0
-        self.owner = None
+        self.location = "DE"
+        self.age = None
+        self.owner = "EnergyProducer1" # change if there are more energyproducers
         self.capacity = 0
         self.efficiency = 0
         # TODO: Implement GetActualEfficiency
         self.banked_allowances = [0 for i in range(100)]
-        self.status = 'NOTSET'
+        self.status = 'NOTSET' # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.loan = None
         self.downpayment = None
         self.dismantleTime = 0
@@ -41,6 +41,7 @@ class PowerPlant(ImportObject):
         # from Amiris
         self.chargingEfficiency = 0
         # from Amiris results
+        self.subsidized = False
         self.AwardedPowerinMWh = 0
         self.CostsinEUR = 0
         self.OfferedPowerinMWH = 0
@@ -54,14 +55,23 @@ class PowerPlant(ImportObject):
 
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'Id':
+        if parameter_name == 'Status':
+            if parameter_value != 'Decommissioned': # do not import decommissioned power plants to the repository
+                self.status = parameter_value
+        elif parameter_name == 'Efficiency':
+            self.actualEfficiency = float(parameter_value)
+        elif parameter_name == 'Location':
+            self.location = parameter_value
+        elif parameter_name == 'Id':
             self.name = parameter_value
         if parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'InstalledPowerInMW':
             self.capacity = parameter_value
         elif parameter_name == 'Owner':
-            self.owner = parameter_value
+             self.owner = parameter_value
+        elif parameter_name == 'Age':
+            self.age = parameter_value     # for amiris data the age can be read from the commisioned year
         elif parameter_name == 'ComissionedYear':
             self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
             self.commissionedYear = int(parameter_value)
@@ -88,25 +98,45 @@ class PowerPlant(ImportObject):
         elif parameter_name == 'SelfDischargeRatePerHour':
             self.selfDischargeRatePerHour = float(parameter_value)
 
-    #createPowerPlant
-    def specifyPowerPlantsforFirstTick(self, tick, energyProducer, location):
+    #createPowerPlant from target investment or from investment algorithm
+    def specifyPowerPlant(self, tick, energyProducer, location, capacity, pgt ):
+        self.setCapacity(capacity)
+        self.setTechnology(pgt)
+        self.specifyPowerPlantsInstalled(tick, energyProducer, location)
+        self.commissionedYear = self.reps.current_year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
+
+    #createPowerPlant from initial database
+    def specifyPowerPlantsInstalled(self, tick, energyProducer, location):     # TODO add this information to the database
         self.setOwner(energyProducer)
         self.setLocation(location)
-        self.setConstructionStartTime()
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
-        #self.setHistoricalCvarDummyPlant(False)
         self.setActualNominalCapacity(self.getCapacity())
-        self.setDismantleTime(1000)
+        self.setConstructionStartTime() # minus years, considering the age, permit and lead time
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
+        self.setDismantleTime(1000) # TODO why first set to 1000?
+
         if self.dismantleTime < 1000:
             self.setExpectedEndOfLife = self.dismantleTime
         else:
             self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
         return self
+
+
+    def setPowerPlantsStatusforFirstTick(self):
+        if self.age is not None:
+            if self.age >= self.technology.expected_lifetime:
+                self.status = "TobeDecommissioned"
+            else:
+                self.status = "Operational"
+        else:
+
+            print("power plant dont have an age ", self.name)
+
+    def addoneYeartoAge(self):
+        self.age =+ 1
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
@@ -238,7 +268,6 @@ class PowerPlant(ImportObject):
         return True
 
     def calculateAndSetActualInvestedCapital(self, timeOfPermitorBuildingStart):
-
         self.setActualInvestedCapital(self.technology.getInvestmentCost(timeOfPermitorBuildingStart + self.getActualPermittime() + self.getActualLeadtime()) * self.get_actual_nominal_capacity())
 
 # the growth trend
@@ -285,8 +314,8 @@ class PowerPlant(ImportObject):
     def calculateCO2EmissionsAtTime(self, time, forecast):
         return self.calculateEmissionIntensity() * self.calculateElectricityOutputAtTime(time, forecast)
 
-    def dismantlePowerPlant(self, time):
-        self.setDismantleTime(time)
+    # def dismantlePowerPlant(self, time):
+    #     self.setDismantleTime(time)
 
     def createOrUpdateLoan(self, loan):
         self.setLoan(loan)
@@ -342,13 +371,16 @@ class PowerPlant(ImportObject):
     def getOwner(self):
         return self.owner
 
-    def setConstructionStartTime(self):
+    def setConstructionStartTime(self): # in terms of tick
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
                                         self.age)
 
     def getCapacity(self):
         return self.capacity
+
+    def setCapacity(self, capacity):
+        self.capacity = capacity
 
     def getConstructionStartTime(self):
         return self.constructionStartTime

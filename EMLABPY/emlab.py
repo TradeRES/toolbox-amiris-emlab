@@ -74,10 +74,16 @@ try:    # Try statement to always close DB properly
     payment_and_bank_co2 = PayAndBankCO2Allowances(reps)
     use_co2_allowances = UseCO2Allowances(reps)
     market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
-    for p, v in reps.power_plants.items():
-        v.specifyPowerPlantsforFirstTick( 0 , "Producer1", "DE")
-    financial_report = CreatingFinancialReports(reps)
- #   financial_report.act_and_commit()
+    # for the first year, specify the
+    for p, power_plant in reps.power_plants.items():
+        if reps.current_tick > 0:
+            power_plant.addoneYeartoAge()
+        else:
+            power_plant.specifyPowerPlantsInstalled( 0 , "Producer1", "DE") # TODO this shouldn't be hard coded
+
+
+    #financial_report = CreatingFinancialReports(reps)
+    #financial_report.act_and_commit() # TODO make faster
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('End Initialization Modules')
 
@@ -94,7 +100,7 @@ try:    # Try statement to always close DB properly
         logging.info('Start Run preparing market for next year')
         preparing_market = PrepareMarket(reps)
         preparing_market.act_and_commit()
-        logging.info('End Run makret preparation ')
+        logging.info('End Run market preparation ')
 
     if run_new_power_plants:
         creating_power_plants = FuturePowerPlants(reps)
