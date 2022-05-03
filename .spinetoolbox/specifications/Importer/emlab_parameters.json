@@ -409,11 +409,11 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden"
+                                "position": "header"
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden"
+                                "position": 0
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -429,8 +429,11 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "trends"
+                                "position": "table_name",
+                                "value": "FuelPriceTrends",
+                                "skip_columns": [
+                                    4
+                                ]
                             },
                             {
                                 "map_type": "Object",
@@ -570,45 +573,6 @@
                     }
                 }
             ],
-            "Import Priorities": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Configuration",
-                                "read_start_row": 1
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "NewTechnologies": [
                 {
                     "Mapping 1": {
@@ -669,17 +633,157 @@
                         ]
                     }
                 }
+            ],
+            "COMPETESfuelPrices": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dutchGermanPlants2015_from_emla": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled",
+                                "skip_columns": [
+                                    1
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dictTech": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dictFuel": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "TechnologiesEmlabTemporal": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "unit"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "emlab-temporal"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "CapacityMarkets",
             "EnergyProducers",
+            "StepTrends",
             "FuelPriceTrends",
             "TechnologiesEmlab",
-            "Fuels",
-            "Import Priorities",
             "NewTechnologies",
-            "not chosen technologies"
+            "COMPETESfuelPrices",
+            "dutchGermanPlants2015_from_emla",
+            "TechnologiesEmlabTemporal"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -699,9 +803,13 @@
             "explanation": {},
             "TechnologiesEmlab": {},
             "Fuels": {},
-            "Import Priorities": {},
             "NewTechnologies": {},
-            "not chosen technologies": {}
+            "not chosen technologies": {},
+            "COMPETESfuelPrices": {},
+            "dutchGermanPlants2015_from_emla": {},
+            "dictTech": {},
+            "dictFuel": {},
+            "TechnologiesEmlabTemporal": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -800,7 +908,12 @@
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float"
+                "4": "float",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string"
             },
             "TargetInvestors": {
                 "0": "string",
@@ -817,7 +930,12 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float"
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float"
             },
             "TechnologiesEmlab": {
                 "0": "string",
@@ -850,10 +968,6 @@
                 "4": "float",
                 "5": "float"
             },
-            "Import Priorities": {
-                "0": "string",
-                "1": "float"
-            },
             "explanation": {
                 "0": "string",
                 "1": "string",
@@ -869,6 +983,44 @@
                 "6": "string",
                 "7": "float",
                 "8": "float"
+            },
+            "not chosen technologies": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
+            },
+            "dutchGermanPlants2015_from_emla": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float"
+            },
+            "COMPETESfuelPrices": {
+                "0": "string"
+            },
+            "TechnologiesEmlabTemporal": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
+            },
+            "dictFuel": {
+                "0": "string",
+                "1": "string",
+                "2": "string"
             }
         },
         "table_row_types": {

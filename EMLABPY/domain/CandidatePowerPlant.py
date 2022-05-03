@@ -10,14 +10,6 @@ class CandidatePowerPlant(PowerPlant):
         self.OfferedPowerinMWH = 0
         self.ReceivedMoneyinEUR = 0
         self.Profit = 0
-        # scenario from amiris
-        # self.technology = None
-        # self.location = None
-        # self.age = 0
-        # self.owner = None
-        # self.efficiency = 0
-        # self.capacity = 0
-        # self.constructionStartTime = 0
         # scenario from artificial emlab parameters
         self.Leadtime = 0
         self.Permittime = 0
@@ -30,7 +22,6 @@ class CandidatePowerPlant(PowerPlant):
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True
-
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'AwardedPowerInMWH':
@@ -54,7 +45,6 @@ class CandidatePowerPlant(PowerPlant):
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
 
-
     def get_technology(self, time):
         return self.technology
 
@@ -72,7 +62,6 @@ class CandidatePowerPlant(PowerPlant):
         self.setConstructionStartTime()
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
-        #self.setHistoricalCvarDummyPlant(False)
         self.setActualNominalCapacity(self.getCapacity())
         self.setDismantleTime(1000)
         #self.calculateAndSetActualInvestedCapital(tick)

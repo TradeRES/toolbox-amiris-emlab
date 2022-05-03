@@ -65,9 +65,11 @@ class SpineDBReaderWriter:
 
         parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
                                 in self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration", "priority")}
+
         sorted_parameter_names = sorted(db_data['object_parameters'],
                                         key=lambda item: parameter_priorities[item[0]]
                                         if item[0] in parameter_priorities.keys() else 0, reverse=True)
+
         object_parameter_values = db_data['object_parameter_values']
 
         for (object_class_name, parameter_name, _, _, _) in sorted_parameter_names:
@@ -293,23 +295,29 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     """
     object_class_name = db_line[0]
     object_name = db_line[1]
-    if object_class_name == 'trends':
+    if object_class_name == 'FuelPriceTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
+    elif object_class_name == 'PowerPlantsInstalled':
+        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
     elif object_class_name in ['ConventionalPlantOperator', 'VariableRenewableOperator']:# TODO add  'StorageTrader'
         if object_name not in candidatePowerPlants:
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
             add_type_to_power_plant(reps, db_line, reps.power_plants)
         else:
             add_parameter_value_to_repository(reps, db_line, reps.candidatePowerPlants, CandidatePowerPlant)
+
     elif object_class_name == 'NewTechnologies':
         add_parameter_value_to_repository(reps, db_line, reps.newTechnology, NewTechnology)
     elif object_class_name == 'CapacityMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
     elif object_class_name == 'TechnologiesEmlab':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    # data from Traderes
+    # TODO data from traderes excel, has to be changed by the database
+    elif object_class_name == 'technologyPotentials':
+        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        # data from Traderes
     elif object_class_name == 'unit':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'electricity':

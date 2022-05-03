@@ -59,6 +59,8 @@ class SpineDBReaderWriter:
                 reps.lookAhead = int(row['parameter_value'])
             elif row['parameter_name'] == 'CurrentYear':
                 reps.current_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'Country':# changed from node(emlab) to country because in traderes Node is used for fuels
+                reps.country = row['parameter_value']
 
         candidatePowerPlants = [str(503),  str(49)]         # todo: later this should not be hardcoded
         # if reps.current_tick > 0:
@@ -106,10 +108,20 @@ class SpineDBReaderWriter:
     #             reps.end_simulation_year = int(row['parameter_value'])
     #         elif row['parameter_name'] == 'Look Ahead':
     #             reps.lookAhead = int(row['parameter_value'])
+   # [powerplanttype, powerplantname,"Status", powerplant.status, "0"]
 
-    def stage_power_plant_status(self, power_plant_status):
-        #self.stage_object_parameter(power_plant_type, 'Status')
-        self.db.import_object_parameter_values(power_plant_status)
+    def stage_init_power_plants_status(self):
+        self.stage_object_parameters("PowerPlantsInstalled", ['Status'])
+
+    def stage_power_plant_status(self, power_plants):
+        self.stage_object("PowerPlantsInstalled", "Status")
+        for power_plant_name , values in power_plants.items() :
+            self.db.import_object_parameter_values([("PowerPlantsInstalled",  power_plant_name , "Status", values.status, '0')])
+
+    def stage_decommission_time(self, powerplant_name,  tick):
+        self.stage_object_parameters("PowerPlantsInstalled", ['dismantleTime'])
+        self.stage_object("PowerPlantsInstalled", "dismantleTime")
+        self.db.import_object_parameter_values("PowerPlantsInstalled",  powerplant_name, "dismantleTime", tick, '0')
 
     """
     Staging functions that are the core for communicating with SpineDB
@@ -170,6 +182,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                  ['PowerPlant', 'latestTick','spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
 
+
     def stage_init_next_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
         self.stage_object_parameters(self.fuel_classname, ['simulatedPrice'])
@@ -200,18 +213,26 @@ class SpineDBReaderWriter:
                                             ('AcceptedAmount', ppdp.accepted_amount),
                                             ('Status', ppdp.status)], current_tick)
 
-    def stage_financial_results(self, fr):
-        object_name = fr.name
-        self.stage_object(self.financial_reports_object_classname, object_name)
-        self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
-                                           [('PowerPlant', fr.powerPlant),
-                                            ('latestTick', (fr.tick)),
-                                            ('spotMarketRevenue', (fr.spotMarketRevenue)),
-                                            ('overallRevenue',  Map([str(fr.tick)], [fr.overallRevenue])),
-                                            ('production', Map([str(fr.tick)], [fr.production])),
-                                            ('powerPlantStatus', Map([str(fr.tick)], [fr.powerPlantStatus])),
-                                            ('profit', Map([str(fr.tick)], [fr.profit]))],
-                                           '0')
+    def stage_financial_results(self, financialreports):
+        for fr in financialreports:
+            object_name = fr.name
+            self.stage_object(self.financial_reports_object_classname, object_name)
+            self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
+                                               [('PowerPlant', fr.powerPlant),
+                                                ('latestTick', (fr.tick)),
+                                                ('spotMarketRevenue', (fr.spotMarketRevenue)),
+                                                ('overallRevenue',  Map( [str(fr.tick)], [str(fr.overallRevenue)] )),
+                                                ('production', Map([str(fr.tick)], [str(fr.production)] )),
+                                                ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)] )),
+                                                ('profit', Map([str(fr.tick)], [str(fr.profit)] ))],
+                                               '0')
+
+    def findFinancialPowerPlantProfitsForPlant(self, powerplant):
+        financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.financial_reports_object_classname, powerplant.name, "profit", 0)
+        if not financialresults:
+            print(" no financial results ")
+            return
+        return financialresults[0]['parameter_value'].to_dict()
 
     def stage_simulated_fuel_prices(self, tick, price, substance):
         object_name = substance.name
@@ -237,7 +258,6 @@ class SpineDBReaderWriter:
         parameter_name = str(iteration)
         self.stage_object(self.candidate_power_plants_list_classname, object_name)
         self.db.import_object_parameter_values([(self.candidate_power_plants_list_classname, object_name, parameter_name, powerPlantsList, "0")])
-
 
     def get_last_iteration(self, year):
         last = self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year)
@@ -315,10 +335,12 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     """
     object_class_name = db_line[0]
     object_name = db_line[1]
-    if object_class_name == 'trends':
+    if object_class_name == 'FuelPriceTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
+    elif object_class_name == 'PowerPlantsInstalled':
+        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
     elif object_class_name in ['ConventionalPlantOperator', 'VariableRenewableOperator']:# TODO add  'StorageTrader'
         if object_name not in candidatePowerPlants:
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
@@ -331,11 +353,17 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
     elif object_class_name == 'TechnologiesEmlab':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    # data from Traderes
+
+
+        # data from Traderes
     elif object_class_name == 'unit':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'electricity':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+    # TODO data from traderes excel, has to be changed by the database
+    elif object_class_name == 'technologyPotentials':
+        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+
     elif object_class_name == 'Fuels': # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node': # node contain the # TODO complete this to the scenario

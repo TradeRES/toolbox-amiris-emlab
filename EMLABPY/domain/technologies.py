@@ -9,7 +9,7 @@ from emlabpy.domain.import_object import *
 from emlabpy.domain.trends import *
 import logging
 import random
-
+import sys
 
 class PowerGeneratingTechnology(ImportObject):
     def __init__(self, name):
@@ -26,7 +26,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
-        self.maximum_installed_capacity_fraction_in_country = 0
+        self.maximum_installed_capacity_in_country = sys.float_info.max
         self.intermittent = False
         self.fuel = ''
         self.type= ''
@@ -66,9 +66,9 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'lifetime_economic':
             self.depreciation_time = int(parameter_value)
-        elif parameter_name == 'investment_limit':
-            self.maximum_installed_capacity_fraction_in_country = int(parameter_value)
-           # TODO: Implement Investment limit per node
+        elif parameter_name == reps.country: # TODO: Implement Investment limit per node
+             self.maximum_installed_capacity_in_country = parameter_value*1000 # capacities from GW to MW (emlab)
+
         elif parameter_name == 'interest_rate':
             self.interest_rate = int(parameter_value)
         elif parameter_name == 'fom_cost':
@@ -76,8 +76,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.initializeFixedCostsTrend()
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
-        elif parameter_name == 'investment_cost': # these are in eur/kw -> *1000 eur /MW
-            self.investment_cost = float(parameter_value)
+        elif parameter_name == 'investment_cost': # these are in eur/kw Traderes-> *1000 eur /MW emlab
+            self.investment_cost = float(parameter_value)*1000
             self.initializeInvestmenttrend()
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
@@ -251,7 +251,8 @@ class PowerGeneratingTechnology(ImportObject):
     def setIntermittent(self, intermittent):
         self.intermittent = intermittent
 
-
+    def getMaximumCapacityinCountry(self):
+        return self.maximum_installed_capacity_in_country
 
 
 

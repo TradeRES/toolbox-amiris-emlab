@@ -48,6 +48,8 @@ class FuturePowerPlants(DefaultModule):
         self.iteration = self.reps.dbrw.get_last_iteration( self.futureYear)
         if self.iteration > 0: # if there was no iteration before leave it as zero
             self.iteration += 1
+
+        #
         self.reps.dbrw.stage_init_power_plants_list(self.iteration)
 
         for key, candidateTechnology in self.reps.newTechnology.items():

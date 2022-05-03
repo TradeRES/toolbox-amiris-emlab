@@ -39,4 +39,10 @@ Please add metadata and licensing information as well.
 ## License and Terms of Use
 
 The Spine Toolbox project example provided here can be used without any 
-limitations. This does not necessarily apply to any data files contained within.
+limitations. This does not apply to any data files contained within or any parts of the models EMLab and AMIRIS.
+
+The (Un)Licensing explicitly excludes:
+
+    * Anything under "amiris", for which license of https://gitlab.com/dlr-ve/esy/amiris/amiris applies
+    * Anything under "EMLABPY", for which MIT License applies
+    * Any data contained in this repository.

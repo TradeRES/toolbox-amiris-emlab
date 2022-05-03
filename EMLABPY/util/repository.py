@@ -31,6 +31,8 @@ class Repository:
         """
         Initialize all Repository variables
         """
+        self.node = ""
+        self.country = ""
         self.dbrw = None
         self.current_tick = 0
         self.time_step = 0
@@ -64,9 +66,12 @@ class Repository:
         self.power_plant_dispatch_plan_status_failed = 'Failed'
         self.power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
         self.power_plant_dispatch_plan_status_awaiting = 'Awaiting'
+
         self.power_plant_status_operational = 'Operational'
         self.power_plant_status_inPipeline = 'InPipeline'
         self.power_plant_status_decommissioned = 'Decommissioned'
+        self.power_plant_status_to_be_decommissioned = 'TobeDecommissioned'
+
         self.marketForSubstance = {}
         self.electricitySpotMarketForNationalGovernment = {}
         self.electricitySpotMarketForPowerPlant = {}
@@ -163,14 +168,24 @@ class Repository:
     """
 
     # PowerPlants
+
+
+
+    def calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(self):
+        #so far there is only one market
+        pass
+
     def calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(self, technology, futuretick):
         expectedOperationalcapacity = 0
         plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
         for plant in plantsoftechnology:
             if PowerPlant.isExpectedToBeOperational(plant, futuretick):
                 expectedOperationalcapacity.sum()
-
         return expectedOperationalcapacity
+
+    def findPowerGeneratingTechnologyTargetByTechnology(self):
+
+        pass
 
     def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
         return [i for i in self.power_plants if i.getConstructionStartTime() == tick]
@@ -182,6 +197,10 @@ class Repository:
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == self.power_plant_status_operational]
+
+    def get_power_plants_to_be_decommisioned(self, owner) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.owner == owner and i.status ==  self.power_plant_status_to_be_decommissioned]
 
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
