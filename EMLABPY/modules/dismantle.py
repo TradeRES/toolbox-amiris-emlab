@@ -54,6 +54,8 @@ class Dismantle(DefaultModule):
                 powerplant.status = self.reps.power_plant_status_to_be_decommissioned
             elif powerplant.commissionedYear <= self.reps.current_year:
                 powerplant.status = self.reps.power_plant_status_operational
+                if powerplant.commissionedYear == self.reps.current_year:
+                    powerplant.age = 0
             elif powerplant.commissionedYear > self.reps.current_year:
                 powerplant.status = self.reps.power_plant_status_inPipeline
             else:

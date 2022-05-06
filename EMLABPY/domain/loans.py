@@ -2,10 +2,11 @@
 """
 This file contains Loans
 """
+import numpy_financial as npf
 
 class Loan:
     def __init__(self):
-        self.from_keyword_conflict = None
+        self.from_agent = None
         self.to = None
         self.regardingPowerPlant = None
         self.amountPerPayment = 0
@@ -16,6 +17,12 @@ class Loan:
     #    @RelatedTo(type = "LEND_TO_AGENT", elementClass = EMLabAgent.class, direction = Direction.OUTGOING)
     #    @RelatedTo(type = "LEND_BY_AGENT", elementClass = EMLabAgent.class, direction = Direction.OUTGOING)
     #    @RelatedTo(type = "LOAN_POWERPLANT", elementClass = PowerPlant.class, direction = Direction.OUTGOING)
+
+    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
+        annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
+        annuitybyhand = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
+        print(annuitybyhand - annuity)
+        return annuity
 
     def getLoanStartTime(self):
         return self.loanStartTime
@@ -42,10 +49,10 @@ class Loan:
         self.numberOfPaymentsDone = numberOfPaymentsDone
 
     def getFrom(self):
-        return self.from_keyword_conflict
+        return self.from_agent
 
-    def setFrom(self, from_keyword_conflict):
-        self.from_keyword_conflict = from_keyword_conflict
+    def setFrom(self, from_agent):
+        self.from_agent = from_agent
 
     def getTo(self):
         return self.to
@@ -58,3 +65,4 @@ class Loan:
 
     def setRegardingPowerPlant(self, regardingPowerPlant):
         self.regardingPowerPlant = regardingPowerPlant
+

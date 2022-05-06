@@ -8,6 +8,8 @@ import sys
 import logging
 import os
 import time
+
+from emlabpy.modules.payLoans import PayForLoansRole
 from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
@@ -16,41 +18,48 @@ from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.co2market import *
 from emlabpy.modules.Invest import *
-from modules.futurePowerPlants import *
+from modules.prepareCandidatePowerPlants import *
 from modules.dismantle import *
+
 # Initialize Logging
 if not os.path.isdir('logs'):
     os.makedirs('logs')
 logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.txt', level=logging.DEBUG)
 # Log to console? Uncomment next line
-#logging.getLogger().addHandler(logging.StreamHandler())
+# logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
 run_capacity_market = False
 run_electricity_spot_market = False
-run_new_power_plants = False
+run_future_power_plants = False
 run_co2_market = False
 run_investment_module = False
 run_decommission_module = False
-run_prepare_market_module = False
+run_next_year_market = False
+run_financial_results = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
-#logging.info('Selected modules: ' + str(sys.argv[2:]))
+# logging.info('Selected modules: ' + str(sys.argv[2:]))
 
 for arg in sys.argv[3:]:
     if arg == 'run_capacity_market':
         run_capacity_market = True
-    if arg == 'run_new_power_plants':
-        run_new_power_plants = True
+    if arg == 'run_future_power_plants':
+        run_future_power_plants = True
     if arg == 'run_co2_market':
         run_co2_market = True
     if arg == 'run_investment_module':
         run_investment_module = True
+    if arg == 'run_short_investment_module':
+        run_short_investment_module = True
     if arg == 'run_decommission_module':
         run_decommission_module = True
-    if arg == 'run_prepare_market':
-        run_prepare_market_module = True
+    if arg == 'run_next_year_market':
+        run_next_year_market = True
+    if arg == 'run_financial_results':
+        run_financial_results = True
 
-if run_investment_module:
+
+if run_investment_module or run_short_investment_module:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
     amiris_url = sys.argv[2]
@@ -61,29 +70,25 @@ else:
     logging.info('emlab database: ' + str(emlab_url))
     spinedb_reader_writer = SpineDBReaderWriter("run_other_module", emlab_url)
 
-
-try:    # Try statement to always close DB properly
+try:  # Try statement to always close DB properly
     # Load repository
     reps = spinedb_reader_writer.read_db_and_create_repository()
     print("repository complete")
     logging.info('Start Initialization Modules')
-    capacity_market_submit_bids = CapacityMarketSubmitBids(reps) # This function stages new dispatch power plant
-    capacity_market_clear = CapacityMarketClearing(reps) # This function adds rep to class capacity markets
-     # This function adds rep to class capacity markets
+    capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
+    capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
+    # This function adds rep to class capacity markets
     co2_market_determine_co2_price = CO2MarketDetermineCO2Price(reps)
     payment_and_bank_co2 = PayAndBankCO2Allowances(reps)
     use_co2_allowances = UseCO2Allowances(reps)
     market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
-    # for the first year, specify the
+    # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
     for p, power_plant in reps.power_plants.items():
         if reps.current_tick > 0:
-            power_plant.addoneYeartoAge()
+            power_plant.addoneYeartoAge() # add one year to all power plants
         else:
-            power_plant.specifyPowerPlantsInstalled( 0 , "Producer1", "DE") # TODO this shouldn't be hard coded
+            power_plant.specifyPowerPlantsInstalled(0, reps.energy_producers["Producer1"], "DE")  # TODO this shouldn't be hard coded
 
-
-    #financial_report = CreatingFinancialReports(reps)
-    #financial_report.act_and_commit() # TODO make faster
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('End Initialization Modules')
 
@@ -94,19 +99,27 @@ try:    # Try statement to always close DB properly
         logging.info('Start Run dismantle')
         dismantling = Dismantle(reps)
         dismantling.act_and_commit()
+        payingLoans = PayForLoansRole(reps)
+        payingLoans.act_and_commit()
         logging.info('End Run dismantle')
 
-    if run_prepare_market_module:
+    if run_financial_results:
+        logging.info('Start Saving Financial Results')
+        financial_report = CreatingFinancialReports(reps)
+        financial_report.act_and_commit() # TODO make faster
+        logging.info('End saving Financial Results')
+
+    if run_next_year_market:
         logging.info('Start Run preparing market for next year')
         preparing_market = PrepareMarket(reps)
         preparing_market.act_and_commit()
-        logging.info('End Run market preparation ')
+        logging.info('End Run market preparation for next year ')
 
-    if run_new_power_plants:
-        creating_power_plants = FuturePowerPlants(reps)
-        logging.info('Start definition of future PP')
+    if run_future_power_plants:
+        creating_power_plants = PrepareCandidatePowerPlants(reps)
+        logging.info('Start creating future power plants')
         creating_power_plants.act_and_commit()
-        logging.info('End Run definition of future PP')
+        logging.info('Start creating future power plants')
 
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
@@ -141,4 +154,3 @@ finally:
     spinedb_reader_writer.db.close_connection()
     if run_investment_module:
         spinedb_reader_writer.amirisdb.close_connection()
-

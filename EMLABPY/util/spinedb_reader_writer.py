@@ -10,6 +10,7 @@ from spinedb_api import Map
 from twine.repository import Repository
 
 from emlabpy.domain.newTechnology import NewTechnology
+from emlabpy.domain.targetinvestor import TargetInvestor
 from emlabpy.util.repository import *
 from emlabpy.util.spinedb import SpineDB
 
@@ -23,6 +24,7 @@ class SpineDBReaderWriter:
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0]) # the first is always emlab
         self.run_module = run_module
+        self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
@@ -90,25 +92,65 @@ class SpineDBReaderWriter:
 
         return reps
 
-    # def stage_cashflow_PowerPlant(self, current_tick: int):
-    #     self.stage_init_alternative("0")
-    #     self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
-    #     self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
-    #                                        [('Plant', ppdp.plant.name),
-    #                                         ('Market', ppdp.bidding_market.name),
-    #                                         ('Price', ppdp.price),
-    #                                         ('Capacity', ppdp.amount),
-    #                                         ('EnergyProducer', ppdp.bidder.name),
-    #                                         ('AcceptedAmount', ppdp.accepted_amount),
-    #                                         ('Status', ppdp.status)], current_tick)
-    #     for row in self.db.query_object_parameter_values_by_object_class_and_object_name('Configuration', "SimulationYears"):
-    #         if row['parameter_name'] == 'Start Year':
-    #             reps.start_simulation_year = int(row['parameter_value'])
-    #         elif row['parameter_name'] == 'End Year':
-    #             reps.end_simulation_year = int(row['parameter_value'])
-    #         elif row['parameter_name'] == 'Look Ahead':
-    #             reps.lookAhead = int(row['parameter_value'])
-   # [powerplanttype, powerplantname,"Status", powerplant.status, "0"]
+
+
+    """
+    Markets
+    """
+
+    def stage_init_market_clearing_point_structure(self):
+        self.stage_object_class(self.market_clearing_point_object_classname)
+        self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'TotalCapacity'])
+
+    def stage_init_power_plant_dispatch_plan_structure(self):
+        self.stage_object_class(self.powerplant_dispatch_plan_classname)
+        self.stage_object_parameters(self.powerplant_dispatch_plan_classname,
+                                     ['Plant', 'Market', 'Price', 'Capacity', 'EnergyProducer', 'AcceptedAmount',
+                                      'powerPlantStatus'])
+
+    def stage_init_power_plants_list(self, iteration ):
+        self.stage_object_class(self.candidate_power_plants_list_classname)
+        self.stage_object_parameters(self.candidate_power_plants_list_classname, [str(iteration)]) # parameter name = iteration
+
+    def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
+        object_name = mcp.name
+        self.stage_object(self.market_clearing_point_object_classname, object_name)
+        self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
+                                           [('Market', mcp.market.name),
+                                            ('Price', mcp.price),
+                                            ('TotalCapacity', mcp.capacity)], current_tick)
+
+    def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
+        self.stage_co2_allowances(power_plant, allowances, time)
+        self.stage_object_parameter_values('EnergyProducers', power_plant.owner.name, [('cash', cash)], time)
+
+    def stage_co2_allowances(self, power_plant, allowances, time):
+        param_name = 'Allowances'
+        self.stage_object_parameter('PowerPlants', param_name)
+        self.stage_object_parameter_values('PowerPlants', power_plant.name, [(param_name, allowances)], time)
+
+    def stage_market_stability_reserve(self, msr: MarketStabilityReserve, reserve, time):
+        param_name = 'Reserve'
+        self.stage_object_parameter('MarketStabilityReserve', param_name)
+        self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
+    """
+    Power plants
+    """
+    def stage_init_power_plant_structure(self):
+        self.stage_object_class(self.powerplant_installed_classname)
+        self.stage_object_parameters(self.powerplant_installed_classname, ["Age" , "Efficiency", "InstalledPowerinMW" , "Location" , "Owner" , "Status" , "Technology"])
+
+    def stage_new_power_plant(self,  powerplant ):
+        object_name = powerplant.name
+        self.stage_object(self.powerplant_installed_classname, object_name)
+        self.stage_object_parameter_values(self.powerplant_installed_classname, object_name,
+                                           [('Age', powerplant.age),
+                                            ('Efficiency', powerplant.actualEfficiency),
+                                            ('Location', powerplant.spotMarketRevenue),
+                                            ('Owner', powerplant.owner  ),
+                                            ('Status', powerplant.status ),
+                                            ('Technology', powerplant.technology.name )],
+                                           '0')
 
     def stage_init_power_plants_status(self):
         self.stage_object_parameters("PowerPlantsInstalled", ['Status'])
@@ -123,11 +165,101 @@ class SpineDBReaderWriter:
         self.stage_object("PowerPlantsInstalled", "dismantleTime")
         self.db.import_object_parameter_values("PowerPlantsInstalled",  powerplant_name, "dismantleTime", tick, '0')
 
+    def stage_power_plant_dispatch_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
+        self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
+        self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
+                                           [('Plant', ppdp.plant.name),
+                                            ('Market', ppdp.bidding_market.name),
+                                            ('Price', ppdp.price),
+                                            ('Capacity', ppdp.amount),
+                                            ('EnergyProducer', ppdp.bidder.name),
+                                            ('AcceptedAmount', ppdp.accepted_amount),
+                                            ('Status', ppdp.status)], current_tick)
+
+    def stage_new_power_plants_ids(self, powerPlantsList, iteration, futureYear):
+        object_name = str(futureYear)
+        parameter_name = str(iteration)
+        self.stage_object(self.candidate_power_plants_list_classname, object_name)
+        self.db.import_object_parameter_values([(self.candidate_power_plants_list_classname, object_name, parameter_name, powerPlantsList, "0")])
+
+    def get_last_iteration(self, year):
+        last = self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year)
+        if not last:
+            lastiteration = 0
+        else:
+            lastiteration = max(int(i['parameter_name']) for i in self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year))
+        return lastiteration
+
     """
-    Staging functions that are the core for communicating with SpineDB
-    
-    TO ADD DATA TO DB
+    Financial results
     """
+    def stage_init_financial_results_structure(self):
+        self.stage_object_class(self.financial_reports_object_classname)
+        self.stage_object_parameters(self.financial_reports_object_classname,
+                                 ['PowerPlant', 'latestTick','spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
+
+    def stage_financial_results(self, financialreports):
+        for fr in financialreports:
+            object_name = fr.name
+            self.stage_object(self.financial_reports_object_classname, object_name)
+            self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
+                                               [('PowerPlant', fr.powerPlant),
+                                                ('latestTick', (fr.tick)),
+                                                ('spotMarketRevenue', (fr.spotMarketRevenue)),
+                                                ('overallRevenue',  Map( [str(fr.tick)], [str(fr.overallRevenue)] )),
+                                                ('production', Map([str(fr.tick)], [str(fr.production)] )),
+                                                ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)] )),
+                                                ('profit', Map([str(fr.tick)], [str(fr.profit)] ))],
+                                               '0')
+
+    def findFinancialPowerPlantProfitsForPlant(self, powerplant):
+        financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.financial_reports_object_classname, powerplant.name, "profit", 0)
+        if not financialresults:
+            print(" no financial results ")
+            return
+        return financialresults[0]['parameter_value'].to_dict()
+
+    def stage_cashflow_PowerPlant(self, current_tick: int):
+        self.stage_init_alternative("0")
+        self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
+
+
+
+    """
+    Fuel prices
+    """
+    def stage_init_next_prices_structure(self):
+        self.stage_object_class(self.fuel_classname)
+        self.stage_object_parameters(self.fuel_classname, ['simulatedPrice'])
+
+    def stage_init_future_prices_structure(self):
+        self.stage_object_class(self.fuel_classname)
+        self.stage_object_parameters(self.fuel_classname, ['futurePrice'])
+
+    def stage_simulated_fuel_prices(self, tick, price, substance):
+        object_name = substance.name
+        self.stage_object(self.fuel_classname, object_name)
+        #print(self.fuel_classname, substance.name, "simulatedPrice", tick,"-", type(price), price)
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [price]) , '0')])
+
+    def stage_future_fuel_prices(self, year, substance, futurePrice):
+        object_name = substance.name
+        self.stage_object(self.fuel_classname, object_name)
+        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", Map([str(year)], [futurePrice]), '0')])
+
+    def get_calculated_future_fuel_prices(self, substance):
+        calculated_future_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "futurePrice", 0)
+        return calculated_future_fuel_prices[0]['parameter_value'].to_dict()
+
+    def get_calculated_simulated_fuel_prices(self, substance):
+        calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "simulatedPrice", 0)
+        return calculated_fuel_prices[0]['parameter_value'].to_dict()
+
+    """
+    General
+    """
+    def stage_init_alternative(self, current_tick: int):
+        self.db.import_alternatives([str(current_tick)])
 
     def stage_object_class(self, object_class_name: str):
         self.stage_object_classes([object_class_name])
@@ -161,133 +293,6 @@ class SpineDBReaderWriter:
 
     def commit(self, commit_message: str):
         self.db.commit(commit_message)
-
-    """
-    Element specific initialization staging functions
-    TO ADD SPECIFICALLY TO DB
-    """
-
-    def stage_init_market_clearing_point_structure(self):
-        self.stage_object_class(self.market_clearing_point_object_classname)
-        self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'TotalCapacity'])
-
-    def stage_init_power_plant_dispatch_plan_structure(self):
-        self.stage_object_class(self.powerplant_dispatch_plan_classname)
-        self.stage_object_parameters(self.powerplant_dispatch_plan_classname,
-                                     ['Plant', 'Market', 'Price', 'Capacity', 'EnergyProducer', 'AcceptedAmount',
-                                      'powerPlantStatus'])
-
-    def stage_init_financial_results_structure(self):
-        self.stage_object_class(self.financial_reports_object_classname)
-        self.stage_object_parameters(self.financial_reports_object_classname,
-                                 ['PowerPlant', 'latestTick','spotMarketRevenue','overallRevenue', 'production', 'powerPlantStatus','profit'])
-
-
-    def stage_init_next_prices_structure(self):
-        self.stage_object_class(self.fuel_classname)
-        self.stage_object_parameters(self.fuel_classname, ['simulatedPrice'])
-
-    def stage_init_future_prices_structure(self):
-        self.stage_object_class(self.fuel_classname)
-        self.stage_object_parameters(self.fuel_classname, ['futurePrice'])
-
-    def stage_init_power_plants_list(self, iteration ):
-        self.stage_object_class(self.candidate_power_plants_list_classname)
-        self.stage_object_parameters(self.candidate_power_plants_list_classname, [str(iteration)]) # parameter name = iteration
-
-    def stage_init_alternative(self, current_tick: int):
-        self.db.import_alternatives([str(current_tick)])
-
-    """
-    Element specific staging functions
-    """
-
-    def stage_power_plant_dispatch_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
-        self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
-        self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
-                                           [('Plant', ppdp.plant.name),
-                                            ('Market', ppdp.bidding_market.name),
-                                            ('Price', ppdp.price),
-                                            ('Capacity', ppdp.amount),
-                                            ('EnergyProducer', ppdp.bidder.name),
-                                            ('AcceptedAmount', ppdp.accepted_amount),
-                                            ('Status', ppdp.status)], current_tick)
-
-    def stage_financial_results(self, financialreports):
-        for fr in financialreports:
-            object_name = fr.name
-            self.stage_object(self.financial_reports_object_classname, object_name)
-            self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
-                                               [('PowerPlant', fr.powerPlant),
-                                                ('latestTick', (fr.tick)),
-                                                ('spotMarketRevenue', (fr.spotMarketRevenue)),
-                                                ('overallRevenue',  Map( [str(fr.tick)], [str(fr.overallRevenue)] )),
-                                                ('production', Map([str(fr.tick)], [str(fr.production)] )),
-                                                ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)] )),
-                                                ('profit', Map([str(fr.tick)], [str(fr.profit)] ))],
-                                               '0')
-
-    def findFinancialPowerPlantProfitsForPlant(self, powerplant):
-        financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.financial_reports_object_classname, powerplant.name, "profit", 0)
-        if not financialresults:
-            print(" no financial results ")
-            return
-        return financialresults[0]['parameter_value'].to_dict()
-
-    def stage_simulated_fuel_prices(self, tick, price, substance):
-        object_name = substance.name
-        self.stage_object(self.fuel_classname, object_name)
-        #print(self.fuel_classname, substance.name, "simulatedPrice", tick,"-", type(price), price)
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [price]) , '0')])
-
-    def stage_future_fuel_prices(self, year, substance, futurePrice):
-        object_name = substance.name
-        self.stage_object(self.fuel_classname, object_name)
-        self.db.import_object_parameter_values([(self.fuel_classname, substance.name, "futurePrice", Map([str(year)], [futurePrice]), '0')])
-
-    def get_calculated_future_fuel_prices(self, substance):
-        calculated_future_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "futurePrice", 0)
-        return calculated_future_fuel_prices[0]['parameter_value'].to_dict()
-
-    def get_calculated_simulated_fuel_prices(self, substance):
-        calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(self.fuel_classname, substance.name, "simulatedPrice", 0)
-        return calculated_fuel_prices[0]['parameter_value'].to_dict()
-
-    def stage_new_power_plants_ids(self, powerPlantsList, iteration, futureYear):
-        object_name = str(futureYear)
-        parameter_name = str(iteration)
-        self.stage_object(self.candidate_power_plants_list_classname, object_name)
-        self.db.import_object_parameter_values([(self.candidate_power_plants_list_classname, object_name, parameter_name, powerPlantsList, "0")])
-
-    def get_last_iteration(self, year):
-        last = self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year)
-        if not last:
-            lastiteration = 0
-        else:
-            lastiteration = max(int(i['parameter_name']) for i in self.db.query_object_parameter_values_by_object_class_and_object_name(self.candidate_power_plants_list_classname, year))
-        return lastiteration
-
-    def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
-        object_name = mcp.name
-        self.stage_object(self.market_clearing_point_object_classname, object_name)
-        self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
-                                           [('Market', mcp.market.name),
-                                            ('Price', mcp.price),
-                                            ('TotalCapacity', mcp.capacity)], current_tick)
-
-    def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
-        self.stage_co2_allowances(power_plant, allowances, time)
-        self.stage_object_parameter_values('EnergyProducers', power_plant.owner.name, [('cash', cash)], time)
-
-    def stage_co2_allowances(self, power_plant, allowances, time):
-        param_name = 'Allowances'
-        self.stage_object_parameter('PowerPlants', param_name)
-        self.stage_object_parameter_values('PowerPlants', power_plant.name, [(param_name, allowances)], time)
-
-    def stage_market_stability_reserve(self, msr: MarketStabilityReserve, reserve, time):
-        param_name = 'Reserve'
-        self.stage_object_parameter('MarketStabilityReserve', param_name)
-        self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
 
     def __str__(self):
         return str(vars(self))
@@ -351,25 +356,32 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.newTechnology, NewTechnology)
     elif object_class_name == 'CapacityMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
+    elif object_class_name == 'EnergyProducers':
+        add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
+
+
+    elif object_class_name == 'Targets':
+        add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
+
     elif object_class_name == 'TechnologiesEmlab':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-
-
         # data from Traderes
+    elif object_class_name == 'technologyPotentials': # From traderes these potentials are the maximum that can be installed per country. The units are in GW
+        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'unit':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'electricity':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     # TODO data from traderes excel, has to be changed by the database
-    elif object_class_name == 'technologyPotentials':
-        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+
 
     elif object_class_name == 'Fuels': # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node': # node contain the # TODO complete this to the scenario
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
-    elif object_class_name == 'EnergyProducers':
-        add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
+
+
+
     else:
         logging.info('Object Class not defined: ' + object_class_name)
     # elif object_class_name == 'Zones':

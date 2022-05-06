@@ -1,12 +1,11 @@
+"""Ths function creates the power plants that will be analyzed as possible investments
+    creates the Candidate Power Plants
+"""
 from emlabpy.domain.CandidatePowerPlant import *
 from emlabpy.modules.defaultmodule import DefaultModule
-import pandas as pd
 
 
-class FuturePowerPlants(DefaultModule):
-    """Ths function creates the power plants that will be analyzed as possible investments
-        creates the Candidate Power Plants
-    """
+class PrepareCandidatePowerPlants(DefaultModule):
 
     def __init__(self, reps):
         super().__init__("Define Future Power Plants", reps)
@@ -15,7 +14,6 @@ class FuturePowerPlants(DefaultModule):
         self.lastrenewableId = 0
         self.lastconventionalId = 0
         self.laststorageId = 0
-        self.futureDemand = None
         self.futureYear = 0
         self.futureInvestmentyear = 0
         self.futureDemand = None
@@ -25,7 +23,7 @@ class FuturePowerPlants(DefaultModule):
         reps.dbrw.stage_init_future_prices_structure()
         self.agent = "Producer1"
         self.powerPlantsList = []
-        self.iteration = 0
+        self.iteration = 0  # the number of times that the future clearing has been done per year.
 
     def act(self):
         self.setTimeHorizon()
@@ -39,17 +37,17 @@ class FuturePowerPlants(DefaultModule):
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
             futureprice = substance.get_price_for_future_tick(self.reps, self.futureYear, substance)
-            self.reps.dbrw.stage_future_fuel_prices(self.futureYear, substance, futureprice)  # todo: save this as a map in DB
+            self.reps.dbrw.stage_future_fuel_prices(self.futureYear, substance,
+                                                    futureprice)  # todo: save this as a map in DB
         # self.predictDemand()
         # self.nextDemand()
 
     def createCandidatePowerPlants(self):
-        self.getlastIds()
-        self.iteration = self.reps.dbrw.get_last_iteration( self.futureYear)
-        if self.iteration > 0: # if there was no iteration before leave it as zero
+        self.getlastIds()  # from installed power plants
+        self.iteration = self.reps.dbrw.get_last_iteration(self.futureYear)
+        if self.iteration > 0:  # if there was no iteration before leave it as zero
             self.iteration += 1
-
-        #
+            # TODO for higher iterations dont consider the power plants that are not investable
         self.reps.dbrw.stage_init_power_plants_list(self.iteration)
 
         for key, candidateTechnology in self.reps.newTechnology.items():
@@ -69,15 +67,18 @@ class FuturePowerPlants(DefaultModule):
                                                                             candidateTechnology.name, 0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW",
                                                                             candidateTechnology.InstalledPowerInMW, 0)
-            print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name, candidateTechnology.InstalledPowerInMW)
+            print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name,
+                  candidateTechnology.InstalledPowerInMW)
 
             self.powerPlantsList.append(object_name)
-        #df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
-        #df.to_excel('forYaml.xlsx')
+        # df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
+        # df.to_excel('forYaml.xlsx')
         print(self.powerPlantsList, self.iteration, self.futureYear)
-        self.reps.dbrw.stage_new_power_plants_ids( self.powerPlantsList, self.iteration, self.futureYear)
 
-            # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
+        # save the list of power plants that have been candidates per iteration.
+        self.reps.dbrw.stage_new_power_plants_ids(self.powerPlantsList, self.iteration, self.futureYear)
+
+        # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
 
     def getlastIds(self):
         # get maximum number of power plan

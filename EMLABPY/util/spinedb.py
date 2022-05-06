@@ -117,7 +117,7 @@ class SpineDB(object):
             _handle_errors(errors)
         return n_imported
 
-    def import_object_parameter_values(self, object_parameter_values) -> int:
+    def import_object_parameter_values(self, object_parameter_values: object) -> int:
         """
         Import object parameter values from a list of object class name, object name, parameter name and value tuples
         Example::

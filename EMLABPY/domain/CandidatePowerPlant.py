@@ -66,10 +66,10 @@ class CandidatePowerPlant(PowerPlant):
         self.setDismantleTime(1000)
         #self.calculateAndSetActualInvestedCapital(tick)
         self.calculateAndSetActualFixedOperatingCosts(tick)
-        print("tick", tick,  "permit", self.getActualPermittime() ,"actuallead" ,self.getActualLeadtime() ,"lifetirme",  self.getTechnology().getExpectedLifetime())
-
         self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        print("setExpectedEndOfLife", self.expectedEndOfLife)
+        print("specifyTemporaryPowerPlant tick", tick,  "permit", self.getActualPermittime() ,
+              "actuallead" ,self.getActualLeadtime() ,"lifetime",  self.getTechnology().getExpectedLifetime(),
+              "setExpectedEndOfLife", self.expectedEndOfLife)
         return self
 
     def setConstructionStartTime(self):

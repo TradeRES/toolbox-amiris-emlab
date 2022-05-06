@@ -33,14 +33,14 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setProduction(totalSupply)
             financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR)
             financialPowerPlantReport.setProfit(plant.Profit)
-            if plant.isOperational(tick):
-                operationalStatus = "operational"
-            elif plant.isInPipeline(tick):
-                operationalStatus = "inPipeline"
-            else:
-                operationalStatus = "decommissioned"
-
-            financialPowerPlantReport.setPowerPlantStatus(operationalStatus)
+            # if plant.isOperational(tick):
+            #     operationalStatus = "operational"
+            # elif plant.isInPipeline(tick):
+            #     operationalStatus = "inPipeline"
+            # else:
+            #     operationalStatus = "decommissioned"
+            #
+            # financialPowerPlantReport.setPowerPlantStatus(operationalStatus)
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 

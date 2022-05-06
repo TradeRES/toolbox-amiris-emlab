@@ -1,5 +1,5 @@
 {
-    "name": "Future power plants",
+    "name": "Prepare market clearing",
     "tooltype": "python",
     "includes": [
         "emlab.py"

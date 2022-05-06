@@ -1,10 +1,11 @@
 from emlabpy.domain.energyproducer import EnergyProducer
 
 class TargetInvestor(EnergyProducer):
-
-    def __init__(self):
+    def __init__(self, name):
+        super().__init__(name)
         self.powerGeneratingTechnologyTargets = None
         self.specificPowerGridNode = None
+
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'targetTechnology':

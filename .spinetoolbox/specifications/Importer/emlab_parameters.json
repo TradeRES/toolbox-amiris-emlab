@@ -409,7 +409,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "header"
+                                "position": "hidden",
+                                "value": "Targets"
                             },
                             {
                                 "map_type": "Object",
@@ -417,6 +418,23 @@
                             },
                             {
                                 "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
                                 "position": "hidden"
                             }
                         ]
@@ -778,6 +796,7 @@
             "CapacityMarkets",
             "EnergyProducers",
             "StepTrends",
+            "TargetInvestorTargets",
             "FuelPriceTrends",
             "TechnologiesEmlab",
             "NewTechnologies",
@@ -922,7 +941,7 @@
             },
             "TargetInvestorTargets": {
                 "0": "string",
-                "1": "string"
+                "1": "float"
             },
             "FuelPriceTrends": {
                 "0": "string",

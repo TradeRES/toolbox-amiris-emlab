@@ -30,6 +30,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.intermittent = False
         self.fuel = ''
         self.type= ''
+
         # here are missing info
 
         self.applicable_for_long_term_contract = False
@@ -87,13 +88,6 @@ class PowerGeneratingTechnology(ImportObject):
             self.efficiency = float(parameter_value)
             self.initializeEfficiencytrend()
 
-        # elif parameter_name == 'maximumInstalledCapacityFractionPerAgent':
-        #     self.maximum_installed_capacity_fraction_per_agent = float(parameter_value)
-        # elif parameter_name == 'minimumFuelQuality':
-        #     self.minimum_fuel_quality = float(parameter_value)
-        # elif parameter_name == 'minimumRunningHours':
-        #     self.minimum_running_hours = int(parameter_value)
-
     def initializeEfficiencytrend(self):
         self.efficiency_time_series = GeometricTrend("geometrictrend" + self.name)
         self.efficiency_time_series.start = self.efficiency
@@ -140,16 +134,11 @@ class PowerGeneratingTechnology(ImportObject):
     #     self.maximumInstalledCapacityFractionPerAgent = maximumInstalledCapacityFractionPerAgent
 
     def getDepreciationTime(self):
-        return self.depreciationTime
+        return self.depreciation_time
 
-    def setDepreciationTime(self, depreciationTime):
-        self.depreciationTime = depreciationTime
+    def setDepreciationTime(self, depreciation_time):
+        self.depreciation_time = depreciation_time
 
-    def getMinimumRunningHours(self):
-        return self.minimumRunningHours
-
-    def setMinimumRunningHours(self, minimumRunningHours):
-        self.minimumRunningHours = minimumRunningHours
 
     def getName(self):
         return self.name
@@ -256,3 +245,9 @@ class PowerGeneratingTechnology(ImportObject):
 
 
 
+
+    # def getMinimumRunningHours(self):
+    #     return self.minimumRunningHours
+    #
+    # def setMinimumRunningHours(self, minimumRunningHours):
+    #     self.minimumRunningHours = minimumRunningHours

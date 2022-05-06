@@ -1,4 +1,9 @@
+"""
+This code prepares the information for next years market clearing:
+-fuel prices and demand. the demand is as the node "electricity"
+For the first 2 years the fuel prices are considering interpolating.
 
+"""
 from emlabpy.modules.defaultmodule import DefaultModule
 
 class PrepareMarket(DefaultModule):

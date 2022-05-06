@@ -1,7 +1,14 @@
-import pandas as pd
-x = [[2000, 'Job', 'Salary($)'],
-          [2001, 'Machine Learning Engineer', 121000]]
-df = pd.DataFrame(x)
-df.set_index(0, inplace=True)
-df.loc[2000]
-print("here")
+dict_values([{'name': 'pvTargetTrend', 'parameters': {}, 'investmentRole': None, 'investorMarket': None,
+              'priceMarkUp': None, 'longTermContractMargin': None, 'longTermContractPastTimeHorizon': None,
+              'investmentFutureTimeHorizon': None, 'equityInterestRate': None, 'downpaymentFractionOfCash': None,
+              'debtRatioOfInvestments': None, 'willingToInvest': None, 'loanInterestRate': None,
+              'numberOfYearsBacklookingForForecasting': None, 'dismantlingProlongingYearsAfterTechnicalLifetime': None,
+              'dismantlingRequiredOperatingProfit': None, 'pastTimeHorizon': None,
+              'powerGeneratingTechnologyTargets': 'PV_utility_systems', 'specificPowerGridNode': 'DE'},
+             {'name': 'windTargetTrend', 'parameters': {}, 'investmentRole': None, 'investorMarket': None,
+              'priceMarkUp': None, 'longTermContractMargin': None, 'longTermContractPastTimeHorizon': None,
+              'investmentFutureTimeHorizon': None, 'equityInterestRate': None, 'downpaymentFractionOfCash': None,
+              'debtRatioOfInvestments': None, 'willingToInvest': None, 'loanInterestRate': None,
+              'numberOfYearsBacklookingForForecasting': None, 'dismantlingProlongingYearsAfterTechnicalLifetime': None,
+              'dismantlingRequiredOperatingProfit': None, 'pastTimeHorizon': None,
+              'powerGeneratingTechnologyTargets': 'WTG_onshore', 'specificPowerGridNode': 'DE'}])

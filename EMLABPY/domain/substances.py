@@ -64,7 +64,6 @@ class Substance(ImportObject):
                 self.newSimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.top - self.trend.min)))
             else:
                 self.newSimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.max - self.trend.top)))
-            #print(substance.name , 'lastvalue',last_value , "r " , random_number, "simulated", self.simulatedPrice  )
         return self.newSimulatedPrice
 
     def get_price_for_future_tick(self, reps, futureYear, substance):

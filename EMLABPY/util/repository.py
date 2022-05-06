@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Optional, Dict, List
 
 from emlabpy.domain.actors import *
+from emlabpy.domain.cashflow import CashFlow
 from emlabpy.domain.powerplantDispatchPlan import *
 from emlabpy.domain.technologies import *
 from emlabpy.domain.markets import *
@@ -43,6 +44,7 @@ class Repository:
         self.simulation_length = 0
         self.newTechnology = dict()
         self.energy_producers = dict()
+        self.target_investors = dict()
         self.power_plants = dict()
         self.candidatePowerPlants = dict()
         self.substances = dict()
@@ -58,6 +60,10 @@ class Repository:
         self.zones = dict()
         self.national_governments = dict()
         self.governments = dict()
+
+        self.bigBank = BigBank("0")
+        self.manufacturer = PowerPlantManufacturer("0")
+
         self.market_stability_reserves = dict()
         self.load = dict()
         self.emissions = dict()
@@ -81,7 +87,8 @@ class Repository:
         self.loanList = []
         self.financialPowerPlantReports = None
     """
-    This part is new 
+    Repository functions:
+    All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
     """
 
     def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
@@ -89,9 +96,9 @@ class Repository:
                 if i.owner == owner]
 
     # loans
-    def createLoan(self, from_keyword_conflict, to, amount, numberOfPayments, loanStartTime, plant):
+    def createLoan(self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
         loan = Loan()
-        loan.setFrom(from_keyword_conflict)
+        loan.setFrom(from_agent)
         loan.setTo(to)
         loan.setAmountPerPayment(amount)
         loan.setTotalNumberOfPayments(numberOfPayments)
@@ -99,10 +106,11 @@ class Repository:
         loan.setLoanStartTime(loanStartTime)
         loan.setNumberOfPaymentsDone(0)
         plant.setLoan(loan)
-        self.loanList.add(loan)
-        if not self.loansFromAgent.containsKey(from_keyword_conflict):
-            self.loansFromAgent.put(from_keyword_conflict, [])
-        self.loansFromAgent.get(from_keyword_conflict).add(loan)
+        self.loanList.append(loan)
+        # if 'key1' in dict.keys():
+        if not self.loansFromAgent.containsKey(from_agent):
+            self.loansFromAgent.put(from_agent, [])
+        self.loansFromAgent.get(from_agent).add(loan)
         if not self.loansToAgent.containsKey(to):
             self.loansToAgent.put(to, [])
         self.loansToAgent.get(to).add(loan)
@@ -115,19 +123,25 @@ class Repository:
         return self.loansToAgent.get(agent)
 
     # Cashflow
-    def createCashFlow(self, from_keyword_conflict, to, amount, type, time, plant):
+    def createCashFlow(self, from_agent, to, amount, type, time, plant):
         cashFlow = CashFlow()
-        cashFlow.setFrom(from_keyword_conflict)
+        cashFlow.setFrom(from_agent)
         cashFlow.setTo(to)
         cashFlow.setMoney(amount)
         cashFlow.setType(type)
         cashFlow.setTime(time)
         cashFlow.setRegardingPowerPlant(plant)
-        from_keyword_conflict.setCash(from_keyword_conflict.getCash() - amount)
+        from_agent.setCash(from_agent.getCash() - amount)
         if to is not None:
             to.setCash(to.getCash() + amount)
-        cashFlows.add(cashFlow)
+        #cashFlows.add(cashFlow)
         return cashFlow
+
+    def getCashFlowsForPowerPlant(self, plant, tick):
+
+        pass
+         # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
+        #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
 
     def create_or_update_power_plant_loan(self, plant: PowerPlant,
                                           bidder: EnergyProducer,
@@ -142,7 +156,6 @@ class Repository:
             # PowerPlantDispatchPlan not found, so create a new one
             name = 'PowerPlantDispatchPlan ' + str(datetime.now())
             ppdp = PowerPlantDispatchPlan(name)
-
         ppdp.plant = plant
         ppdp.bidder = bidder
         ppdp.bidding_market = bidding_market
@@ -151,30 +164,16 @@ class Repository:
         ppdp.status = self.power_plant_dispatch_plan_status_awaiting
         ppdp.accepted_amount = 0
         ppdp.tick = time
-
         self.power_plant_dispatch_plans[ppdp.name] = ppdp
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
-
-    def getCashFlowsForPowerPlant(self, plant, tick):
-        pass
-         # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
-        #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
-
-
-    """
-    Repository functions:
-    All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
-    """
+    #
+    # def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
+    #     q = 1 + interestRate
+    #     annuity = totalLoan * (q ** payBackTime * (q - 1)) / (q ** payBackTime - 1)
+    #     return annuity
 
     # PowerPlants
-
-
-
-    def calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(self):
-        #so far there is only one market
-        pass
-
     def calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(self, technology, futuretick):
         expectedOperationalcapacity = 0
         plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
@@ -183,9 +182,22 @@ class Repository:
                 expectedOperationalcapacity.sum()
         return expectedOperationalcapacity
 
-    def findPowerGeneratingTechnologyTargetByTechnology(self):
+    def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
+        plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology == technology
+                              and i.status == self.power_plant_status_operational]
+        return sum(plantsoftechnology)
 
-        pass
+    def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
+        return sum([pp.capacity for pp in self.power_plants.values() if pp.technology == technology
+                    and pp.status == self.power_plant_status_inPipeline]) # pp.isInPipeline(tick)
+
+    def calculateCapacityOfPowerPlantsInPipeline(self):
+        return sum([i.capacity for i in self.power_plants.values() if i.status == self.power_plant_status_inPipeline])
+
+    def findPowerGeneratingTechnologyTargetByTechnology(self, technology):
+        for i in self.target_investors.values():
+            if i.powerGeneratingTechnologyTargets == technology.name and i.targetNode == self.country:
+                return i
 
     def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
         return [i for i in self.power_plants if i.getConstructionStartTime() == tick]
@@ -193,10 +205,13 @@ class Repository:
     def findAllPowerPlantsWhichAreNotDismantledBeforeTick(self, tick):
         return [i for i in self.power_plants.values() if i.isWithinTechnicalLifetime(tick)]
 
-
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == self.power_plant_status_operational]
+
+    def get_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.owner == owner]
 
     def get_power_plants_to_be_decommisioned(self, owner) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -276,10 +291,6 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.plant == plant and i.tick == time]
 
-    """
-    SET => AD INFO TO DB 
-    """
-
     def set_power_plant_dispatch_plan_production(self,
                                                  ppdp: PowerPlantDispatchPlan,
                                                  status: str, accepted_amount: float):
@@ -312,6 +323,39 @@ class Repository:
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
 
+    # MarketClearingPoints
+    def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
+        try:
+            return next(i for i in self.market_clearing_points.values() if i.market == market and i.tick == time)
+        except StopIteration:
+            return None
+
+    def get_market_clearing_point_price_for_market_and_time(self, market: Market, time: int) -> float:
+        if time >= 0:
+            mcp = self.get_market_clearing_point_for_market_and_time(market, time)
+            return mcp.price
+        else:
+            return 0
+
+    def create_or_update_market_clearing_point(self,
+                                               market: Market,
+                                               price: float,
+                                               capacity: float,
+                                               time: int) -> MarketClearingPoint:
+        mcp = next((mcp for mcp in self.market_clearing_points.values() if mcp.market == market and mcp.tick == time),
+                   None)
+        if mcp is None:
+            # MarketClearingPoint not found, so create a new one
+            name = 'MarketClearingPoint ' + str(datetime.now())
+            mcp = MarketClearingPoint(name)
+
+        mcp.market = market
+        mcp.price = price
+        mcp.capacity = capacity
+        mcp.tick = time
+        self.market_clearing_points[mcp.name] = mcp
+        self.dbrw.stage_market_clearing_point(mcp, time)
+        return mcp
 
     # Markets
     def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:
@@ -356,48 +400,12 @@ class Repository:
         else:
             return None
 
-
-
-
     def findAllClearingPointsForSubstanceAndTimeRange(self, substance, timeFrom, timeTo, forecast):
 
         # return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
         # filter(lambda p : p.getAbstractMarket().getSubstance() is substance).filter(p -(> p.isForecast()) == forecast).collect(Collectors.toList())
         return
 
-    # MarketClearingPoints
-    def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
-        try:
-            return next(i for i in self.market_clearing_points.values() if i.market == market and i.tick == time)
-        except StopIteration:
-            return None
-
-    def get_market_clearing_point_price_for_market_and_time(self, market: Market, time: int) -> float:
-        if time >= 0:
-            mcp = self.get_market_clearing_point_for_market_and_time(market, time)
-            return mcp.price
-        else:
-            return 0
-
-    def create_or_update_market_clearing_point(self,
-                                               market: Market,
-                                               price: float,
-                                               capacity: float,
-                                               time: int) -> MarketClearingPoint:
-        mcp = next((mcp for mcp in self.market_clearing_points.values() if mcp.market == market and mcp.tick == time),
-                   None)
-        if mcp is None:
-            # MarketClearingPoint not found, so create a new one
-            name = 'MarketClearingPoint ' + str(datetime.now())
-            mcp = MarketClearingPoint(name)
-
-        mcp.market = market
-        mcp.price = price
-        mcp.capacity = capacity
-        mcp.tick = time
-        self.market_clearing_points[mcp.name] = mcp
-        self.dbrw.stage_market_clearing_point(mcp, time)
-        return mcp
 
     # Governments
     def get_national_government_by_zone(self, zone: Zone) -> NationalGovernment:

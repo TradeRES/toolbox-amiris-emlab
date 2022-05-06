@@ -1,8 +1,10 @@
 import logging
 
+from emlabpy.domain.actors import EMLabAgent
 from emlabpy.domain.import_object import *
 
-class EnergyProducer(ImportObject):
+class EnergyProducer(EMLabAgent):
+
     def __init__(self, name):
         super().__init__(name)
         self.investmentRole = None
@@ -57,10 +59,7 @@ class EnergyProducer(ImportObject):
         elif parameter_name == 'willingToInvest':
             self.willingToInvest = parameter_value
 
-    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
-        q = 1 + interestRate
-        annuity = totalLoan * (q ** payBackTime * (q - 1)) / (q ** payBackTime - 1)
-        return annuity
+
 
     def predictFuelPrices(self, agent, futureTimePoint):
         # Fuel Prices
