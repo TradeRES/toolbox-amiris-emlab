@@ -138,7 +138,7 @@ class SpineDBReaderWriter:
     """
     def stage_init_power_plant_structure(self):
         self.stage_object_class(self.powerplant_installed_classname)
-        self.stage_object_parameters(self.powerplant_installed_classname, ["Age" , "Efficiency", "InstalledPowerinMW" , "Location" , "Owner" , "Status" , "Technology"])
+        self.stage_object_parameters(self.powerplant_installed_classname, ["Age" , "Efficiency", "Capacity" , "Location" , "Owner" , "Status" , "Technology"])
 
     def stage_new_power_plant(self,  powerplant ):
         object_name = powerplant.name
@@ -146,8 +146,9 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.powerplant_installed_classname, object_name,
                                            [('Age', powerplant.age),
                                             ('Efficiency', powerplant.actualEfficiency),
-                                            ('Location', powerplant.spotMarketRevenue),
-                                            ('Owner', powerplant.owner  ),
+                                            ('Capacity', powerplant.capacity),
+                                            ('Location', powerplant.location),
+                                            ('Owner', powerplant.owner.name ),
                                             ('Status', powerplant.status ),
                                             ('Technology', powerplant.technology.name )],
                                            '0')

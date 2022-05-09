@@ -65,10 +65,10 @@ class PrepareCandidatePowerPlants(DefaultModule):
                                                                             0)
             self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology",
                                                                             candidateTechnology.name, 0)
-            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "InstalledPowerInMW",
-                                                                            candidateTechnology.InstalledPowerInMW, 0)
+            self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "Capacity",
+                                                                            candidateTechnology.Capacity, 0)
             print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name,
-                  candidateTechnology.InstalledPowerInMW)
+                  candidateTechnology.Capacity)
 
             self.powerPlantsList.append(object_name)
         # df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
@@ -78,7 +78,7 @@ class PrepareCandidatePowerPlants(DefaultModule):
         # save the list of power plants that have been candidates per iteration.
         self.reps.dbrw.stage_new_power_plants_ids(self.powerPlantsList, self.iteration, self.futureYear)
 
-        # parameternames = [Technology, Status, CommissionedYear, InstalledPowerInMW, FuelType, Label]
+        # parameternames = [Technology, Status, CommissionedYear, Capacity, FuelType, Label]
 
     def getlastIds(self):
         # get maximum number of power plan

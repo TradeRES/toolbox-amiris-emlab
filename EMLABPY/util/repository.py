@@ -107,13 +107,12 @@ class Repository:
         loan.setNumberOfPaymentsDone(0)
         plant.setLoan(loan)
         self.loanList.append(loan)
-        # if 'key1' in dict.keys():
-        if not self.loansFromAgent.containsKey(from_agent):
-            self.loansFromAgent.put(from_agent, [])
-        self.loansFromAgent.get(from_agent).add(loan)
-        if not self.loansToAgent.containsKey(to):
-            self.loansToAgent.put(to, [])
-        self.loansToAgent.get(to).add(loan)
+        if from_agent not in self.loansFromAgent.keys():
+            self.loansFromAgent['from_agent'] = []
+        self.loansFromAgent['from_agent'] = loan
+        if to not in self.loansToAgent.keys():
+            self.loansToAgent['to'] = []
+        self.loansToAgent['to'] = loan
         return loan
 
     def findLoansFromAgent(self, agent):

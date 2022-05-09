@@ -20,8 +20,7 @@ class Loan:
 
     def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
         annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
-        annuitybyhand = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
-        print(annuitybyhand - annuity)
+#        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
         return annuity
 
     def getLoanStartTime(self):

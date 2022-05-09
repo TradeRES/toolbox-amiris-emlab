@@ -36,7 +36,7 @@ class CandidatePowerPlant(PowerPlant):
             self.name = parameter_value
         elif parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
-        elif parameter_name == 'InstalledPowerInMW':
+        elif parameter_name == 'Capacity':
             self.capacity = parameter_value
         elif parameter_name == 'Owner':
             self.owner = parameter_value

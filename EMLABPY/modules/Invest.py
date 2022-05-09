@@ -42,6 +42,7 @@ class Investmentdecision(DefaultModule):
         self.agent = None
         self.budget_year0 = 0
         reps.dbrw.stage_init_future_prices_structure()
+        reps.dbrw.stage_init_power_plant_structure()
 
     def act(self):
         self.setAgent( "Producer1")
@@ -53,38 +54,36 @@ class Investmentdecision(DefaultModule):
         # calculate which is the power plant with the highest NPV
         for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
             print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
-            #futurecapacity = FutureCapacityExpectation(self.reps) # inner class is over complicated so transformed to method
             self.calculateFutureCapacityExpectation(candidatepowerplant)
-            #agent = self.reps.energy_producers[self.agent]
+
             projectvalue = self.getProjectValue( candidatepowerplant, self.agent)
             print("projectvalue", projectvalue)
             # TODO this is only to test
             bestCandidatePowerPlant = candidatepowerplant
-
-            # if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
-            #     highestValue = projectvalue / candidatepowerplant.capacity
-            #     bestCandidatePowerPlant = candidatepowerplant
+            if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
+                highestValue = projectvalue / candidatepowerplant.capacity
+                bestCandidatePowerPlant = candidatepowerplant
 
         print("bestPlant is " , bestCandidatePowerPlant)
 
         if bestCandidatePowerPlant is not None:
-            # build the power plant and give a random number to it
+            # investing in best candidate power plant
             newplant = self.invest(bestCandidatePowerPlant)
             self.reps.dbrw.stage_new_power_plant(newplant)
 
     def invest(self, bestCandidatePowerPlant):
         newplant = PowerPlant(bestCandidatePowerPlant.name) # the name of the candidate power plant was assigned as the next available id from the installed power plants
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country, bestCandidatePowerPlant.capacity, bestCandidatePowerPlant.technology)
-        print("{0} invests in technology {1} at tick {2}", [self.agent, newplant.name , self.reps.current_tick])
+        print("{0} invests in technology {1} at tick {2}".format(self.agent, newplant.name , self.reps.current_tick))
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
         downPayment = investmentCostPayedByEquity
         bigbank = self.reps.bigBank
         manufacturer = self.reps.manufacturer
         self.createSpreadOutDownPayments(self.agent, manufacturer, downPayment, newplant)
-        amount = Loan.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(), self.agent.getLoanInterestRate())
+        amount = self.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(), self.agent.getLoanInterestRate())
         #(self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
-        loan = self.reps.createLoan(self.agent, bigbank, amount, newplant.getTechnology().getDepreciationTime(), getCurrentTick(), newplant)
+        loan = self.reps.createLoan(self.agent, bigbank, amount, newplant.getTechnology().getDepreciationTime(), self.reps.current_tick, newplant)
         newplant.createOrUpdateLoan(loan)
         return newplant
 
@@ -143,6 +142,13 @@ class Investmentdecision(DefaultModule):
         downpayment = self.reps.createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1, self.reps.current_tick, plant)
         # the rest of downpayments are scheduled
         plant.createOrUpdateDownPayment(downpayment)
+
+    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
+        annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
+        annuitybyhand = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
+        annuity = totalLoan * ((1+interestRate) ** payBackTime * (interestRate)) / ((1+interestRate) ** payBackTime - 1)
+        print(annuitybyhand - annuity) # TODO check which one is correct
+        return annuity
 
     def setPowerPlantExpectations(self, powerplant, time):
         powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
