@@ -24,9 +24,13 @@ class ScenarioCreator:
             specific_emissions = self.get_specific_emissions_by_fuel(
                 prototype["FuelType"]
             )
-            prototype["SpecificCo2EmissionsInTperMWH"] = prototype
+            prototype["SpecificCo2EmissionsInTperMWH"] = specific_emissions
 
-        self.scenario
+            specific_emissions = self.get_specific_emissions_by_fuel(
+                prototype["FuelType"]
+            )
+            prototype["SpecificCo2EmissionsInTperMWH"] = specific_emissions
+
 
     def get_agents_by_type(self, agent_type: str) -> List[Dict]:
         """Return list of agents of given type"""
@@ -37,6 +41,6 @@ class ScenarioCreator:
         ]
 
     # TODO: Replace with (TradeRES) DB queries / extraction
-    def get_specific_emissions_by_fuel(self, db: dict, fuel: str) -> None:
+    def get_specific_emissions_by_fuel(self, db: dict, fuel: str) -> float:
         """Return specific emissions for given fuel"""
         return db["specific_emissions"][fuel]
