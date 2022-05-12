@@ -22,6 +22,7 @@ class EnergyProducer(EMLabAgent):
         self.dismantlingProlongingYearsAfterTechnicalLifetime = None
         self.dismantlingRequiredOperatingProfit = None
         self.pastTimeHorizon = None
+        self.readytoInvest = False
 
     def add_parameter_value(self, reps, parameter_name, parameter_value: object, alternative):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent

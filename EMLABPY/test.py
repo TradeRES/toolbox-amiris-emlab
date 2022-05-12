@@ -1,14 +1,15 @@
-dict_values([{'name': 'pvTargetTrend', 'parameters': {}, 'investmentRole': None, 'investorMarket': None,
-              'priceMarkUp': None, 'longTermContractMargin': None, 'longTermContractPastTimeHorizon': None,
-              'investmentFutureTimeHorizon': None, 'equityInterestRate': None, 'downpaymentFractionOfCash': None,
-              'debtRatioOfInvestments': None, 'willingToInvest': None, 'loanInterestRate': None,
-              'numberOfYearsBacklookingForForecasting': None, 'dismantlingProlongingYearsAfterTechnicalLifetime': None,
-              'dismantlingRequiredOperatingProfit': None, 'pastTimeHorizon': None,
-              'powerGeneratingTechnologyTargets': 'PV_utility_systems', 'specificPowerGridNode': 'DE'},
-             {'name': 'windTargetTrend', 'parameters': {}, 'investmentRole': None, 'investorMarket': None,
-              'priceMarkUp': None, 'longTermContractMargin': None, 'longTermContractPastTimeHorizon': None,
-              'investmentFutureTimeHorizon': None, 'equityInterestRate': None, 'downpaymentFractionOfCash': None,
-              'debtRatioOfInvestments': None, 'willingToInvest': None, 'loanInterestRate': None,
-              'numberOfYearsBacklookingForForecasting': None, 'dismantlingProlongingYearsAfterTechnicalLifetime': None,
-              'dismantlingRequiredOperatingProfit': None, 'pastTimeHorizon': None,
-              'powerGeneratingTechnologyTargets': 'WTG_onshore', 'specificPowerGridNode': 'DE'}])
+# import pandas library
+import pandas as pd
+
+# dictionary
+x = ['A', 'B', 'A', 'B', 'A', 'B'],
+y = [1, 4, 3, 2, 10, 11]
+
+df = pd.DataFrame(powerplantsvalues, columns=['name', 'technology', 'profit'])
+groupedplantsbytechnology = df.groupby('technology')
+keys = groupedplantsbytechnology.groups.keys()
+for i in keys:
+    for index, planttoInvest in groupedplantsbytechnology.get_group(i).iterrows():
+        if planttoInvest["technology"].isinvestable == False:
+            break
+    # investing in best candidate power plant as it passed the checks.

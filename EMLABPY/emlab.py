@@ -10,6 +10,7 @@ import os
 import time
 
 from emlabpy.modules.payLoans import PayForLoansRole
+from emlabpy.modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
@@ -36,6 +37,7 @@ run_investment_module = False
 run_decommission_module = False
 run_next_year_market = False
 run_financial_results = False
+run_prepare_next_year_market_clearing = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -53,8 +55,8 @@ for arg in sys.argv[3:]:
         run_short_investment_module = True
     if arg == 'run_decommission_module':
         run_decommission_module = True
-    if arg == 'run_next_year_market':
-        run_next_year_market = True
+    if arg == 'run_prepare_next_year_market_clearing':
+        run_prepare_next_year_market_clearing = True
     if arg == 'run_financial_results':
         run_financial_results = True
 
@@ -71,8 +73,7 @@ else:
     spinedb_reader_writer = SpineDBReaderWriter("run_other_module", emlab_url)
 
 try:  # Try statement to always close DB properly
-    # Load repository
-    reps = spinedb_reader_writer.read_db_and_create_repository()
+    reps = spinedb_reader_writer.read_db_and_create_repository()     # Load repository
     print("repository complete")
     logging.info('Start Initialization Modules')
     capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
@@ -109,7 +110,7 @@ try:  # Try statement to always close DB properly
         financial_report.act_and_commit() # TODO make faster
         logging.info('End saving Financial Results')
 
-    if run_next_year_market:
+    if run_prepare_next_year_market_clearing:
         logging.info('Start Run preparing market for next year')
         preparing_market = PrepareMarket(reps)
         preparing_market.act_and_commit()
@@ -140,6 +141,13 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run Investment')
         investing.act_and_commit()
         logging.info('End Run Investment')
+
+    if run_short_investment_module:
+        short_investing = ShortInvestmentdecision(reps)
+        logging.info('Start Run short term Investments')
+        short_investing.act_and_commit()
+        logging.info('End Run short term Investment')
+
     logging.info('End Run Modules')
 
     spinedb_reader_writer.commit('Initialize all module import structures')

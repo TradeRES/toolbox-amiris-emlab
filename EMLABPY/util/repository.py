@@ -39,9 +39,11 @@ class Repository:
         self.time_step = 0
         self.start_simulation_year = 0
         self.end_simulation_year = 0
+        self.short_term_investment_minimal_irr = 0
         self.lookAhead = 0
         self.current_year = 0
         self.simulation_length = 0
+
         self.newTechnology = dict()
         self.energy_producers = dict()
         self.target_investors = dict()
@@ -86,14 +88,11 @@ class Repository:
         self.powerPlantsForAgent = {}
         self.loanList = []
         self.financialPowerPlantReports = None
+
     """
     Repository functions:
     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
     """
-
-    def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
-        return [i for i in self.candidatePowerPlants.values()
-                if i.owner == owner]
 
     # loans
     def createLoan(self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
@@ -133,13 +132,13 @@ class Repository:
         from_agent.setCash(from_agent.getCash() - amount)
         if to is not None:
             to.setCash(to.getCash() + amount)
-        #cashFlows.add(cashFlow)
+        # cashFlows.add(cashFlow)
         return cashFlow
 
     def getCashFlowsForPowerPlant(self, plant, tick):
 
         pass
-         # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
+        # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
         #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
 
     def create_or_update_power_plant_loan(self, plant: PowerPlant,
@@ -166,6 +165,7 @@ class Repository:
         self.power_plant_dispatch_plans[ppdp.name] = ppdp
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
+
     #
     # def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
     #     q = 1 + interestRate
@@ -173,11 +173,15 @@ class Repository:
     #     return annuity
 
     # PowerPlants
-    def calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(self, technology, futuretick):
+    def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
+        return [i for i in self.candidatePowerPlants.values()
+                if i.owner == owner]
+
+    def calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(self, technology, tick):
         expectedOperationalcapacity = 0
         plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
         for plant in plantsoftechnology:
-            if PowerPlant.isExpectedToBeOperational(plant, futuretick):
+            if PowerPlant.isExpectedToBeOperational(plant, tick):
                 expectedOperationalcapacity.sum()
         return expectedOperationalcapacity
 
@@ -188,7 +192,7 @@ class Repository:
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology == technology
-                    and pp.status == self.power_plant_status_inPipeline]) # pp.isInPipeline(tick)
+                    and pp.status == self.power_plant_status_inPipeline])  # pp.isInPipeline(tick)
 
     def calculateCapacityOfPowerPlantsInPipeline(self):
         return sum([i.capacity for i in self.power_plants.values() if i.status == self.power_plant_status_inPipeline])
@@ -214,7 +218,7 @@ class Repository:
 
     def get_power_plants_to_be_decommisioned(self, owner) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner == owner and i.status ==  self.power_plant_status_to_be_decommissioned]
+                if i.owner == owner and i.status == self.power_plant_status_to_be_decommissioned]
 
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
@@ -263,7 +267,7 @@ class Repository:
             total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time,
                                                                                                 self.electricity_spot_markets[
                                                                                                     'DutchElectricitySpotMarket'])
-            # Emission intensity is in ton CO2 / MWh☺
+            # Emission intensity is in ton CO2 / MWh
             emission_intensity = power_plant.calculate_emission_intensity(self)
             res[power_plant.name] = total_capacity * emission_intensity
         return res
@@ -404,7 +408,6 @@ class Repository:
         # return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
         # filter(lambda p : p.getAbstractMarket().getSubstance() is substance).filter(p -(> p.isForecast()) == forecast).collect(Collectors.toList())
         return
-
 
     # Governments
     def get_national_government_by_zone(self, zone: Zone) -> NationalGovernment:

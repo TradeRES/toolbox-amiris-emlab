@@ -489,3 +489,4 @@ class PowerPlant(ImportObject):
     # getter and setters
     def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
         self.historicalCvarDummyPlant = historicalCvarDummyPlant
+

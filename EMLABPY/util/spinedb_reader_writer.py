@@ -5,7 +5,6 @@ Ingrid Sanchez 18-2-2022 modified
 Jim Hommes - 25-3-2021
 """
 import logging
-
 from spinedb_api import Map
 from twine.repository import Repository
 
@@ -13,6 +12,7 @@ from emlabpy.domain.newTechnology import NewTechnology
 from emlabpy.domain.targetinvestor import TargetInvestor
 from emlabpy.util.repository import *
 from emlabpy.util.spinedb import SpineDB
+from emlabpy.util.globalNames import names
 
 
 class SpineDBReaderWriter:
@@ -32,8 +32,9 @@ class SpineDBReaderWriter:
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
-        self.ConventionalOperator_classname = "ConventionalPlantOperator"
-        self.VariableRenewableOperator_classname = "VariableRenewableOperator"
+        self.ConventionalOperator_classname = "Conventionals"
+        self.VariableRenewableOperator_classname = "Renewables"
+        self.Storages_classname = "Storages"
         if run_module == "run_investment_module":
             self.amirisdb = SpineDB(db_urls[1])
 
@@ -63,6 +64,8 @@ class SpineDBReaderWriter:
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'Country':# changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
+            elif row['parameter_name'] == 'short_term_investment_minimal_irr':# changed from node(emlab) to country because in traderes Node is used for fuels
+                reps.country = row['parameter_value']
 
         candidatePowerPlants = [str(503),  str(49)]         # todo: later this should not be hardcoded
         # if reps.current_tick > 0:
@@ -86,10 +89,10 @@ class SpineDBReaderWriter:
                                     ', object: ' + object_name +
                                     ', parameter: ' + parameter_name)
 
-        if self.run_module == "run_investment_module":
+        # the results of AMIRIS dispatch are extracted from the amiris DB
+        if self.run_module == "run_investment_module" or "run_short_investment_module":
             db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata, candidatePowerPlants)
-
         return reps
 
 
@@ -225,7 +228,6 @@ class SpineDBReaderWriter:
         self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
 
 
-
     """
     Fuel prices
     """
@@ -347,7 +349,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
     elif object_class_name == 'PowerPlantsInstalled':
         add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
-    elif object_class_name in ['ConventionalPlantOperator', 'VariableRenewableOperator']:# TODO add  'StorageTrader'
+    elif object_class_name in ['Conventionals', 'Renewables', "Storages"]:# TODO add  'StorageTrader' and change to "conventional",
         if object_name not in candidatePowerPlants:
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
             add_type_to_power_plant(reps, db_line, reps.power_plants)

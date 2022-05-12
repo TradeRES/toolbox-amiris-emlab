@@ -204,9 +204,9 @@
                 ]
             },
             {
-                "name": "from scenario_excel to ScenarioImporter",
+                "name": "from amiris excel to ScenarioImporter",
                 "from": [
-                    "scenario_excel",
+                    "amiris excel",
                     "right"
                 ],
                 "to": [
@@ -662,8 +662,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 632.8336540433166,
-            "y": 12.4298464604015,
+            "x": 629.5091220046081,
+            "y": 17.41664451846392,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -702,20 +702,6 @@
                     true
                 ]
             ]
-        },
-        "scenario_excel": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -1162.8207006330458,
-            "y": -433.8646237457562,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "data/scenariofromAMIRIS.xlsx"
-                }
-            ],
-            "db_references": []
         },
         "Scenario_gas": {
             "type": "Data Connection",
@@ -923,8 +909,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -973.9499088133524,
-            "y": -294.4747612768357,
+            "x": -982.5887982550707,
+            "y": -292.4849359125341,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -940,7 +926,7 @@
             "type": "Data Connection",
             "description": "",
             "x": -1219.5280281189316,
-            "y": -717.34202344374,
+            "y": -719.004289463094,
             "file_references": [
                 {
                     "type": "path",
@@ -976,7 +962,7 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 215.13487237953564,
+            "x": 217.12469774383732,
             "y": -511.13943530093763,
             "specification": "Best Investment",
             "execute_in_work": false,
@@ -1062,8 +1048,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -556.1344993853858,
-            "y": -390.4534086988996,
+            "x": -554.4722333660318,
+            "y": -390.45340869889964,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1150,9 +1136,9 @@
             "type": "Tool",
             "description": "",
             "x": -524.6432033997546,
-            "y": -48.49659876478984,
-            "specification": "Future power plants",
-            "execute_in_work": false,
+            "y": -44.51694803618648,
+            "specification": "",
+            "execute_in_work": true,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -1252,6 +1238,20 @@
                     true
                 ]
             ]
+        },
+        "amiris excel": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -1240.4238898408112,
+            "y": -425.9053222885495,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/scenariofromAMIRIS.xlsx"
+                }
+            ],
+            "db_references": []
         }
     }
 }

@@ -16,7 +16,7 @@ class CandidatePowerPlant(PowerPlant):
         self.Lifetime = 0
         self.InvestedCapital = 0
         self.FixedOperatingCost = 0
-        self.viableInvestment = False
+        self.viableInvestment = True # initially all candidate power plants should be investable
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
         self.historicalCvarDummyPlant = 0
@@ -76,6 +76,14 @@ class CandidatePowerPlant(PowerPlant):
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
                                         round(random() * self.technology.expected_lifetime)) + 2
+
+    # candidate power plants can be invested or not
+    def isViableInvestment(self):
+        return self.viableInvestment
+
+    def setViableInvestment(self, viableInvestment):
+        self.viableInvestment = viableInvestment
+
 
 class FutureStorageTrader(ImportObject):
     def __init__(self, name):
