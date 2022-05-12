@@ -1,0 +1,48 @@
+﻿AgentGroups:
+  - &exchange 1
+  - &policy 90
+  - &allMarketers [111, 112, 113]
+  - &supportedMarketers [111, 112, 113]
+
+Contracts:
+  - SenderId: *supportedMarketers
+    ReceiverId: *policy
+    ProductName: SupportInfoRequest
+    FirstDeliveryTime: -35
+    DeliveryIntervalInSteps: 31536000
+
+  - SenderId: *policy
+    ReceiverId: *supportedMarketers
+    ProductName: SupportInfo
+    FirstDeliveryTime: -33
+    DeliveryIntervalInSteps: 31536000
+
+  - SenderId: *exchange
+    ReceiverId: *policy
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *allMarketers
+    ReceiverId: *policy
+    ProductName: YieldPotential
+    FirstDeliveryTime: 1
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *supportedMarketers
+    ReceiverId: *policy
+    ProductName: SupportPayoutRequest
+    FirstDeliveryTime: 2626200
+    DeliveryIntervalInSteps: 2628000
+
+  - SenderId: *policy
+    ReceiverId: *supportedMarketers
+    ProductName: SupportPayout
+    FirstDeliveryTime: 2626202
+    DeliveryIntervalInSteps: 2628000
+
+  - SenderId: *policy
+    ReceiverId: *policy
+    ProductName: MarketValueCalculation
+    FirstDeliveryTime: 2626204
+    DeliveryIntervalInSteps: 2628000
