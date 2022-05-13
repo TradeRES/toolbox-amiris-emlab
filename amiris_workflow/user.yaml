@@ -28,7 +28,7 @@ workflow:
         read_from_dmgr: null
         write_to_dmgr: powerPlants
       args:
-        excelFile: ../amiris_emlab.xlsx #TODO: parse cells with formulas
+        excelFile: ../amiris_data_structure.xlsx
         excelSheet: conventionals
         excelHeader: True
 
@@ -37,60 +37,40 @@ workflow:
       call: checkpoint
       tag: parsedData
 
-  - action:
-      project: general
-      call: translate_data
-      data:
-        read_from_dmgr: powerPlants
-        write_to_dmgr: powerPlants_translated
-      args:
-        translationDirective: translationFieldMap
-
-  - action:
-      project: general
-      call: filter_data
-      data:
-        read_from_dmgr: powerPlants_translated
-        write_to_dmgr: powerPlants_DE
-      args:
-        intersectingFilters:
-          - column: COUNTRY
-            values: ['GERMANY']
-          - column: FUEL
-            values: 'NUCLEAR'
-
-  - actionCheck:
-      project: general
-      call: checkpoint
-      tag: filteredData
-
-  - action:
-      project: general
-      call: write_timeseries
-      data:
-        read_from_dmgr: powerPlants_DE
-        write_to_dmgr: Null
-      args:
-        columns_to_export:
-          - UNITID
-          - PLANT
-          - MW
-          - FUEL
-
-  - actionCheck:
-      project: general
-      call: checkpoint
-      tag: builtPb
-
+  # Add conventionals (append to scneario skeleton)
   - action:
       project: general
       call: write_AMIRIS_config
       data:
-        read_from_dmgr: powerPlants_DE
+        read_from_dmgr: powerPlants
         write_to_dmgr: null
       args:
-        AMIRISConfigFieldMap: amiris-config/AMIRISConfigFieldMap_DE.yaml
+        AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
         templateFile: amiris-config/scenario_template.yaml
+        outputFile: scenario.yaml
+
+  # Add storages (append to scenario)
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: powerPlants
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
+        templateFile: amiris-config/data/scenario.yaml
+        outputFile: scenario.yaml
+
+  # Add renewables (append to scenario)
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: powerPlants
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
+        templateFile: amiris-config/data/scenario.yaml
         outputFile: scenario.yaml
 
   - action:
