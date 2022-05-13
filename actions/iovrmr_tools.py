@@ -230,6 +230,8 @@ def insert_agents_from_map(data, translation_map, template):
                 if row[column] == target:
                     agent = create_agent(row, translation['map'])
                     agent_list.append(agent)
+                else:
+                    continue
             elif isinstance(translation, list):
                 agent = create_agent(row, translation)
                 agent_list.append(agent)

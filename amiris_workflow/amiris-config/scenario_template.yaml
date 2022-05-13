@@ -56,6 +56,13 @@ Agents:
         - ValueOfLostLoad: 3000.0
           DemandSeries: "data/load.csv"
 
+  - Type: PriceForecaster
+    Id: 6
+    Attributes:
+      DistributionMethod: SAME_SHARES
+      ForecastPeriodInHours: 24
+      ForecastRequestOffsetInSeconds: 27
+
   - Type: SystemOperatorTrader
     Id: 13
 

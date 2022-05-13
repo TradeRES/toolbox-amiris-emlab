@@ -7,30 +7,32 @@ __email__ = 'felix.nitsch@dlr.de'
 
 import csv
 import os
-from typing import List, Dict
+from datetime import datetime, timedelta
+from typing import Dict
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import yaml
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import seaborn as sns
-from datetime import datetime, timedelta
-from fameio.scripts.make_config import run as make_config
+import yaml
+from fameio.scripts.convert_results import run as convert_results
 from fameio.scripts.make_config import DEFAULT_CONFIG
+from fameio.scripts.make_config import run as make_config
+from fameio.source.cli import Config
 from fameio.source.loader import load_yaml
 from fameio.source.time import DATE_FORMAT
 from fameio.source.time import FameTime
-from fameio.source.cli import Config
-from fameio.scripts.convert_results import run as convert_results
-
-from ioproc.tools import action
 from ioproc.logger import mainlogger
-from iovrmr_tools import ensure_path_exists, filter_for_columns, get_excel_sheet, get_filter_type_lists, \
-    get_from_dict_or_default, insert_agents_from_map, insert_contracts_from_map, get_header, get_field, \
-    write_yaml, to_list, round_to_full_hour, ensure_given_data_matches_dims, check_if_window_too_large, \
-    raise_and_log_critical_error, get_all_csv_files_in_folder
+from ioproc.tools import action
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from iovrmr_tools import ensure_path_exists, filter_for_columns, \
+    get_excel_sheet, get_filter_type_lists, \
+    get_from_dict_or_default, insert_agents_from_map, \
+    insert_contracts_from_map, get_header, get_field, \
+    write_yaml, to_list, round_to_full_hour, ensure_given_data_matches_dims, \
+    check_if_window_too_large, \
+    raise_and_log_critical_error, get_all_csv_files_in_folder
 
 _FOUND_POWER = "Searched for `power` information in agent '{}' with id '{}. Found {} MW for technology `{}`."
 _FOUND_NO_POWER = "Searched for `power` information in agent '{}' with id '{}'. Found none."
@@ -251,7 +253,7 @@ def write_AMIRIS_config(dmgr, config, params):
               read_from_dmgr: powerPlants_translated_DE
               write_to_dmgr: null
             args:
-              AMIRISConfigFieldMap: AMIRISConfigFieldMap_DE.yaml
+              AMIRISConfigFieldMap: conventionalsFieldMap.yaml
               templateFile: scenario_template.yaml
               outputFile: scenario.yaml
     """
