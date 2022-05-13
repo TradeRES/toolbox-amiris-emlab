@@ -3,8 +3,8 @@ Schema: !include "schema.yaml"
 GeneralProperties:
   RunId: 1
   Simulation:
-    StartTime: 2011-12-31_23:58:00
-    StopTime: 2012-12-30_23:58:00
+    StartTime: 2029-12-31_23:58:00
+    StopTime: 2030-12-31_23:58:00
     RandomSeed: 1
   Output:
     Interval: 100
@@ -54,7 +54,7 @@ Agents:
     Attributes:
       Loads:
         - ValueOfLostLoad: 3000.0
-          DemandSeries: "data/load.csv"
+          DemandSeries: "amiris-config/data/load.csv"
 
   - Type: PriceForecaster
     Id: 6
@@ -72,7 +72,7 @@ Agents:
       EnergyCarrier: PV
       InstalledPowerInMW: 45436
       OpexVarInEURperMWH: 0.0
-      YieldProfile: "data/pv.csv"
+      YieldProfile: "amiris-config/data/pv.csv"
 
   - Type: VariableRenewableOperator
     Id: 20
@@ -80,7 +80,7 @@ Agents:
       EnergyCarrier: WindOn
       InstalledPowerInMW: 51945
       OpexVarInEURperMWH: 0
-      YieldProfile: "data/windon.csv"
+      YieldProfile: "amiris-config/data/windon.csv"
 
 Contracts: !include ["yaml/contracts/*.yaml", "Contracts"]
 

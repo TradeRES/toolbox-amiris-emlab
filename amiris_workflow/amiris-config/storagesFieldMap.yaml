@@ -7,7 +7,7 @@ Agents:
       - attribute: Id
         column: identifier
       - attribute: Attributes/ForecastRequestOffsetInSeconds
-        column: ForecastRequestOffsetInSeconds
+        value: 22
       - attribute: Attributes/Device/EnergyToPowerRatio
         column: EnergyToPowerRatio
       - attribute: Attributes/Device/SelfDischargeRatePerHour
@@ -18,7 +18,7 @@ Agents:
         column: DischargingEfficiency
       - attribute: Attributes/Device/InitialEnergyLevelInMWH
         column: InitialEnergyLevelInMWH
-      - attribute: Attributes/Device/PowerInMW
+      - attribute: Attributes/Device/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/Strategy/StrategistType
         value: MULTI_AGENT_SIMPLE
@@ -30,11 +30,6 @@ Agents:
         value: [0.0, 1.0, 2.0]
 
 
-AgentGroups:
-  - &exchange 1
-  - &forecaster 6
-  - &storage 7
-
 Contracts:
 ##########################
 # -- Price Forecaster -- #
@@ -43,13 +38,13 @@ Contracts:
 ## use with SINGLE* strategies#
 ###############################
 #  - SenderId: StorageTrader
-#    ReceiverId: *forecaster
+#    ReceiverId: 6
 #    ProductName: MeritOrderForecastRequest
 #    FirstDeliveryTime: -21
 #    DeliveryIntervalInSteps: 3600
 #
-#  - SenderId: *forecaster
-#    ReceiverId: *storage
+#  - SenderId: 6
+#    ReceiverId: StorageTrader
 #    ProductName: MeritOrderForecast
 #    FirstDeliveryTime: -19
 #    DeliveryIntervalInSteps: 3600
@@ -57,14 +52,14 @@ Contracts:
 ###############################
 ## use with MULTI strategy    #
 ###############################
-  - SenderId: PriceForecaster
+  - SenderId: 6
     ReceiverId: StorageTrader
     ProductName: PriceForecast
     FirstDeliveryTime: -19
     DeliveryIntervalInSteps: 3600
 
   - SenderId: StorageTrader
-    ReceiverId: PriceForecaster
+    ReceiverId: 6
     ProductName: PriceForecastRequest
     FirstDeliveryTime: -21
     DeliveryIntervalInSteps: 3600

@@ -9,7 +9,7 @@ debug:
 
 global:
   pbDir: "amiris/result/"
-  pbFile: config.pb
+  pbFile: traderes.pb
   output:
     filePath: amiris-config/data/
     timeSeriesDateFormat: '%Y-%m-%d_%H:%M:%S'
@@ -50,28 +50,28 @@ workflow:
         outputFile: scenario.yaml
 
   # Add storages (append to scenario)
-  - action:
-      project: general
-      call: write_AMIRIS_config
-      data:
-        read_from_dmgr: powerPlants
-        write_to_dmgr: null
-      args:
-        AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
-        templateFile: amiris-config/data/scenario.yaml
-        outputFile: scenario.yaml
-
-  # Add renewables (append to scenario)
-  - action:
-      project: general
-      call: write_AMIRIS_config
-      data:
-        read_from_dmgr: powerPlants
-        write_to_dmgr: null
-      args:
-        AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
-        templateFile: amiris-config/data/scenario.yaml
-        outputFile: scenario.yaml
+#  - action:
+#      project: general
+#      call: write_AMIRIS_config
+#      data:
+#        read_from_dmgr: powerPlants
+#        write_to_dmgr: null
+#      args:
+#        AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
+#        templateFile: amiris-config/data/scenario.yaml
+#        outputFile: scenario.yaml
+#
+#  # Add renewables (append to scenario)
+#  - action:
+#      project: general
+#      call: write_AMIRIS_config
+#      data:
+#        read_from_dmgr: powerPlants
+#        write_to_dmgr: null
+#      args:
+#        AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
+#        templateFile: amiris-config/data/scenario.yaml
+#        outputFile: scenario.yaml
 
   - action:
       project: general
@@ -86,7 +86,7 @@ workflow:
       args:
         input: "amiris-config/config.pb"
         model:
-          jar: 'amiris/asgard/amiris-jar-with-dependencies.jar'
+          jar: 'amiris/amiris-core_1.2-jar-with-dependencies.jar'
           vm: '-ea -Xmx2000M'
           fame_args: '-Dlog4j.configuration=file:amiris/log4j.properties'
           runner: 'de.dlr.gitlab.fame.setup.FameRunner'
@@ -95,247 +95,3 @@ workflow:
   - action:
       project: general
       call: convert_pb
-
-  - action:
-      project: general
-      call: compile_price_exchange_file
-      args:
-        agent: EnergyExchange
-        indexColumn: 'TimeStep'
-        mapping:
-          TimeStep: Time
-          AgentId: Region
-        groupby: ["Time", "Region"]
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-
-  - action:
-      project: general
-      call: compile_installed_capacities_exchange_file
-      args:
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-        one_file_per_exchange: true
-        map:
-          Energy Carrier:
-            Storage: Pumped Hydro Storage
-            NUCLEAR: Nuclear Power
-            LIGNITE: Lignite
-            HARD_COAL: Hard Coal
-            GASCC: Gas CCGT
-            GASTURBINE: Gas Turbine
-            OIL: Other Conventional
-            PV: Photovoltaic
-            WindOn: Wind Onshore
-            RunOfRiver: Hydro Energy
-            Biogas: Bioenergy
-            WindOff: Wind Offshore
-
-  - action:
-      project: general
-      call: compile_awarded_power_exchange_file
-      args:
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-        aggregated_yearly_sum: false
-        map:
-          Energy Carrier:
-            Storage: Pumped Hydro Storage
-            NUCLEAR: Nuclear Power
-            LIGNITE: Lignite
-            HARD_COAL: Hard Coal
-            GASCC: Gas CCGT
-            GASTURBINE: Gas Turbine
-            OIL: Other Conventional
-            PV: Photovoltaic
-            WindOn: Wind Onshore
-            RunOfRiver: Hydro Energy
-            Biogas: Bioenergy
-            WindOff: Wind Offshore
-
-  - action:
-      project: general
-      call: compile_awarded_power_exchange_file
-      args:
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-        aggregated_yearly_sum: true
-        map:
-          Energy Carrier:
-            Storage: Pumped Hydro Storage
-            NUCLEAR: Nuclear Power
-            LIGNITE: Lignite
-            HARD_COAL: Hard Coal
-            GASCC: Gas CCGT
-            GASTURBINE: Gas Turbine
-            OIL: Other Conventional
-            PV: Photovoltaic
-            WindOn: Wind Onshore
-            RunOfRiver: Hydro Energy
-            Biogas: Bioenergy
-            WindOff: Wind Offshore
-
-    # TODO: enable when MarketCoupling is updated in AMIRIS
-    # - action:
-    #     project: general
-    #     call: compile_transfer_capacity_exchange_file
-    #     args:
-    #       agent: MarketCoupling
-    #       indexColumn: 'TimeStep'
-    #       mapping:
-    #         TimeStep: Time
-    #         OriginAgentId: From
-    #         TargetAgentId: To
-    #         AvailableTransferCapacityInMWH: Available Transfer Capacity In MWh
-    #         UsedTransferCapacityInMWH: Used Transfer Capacity In MWh
-    #       scenario: "../couple_markets_AT-DE/amiris-config/scenario.yaml"
-
-  - action:
-      project: general
-      call: compile_powerplant_generation_exchange_file
-      args:
-        agent: ConventionalPlantOperator
-        indexColumn: 'TimeStep'
-        mapping:
-          TimeStep: Time
-          AgentId: Id
-          AwardedPowerInMWH: Power
-        groupby: ["Time", "Id"]
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-        save_as_hdf5: True
-
-  - action:
-      project: general
-      call: compile_powerplant_generation_exchange_file
-      args:
-        agent: ConventionalPlantOperator
-        indexColumn: 'TimeStep'
-        mapping:
-          TimeStep: Time
-          AgentId: Id
-          AwardedPowerInMWH: Power
-        groupby: ["Time", "Id"]
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-        save_as_hdf5: False
-
-  - action:
-      project: general
-      call: compile_demand_exchange_file
-      args:
-        agent: EnergyExchange
-        indexColumn: 'TimeStep'
-        mapping:
-          TimeStep: Time
-          AgentId: Region
-        groupby: ["Time", "Region"]
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-
-  - action:
-      project: general
-      call: compile_markup_exchange_file
-      args:
-        scenario: "../couple_markets_AT-DE/amiris-config/data/scenario.yaml"
-
-### C O M P A R E ###
-  - action:
-      project: general
-      call: compare_price_duration_curves
-      args:
-        data:
-          - file_path: "output/2019_couplingtest_002_DLR_Electricity-Prices-In-EUR-Per-MWh.csv"
-            origin: DLR
-            column_name: "Electricity Price In EUR Per MWh"
-          - file_path: "external/2019_couplingtest_001_KIT_DayAheadPrices.csv"
-            origin: KIT
-            column_name: "ElectricityPriceInEURperMWh"
-        limit_to_regions: ['DE', 'AT']
-        groupby: [ "Time", "Region" ]
-        figure:
-          width: 8.1
-          height: 5.8
-          dpi: 200
-        ylabel: 'EUR/MWh'
-        watermark: True
-
-  - action:
-      project: general
-      call: compare_heat_maps
-      args:
-        data:
-          - file_path: "output/2019_couplingtest_002_DLR_Electricity-Prices-In-EUR-Per-MWh.csv"
-            origin: DLR
-            column_name: "Electricity Price In EUR Per MWh"
-          - file_path: "external/2019_couplingtest_001_KIT_DayAheadPrices.csv"
-            origin: KIT
-            column_name: "ElectricityPriceInEURperMWh"
-        limit_to_region: 'DE'
-        groupby: [ "Time", "Region" ]
-        figure:
-          width: 13
-          height: 7
-          dpi: 200
-        cbarlabel: 'EUR/MWh'
-        cmap: "RdBu_r"
-        vmin: MINIMUM
-#          vmax: MAXIMUM
-        watermark: True
-        normalize: False
-
-  - action:
-      project: general
-      call: compare_heat_maps
-      args:
-        data:
-          - file_path: "output/2019_couplingtest_002_DLR_Electricity-Prices-In-EUR-Per-MWh.csv"
-            origin: DLR
-            column_name: "Electricity Price In EUR Per MWh"
-          - file_path: "external/2019_couplingtest_001_KIT_DayAheadPrices.csv"
-            origin: KIT
-            column_name: "ElectricityPriceInEURperMWh"
-        limit_to_region: 'AT'
-        groupby: [ "Time", "Region" ]
-        figure:
-          width: 13
-          height: 7
-          dpi: 200
-        cbarlabel: 'EUR/MWh'
-        cmap: "RdBu_r"
-        vmin: 0
-        vmax: 50
-        watermark: True
-        normalize: False
-
-# CURRENTLY NOT USED
-#
-#    - action:
-#        project: general
-#        call: analyse_time_series
-#        args:
-#          agent: EnergyExchange
-#          time:
-#            convertToDateTime: true
-#            originName: TimeStep
-#            targetName: DateTime
-#          groupby: [ "DateTime", "AgentId" ]
-#          analysis:
-#            - column: 'ElectricityPriceInEURperMWH'
-#              countNumberOfValue: 3000.0
-#          consoleOutput: True
-#
-#    - action:
-#        project: general
-#        call: plot_price_duration_curve
-#        args:
-#          agent: EnergyExchange
-#          column: 'ElectricityPriceInEURperMWH'
-#          time:
-#            convertToDateTime: true
-#            originName: TimeStep
-#            targetName: DateTime
-#          groupby: [ "DateTime", "AgentId" ]
-#          figure:
-#            width: 8.1
-#            height: 5.8
-#            dpi: 200
-#          map:
-#            AgentId:
-#              1: "Simulated prices DE"
-#              143: "Simulated prices AT"
-##          backtestAgainst: "./data/timeseries/DE_dayahead_prices_2019.csv"
-#          ylabel: 'EUR/MWh'

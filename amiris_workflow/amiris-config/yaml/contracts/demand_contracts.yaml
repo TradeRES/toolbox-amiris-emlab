@@ -14,5 +14,5 @@ Contracts:
   - SenderId: 1
     ReceiverId: 5
     ProductName: Awards
-    FirstDeliveryTime: 1
+    FirstDeliveryTime: 4
     DeliveryIntervalInSteps: 3600

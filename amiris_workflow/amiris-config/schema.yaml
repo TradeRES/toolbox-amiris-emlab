@@ -297,6 +297,23 @@ AgentTypes:
         List: false
     Products: [ 'ForecastRequest', 'MeritOrderForecast' ]
 
+  PriceForecaster:
+    Attributes:
+      DistributionMethod:
+        AttributeType: enum
+        Mandatory: true
+        List: false
+        Values: [ 'SAME_SHARES', 'FIRST_COME_FIRST_SERVE', 'RANDOMIZE' ]
+      ForecastPeriodInHours:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+      ForecastRequestOffsetInSeconds:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+    Products: [ 'ForecastRequest', 'PriceForecast' ]
+
   ConventionalPlantOperator:
     Products: [ 'Co2Emissions', 'Co2PriceForecastRequest', 'FuelPriceForecastRequest', 'FuelPriceRequest', 'ConsumedFuel', 'MarginalCost', 'MarginalCostForecast', 'Co2PriceRequest' ]
 
