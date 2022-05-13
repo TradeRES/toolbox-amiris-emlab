@@ -13,6 +13,7 @@ dist
 
 # Data and scripts
 *.log
+*.h5f
 amiris/
 *amiris-jar-with-dependencies*
 data/
