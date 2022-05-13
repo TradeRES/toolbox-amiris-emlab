@@ -1,0 +1,137 @@
+Agents:
+  # PVRooftop
+  - column: Set
+    target: PVRooftop
+    map:
+      - attribute: Type
+        value: VariableRenewableOperator
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/SupportInstrument
+        value: FIT
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/YieldProfile
+        value: "amiris-config/data/pv.csv"
+
+  # WindOn
+  - column: Set
+    target: WindOn
+    map:
+      - attribute: Type
+        value: VariableRenewableOperator
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/SupportInstrument
+        value: FIT
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/YieldProfile
+        value: "amiris-config/data/windon.csv"
+
+AgentGroups:
+  - &exchange 1
+  - &forecaster 6
+  - &marketer 13
+
+Contracts:
+#################################
+# -- Registration --            #
+#################################
+  - SenderId: VariableRenewableOperator
+    ReceiverId: *marketer
+    ProductName: SetRegistration
+    FirstDeliveryTime: -37
+    DeliveryIntervalInSteps: 31536000
+
+#################################
+# -- Forecasting --             #
+#################################
+  - SenderId: *forecaster
+    ReceiverId: VariableRenewableOperator
+    ProductName: ForecastRequest
+    FirstDeliveryTime: -26
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: VariableRenewableOperator
+    ProductName: ForecastRequestForward
+    FirstDeliveryTime: -25
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: VariableRenewableOperator
+    ReceiverId: *marketer
+    ProductName: MarginalCostForecast
+    FirstDeliveryTime: -22
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: *forecaster
+    ProductName: BidsForecast
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Bidding --                 #
+#################################
+  - SenderId: *exchange
+    ReceiverId: *marketer
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: VariableRenewableOperator
+    ProductName: GateClosureForward
+    FirstDeliveryTime: -9
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: VariableRenewableOperator
+    ReceiverId: *marketer
+    ProductName: MarginalCost
+    FirstDeliveryTime: -1
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: *exchange
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Dispatch --                #
+#################################
+  - SenderId: *exchange
+    ReceiverId: *marketer
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: VariableRenewableOperator
+    ProductName: DispatchAssignment
+    FirstDeliveryTime: 5
+    DeliveryIntervalInSteps: 3600
+
+#   - SenderId: *marketer
+#     ReceiverId: VariableRenewableOperator
+#     ProductName: Payout
+#     FirstDeliveryTime: 2626204
+#     DeliveryIntervalInSteps: 2628000
+
+####################
+#   -- Output --   #
+####################
+  - SenderId: VariableRenewableOperator
+    ReceiverId: VariableRenewableOperator
+    ProductName: AnnualCostReport
+    FirstDeliveryTime: 1
+    DeliveryIntervalInSteps: 31536000
