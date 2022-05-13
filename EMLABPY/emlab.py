@@ -34,6 +34,7 @@ run_electricity_spot_market = False
 run_future_power_plants = False
 run_co2_market = False
 run_investment_module = False
+run_short_investment_module = False
 run_decommission_module = False
 run_next_year_market = False
 run_financial_results = False
@@ -88,6 +89,7 @@ try:  # Try statement to always close DB properly
         if reps.current_tick > 0:
             power_plant.addoneYeartoAge() # add one year to all power plants
         else:
+
             power_plant.specifyPowerPlantsInstalled(0, reps.energy_producers["Producer1"], "DE")  # TODO this shouldn't be hard coded
 
     spinedb_reader_writer.commit('Initialize all module import structures')

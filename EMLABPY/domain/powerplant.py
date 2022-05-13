@@ -35,6 +35,7 @@ class PowerPlant(ImportObject):
         self.label = ""
         self.actualInvestedCapital = 0
         self.actualFixedOperatingCost = 0
+
         self.actualEfficiency = 0
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
@@ -73,10 +74,12 @@ class PowerPlant(ImportObject):
         elif parameter_name == 'Owner':
             self.owner = parameter_value
         elif parameter_name == 'Age':
-            self.age = parameter_value  # for amiris data the age can be read from the commisioned year
+            self.age = int(parameter_value)
+            # for emlab data the commissioned year can be read from the age
+            self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'ComissionedYear':
+            # for amiris data the age can be read from the commisioned year
             self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
-            self.commissionedYear = int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
         elif parameter_name == 'AwardedPowerInMWH':
@@ -179,6 +182,7 @@ class PowerPlant(ImportObject):
 
     # createPowerPlant from initial database
     def specifyPowerPlantsInstalled(self, tick, energyProducer, location):  # TODO add this information to the database
+
         self.setOwner(energyProducer.name)
         self.setLocation(location)
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
@@ -337,7 +341,7 @@ class PowerPlant(ImportObject):
         self.actualFixedOperatingCost = actualFixedOperatingCost
 
     def getIntermittentTechnologyNodeLoadFactor(self):
-        return reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(),
+        return self.reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(),
                                                                                  self.getTechnology())
 
     # general

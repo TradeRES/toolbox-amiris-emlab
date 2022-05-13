@@ -511,7 +511,6 @@
                                 "position": "table_name",
                                 "value": "TechnologiesEmlab",
                                 "skip_columns": [
-                                    10,
                                     11,
                                     12,
                                     13,
@@ -739,15 +738,76 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "Dictionary",
+                                "skip_columns": [
+                                    3
+                                ],
+                                "read_start_row": 1
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden"
+                                "position": 0
                             },
                             {
                                 "map_type": "ObjectMetadata",
                                 "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 1
+                            }
+                        ]
+                    }
+                },
+                {
+                    "Mapping 2": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Dictionary",
+                                "skip_columns": [
+                                    3
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 2
                             }
                         ]
                     }
@@ -791,37 +851,20 @@
                     }
                 }
             ],
-            "Investment": [
+            "dictvariables": [
                 {
                     "Mapping 1": {
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name"
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "Object",
-                                "position": 0
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
                                 "position": "hidden"
                             }
                         ]
@@ -839,8 +882,8 @@
             "NewTechnologies",
             "COMPETESfuelPrices",
             "dutchGermanPlants2015_from_emla",
-            "TechnologiesEmlabTemporal",
-            "Investment"
+            "dictFuel",
+            "TechnologiesEmlabTemporal"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -867,7 +910,7 @@
             "dictTech": {},
             "dictFuel": {},
             "TechnologiesEmlabTemporal": {},
-            "Investment": {}
+            "dictvariables": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1077,10 +1120,11 @@
             },
             "dictFuel": {
                 "0": "string",
-                "1": "string",
-                "2": "string"
+                "1": "float",
+                "2": "float",
+                "3": "string"
             },
-            "Investment": {
+            "dictvariables": {
                 "0": "string",
                 "1": "string"
             }
@@ -1088,6 +1132,9 @@
         "table_row_types": {
             "TechnologiesEmlab": {
                 "1": "string",
+                "0": "string"
+            },
+            "dictFuel": {
                 "0": "string"
             }
         },

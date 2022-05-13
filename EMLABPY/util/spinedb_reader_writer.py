@@ -12,7 +12,6 @@ from emlabpy.domain.newTechnology import NewTechnology
 from emlabpy.domain.targetinvestor import TargetInvestor
 from emlabpy.util.repository import *
 from emlabpy.util.spinedb import SpineDB
-from emlabpy.util.globalNames import names
 
 
 class SpineDBReaderWriter:
@@ -24,6 +23,7 @@ class SpineDBReaderWriter:
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0]) # the first is always emlab
         self.run_module = run_module
+
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
@@ -32,9 +32,11 @@ class SpineDBReaderWriter:
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
-        self.ConventionalOperator_classname = "Conventionals"
-        self.VariableRenewableOperator_classname = "Renewables"
+
+        self.Conventionals_classname = "Conventionals"
+        self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
+
         if run_module == "run_investment_module":
             self.amirisdb = SpineDB(db_urls[1])
 
@@ -70,7 +72,10 @@ class SpineDBReaderWriter:
         candidatePowerPlants = [str(503),  str(49)]         # todo: later this should not be hardcoded
         # if reps.current_tick > 0:
         #     candidatePowerPlants = self.getlistofpowerplants()
-
+        reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
+                               in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary", "AmirisFuelName")}
+        reps.dictionaryFuelNumbers = {i['parameter_name']: i[('parameter_value')] for i
+                                    in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary", "FuelNumber")}
         parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
                                 in self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration", "priority")}
         sorted_parameter_names = sorted(db_data['object_parameters'],
@@ -90,12 +95,10 @@ class SpineDBReaderWriter:
                                     ', parameter: ' + parameter_name)
 
         # the results of AMIRIS dispatch are extracted from the amiris DB
-        if self.run_module == "run_investment_module" or "run_short_investment_module":
+        if self.run_module in ["run_investment_module", "run_short_investment_module"] :
             db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata, candidatePowerPlants)
         return reps
-
-
 
     """
     Markets
@@ -349,7 +352,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
     elif object_class_name == 'PowerPlantsInstalled':
         add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
-    elif object_class_name in ['Conventionals', 'Renewables', "Storages"]:# TODO add  'StorageTrader' and change to "conventional",
+    elif object_class_name in ['Conventionals', 'Renewables', "Storages"]:
+
         if object_name not in candidatePowerPlants:
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
             add_type_to_power_plant(reps, db_line, reps.power_plants)
@@ -418,13 +422,20 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-        if object_class_name == self.ConventionalOperator_classname:
+        if object_class_name in [self.Conventionals_classname, self.VariableRenewable_classname, self.Storages_classname]:
             if object_name in candidatePowerPlants:
                 add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
             else:
                 add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)
-        elif object_class_name == self.VariableRenewableOperator_classname:
-            if object_name in candidatePowerPlants:
-                add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
-            else:
-                add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)
+        #
+        # elif object_class_name == :
+        #     if object_name in candidatePowerPlants:
+        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
+        #     else:
+        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)
+        #
+        # elif object_class_name == :
+        #     if object_name in candidatePowerPlants:
+        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
+        #     else:
+        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)

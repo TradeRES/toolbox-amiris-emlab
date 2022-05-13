@@ -10,7 +10,7 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "ConventionalPlantOperator"
+                                "value": "Conventionals"
                             },
                             {
                                 "map_type": "Object",
@@ -47,7 +47,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": -2,
+                                "position": "hidden",
+                                "value": "Renewables",
                                 "skip_columns": [
                                     0
                                 ]
@@ -107,8 +108,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name",
-                                "value": 0
+                                "position": "hidden",
+                                "value": "Storages"
                             },
                             {
                                 "map_type": "Object",
@@ -182,7 +183,9 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float"
+                "5": "float",
+                "6": "float",
+                "7": "float"
             },
             "VariableRenewableOperator": {
                 "0": "float",
@@ -195,9 +198,9 @@
                 "7": "float",
                 "8": "float",
                 "9": "float",
-                "10": "string",
-                "11": "string",
-                "12": "string"
+                "10": "float",
+                "11": "float",
+                "12": "float"
             },
             "StorageTrader": {
                 "0": "string",
@@ -208,6 +211,9 @@
                 "1": "string",
                 "2": "string",
                 "3": "string"
+            },
+            "explanation": {
+                "0": "string"
             }
         },
         "table_row_types": {

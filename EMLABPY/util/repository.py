@@ -7,7 +7,6 @@ Ingrid Sanchez 16-2-2022
 """
 from datetime import datetime
 from typing import Optional, Dict, List
-
 from emlabpy.domain.actors import *
 from emlabpy.domain.cashflow import CashFlow
 from emlabpy.domain.powerplantDispatchPlan import *
@@ -20,7 +19,7 @@ from emlabpy.domain.trends import *
 from emlabpy.domain.zones import *
 from emlabpy.domain.contract import *
 from emlabpy.domain.loans import Loan
-
+from emlabpy.util.globalNames import *
 
 class Repository:
     """
@@ -32,6 +31,7 @@ class Repository:
         """
         Initialize all Repository variables
         """
+
         self.node = ""
         self.country = ""
         self.dbrw = None
@@ -43,7 +43,8 @@ class Repository:
         self.lookAhead = 0
         self.current_year = 0
         self.simulation_length = 0
-
+        self.dictionaryFuelNames= dict()
+        self.dictionaryFuelNumbers= dict()
         self.newTechnology = dict()
         self.energy_producers = dict()
         self.target_investors = dict()
@@ -70,13 +71,14 @@ class Repository:
         self.load = dict()
         self.emissions = dict()
         self.exports = dict()
+
         self.power_plant_dispatch_plan_status_accepted = 'Accepted'
         self.power_plant_dispatch_plan_status_failed = 'Failed'
         self.power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
         self.power_plant_dispatch_plan_status_awaiting = 'Awaiting'
 
         self.power_plant_status_operational = 'Operational'
-        self.power_plant_status_inPipeline = 'InPipeline'
+        #self.power_plant_status_inPipeline = 'InPipeline' # TODO change the rest to global variables
         self.power_plant_status_decommissioned = 'Decommissioned'
         self.power_plant_status_to_be_decommissioned = 'TobeDecommissioned'
 
@@ -192,10 +194,10 @@ class Repository:
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology == technology
-                    and pp.status == self.power_plant_status_inPipeline])  # pp.isInPipeline(tick)
+                    and pp.status == power_plant_status_inPipeline])  # pp.isInPipeline(tick)
 
     def calculateCapacityOfPowerPlantsInPipeline(self):
-        return sum([i.capacity for i in self.power_plants.values() if i.status == self.power_plant_status_inPipeline])
+        return sum([i.capacity for i in self.power_plants.values() if i.status == power_plant_status_inPipeline])
 
     def findPowerGeneratingTechnologyTargetByTechnology(self, technology):
         for i in self.target_investors.values():

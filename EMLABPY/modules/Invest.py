@@ -35,7 +35,7 @@ class Investmentdecision(DefaultModule):
         self.marketInformation = None
         self.agent = None
         self.budget_year0 = 0
-        self.short
+
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
         # self.viableInvestment = False
@@ -45,11 +45,12 @@ class Investmentdecision(DefaultModule):
         # self.pgtNodeLimit = Double.MAX_VALUE
 
     def act(self):
+        self.setAgent("Producer1")
         self.setTimeHorizon()
         # TODO if there would be more agents, the future capacity should be analyzed per agent
         # for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
-        self.setAgent("Producer1")
-        if agent.readytoInvest == True :
+
+        if self.agent.readytoInvest == True :
             bestCandidatePowerPlant = None
             highestValue = 0
             # calculate which is the power plant (technology) with the highest NPV
@@ -187,7 +188,10 @@ class Investmentdecision(DefaultModule):
             # TODO: if the candidate power plants would be parallellized, setting this technology as not investable could that technology simulation
             candidatepowerplant.setViableInvestment(False)
             return
-            # TODO: add the maxExpected Load amd agent cash
+            # TODO: add the maxExpected Load
+
+            # TODO: add if the agent dont have enough cash then change the agent.readytoInvest = False
+
         # elif (self.expectedInstalledCapacityOfTechnology + self.candidatepowerplant.getActualNominalCapacity()) / (marketInformation.maxExpectedLoad + self.plant.getActualNominalCapacity()) >\
         #         self.technology.getMaximumInstalledCapacityFractionInCountry():
         #     logging.info(" will not invest in {} technology because there's too much of this type in the market", technology)

@@ -4,7 +4,7 @@ This file contains all Market and Market operation classes.
 Jim Hommes - 13-5-2021
 """
 from emlabpy.domain.import_object import *
-
+from spinedb_api import Map
 
 class Market(ImportObject):
     """
@@ -14,7 +14,9 @@ class Market(ImportObject):
 
 
 class ElectricitySpotMarket(Market):
+
     pass
+
 
 
 class CapacityMarket(Market):
