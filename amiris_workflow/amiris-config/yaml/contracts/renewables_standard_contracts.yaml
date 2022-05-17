@@ -1,0 +1,44 @@
+AgentGroups:
+  - &exchange 1
+  - &marketer 2
+  - &forecaster 6
+
+Contracts:
+#################################
+# -- Forecasting --             #
+#################################
+  - SenderId: *forecaster
+    ReceiverId: *marketer
+    ProductName: ForecastRequest
+    FirstDeliveryTime: -26
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: *forecaster
+    ProductName: BidsForecast
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Bidding --                 #
+#################################
+  - SenderId: *exchange
+    ReceiverId: *marketer
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverId: *exchange
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Dispatch --                #
+#################################
+  - SenderId: *exchange
+    ReceiverId: *marketer
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600

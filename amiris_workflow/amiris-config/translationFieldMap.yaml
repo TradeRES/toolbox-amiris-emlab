@@ -1,9 +1,0 @@
-Translation:
-#  - column: FUEL
-#    map:
-#      - origin: UR
-#        target: NUCLEAR
-# - column: FUEL
-#   map:
-#     - origin: COAL
-#       target: LIGNITE

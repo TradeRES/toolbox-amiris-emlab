@@ -188,7 +188,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'SINGLE_AGENT_MIN_SYSTEM_COST', 'DISPATCH_FILE', 'SINGLE_AGENT_MAX_PROFIT' ]
+            Values: [ 'SINGLE_AGENT_MAX_PROFIT', 'SINGLE_AGENT_MIN_SYSTEM_COST', 'MULTI_AGENT_SIMPLE', 'DISPATCH_FILE' ]
           ForecastPeriodInHours:
             AttributeType: integer
             Mandatory: true
@@ -210,6 +210,15 @@ AgentTypes:
                 AttributeType: double
                 Mandatory: false
                 List: false
+          MultiAgent:
+            AttributeType: block
+            Mandatory: false
+            List: false
+            NestedAttributes:
+              AssessmentFunctionPrefactors:
+                AttributeType: double
+                Mandatory: false
+                List: true
           FixedDispatch:
             AttributeType: block
             Mandatory: false
@@ -219,7 +228,24 @@ AgentTypes:
                 AttributeType: time_series
                 Mandatory: false
                 List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward' ]
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
 
   RenewableTrader:
     Attributes:
@@ -315,7 +341,25 @@ AgentTypes:
     Products: [ 'ForecastRequest', 'PriceForecast' ]
 
   ConventionalPlantOperator:
-    Products: [ 'Co2Emissions', 'Co2PriceForecastRequest', 'FuelPriceForecastRequest', 'FuelPriceRequest', 'ConsumedFuel', 'MarginalCost', 'MarginalCostForecast', 'Co2PriceRequest' ]
+    Attributes:
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+    Products: [ 'Co2Emissions', 'Co2PriceForecastRequest', 'FuelPriceForecastRequest', 'FuelPriceRequest', 'ConsumedFuel', 'MarginalCost', 'MarginalCostForecast', 'Co2PriceRequest', 'AnnualCostReport' ]
 
   VariableRenewableOperator:
     Attributes:
@@ -323,17 +367,12 @@ AgentTypes:
         AttributeType: enum
         Mandatory: false
         List: false
-        Values: [ 'PVRooftop', 'WindOn', 'WindOff', 'RunOfRiver', 'OtherPV', 'Biogas', 'Undefined',
-                  'PvFit', 'PvMpvarCluster1', 'PvMpvarCluster2', 'PvMpvarCluster3', 'PvMpvarCluster4', 'PvMpvarCluster5',
-                  'WindOnFit', 'WindOnMpvarCluster1', 'WindOnMpvarCluster2', 'WindOnMpvarCluster3', 'WindOnMpvarCluster4', 'WindOnMpvarCluster5',
-                  'WindOffMpvarCluster1', 'WindOffMpvarCluster2', 'WindOffMpvarCluster3', 'WindOffMpvarCluster4',
-                  'PvMpfix', 'WindOnMpfix', 'WindOffMpfix',
-        ]
+        Values: [ 'PVRooftop', 'OtherPV', 'WindOn', 'WindOff', 'RunOfRiver' ]
       EnergyCarrier:
         AttributeType: enum
         Mandatory: true
         List: false
-        Values: [ 'PV', 'WindOn', 'WindOff', 'RunOfRiver', 'Other' ]
+        Values: [ 'PV', 'WindOn', 'WindOff', 'RunOfRiver' ]
       SupportInstrument:
         AttributeType: enum
         Mandatory: false
@@ -351,7 +390,24 @@ AgentTypes:
         AttributeType: time_series
         Mandatory: true
         List: false
-    Products: [ 'MarginalCost', 'MarginalCostForecast', 'SetRegistration' ]
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+    Products: [ 'MarginalCost', 'MarginalCostForecast', 'SetRegistration', 'AnnualCostReport' ]
 
   Biogas:
     Attributes:

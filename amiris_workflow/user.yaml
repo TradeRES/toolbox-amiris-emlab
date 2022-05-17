@@ -11,16 +11,14 @@ global:
   pbDir: "amiris/result/"
   pbFile: traderes.pb
   output:
-    filePath: amiris-config/data/
+    filePath: amiris-config/
     timeSeriesDateFormat: '%Y-%m-%d_%H:%M:%S'
     pbOutputRaw: "output/raw/"
     pbOutputProcessed: "output/"
     csvSeparator: ";"
 
-directives:
-  translationFieldMap: 'amiris-config/translationFieldMap.yaml'
-
 workflow:
+  # Add conventionals (append to scenario skeleton)
   - action:
       project: general
       call: parse_excel
@@ -28,16 +26,10 @@ workflow:
         read_from_dmgr: null
         write_to_dmgr: powerPlants
       args:
-        excelFile: ../amiris_data_structure.xlsx
+        excelFile: ../amiris_data_structure_shortened.xlsx
         excelSheet: conventionals
         excelHeader: True
 
-  - actionCheck:
-      project: general
-      call: checkpoint
-      tag: parsedData
-
-  # Add conventionals (append to scneario skeleton)
   - action:
       project: general
       call: write_AMIRIS_config
@@ -49,35 +41,72 @@ workflow:
         templateFile: amiris-config/scenario_template.yaml
         outputFile: scenario.yaml
 
+  - actionCheck:
+      project: general
+      call: checkpoint
+      tag: conventionals_processed
+
   # Add storages (append to scenario)
-#  - action:
-#      project: general
-#      call: write_AMIRIS_config
-#      data:
-#        read_from_dmgr: powerPlants
-#        write_to_dmgr: null
-#      args:
-#        AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
-#        templateFile: amiris-config/data/scenario.yaml
-#        outputFile: scenario.yaml
-#
-#  # Add renewables (append to scenario)
-#  - action:
-#      project: general
-#      call: write_AMIRIS_config
-#      data:
-#        read_from_dmgr: powerPlants
-#        write_to_dmgr: null
-#      args:
-#        AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
-#        templateFile: amiris-config/data/scenario.yaml
-#        outputFile: scenario.yaml
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: storages
+      args:
+        excelFile: ../amiris_data_structure_shortened.xlsx
+        excelSheet: storages
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: storages
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
+        templateFile: amiris-config/scenario.yaml
+        outputFile: scenario.yaml
+
+  - actionCheck:
+      project: general
+      call: checkpoint
+      tag: storages_processed
+
+  # Add renewables (append to scenario)
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: renewables
+      args:
+        excelFile: ../amiris_data_structure_shortened.xlsx
+        excelSheet: renewables
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: renewables
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/renewablesFieldMap.yaml
+        templateFile: amiris-config/scenario.yaml
+        outputFile: scenario.yaml
+
+  - actionCheck:
+      project: general
+      call: checkpoint
+      tag: renewables_processed
 
   - action:
       project: general
       call: create_AMIRIS_protobuf
       args:
-        input: amiris-config/data/scenario.yaml
+        input: amiris-config/scenario.yaml
         output: amiris-config/config.pb
 
   - action:
@@ -95,3 +124,13 @@ workflow:
   - action:
       project: general
       call: convert_pb
+
+  - action:
+      project: general
+      call: aggregate_results
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: all_outputs_per_agent
+      args:
+        write: True
+        file_name: amiris_results.csv
