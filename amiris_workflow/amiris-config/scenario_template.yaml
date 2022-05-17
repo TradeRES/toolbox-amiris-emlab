@@ -20,8 +20,10 @@ Agents:
       DistributionMethod: SAME_SHARES
       GateClosureInfoOffsetInSeconds: 11
 
-  - Type: SystemOperatorTrader
+  - Type: NoSupportTrader
     Id: 2
+    Attributes:
+      ShareOfRevenues: 0.0
 
   - Type: CarbonMarket
     Id: 3
@@ -62,25 +64,22 @@ Agents:
       DistributionMethod: SAME_SHARES
       ForecastPeriodInHours: 24
       ForecastRequestOffsetInSeconds: 27
-
-  - Type: SystemOperatorTrader
-    Id: 13
-
-  - Type: VariableRenewableOperator
-    Id: 10
-    Attributes:
-      EnergyCarrier: PV
-      InstalledPowerInMW: 45436
-      OpexVarInEURperMWH: 0.0
-      YieldProfile: "amiris-config/data/pv.csv"
-
-  - Type: VariableRenewableOperator
-    Id: 20
-    Attributes:
-      EnergyCarrier: WindOn
-      InstalledPowerInMW: 51945
-      OpexVarInEURperMWH: 0
-      YieldProfile: "amiris-config/data/windon.csv"
+#
+#  - Type: VariableRenewableOperator
+#    Id: 10
+#    Attributes:
+#      EnergyCarrier: PV
+#      InstalledPowerInMW: 45436
+#      OpexVarInEURperMWH: 0.0
+#      YieldProfile: "amiris-config/data/pv.csv"
+#
+#  - Type: VariableRenewableOperator
+#    Id: 20
+#    Attributes:
+#      EnergyCarrier: WindOn
+#      InstalledPowerInMW: 51945
+#      OpexVarInEURperMWH: 0
+#      YieldProfile: "amiris-config/data/windon.csv"
 
 Contracts: !include ["yaml/contracts/*.yaml", "Contracts"]
 
