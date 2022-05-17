@@ -32,7 +32,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.type= ''
 
         # here are missing info
-
+        self.energyToPowerRatio = 0
         self.applicable_for_long_term_contract = False
         self.co2_capture_efficiency = 0
         self.techtype = ''
@@ -80,6 +80,9 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'investment_cost': # these are in eur/kw Traderes-> *1000 eur /MW emlab
             self.investment_cost = float(parameter_value)*1000
             self.initializeInvestmenttrend()
+        elif parameter_name == 'EnergyToPowerRatio':
+            self.energyToPowerRatio = int(parameter_value)
+
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':

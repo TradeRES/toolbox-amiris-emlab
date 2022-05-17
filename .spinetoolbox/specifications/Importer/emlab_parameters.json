@@ -718,14 +718,39 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "Dictionary",
+                                "skip_columns": [
+                                    0,
+                                    4,
+                                    5,
+                                    6,
+                                    7
+                                ]
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden"
+                                "position": -1
                             },
                             {
                                 "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
                                 "position": "hidden"
                             }
                         ]
@@ -747,7 +772,7 @@
                             },
                             {
                                 "map_type": "Object",
-                                "position": 0
+                                "position": -1
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -755,7 +780,7 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": -1
+                                "position": 0
                             },
                             {
                                 "map_type": "Alternative",
@@ -870,6 +895,47 @@
                         ]
                     }
                 }
+            ],
+            "CO2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "node",
+                                "skip_columns": [
+                                    2,
+                                    3
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "table_name"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -882,8 +948,10 @@
             "NewTechnologies",
             "COMPETESfuelPrices",
             "dutchGermanPlants2015_from_emla",
+            "dictTech",
             "dictFuel",
-            "TechnologiesEmlabTemporal"
+            "TechnologiesEmlabTemporal",
+            "CO2"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -910,7 +978,8 @@
             "dictTech": {},
             "dictFuel": {},
             "TechnologiesEmlabTemporal": {},
-            "dictvariables": {}
+            "dictvariables": {},
+            "CO2": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1127,6 +1196,22 @@
             "dictvariables": {
                 "0": "string",
                 "1": "string"
+            },
+            "dictTech": {
+                "0": "float",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "string"
+            },
+            "CO2": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string"
             }
         },
         "table_row_types": {

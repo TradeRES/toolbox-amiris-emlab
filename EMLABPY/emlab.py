@@ -39,6 +39,7 @@ run_decommission_module = False
 run_next_year_market = False
 run_financial_results = False
 run_prepare_next_year_market_clearing = False
+run_initialize_power_plants = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -60,6 +61,8 @@ for arg in sys.argv[3:]:
         run_prepare_next_year_market_clearing = True
     if arg == 'run_financial_results':
         run_financial_results = True
+    if arg == 'run_initialize_power_plants':
+        run_initialize_power_plants = True
 
 
 if run_investment_module or run_short_investment_module:
@@ -85,19 +88,25 @@ try:  # Try statement to always close DB properly
     use_co2_allowances = UseCO2Allowances(reps)
     market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
     # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
+
     for p, power_plant in reps.power_plants.items():
         if reps.current_tick > 0:
             power_plant.addoneYeartoAge() # add one year to all power plants
-        else:
 
-            power_plant.specifyPowerPlantsInstalled(0, reps.energy_producers["Producer1"], "DE")  # TODO this shouldn't be hard coded
+    if run_initialize_power_plants:
+        power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"], "DE")  # TODO this shouldn't be hard coded
+        pp_counter = 0
+        for p, power_plant in reps.power_plants.items():
+            pp_counter += 1
+            power_plant.id = (int(str(power_plant.commissionedYear) +
+                      str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
+                      str("{:05d}".format(pp_counter))
+                      ))
+        spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
 
     spinedb_reader_writer.commit('Initialize all module import structures')
-    logging.info('End Initialization Modules')
-
+    print('Start Run Modules')
     # From here on modules will be run according to the previously set booleans
-    logging.info('Start Run Modules')
-
     if run_decommission_module:
         logging.info('Start Run dismantle')
         dismantling = Dismantle(reps)
@@ -164,3 +173,5 @@ finally:
     spinedb_reader_writer.db.close_connection()
     if run_investment_module:
         spinedb_reader_writer.amirisdb.close_connection()
+
+

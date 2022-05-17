@@ -788,8 +788,8 @@
         "CombineResultsGas": {
             "type": "Tool",
             "description": "",
-            "x": 285.59418801640595,
-            "y": -48.47025268551158,
+            "x": 285.5941880164059,
+            "y": -47.02464565444129,
             "specification": "Combine Results Gas",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -895,7 +895,7 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1184.9253015379356,
+            "x": -1186.5129518758279,
             "y": -299.40372598329026,
             "file_references": [
                 {
@@ -909,8 +909,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -982.5887982550707,
-            "y": -292.4849359125341,
+            "x": -979.4134975792864,
+            "y": -292.48493591253407,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,

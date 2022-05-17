@@ -14,6 +14,7 @@ class PowerPlant(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.name = name
+        self.id = 0
         self.technology = None
         self.location = "DE"
         self.age = None
@@ -35,7 +36,6 @@ class PowerPlant(ImportObject):
         self.label = ""
         self.actualInvestedCapital = 0
         self.actualFixedOperatingCost = 0
-
         self.actualEfficiency = 0
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
@@ -56,17 +56,20 @@ class PowerPlant(ImportObject):
         self.energyToPowerRatio = 0
         self.initialEnergyLevelInMWH = 0
         self.selfDischargeRatePerHour = 0
+        self.actualDischargingEfficiency = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'Status':
             if parameter_value != 'Decommissioned':  # do not import decommissioned power plants to the repository
                 self.status = parameter_value
-        elif parameter_name == 'Efficiency':
+        elif parameter_name == 'Efficiency': # the efficiency stored in the DB is the actual one
             self.actualEfficiency = float(parameter_value)
+        elif parameter_name == 'DischargingEfficiency': # the efficiency stored in the DB is the actual one
+            self.actualDischargingEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
             self.location = parameter_value
         elif parameter_name == 'Id':
-            self.name = parameter_value
+            self.id = int(parameter_value)
         if parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'Capacity':
@@ -168,7 +171,6 @@ class PowerPlant(ImportObject):
         self.setLocation(location)
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
-        # self.specifyPowerPlantsInstalled(tick, energyProducer, location)
         self.commissionedYear = year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
         self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
         self.constructionStartTime = tick
@@ -182,7 +184,6 @@ class PowerPlant(ImportObject):
 
     # createPowerPlant from initial database
     def specifyPowerPlantsInstalled(self, tick, energyProducer, location):  # TODO add this information to the database
-
         self.setOwner(energyProducer.name)
         self.setLocation(location)
         self.setActualLeadtime(self.technology.getExpectedLeadtime())

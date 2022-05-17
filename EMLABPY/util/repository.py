@@ -45,6 +45,8 @@ class Repository:
         self.simulation_length = 0
         self.dictionaryFuelNames= dict()
         self.dictionaryFuelNumbers= dict()
+        self.dictionaryTechNumbers = dict()
+        self.dictionaryTechSet =dict()
         self.newTechnology = dict()
         self.energy_producers = dict()
         self.target_investors = dict()

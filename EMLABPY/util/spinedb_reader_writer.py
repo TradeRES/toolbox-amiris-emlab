@@ -74,8 +74,12 @@ class SpineDBReaderWriter:
         #     candidatePowerPlants = self.getlistofpowerplants()
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary", "AmirisFuelName")}
+        reps.dictionaryTechSet = {i['parameter_name']: i['parameter_value'] for i
+                                    in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary", "AmirisSet")}
         reps.dictionaryFuelNumbers = {i['parameter_name']: i[('parameter_value')] for i
                                     in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary", "FuelNumber")}
+        reps.dictionaryTechNumbers = {i['parameter_name']: i[('parameter_value')] for i
+                                      in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary", "TechNumber")}
         parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
                                 in self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration", "priority")}
         sorted_parameter_names = sorted(db_data['object_parameters'],
@@ -142,9 +146,17 @@ class SpineDBReaderWriter:
     """
     Power plants
     """
+    def stage_power_plant_id(self, power_plants):
+        self.stage_object_class(self.powerplant_installed_classname)
+        self.stage_object_parameters(self.powerplant_installed_classname, ["Id"])
+        for power_plant_name , values in power_plants.items():
+            self.stage_object(self.powerplant_installed_classname, power_plant_name)
+            self.db.import_object_parameter_values([(self.powerplant_installed_classname,  power_plant_name ,'Id', values.id, '0')])
+
     def stage_init_power_plant_structure(self):
         self.stage_object_class(self.powerplant_installed_classname)
-        self.stage_object_parameters(self.powerplant_installed_classname, ["Age" , "Efficiency", "Capacity" , "Location" , "Owner" , "Status" , "Technology"])
+        self.stage_object_parameters(self.powerplant_installed_classname, ["Id", "Age" , "Efficiency", "Capacity" , "Location" , "Owner" , "Status" , "Technology"])
+
 
     def stage_new_power_plant(self,  powerplant ):
         object_name = powerplant.name
@@ -160,12 +172,12 @@ class SpineDBReaderWriter:
                                            '0')
 
     def stage_init_power_plants_status(self):
-        self.stage_object_parameters("PowerPlantsInstalled", ['Status'])
+        self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 
     def stage_power_plant_status(self, power_plants):
-        self.stage_object("PowerPlantsInstalled", "Status")
+        self.stage_object(self.powerplant_installed_classname, "Status")
         for power_plant_name , values in power_plants.items() :
-            self.db.import_object_parameter_values([("PowerPlantsInstalled",  power_plant_name , "Status", values.status, '0')])
+            self.db.import_object_parameter_values([(self.powerplant_installed_classname,  power_plant_name , "Status", values.status, '0')])
 
     def stage_decommission_time(self, powerplant_name,  tick):
         self.stage_object_parameters("PowerPlantsInstalled", ['dismantleTime'])
