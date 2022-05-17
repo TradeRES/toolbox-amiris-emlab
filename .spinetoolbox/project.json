@@ -160,50 +160,6 @@
         },
         "connections": [
             {
-                "name": "from AMIRIS to combine results",
-                "from": [
-                    "AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "combine results",
-                    "left"
-                ]
-            },
-            {
-                "name": "from fameSetup to AMIRIS",
-                "from": [
-                    "fameSetup",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS",
-                    "left"
-                ]
-            },
-            {
-                "name": "from amiris importer to AMRISDB",
-                "from": [
-                    "amiris importer",
-                    "right"
-                ],
-                "to": [
-                    "AMRISDB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from run config to AMIRIS",
-                "from": [
-                    "run config",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS",
-                    "left"
-                ]
-            },
-            {
                 "name": "from amiris excel to ScenarioImporter",
                 "from": [
                     "amiris excel",
@@ -211,17 +167,6 @@
                 ],
                 "to": [
                     "ScenarioImporter",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Scenario to run config",
-                "from": [
-                    "Scenario",
-                    "right"
-                ],
-                "to": [
-                    "run config",
                     "left"
                 ]
             },
@@ -255,61 +200,6 @@
                 ],
                 "to": [
                     "CombineResultsGas",
-                    "left"
-                ]
-            },
-            {
-                "name": "from ScenarioRiver to run config river",
-                "from": [
-                    "ScenarioRiver",
-                    "right"
-                ],
-                "to": [
-                    "run config river",
-                    "left"
-                ]
-            },
-            {
-                "name": "from run config river to Amiris River",
-                "from": [
-                    "run config river",
-                    "right"
-                ],
-                "to": [
-                    "Amiris River",
-                    "left"
-                ]
-            },
-            {
-                "name": "from fameSetupRiver to Amiris River",
-                "from": [
-                    "fameSetupRiver",
-                    "right"
-                ],
-                "to": [
-                    "Amiris River",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Amiris River to CombineResultsRiver",
-                "from": [
-                    "Amiris River",
-                    "right"
-                ],
-                "to": [
-                    "CombineResultsRiver",
-                    "left"
-                ]
-            },
-            {
-                "name": "from CombineResultsRiver to amiris importer",
-                "from": [
-                    "CombineResultsRiver",
-                    "right"
-                ],
-                "to": [
-                    "amiris importer",
                     "left"
                 ]
             },
@@ -580,90 +470,11 @@
         "jumps": []
     },
     "items": {
-        "combine results": {
-            "type": "Tool",
-            "description": "importAmiris",
-            "x": 155.04129323551,
-            "y": 442.9869898415568,
-            "specification": "combined results",
-            "execute_in_work": false,
-            "cmd_line_args": []
-        },
-        "amiris importer": {
-            "type": "Importer",
-            "description": "",
-            "x": 504.0263385169102,
-            "y": 109.08986117135248,
-            "specification": "Amiris importer",
-            "cancel_on_error": false,
-            "purge_before_writing": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\NewPowerPlants\\River\\AMIRIS_combinedRiver.csv",
-                    true
-                ]
-            ]
-        },
-        "AMIRIS": {
-            "type": "Tool",
-            "description": "",
-            "x": -40.13343392713251,
-            "y": 442.2178266321424,
-            "specification": "AMIRIS",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "literal",
-                    "arg": "-f"
-                },
-                {
-                    "type": "resource",
-                    "arg": "fameConfig.pb"
-                },
-                {
-                    "type": "literal",
-                    "arg": "--setup"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/amiris/fameSetup.yaml"
-                }
-            ]
-        },
-        "run config": {
-            "type": "Tool",
-            "description": "",
-            "x": -286.9185697422472,
-            "y": 441.67854132226745,
-            "specification": "Run config",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "<project>/amiris/input/Austria2019/scenario.yaml"
-                }
-            ]
-        },
-        "fameSetup": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -281.7423842137391,
-            "y": 306.5747937408076,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "amiris/fameSetup.yaml"
-                }
-            ],
-            "db_references": []
-        },
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 629.5091220046081,
-            "y": 17.41664451846392,
+            "x": 651.7362267351001,
+            "y": -42.91406832144293,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -713,20 +524,6 @@
                     "type": "path",
                     "relative": true,
                     "path": "amiris/input/Austria2019/scenario_gas.yaml"
-                }
-            ],
-            "db_references": []
-        },
-        "Scenario": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -453.79519435423845,
-            "y": 439.8484299191585,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "amiris/input/Austria2019/scenario.yaml"
                 }
             ],
             "db_references": []
@@ -793,88 +590,6 @@
             "specification": "Combine Results Gas",
             "execute_in_work": false,
             "cmd_line_args": []
-        },
-        "ScenarioRiver": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -462.12565199896983,
-            "y": 162.37939054923498,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "amiris/input/Austria2019/scenario_river.yaml"
-                }
-            ],
-            "db_references": []
-        },
-        "run config river": {
-            "type": "Tool",
-            "description": "",
-            "x": -289.3688331609542,
-            "y": 167.90139695065017,
-            "specification": "Run Config River",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "<project>/amiris/input/Austria2019/scenario_river.yaml"
-                }
-            ]
-        },
-        "fameSetupRiver": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -166.90881182876973,
-            "y": 77.30513389964074,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "scripts/NewPowerPlants/River/fameSetupRiver.yaml"
-                }
-            ],
-            "db_references": []
-        },
-        "Amiris River": {
-            "type": "Tool",
-            "description": "",
-            "x": 19.326283474910184,
-            "y": 173.93655127419163,
-            "specification": "Amiris river",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "literal",
-                    "arg": "-f"
-                },
-                {
-                    "type": "resource",
-                    "arg": "fameConfigRiver.pb"
-                },
-                {
-                    "type": "literal",
-                    "arg": "--setup"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/scripts/NewPowerPlants/River/fameSetupRiver.yaml"
-                }
-            ]
-        },
-        "CombineResultsRiver": {
-            "type": "Tool",
-            "description": "",
-            "x": 293.40812184636366,
-            "y": 172.1796164128362,
-            "specification": "CombineResultsRiver",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "AMIRIS.FameResult_River.pb"
-                }
-            ]
         },
         "amiris importer gas": {
             "type": "Importer",
@@ -1171,16 +886,6 @@
                     "arg": "db_url@traderesLocal"
                 }
             ]
-        },
-        "export_to_amiris": {
-            "type": "Exporter",
-            "description": "",
-            "x": -869.7279419604608,
-            "y": 188.26428011949,
-            "output_time_stamps": false,
-            "cancel_on_error": true,
-            "output_labels": [],
-            "specification": "Emlab to Amiris"
         },
         "testtool": {
             "type": "Tool",
