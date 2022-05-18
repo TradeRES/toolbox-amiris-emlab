@@ -1,0 +1,18 @@
+Contracts:
+  - SenderId: 1
+    ReceiverId: 5
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: 5
+    ReceiverId: 1
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: 1
+    ReceiverId: 5
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600

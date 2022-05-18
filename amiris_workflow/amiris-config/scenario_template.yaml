@@ -1,0 +1,85 @@
+Schema: !include "schema.yaml"
+
+GeneralProperties:
+  RunId: 1
+  Simulation:
+    StartTime: 2029-12-31_23:58:00
+    StopTime: 2030-12-31_23:58:00
+    RandomSeed: 1
+  Output:
+    Interval: 100
+    Process: 0
+
+Variables:
+  - &portfolioBuildingOffset 60
+
+Agents:
+  - Type: EnergyExchange
+    Id: 1
+    Attributes:
+      DistributionMethod: SAME_SHARES
+      GateClosureInfoOffsetInSeconds: 11
+
+  - Type: NoSupportTrader
+    Id: 2
+    Attributes:
+      ShareOfRevenues: 0.0
+
+  - Type: CarbonMarket
+    Id: 3
+    Attributes:
+      OperationMode: FIXED
+      Co2Prices: 20.0
+
+  - Type: FuelsMarket
+    Id: 4
+    Attributes:
+      FuelPrices:
+        - FuelType: NUCLEAR
+          Price: 2.00
+          ConversionFactor: 1.0
+        - FuelType: LIGNITE
+          Price: 5.00
+          ConversionFactor: 1.0
+        - FuelType: HARD_COAL
+          Price: 11
+          ConversionFactor: 1.0
+        - FuelType: NATURAL_GAS
+          Price: 17
+          ConversionFactor: 1.0
+        - FuelType: OIL
+          Price: 37
+          ConversionFactor: 1.0
+
+  - Type: DemandTrader
+    Id: 5
+    Attributes:
+      Loads:
+        - ValueOfLostLoad: 3000.0
+          DemandSeries: "amiris-config/data/load.csv"
+
+  - Type: PriceForecaster
+    Id: 6
+    Attributes:
+      DistributionMethod: SAME_SHARES
+      ForecastPeriodInHours: 24
+      ForecastRequestOffsetInSeconds: 27
+#
+#  - Type: VariableRenewableOperator
+#    Id: 10
+#    Attributes:
+#      EnergyCarrier: PV
+#      InstalledPowerInMW: 45436
+#      OpexVarInEURperMWH: 0.0
+#      YieldProfile: "amiris-config/data/pv.csv"
+#
+#  - Type: VariableRenewableOperator
+#    Id: 20
+#    Attributes:
+#      EnergyCarrier: WindOn
+#      InstalledPowerInMW: 51945
+#      OpexVarInEURperMWH: 0
+#      YieldProfile: "amiris-config/data/windon.csv"
+
+Contracts: !include ["yaml/contracts/*.yaml", "Contracts"]
+

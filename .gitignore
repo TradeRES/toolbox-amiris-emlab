@@ -1,9 +1,23 @@
-# Project specific
+# Python-and IDE-related
+*.idea
+*.vscode
+*__pycache__
+*.pyc
+*ipynb_checkpoints
 
+# Packaging
+build
+dist
+*.egg
+*.egg-info
 
-scripts/amiris-jar-with-dependencies.jar
-scripts/amiris-jar-with-dependencies2.jar
-data/powerplantsGermany/
+# Data and scripts
+*.log
+*.h5f
+*.pb
+amiris/
+*amiris-jar-with-dependencies*
+data/
 emlabpy/logs
 test.py
 test2.py
