@@ -35,7 +35,7 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         self.write_conventionals()
         self.write_renewables()
         self.write_storage()
-
+        self.write_times()
         self.writer.save()
 
     def specifyIdsandCapacityCandidatePowerPlants(self):

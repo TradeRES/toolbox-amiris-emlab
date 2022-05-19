@@ -6346,6 +6346,43 @@ Agents:
     minMarkup: 0
   Id: 200528004001
   Type: ConventionalTrader
+- Attributes:
+    Device:
+      ChargingEfficiency: 0.0
+      DischargingEfficiency: 0.0
+      EnergyToPowerRatio: 0
+      InitialEnergyLevelInMWH: 0
+      InstalledPowerInMW: 1
+      SelfDischargeRatePerHour: 0.0
+    ForecastRequestOffsetInSeconds: 22
+    Strategy:
+      ForecastPeriodInHours: 24
+      MultiAgent:
+        AssessmentFunctionPrefactors: &id001
+        - 0.0
+        - 1.0
+        - 2.0
+      ScheduleDurationInHours: 24
+      StrategistType: MULTI_AGENT_SIMPLE
+  Id: 99992600009
+  Type: StorageTrader
+- Attributes:
+    Device:
+      ChargingEfficiency: 0.9
+      DischargingEfficiency: 0.9
+      EnergyToPowerRatio: 0
+      InitialEnergyLevelInMWH: 0
+      InstalledPowerInMW: 1
+      SelfDischargeRatePerHour: 0.0
+    ForecastRequestOffsetInSeconds: 22
+    Strategy:
+      ForecastPeriodInHours: 24
+      MultiAgent:
+        AssessmentFunctionPrefactors: *id001
+      ScheduleDurationInHours: 24
+      StrategistType: MULTI_AGENT_SIMPLE
+  Id: 20182600079
+  Type: StorageTrader
 Contracts:
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -10
@@ -35157,6 +35194,66 @@ Contracts:
   ProductName: AnnualCostReport
   ReceiverId: 20052800400
   SenderId: 20052800400
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -19
+  ProductName: PriceForecast
+  ReceiverId: 99992600009
+  SenderId: 6
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -21
+  ProductName: PriceForecastRequest
+  ReceiverId: 6
+  SenderId: 99992600009
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -10
+  ProductName: GateClosureInfo
+  ReceiverId: 99992600009
+  SenderId: 1
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 0
+  ProductName: Bids
+  ReceiverId: 1
+  SenderId: 99992600009
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 4
+  ProductName: Awards
+  ReceiverId: 99992600009
+  SenderId: 1
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: 1
+  ProductName: AnnualCostReport
+  ReceiverId: 99992600009
+  SenderId: 99992600009
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -19
+  ProductName: PriceForecast
+  ReceiverId: 20182600079
+  SenderId: 6
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -21
+  ProductName: PriceForecastRequest
+  ReceiverId: 6
+  SenderId: 20182600079
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -10
+  ProductName: GateClosureInfo
+  ReceiverId: 20182600079
+  SenderId: 1
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 0
+  ProductName: Bids
+  ReceiverId: 1
+  SenderId: 20182600079
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 4
+  ProductName: Awards
+  ReceiverId: 20182600079
+  SenderId: 1
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: 1
+  ProductName: AnnualCostReport
+  ReceiverId: 20182600079
+  SenderId: 20182600079
 GeneralProperties:
   Output:
     Interval: 100

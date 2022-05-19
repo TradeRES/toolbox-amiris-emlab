@@ -84,6 +84,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/increment_clock.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/prepare_market.json"
                 }
             ],
             "Importer": [
@@ -211,17 +216,6 @@
                 ],
                 "to": [
                     "amiris importer gas",
-                    "left"
-                ]
-            },
-            {
-                "name": "from amiris importer gas to AMRISDB",
-                "from": [
-                    "amiris importer gas",
-                    "right"
-                ],
-                "to": [
-                    "AMRISDB",
                     "left"
                 ]
             },
@@ -454,6 +448,28 @@
                     "run config gas",
                     "left"
                 ]
+            },
+            {
+                "name": "from Prepare Data Amiris to AMIRIS",
+                "from": [
+                    "Prepare Data Amiris",
+                    "right"
+                ],
+                "to": [
+                    "AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS to AMRISDB",
+                "from": [
+                    "AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "AMRISDB",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -462,8 +478,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 651.7362267351001,
-            "y": -42.91406832144293,
+            "x": 285.64426581347755,
+            "y": -92.34984406633357,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -506,8 +522,8 @@
         "Scenario_gas": {
             "type": "Data Connection",
             "description": "",
-            "x": -346.85751489553724,
-            "y": -45.60870056497105,
+            "x": -373.57955583872143,
+            "y": 245.66154571573594,
             "file_references": [
                 {
                     "type": "path",
@@ -520,8 +536,8 @@
         "run config gas": {
             "type": "Tool",
             "description": "",
-            "x": -181.63355749355506,
-            "y": -46.560413809278074,
+            "x": -208.35559843673911,
+            "y": 244.70983247142894,
             "specification": "run config2",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -534,8 +550,8 @@
         "fameSetup gas": {
             "type": "Data Connection",
             "description": "",
-            "x": -136.1140290416734,
-            "y": -158.41593181296201,
+            "x": -86.67825329678277,
+            "y": 325.2530092586707,
             "file_references": [
                 {
                     "type": "path",
@@ -548,8 +564,8 @@
         "Amiris Gas": {
             "type": "Tool",
             "description": "",
-            "x": 47.540389963410746,
-            "y": -47.540389963410746,
+            "x": 20.818349020226606,
+            "y": 243.72985631729625,
             "specification": "Amirisgas",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -574,8 +590,8 @@
         "CombineResultsGas": {
             "type": "Tool",
             "description": "",
-            "x": 285.5941880164059,
-            "y": -47.02464565444129,
+            "x": 258.87214707322175,
+            "y": 244.24560062626568,
             "specification": "Combine Results Gas",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -583,8 +599,8 @@
         "amiris importer gas": {
             "type": "Importer",
             "description": "",
-            "x": 495.87014436891883,
-            "y": -36.42082591385845,
+            "x": 469.1481034257347,
+            "y": 254.84942036684853,
             "specification": "amiris importer gas",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -601,13 +617,7 @@
             "description": "",
             "x": -1187.3803993849117,
             "y": -301.0020908659833,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "data/EMLAB parameters.xlsx"
-                }
-            ],
+            "file_references": [],
             "db_references": []
         },
         "Import EMLAB Init": {
@@ -619,12 +629,7 @@
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "<project>/data/EMLAB parameters.xlsx",
-                    true
-                ]
-            ]
+            "file_selection": []
         },
         "Traderes CommonDB": {
             "type": "Data Connection",
@@ -839,9 +844,9 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -524.6432033997546,
-            "y": -44.51694803618648,
-            "specification": "",
+            "x": -285.44325393153684,
+            "y": -88.84569098818338,
+            "specification": "Prepare market",
             "execute_in_work": true,
             "cmd_line_args": [
                 {
@@ -946,6 +951,15 @@
                 }
             ],
             "db_references": []
+        },
+        "AMIRIS": {
+            "type": "Tool",
+            "description": "",
+            "x": -24.049836848865716,
+            "y": -66.80510235796034,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
         }
     }
 }

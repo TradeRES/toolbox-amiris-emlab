@@ -7,6 +7,7 @@ For the next years the fuel prices are considered with a geometric trend
 """
 from modules.defaultmodule import DefaultModule
 import pandas as pd
+from datetime import datetime, timedelta
 
 
 class PrepareMarket(DefaultModule):
@@ -30,39 +31,40 @@ class PrepareMarket(DefaultModule):
         self.write_renewables()
         self.write_storage()
         self.write_scenario_data_emlab("simulatedPrices")
+        self.write_times()
         self.writer.save()
         self.writer.close()
-
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
         self.simulation_year = self.reps.current_year
-        self.Years = (list(range(self.reps.start_simulation_year, self.simulation_year+1, 1)))
+        self.Years = (list(range(self.reps.start_simulation_year, self.simulation_year + 1, 1)))
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
             fuel_price = substance.get_price_for_next_tick(self.reps, self.tick, self.simulation_year, substance)
             self.reps.dbrw.stage_simulated_fuel_prices(self.simulation_year, fuel_price, substance)
 
+    def write_times(self):
+        startime = datetime(self.simulation_year, 1, 1) - timedelta(minutes=2)
+        stoptime = datetime(self.simulation_year, 12, 31) - timedelta(minutes=2)
+        d = {'StartTime': startime, 'StopTime': stoptime}
+        df = pd.DataFrame.from_dict(d, orient='index')
+        df.to_excel(self.writer, sheet_name="times")
 
-
-    def write_scenario_data_emlab(self, calculatedprices ):
+    def write_scenario_data_emlab(self, calculatedprices):
         Co2Prices = []
         FuelPrice_NUCLEAR = []
         FuelPrice_LIGNITE = []
         FuelPrice_HARD_COAL = []
         FuelPrice_NATURAL_GAS = []
         FuelPrice_OIL = []
-        startime =  list(" "*len(self.Years ))
-        stoptime = list(" "*len(self.Years ))
-        demand = ["./timeseries/demand/load.csv"]*len(self.Years)
-        startime[0] = ["01-01-" +  str(self.simulation_year)]
-        stoptime[0] = ["31-12-" +  str(self.simulation_year)]
 
+        demand = ["./timeseries/demand/load.csv"] * len(self.Years)
 
         for k, substance in self.reps.substances.items():
             for year in self.Years:
-                simulatedPrices = self.reps.dbrw.get_calculated_simulated_fuel_prices(substance, calculatedprices )
+                simulatedPrices = self.reps.dbrw.get_calculated_simulated_fuel_prices(substance, calculatedprices)
                 df_prices = pd.DataFrame(simulatedPrices['data'])
                 df_prices.set_index(0, inplace=True)
                 fuel_price = df_prices.loc[str(year)][1]
@@ -79,11 +81,13 @@ class PrepareMarket(DefaultModule):
                 elif substance.name == "CO2":
                     Co2Prices.append(fuel_price)
 
-        d = { 'StartTime': startime, 'StopTime': stoptime,    'Co2Prices': Co2Prices, 'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
-              'FuelPrice_HARD_COAL': FuelPrice_HARD_COAL, 'FuelPrice_NATURAL_GAS': FuelPrice_NATURAL_GAS, 'FuelPrice_OIL': FuelPrice_OIL,
-              'DemandSeries' : demand }
-        df = pd.DataFrame.from_dict(d , orient='index', columns = self.Years)
-        df.to_excel(self.writer, sheet_name = "scenario_data_emlab")
+        d = {'Co2Prices': Co2Prices,
+             'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
+             'FuelPrice_HARD_COAL': FuelPrice_HARD_COAL, 'FuelPrice_NATURAL_GAS': FuelPrice_NATURAL_GAS,
+             'FuelPrice_OIL': FuelPrice_OIL,
+             'DemandSeries': demand}
+        df = pd.DataFrame.from_dict(d, orient='index', columns=self.Years)
+        df.to_excel(self.writer, sheet_name="scenario_data_emlab")
 
     def write_conventionals(self):
         identifier = []
@@ -149,14 +153,14 @@ class PrepareMarket(DefaultModule):
         for id, pp in self.power_plants_list.items():
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
-                ChargingEfficiency.append(pp.actualEfficiency) # todo this should be charging efficiency specifically
+                ChargingEfficiency.append(pp.actualEfficiency)  # todo this should be charging efficiency specifically
                 DischargingEfficiency.append(pp.actualDischargingEfficiency)
                 InitialEnergyLevelInMWH.append(0)  # todo this should be charging efficiency specifically
                 EnergyToPowerRatio.append(pp.technology.energyToPowerRatio)
                 InstalledPowerInMW.append(pp.capacity)
                 StorageType.append("STORAGE")
 
-        d = {'identifier': identifier,  'Storage': StorageType, 'EnergyToPowerRatio': EnergyToPowerRatio,
+        d = {'identifier': identifier, 'StorageType': StorageType, 'EnergyToPowerRatio': EnergyToPowerRatio,
              'ChargingEfficiency': ChargingEfficiency,
              'DischargingEfficiency': DischargingEfficiency, 'InitialEnergyLevelInMWH': InitialEnergyLevelInMWH,
              'InstalledPowerInMW': InstalledPowerInMW}
@@ -164,9 +168,6 @@ class PrepareMarket(DefaultModule):
         df = pd.DataFrame(data=d)
         df.to_excel(self.writer, sheet_name="storages")
 
-
-
     def openwriter(self):
 
-        self.writer = pd.ExcelWriter(self.path,  mode="a", engine='openpyxl',  if_sheet_exists='replace' )
-
+        self.writer = pd.ExcelWriter(self.path, mode="a", engine='openpyxl', if_sheet_exists='replace')
