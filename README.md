@@ -1,19 +1,17 @@
-# Project template for Spine Toolbox
+# AMIRIS EMLABpy softlinking using Spinetoolbox
 
-This is a template repository for Git-versioned Spine Toolbox projects.
-To create a new GitHub repository based on this template, click on the **Use this template** button.
+The soft linking of AMIRIS and EMLabpy intends to investigate the investment
+incentives in a future flexible power system. 
+EMLabpy is based in EMLab and is rewritten in a modular way into python to easily couple with AMIRIS. 
 
-## Ignored files
+## Workflow
+The integration is bets illustrated with following diagram. 
+![](data/model coupling.jpg)
 
-Some files are ignored by default:
-- output files created by project execution
-- temporary and log files
+## Folder structure
 
-Other project-specific ignores can be added to the [.gitignore](.gitignore) file.
-
-
-## Folder strucure
-
+### `emlabpy`
+This code is based on the model EMLab. http://emlab.tudelft.nl/
 
 ### `scripts`
 
@@ -23,9 +21,18 @@ This folder stores the code triggered from Spinetoolbox to do the data exchange
 
 This is the code from the amiris project https://gitlab.com/dlr-ve/esy/amiris/amiris/
 
-### `emlabpy`
+### `amiris_workflow`
 
-This code is based on the model EMLab.
+This workflow define the steps to feed data , run and export data from AMIRIS
+
+### `actions`
+
+These are the actions to run AMIRIS and which order is specified in the amiris_workflow
+
+### `amiris_workflow`
+
+Here is the tool that imports all the needed data to run AMIRIS into yaml files.
+It also runs AMIRIS and exports the data to files to be imported back to EMLAB.
 
 ### `examples`
 
