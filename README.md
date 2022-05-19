@@ -5,8 +5,8 @@ incentives in a future flexible power system.
 EMLabpy is based in EMLab and is rewritten in a modular way into python to easily couple with AMIRIS. 
 
 ## Workflow
-The integration is bets illustrated with following diagram. 
-![](data/model coupling.jpg)
+The integration is best illustrated with following diagram. 
+![](data/workflow.jpg)
 
 ## Folder structure
 
