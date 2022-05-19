@@ -1,0 +1,20 @@
+{
+    "name": "Prepare market",
+    "tooltype": "python",
+    "includes": [
+        "emlab.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": true,
+    "includes_main_path": "../../../emlabpy",
+    "execution_settings": {
+        "env": "",
+        "kernel_spec_name": "amiris",
+        "use_jupyter_console": false,
+        "executable": "C:/Programs/Anaconda3/envs/amiris/python.exe"
+    }
+}

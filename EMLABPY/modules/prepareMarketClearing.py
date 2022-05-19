@@ -18,6 +18,7 @@ class PrepareMarket(DefaultModule):
         self.empty = None
         self.Years = []
         self.writer = None
+        self.path = '../data/amiris/amiris_data_structure.xlsx'
         self.power_plants_list = self.reps.power_plants
         reps.dbrw.stage_init_next_prices_structure()
 
@@ -28,8 +29,9 @@ class PrepareMarket(DefaultModule):
         self.write_conventionals()
         self.write_renewables()
         self.write_storage()
-        self.write_scenario_data_emlab("simulatedPrices" )
+        self.write_scenario_data_emlab("simulatedPrices")
         self.writer.save()
+        self.writer.close()
 
 
     def setTimeHorizon(self):
@@ -165,4 +167,6 @@ class PrepareMarket(DefaultModule):
 
 
     def openwriter(self):
-        self.writer = pd.ExcelWriter('../data/amiris/amiris_data_structure.xlsx', engine='openpyxl')
+
+        self.writer = pd.ExcelWriter(self.path,  mode="a", engine='openpyxl',  if_sheet_exists='replace' )
+
