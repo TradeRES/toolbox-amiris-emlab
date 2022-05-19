@@ -1,12 +1,12 @@
-from emlabpy.domain.energyproducer import EnergyProducer
-from emlabpy.domain.technologies import PowerGeneratingTechnology
-from emlabpy.modules.Invest import Investmentdecision
-from emlabpy.modules.defaultmodule import DefaultModule
+from domain.energyproducer import EnergyProducer
+from domain.technologies import PowerGeneratingTechnology
+from modules.Invest import Investmentdecision
+from modules.defaultmodule import DefaultModule
 import numpy_financial as npf
 
-from emlabpy.domain.actors import *
-from emlabpy.util.repository import Repository
-from emlabpy.helpers.helper_functions import get_current_ticks
+from domain.actors import *
+from util.repository import Repository
+from helpers.helper_functions import get_current_ticks
 import sys
 import logging
 import pandas as pd

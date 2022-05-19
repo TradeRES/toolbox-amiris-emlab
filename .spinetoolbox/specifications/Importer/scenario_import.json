@@ -1,5 +1,5 @@
 {
-    "name": "Scenario import",
+    "name": "amiris simple scenario",
     "item_type": "Importer",
     "mapping": {
         "table_mappings": {

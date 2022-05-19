@@ -1,6 +1,6 @@
-from emlabpy.domain.cashflow import CashFlow
-from emlabpy.modules.defaultmodule import DefaultModule
-from emlabpy.util.repository import Repository
+from domain.cashflow import CashFlow
+from modules.defaultmodule import DefaultModule
+from util.repository import Repository
 import logging
 
 class PayForLoansRole(DefaultModule):

@@ -9,8 +9,8 @@ import logging
 import os
 import time
 
-from emlabpy.modules.payLoans import PayForLoansRole
-from emlabpy.modules.short_invest import ShortInvestmentdecision
+from modules.payLoans import PayForLoansRole
+from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
@@ -18,7 +18,7 @@ from modules.prepareMarketClearing import PrepareMarket
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.co2market import *
-from emlabpy.modules.Invest import *
+from modules.Invest import *
 from modules.prepareCandidatePowerPlants import *
 from modules.dismantle import *
 
@@ -79,23 +79,15 @@ else:
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()     # Load repository
     print("repository complete")
-    logging.info('Start Initialization Modules')
-    capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-    capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
-    # This function adds rep to class capacity markets
-    co2_market_determine_co2_price = CO2MarketDetermineCO2Price(reps)
-    payment_and_bank_co2 = PayAndBankCO2Allowances(reps)
-    use_co2_allowances = UseCO2Allowances(reps)
-    market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
-    # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
 
+    # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
     for p, power_plant in reps.power_plants.items():
         if reps.current_tick > 0:
             power_plant.addoneYeartoAge() # add one year to all power plants
 
     if run_initialize_power_plants:
         power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"], "DE")  # TODO this shouldn't be hard coded
-        pp_counter = 0
+        pp_counter = 20 # start in 20 # TODO make dynamic depending on number of candidate power plants
         for p, power_plant in reps.power_plants.items():
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
@@ -135,14 +127,20 @@ try:  # Try statement to always close DB properly
 
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
+        capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
+        capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
         capacity_market_submit_bids.act_and_commit()
         capacity_market_clear.act_and_commit()
         logging.info('End Run Capacity Market')
 
     if run_co2_market:
         logging.info('Start Run CO2 Market')
+        market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
         market_stability_reserve.act_and_commit()
+        co2_market_determine_co2_price = CO2MarketDetermineCO2Price(reps)
         co2_market_determine_co2_price.act_and_commit()
+        payment_and_bank_co2 = PayAndBankCO2Allowances(reps)
+        use_co2_allowances = UseCO2Allowances(reps)
         # payment_and_bank_co2.act_and_commit(reps.current_tick)
         # use_co2_allowances.act_and_commit(reps.current_tick)
         logging.info('End Run CO2 Market')

@@ -1,4 +1,4 @@
-from emlabpy.domain.energyproducer import EnergyProducer
+from domain.energyproducer import EnergyProducer
 
 class TargetInvestor(EnergyProducer):
     def __init__(self, name):

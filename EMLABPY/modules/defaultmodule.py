@@ -10,7 +10,7 @@ Jim Hommes - 25-3-2021
 import logging
 
 from datetime import datetime
-from emlabpy.util.repository import Repository
+from util.repository import Repository
 
 
 class DefaultModule:

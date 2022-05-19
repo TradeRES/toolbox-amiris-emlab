@@ -3,7 +3,7 @@ The file responsible for all CO2 Market classes.
 
 Jim Hommes - 13-4-2021
 """
-from emlabpy.modules.marketmodule import MarketModule
+from modules.marketmodule import MarketModule
 from util.repository import Repository
 import math
 

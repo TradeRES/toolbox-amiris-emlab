@@ -1,7 +1,7 @@
 # Python-and IDE-related
 *.idea
 *.vscode
-*__pycache__
+**/__pycache__
 *.pyc
 *ipynb_checkpoints
 
@@ -17,7 +17,11 @@ dist
 *.pb
 amiris/
 *amiris-jar-with-dependencies*
-data/
+data/powerplantsGermany/
+data/amiris/
+data/competes/
 emlabpy/logs
 test.py
 test2.py
+scripts/amiris-jar-with-dependencies2.jar
+scripts/amiris-jar-with-dependencies.jar

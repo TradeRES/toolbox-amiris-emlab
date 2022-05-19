@@ -1,6 +1,6 @@
 
-from emlabpy.modules.defaultmodule import DefaultModule
-from emlabpy.util.repository import Repository
+from modules.defaultmodule import DefaultModule
+from util.repository import Repository
 import logging
 
 class Dismantle(DefaultModule):

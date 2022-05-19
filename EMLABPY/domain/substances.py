@@ -1,5 +1,5 @@
-from emlabpy.domain.import_object import *
-from emlabpy.domain.trends import GeometricTrendRegression
+from domain.import_object import *
+from domain.trends import GeometricTrendRegression
 import pandas as pd
 import numpy as np
 import random
@@ -46,7 +46,7 @@ class Substance(ImportObject):
             self.simulatedPrice = parameter_value
 
     def get_price_for_next_tick(self, reps, tick, year, substance):
-        if tick == 0:
+        if tick == 0 or substance.name == "CO2" :
             if substance.name == "electricity":
                 self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year. TODO
             else:
@@ -55,7 +55,7 @@ class Substance(ImportObject):
                 self.newSimulatedPrice = np.interp(year, xp, fp)
             return self.newSimulatedPrice
         else:
-            calculatedfuturePrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance)
+            calculatedfuturePrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance, "futurePrice")
             df = pd.DataFrame(calculatedfuturePrices['data'])
             df.set_index(0, inplace=True)
             last_value = df.loc[str(year - 1)][1]
@@ -79,7 +79,7 @@ class Substance(ImportObject):
 
     def initializeGeometricTrendRegression(self, reps, substance):
         self.geometricRegression = GeometricTrendRegression("geometrictrendRegression" + self.name)
-        calculatedfuturePrices =  reps.dbrw.get_calculated_future_fuel_prices(substance)
+        calculatedfuturePrices =  reps.dbrw.get_calculated_simulated_fuel_prices(substance, "futurePrice")
         x = []
         y = []
         for i in calculatedfuturePrices['data']:

@@ -7,19 +7,19 @@ Ingrid Sanchez 16-2-2022
 """
 from datetime import datetime
 from typing import Optional, Dict, List
-from emlabpy.domain.actors import *
-from emlabpy.domain.cashflow import CashFlow
-from emlabpy.domain.powerplantDispatchPlan import *
-from emlabpy.domain.technologies import *
-from emlabpy.domain.markets import *
-from emlabpy.domain.powerplant import *
-from emlabpy.domain.substances import *
-from emlabpy.domain.CandidatePowerPlant import *
-from emlabpy.domain.trends import *
-from emlabpy.domain.zones import *
-from emlabpy.domain.contract import *
-from emlabpy.domain.loans import Loan
-from emlabpy.util.globalNames import *
+from domain.actors import *
+from domain.cashflow import CashFlow
+from domain.powerplantDispatchPlan import *
+from domain.technologies import *
+from domain.markets import *
+from domain.powerplant import *
+from domain.substances import *
+from domain.CandidatePowerPlant import *
+from domain.trends import *
+from domain.zones import *
+from domain.contract import *
+from domain.loans import Loan
+from util.globalNames import *
 
 class Repository:
     """

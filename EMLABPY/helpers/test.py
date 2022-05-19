@@ -7,7 +7,7 @@ import time
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 
-from emlabpy.util.spinedb_reader_writer import SpineDBReaderWriter
+from util.spinedb_reader_writer import SpineDBReaderWriter
 
 run_capacity_market = True
 

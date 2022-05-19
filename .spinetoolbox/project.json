@@ -303,17 +303,6 @@
                 ]
             },
             {
-                "name": "from ScenarioImporter to EmlabDB",
-                "from": [
-                    "ScenarioImporter",
-                    "right"
-                ],
-                "to": [
-                    "EmlabDB",
-                    "left"
-                ]
-            },
-            {
                 "name": "from TraderesDB to exporterTraderes",
                 "from": [
                     "TraderesDB",
@@ -501,9 +490,9 @@
         "ScenarioImporter": {
             "type": "Importer",
             "description": "",
-            "x": -965.9570250503759,
-            "y": -416.581514673347,
-            "specification": "Scenario import",
+            "x": -1018.0967125593666,
+            "y": 262.98719970349777,
+            "specification": "amiris simple scenario",
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
@@ -610,8 +599,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1186.5129518758279,
-            "y": -299.40372598329026,
+            "x": -1187.3803993849117,
+            "y": -301.0020908659833,
             "file_references": [
                 {
                     "type": "path",
@@ -947,8 +936,8 @@
         "amiris excel": {
             "type": "Data Connection",
             "description": "",
-            "x": -1240.4238898408112,
-            "y": -425.9053222885495,
+            "x": -1164.271318004346,
+            "y": 295.58865335040446,
             "file_references": [
                 {
                     "type": "path",

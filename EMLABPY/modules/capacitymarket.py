@@ -4,8 +4,8 @@ The file responsible for all capacity market operations.
 Jim Hommes - 25-3-2021
 """
 import json
-from emlabpy.modules.marketmodule import MarketModule
-from emlabpy.util.repository import Repository
+from modules.marketmodule import MarketModule
+from util.repository import Repository
 
 
 class CapacityMarketSubmitBids(MarketModule):

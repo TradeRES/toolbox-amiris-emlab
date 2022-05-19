@@ -1,7 +1,7 @@
-from emlabpy.domain.import_object import *
-from emlabpy.modules.defaultmodule import DefaultModule
-from emlabpy.util.repository import Repository
-from emlabpy.domain.technologies import *
+from domain.import_object import *
+from modules.defaultmodule import DefaultModule
+from util.repository import Repository
+from domain.technologies import *
 
 import logging
 class FinancialPowerPlantReport(ImportObject):

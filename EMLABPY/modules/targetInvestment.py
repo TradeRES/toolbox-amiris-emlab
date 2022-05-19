@@ -1,6 +1,6 @@
-from emlabpy.domain.powerplant import PowerPlant
-from emlabpy.domain.targetinvestor import TargetInvestor
-from emlabpy.modules.defaultmodule import DefaultModule
+from domain.powerplant import PowerPlant
+from domain.targetinvestor import TargetInvestor
+from modules.defaultmodule import DefaultModule
 import logging
 import time
 

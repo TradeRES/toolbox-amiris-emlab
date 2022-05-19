@@ -1,9 +1,9 @@
-from emlabpy.domain.import_object import *
-from emlabpy.modules.defaultmodule import DefaultModule
-from emlabpy.domain.financialReports import FinancialPowerPlantReport
-from emlabpy.domain.powerplant import PowerPlant
-from emlabpy.domain.cashflow import CashFlow
-from emlabpy.domain.technologies import *
+from domain.import_object import *
+from modules.defaultmodule import DefaultModule
+from domain.financialReports import FinancialPowerPlantReport
+from domain.powerplant import PowerPlant
+from domain.cashflow import CashFlow
+from domain.technologies import *
 
 import logging
 class CreatingFinancialReports(DefaultModule):

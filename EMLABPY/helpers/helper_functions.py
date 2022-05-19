@@ -3,7 +3,7 @@ This file contains some helper functions for the scripts in resources/scripts.
 Ingrid Sanchez 17-2-2022 reused
 Jim Hommes - 29-6-2021
 """
-from emlabpy.helpers.spinedb import *
+from helpers.spinedb import *
 import pandas as pd
 
 def get_current_ticks(db: SpineDB, offset: int):

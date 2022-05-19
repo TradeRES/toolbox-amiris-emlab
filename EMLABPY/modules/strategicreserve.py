@@ -1,5 +1,5 @@
-from emlabpy.modules.marketmodule import MarketModule
-from emlabpy.util.repository import Repository
+from modules.marketmodule import MarketModule
+from util.repository import Repository
 
 
 # class StrategicReserveOperatorRole(MarketModule):

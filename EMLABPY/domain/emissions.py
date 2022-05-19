@@ -1,4 +1,4 @@
-from emlabpy.domain.import_object import *
+from domain.import_object import *
 
 class YearlyEmissions(ImportObject):
     def __init__(self, name):

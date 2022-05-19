@@ -2,12 +2,12 @@
 This file contains all classes directly related to
 PowerPlant
 """
-from emlabpy.domain.energyproducer import EnergyProducer
-from emlabpy.domain.import_object import *
+from domain.energyproducer import EnergyProducer
+from domain.import_object import *
 from random import random
 import logging
 
-from emlabpy.domain.loans import Loan
+from domain.loans import Loan
 
 
 class PowerPlant(ImportObject):

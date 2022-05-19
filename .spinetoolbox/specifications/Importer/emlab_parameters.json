@@ -936,6 +936,44 @@
                         ]
                     }
                 }
+            ],
+            "CandidatePowerPlants": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "CandidatePowerPlants"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -951,7 +989,8 @@
             "dictTech",
             "dictFuel",
             "TechnologiesEmlabTemporal",
-            "CO2"
+            "CO2",
+            "CandidatePowerPlants"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -979,7 +1018,8 @@
             "dictFuel": {},
             "TechnologiesEmlabTemporal": {},
             "dictvariables": {},
-            "CO2": {}
+            "CO2": {},
+            "CandidatePowerPlants": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1172,7 +1212,8 @@
                 "4": "float",
                 "5": "float",
                 "6": "float",
-                "7": "float"
+                "7": "float",
+                "8": "string"
             },
             "COMPETESfuelPrices": {
                 "0": "string"
@@ -1212,6 +1253,12 @@
                 "1": "string",
                 "2": "string",
                 "3": "string"
+            },
+            "CandidatePowerPlants": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float"
             }
         },
         "table_row_types": {

@@ -1,5 +1,5 @@
 
-from emlabpy.domain.import_object import *
+from domain.import_object import *
 class PowerPlantDispatchPlan(ImportObject):
     def __init__(self, name):
         super().__init__(name)
@@ -15,7 +15,7 @@ class PowerPlantDispatchPlan(ImportObject):
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         self.tick = int(alternative)
         if parameter_name == 'Plant':
-            self.plant = reps.power_plants[parameter_value]
+            self.plant = reps.power_plants_list[parameter_value]
         elif parameter_name == 'EnergyProducer':
             try:
                 self.bidder = reps.energy_producers[parameter_value]

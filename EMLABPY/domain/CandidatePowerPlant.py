@@ -1,4 +1,4 @@
-from emlabpy.domain.powerplant import *
+from domain.powerplant import *
 import logging
 
 class CandidatePowerPlant(PowerPlant):
@@ -19,6 +19,7 @@ class CandidatePowerPlant(PowerPlant):
         self.viableInvestment = True # initially all candidate power plants should be investable
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
+        self.capacitytobeInstalled = 0
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True
@@ -32,18 +33,18 @@ class CandidatePowerPlant(PowerPlant):
             self.OfferedPowerinMW = float(parameter_value)
         elif parameter_name == 'ReceivedMoneyInEUR':
             self.ReceivedMoneyinEUR = float(parameter_value)
+
         elif parameter_name == 'Id':
             self.name = parameter_value
         elif parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
+            self.efficiency = self.technology.efficiency
         elif parameter_name == 'Capacity':
-            self.capacity = parameter_value
+            self.capacitytobeInstalled = int(parameter_value) # the real capacity will be defined once the investment decision is made
         elif parameter_name == 'Owner':
             self.owner = parameter_value
-        elif parameter_name == 'ComissionedYear':
-            self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
-        elif parameter_name == 'Maximal':
-            self.efficiency = float(parameter_value)
+
+
 
     def get_technology(self, time):
         return self.technology

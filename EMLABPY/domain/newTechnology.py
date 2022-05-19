@@ -1,4 +1,4 @@
-from emlabpy.domain.trends import *
+from domain.trends import *
 
 class NewTechnology(ImportObject):
     def __init__(self, name):

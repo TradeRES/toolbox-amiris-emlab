@@ -4,7 +4,7 @@ EnergyProducer
 NationalGovernment
 Government
 """
-from emlabpy.domain.import_object import *
+from domain.import_object import *
 
 class EMLabAgent(ImportObject):
 

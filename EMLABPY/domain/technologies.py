@@ -4,9 +4,9 @@ PowerGeneratingTechnology
 Ingrid Sanchez added lans
 Jim Hommes - 13-5-2021
 """
-from emlabpy.domain.energyproducer import EnergyProducer
-from emlabpy.domain.import_object import *
-from emlabpy.domain.trends import *
+from domain.energyproducer import EnergyProducer
+from domain.import_object import *
+from domain.trends import *
 import logging
 import random
 import sys

@@ -5,7 +5,7 @@ Jim Hommes - 13-5-2021
 """
 from random import random
 
-from emlabpy.domain.import_object import *
+from domain.import_object import *
 
 import math
 import numpy as np

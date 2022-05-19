@@ -1,15 +1,15 @@
-from emlabpy.domain.energyproducer import EnergyProducer
-from emlabpy.domain.technologies import PowerGeneratingTechnology
-from emlabpy.modules.defaultmodule import DefaultModule
-from emlabpy.domain.trends import GeometricTrendRegression
-from emlabpy.domain.powerplant import *
-from emlabpy.domain.CandidatePowerPlant import *
-from emlabpy.domain.cashflow import CashFlow
+from domain.energyproducer import EnergyProducer
+from domain.technologies import PowerGeneratingTechnology
+from modules.defaultmodule import DefaultModule
+from domain.trends import GeometricTrendRegression
+from domain.powerplant import *
+from domain.CandidatePowerPlant import *
+from domain.cashflow import CashFlow
 import numpy_financial as npf
 
 from domain.actors import *
 from util.repository import Repository
-from emlabpy.helpers.helper_functions import get_current_ticks
+from helpers.helper_functions import get_current_ticks
 import sys
 import logging
 

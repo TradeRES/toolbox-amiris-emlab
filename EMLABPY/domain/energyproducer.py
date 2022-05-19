@@ -1,7 +1,7 @@
 import logging
 
-from emlabpy.domain.actors import EMLabAgent
-from emlabpy.domain.import_object import *
+from domain.actors import EMLabAgent
+from domain.import_object import *
 
 class EnergyProducer(EMLabAgent):
 
