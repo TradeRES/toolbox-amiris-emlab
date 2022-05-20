@@ -14,9 +14,8 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         self.lastrenewableId = 0
         self.lastconventionalId = 0
         self.laststorageId = 0
-        self.simulation_year= 0  # future investment year
-
-        self.futureDemand = None
+        self.simulation_year = 0  # future investment year
+        self.powerPlantsinFutureToBeOperational = []
         self.RESLabel = "VariableRenewableOperator"
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
@@ -30,6 +29,8 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         self.setTimeHorizon()
         self.setExpectations()
         self.specifyIdsandCapacityCandidatePowerPlants()
+        self.filter_power_plants_to_be_operational()
+        # funtions to save the power plants
         self.openwriter()
         self.write_scenario_data_emlab("futurePrice")
         self.write_conventionals()
@@ -43,12 +44,29 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         for p, power_plant in self.power_plants_list.items():
             pp_counter += 1
             power_plant.id = (int(str(9999) +  # once installed, this will change to the commissioned year
-                              str("{:02d}".format(int(self.reps.dictionaryTechNumbers[power_plant.technology.name]))) +
-                              str("{:05d}".format(pp_counter))
-                              ))
+                                  str("{:02d}".format(
+                                      int(self.reps.dictionaryTechNumbers[power_plant.technology.name]))) +
+                                  str("{:05d}".format(pp_counter))
+                                  ))
             power_plant.capacity = 1  # See general description
-        self.power_plants_list.update(self.reps.power_plants)
 
+    def filter_power_plants_to_be_operational(self): # TODO add increase of operational costs
+        powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.agent)
+        for powerplant in powerPlantsfromAgent:
+            fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
+            if fictional_age > powerplant.technology.expected_lifetime:
+                powerplant.fictional_status = self.reps.power_plant_status_to_be_decommissioned
+                print("to be decommisioned", powerplant.name, "äge", fictional_age,
+                      "technology", powerplant.technology.name ,"lifetime", powerplant.technology.expected_lifetime )
+                # todo add some exception for plants under startegic reserve
+            elif powerplant.commissionedYear <= self.simulation_year:
+                powerplant.fictional_status = self.reps.power_plant_status_operational
+                self.power_plants_list[powerplant.name] = powerplant
+            elif powerplant.commissionedYear > self.simulation_year:
+                powerplant.fictional_status = self.reps.power_plant_status_inPipeline
+                print("--------------------------------------------------------- in pileline", powerplant.name)
+            else:
+                print("status not set", powerplant.name)
 
     def setTimeHorizon(self):
         """
@@ -60,7 +78,6 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         self.simulation_year = self.reps.current_year + self.reps.energy_producers[
             self.agent].getInvestmentFutureTimeHorizon()
         self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
-
 
     def setExpectations(self):
         """

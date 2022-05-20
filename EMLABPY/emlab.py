@@ -64,7 +64,6 @@ for arg in sys.argv[3:]:
     if arg == 'run_initialize_power_plants':
         run_initialize_power_plants = True
 
-
 if run_investment_module or run_short_investment_module:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
@@ -77,23 +76,21 @@ else:
     spinedb_reader_writer = SpineDBReaderWriter("run_other_module", emlab_url)
 
 try:  # Try statement to always close DB properly
-    reps = spinedb_reader_writer.read_db_and_create_repository()     # Load repository
+    reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
     print("repository complete")
 
     # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
-    for p, power_plant in reps.power_plants.items():
-        if reps.current_tick > 0:
-            power_plant.addoneYeartoAge() # add one year to all power plants
 
     if run_initialize_power_plants:
-        power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"], "DE")  # TODO this shouldn't be hard coded
-        pp_counter = 20 # start in 20 # TODO make dynamic depending on number of candidate power plants
+        pp_counter = 20  # start in 20 # TODO make dynamic depending on number of candidate power plants
         for p, power_plant in reps.power_plants.items():
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"],
+                                                    "DE")  # TODO this shouldn't be hard coded
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
-                      str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
-                      str("{:05d}".format(pp_counter))
-                      ))
+                                  str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
+                                  str("{:05d}".format(pp_counter))
+                                  ))
         spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
 
     spinedb_reader_writer.commit('Initialize all module import structures')
@@ -110,7 +107,7 @@ try:  # Try statement to always close DB properly
     if run_financial_results:
         logging.info('Start Saving Financial Results')
         financial_report = CreatingFinancialReports(reps)
-        financial_report.act_and_commit() # TODO make faster
+        financial_report.act_and_commit()  # TODO make faster
         logging.info('End saving Financial Results')
 
     if run_prepare_next_year_market_clearing:
@@ -171,5 +168,3 @@ finally:
     spinedb_reader_writer.db.close_connection()
     if run_investment_module:
         spinedb_reader_writer.amirisdb.close_connection()
-
-

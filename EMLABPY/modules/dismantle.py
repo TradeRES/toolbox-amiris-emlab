@@ -13,8 +13,11 @@ class Dismantle(DefaultModule):
 
     def act(self):
         self.set_powerplants_status() # set status according to operational time
-        #producer = "Producer1" # TODO change
+        self.decommision_by_age_and_profit()
+        self.add_one_year_to_age() # TODO save this in DB
+        self.save_powerplants_status()
 
+    def decommision_by_age_and_profit(self):
         for producer, producer_specs in self.reps.energy_producers.items():
             for plant in self.reps.get_power_plants_to_be_decommisioned(producer):
                 # TODO is the power plant subsidized ? then dismantle
@@ -31,8 +34,10 @@ class Dismantle(DefaultModule):
                 else:
                     print("dont dismantle but increase OPEX, because lifetime is over")
                     # TODO increase opex
-        self.save_powerplants_status()
 
+    def add_one_year_to_age(self):
+        for powerplant in self.reps.power_plants():
+            powerplant.addoneYeartoAge()
 
     def calculateAveragePastOperatingProfit(self, plant, horizon):
         averagePastOperatingProfit = 0
@@ -64,6 +69,7 @@ class Dismantle(DefaultModule):
     def save_powerplants_status(self):
         print("     saving power plants status ...   ")
         self.reps.dbrw.stage_power_plant_status(self.reps.power_plants)
+
 
 
 

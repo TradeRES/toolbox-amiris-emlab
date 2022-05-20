@@ -98,7 +98,6 @@ class PrepareMarket(DefaultModule):
         InstalledPowerInMW = []
 
         for name, pp in self.power_plants_list.items():
-            print(pp.name)
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])

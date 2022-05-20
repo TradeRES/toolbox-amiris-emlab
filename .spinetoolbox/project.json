@@ -242,17 +242,6 @@
                 ]
             },
             {
-                "name": "from AMRISDB to BestInvestment",
-                "from": [
-                    "AMRISDB",
-                    "right"
-                ],
-                "to": [
-                    "BestInvestment",
-                    "left"
-                ]
-            },
-            {
                 "name": "from Config to Config Importer",
                 "from": [
                     "Config",
@@ -385,27 +374,6 @@
                 ]
             },
             {
-                "name": "from EmlabDB to Prepare Data Amiris",
-                "from": [
-                    "EmlabDB",
-                    "right"
-                ],
-                "to": [
-                    "Prepare Data Amiris",
-                    "left"
-                ],
-                "resource_filters": {
-                    "db_url@EmlabDB": {
-                        "scenario_filter": [
-                            3
-                        ]
-                    }
-                },
-                "options": {
-                    "use_memory_db": false
-                }
-            },
-            {
                 "name": "from increment Clock to EmlabDB",
                 "from": [
                     "increment Clock",
@@ -470,6 +438,94 @@
                     "AMRISDB",
                     "left"
                 ]
+            },
+            {
+                "name": "from AMRISDB to strategic Reserve",
+                "from": [
+                    "AMRISDB",
+                    "right"
+                ],
+                "to": [
+                    "strategic Reserve",
+                    "left"
+                ]
+            },
+            {
+                "name": "from decommission to Prepare Data Amiris",
+                "from": [
+                    "decommission",
+                    "right"
+                ],
+                "to": [
+                    "Prepare Data Amiris",
+                    "left"
+                ]
+            },
+            {
+                "name": "from strategic Reserve to short investments",
+                "from": [
+                    "strategic Reserve",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
+                    "left"
+                ]
+            },
+            {
+                "name": "from short investments to prepare future market",
+                "from": [
+                    "short investments",
+                    "right"
+                ],
+                "to": [
+                    "prepare future market",
+                    "left"
+                ]
+            },
+            {
+                "name": "from prepare future market to AMIRIS2",
+                "from": [
+                    "prepare future market",
+                    "right"
+                ],
+                "to": [
+                    "AMIRIS2",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS2 to AMIRISDB",
+                "from": [
+                    "AMIRIS2",
+                    "right"
+                ],
+                "to": [
+                    "AMIRISDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRISDB to BestInvestment",
+                "from": [
+                    "AMIRISDB",
+                    "right"
+                ],
+                "to": [
+                    "BestInvestment",
+                    "right"
+                ]
+            },
+            {
+                "name": "from EmlabDB to decommission",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
+                    "left"
+                ]
             }
         ],
         "jumps": []
@@ -478,8 +534,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 285.64426581347755,
-            "y": -92.34984406633357,
+            "x": -357.8782863978399,
+            "y": -196.4015084628902,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -522,8 +578,8 @@
         "Scenario_gas": {
             "type": "Data Connection",
             "description": "",
-            "x": -373.57955583872143,
-            "y": 245.66154571573594,
+            "x": -1511.731550862546,
+            "y": 706.1854743380928,
             "file_references": [
                 {
                     "type": "path",
@@ -536,8 +592,8 @@
         "run config gas": {
             "type": "Tool",
             "description": "",
-            "x": -208.35559843673911,
-            "y": 244.70983247142894,
+            "x": -1346.5075934605638,
+            "y": 705.2337610937858,
             "specification": "run config2",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -550,8 +606,8 @@
         "fameSetup gas": {
             "type": "Data Connection",
             "description": "",
-            "x": -86.67825329678277,
-            "y": 325.2530092586707,
+            "x": -1224.8302483206073,
+            "y": 785.7769378810275,
             "file_references": [
                 {
                     "type": "path",
@@ -564,8 +620,8 @@
         "Amiris Gas": {
             "type": "Tool",
             "description": "",
-            "x": 20.818349020226606,
-            "y": 243.72985631729625,
+            "x": -1117.333646003598,
+            "y": 704.2537849396531,
             "specification": "Amirisgas",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -590,8 +646,8 @@
         "CombineResultsGas": {
             "type": "Tool",
             "description": "",
-            "x": 258.87214707322175,
-            "y": 244.24560062626568,
+            "x": -879.279847950603,
+            "y": 704.7695292486225,
             "specification": "Combine Results Gas",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -599,8 +655,8 @@
         "amiris importer gas": {
             "type": "Importer",
             "description": "",
-            "x": 469.1481034257347,
-            "y": 254.84942036684853,
+            "x": -669.0038915980899,
+            "y": 715.3733489892054,
             "specification": "amiris importer gas",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -615,16 +671,16 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1187.3803993849117,
-            "y": -301.0020908659833,
+            "x": -1597.465992967677,
+            "y": -364.5982524376421,
             "file_references": [],
             "db_references": []
         },
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -979.4134975792864,
-            "y": -292.48493591253407,
+            "x": -1354.4115537432056,
+            "y": -367.04595292758233,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -634,8 +690,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1219.5280281189316,
-            "y": -719.004289463094,
+            "x": -1618.648766258308,
+            "y": -993.12567554783,
             "file_references": [
                 {
                     "type": "path",
@@ -648,15 +704,15 @@
         "transform Traderes": {
             "type": "Data Transformer",
             "description": "",
-            "x": 778.9585338529927,
-            "y": -884.7289974737779,
+            "x": -512.7014373782844,
+            "y": 742.4555503252162,
             "specification": ""
         },
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -976.7378908168064,
-            "y": -649.3570373396901,
+            "x": -1331.9992071826246,
+            "y": -864.2682040301231,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -671,8 +727,8 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 217.12469774383732,
-            "y": -511.13943530093763,
+            "x": 546.0703610455207,
+            "y": -535.2621172763943,
             "specification": "Best Investment",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -693,8 +749,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1182.2190106091327,
-            "y": -169.16412390757395,
+            "x": -1587.9186620145424,
+            "y": -230.56731439055488,
             "file_references": [
                 {
                     "type": "path",
@@ -707,8 +763,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -955.6720983674055,
-            "y": -181.2935506624078,
+            "x": -1354.7928365067814,
+            "y": -253.6615965887782,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -739,8 +795,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -389.68976601177417,
-            "y": -659.4705851502417,
+            "x": -1091.440514388699,
+            "y": -690.1721803917321,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -757,8 +813,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -554.4722333660318,
-            "y": -390.45340869889964,
+            "x": -1129.0306585996389,
+            "y": -397.0323219649334,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -844,8 +900,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -285.44325393153684,
-            "y": -88.84569098818338,
+            "x": -818.3352284802638,
+            "y": -202.88018759943367,
             "specification": "Prepare market",
             "execute_in_work": true,
             "cmd_line_args": [
@@ -893,8 +949,8 @@
         "increment Clock": {
             "type": "Tool",
             "description": "",
-            "x": -229.03172891569204,
-            "y": -624.3333833754447,
+            "x": -941.7473327360062,
+            "y": -635.2982388188341,
             "specification": "increment clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -911,8 +967,8 @@
         "Traderes Excel": {
             "type": "Data Connection",
             "description": "",
-            "x": -1240.6563215396934,
-            "y": -564.2532987793521,
+            "x": -1606.8824933489007,
+            "y": -500.6571372076935,
             "file_references": [
                 {
                     "type": "path",
@@ -925,8 +981,8 @@
         "traderesExcel to DB": {
             "type": "Importer",
             "description": "",
-            "x": -979.5577453964529,
-            "y": -539.7205466585109,
+            "x": -1352.362830471694,
+            "y": -500.24706706230893,
             "specification": "technology potential and capacities",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -955,11 +1011,68 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -24.049836848865716,
-            "y": -66.80510235796034,
+            "x": -565.7136957523044,
+            "y": -198.3833676786337,
             "specification": "",
             "execute_in_work": true,
             "cmd_line_args": []
+        },
+        "strategic Reserve": {
+            "type": "Tool",
+            "description": "",
+            "x": -144.48169375064435,
+            "y": -187.19982272346587,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "decommission": {
+            "type": "Tool",
+            "description": "",
+            "x": -999.0832594231392,
+            "y": -219.58083138195846,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "short investments": {
+            "type": "Tool",
+            "description": "",
+            "x": 63.68133794218954,
+            "y": -184.77510034884173,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "prepare future market": {
+            "type": "Tool",
+            "description": "",
+            "x": 291.6651547941593,
+            "y": -133.77123640935127,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "AMIRIS2": {
+            "type": "Tool",
+            "description": "",
+            "x": 502.19037930723675,
+            "y": -195.1744268923321,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "AMIRISDB": {
+            "type": "Data Store",
+            "description": "",
+            "x": 703.9437194656025,
+            "y": -192.98145580365428,
+            "url": {
+                "dialect": "",
+                "host": "",
+                "port": "",
+                "database": ""
+            }
         }
     }
 }

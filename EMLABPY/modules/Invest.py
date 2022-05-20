@@ -73,7 +73,7 @@ class Investmentdecision(DefaultModule):
         else:
             print("Agent cannot invest anymore - no more budget")
 
-    def invest(self, bestCandidatePowerPlant, newpowerplantname):
+    def invest(self, bestCandidatePowerPlant, newpowerplantname): # todo assign age and commissioned year
         newplant = PowerPlant( newpowerplantname )  # the name of the candidate power plant was assigned as the next available id from the installed power plants
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,

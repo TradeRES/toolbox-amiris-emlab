@@ -24,6 +24,7 @@ class PowerPlant(ImportObject):
         # TODO: Implement GetActualEfficiency
         self.banked_allowances = [0 for i in range(100)]
         self.status = 'NOTSET'  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
+        self.fictional_status = 'NOTSET'
         self.loan = None
         self.downpayment = None
         self.dismantleTime = 0
@@ -78,10 +79,12 @@ class PowerPlant(ImportObject):
             self.owner = parameter_value
         elif parameter_name == 'Age':
             self.age = int(parameter_value)
+
             # for emlab data the commissioned year can be read from the age
             self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'ComissionedYear':
             # for amiris data the age can be read from the commisioned year
+            print(self.name , "assigned age by commissioned year ")
             self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
@@ -226,7 +229,7 @@ class PowerPlant(ImportObject):
             print("power plant dont have an age ", self.name)
 
     def addoneYeartoAge(self):
-        self.age = + 1
+        self.age += 1
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
