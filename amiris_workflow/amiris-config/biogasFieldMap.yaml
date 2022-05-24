@@ -1,0 +1,89 @@
+Agents:
+  - column: Set
+    target: Biogas
+    map:
+      - attribute: Type
+        value: Biogas
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/EnergyCarrier
+        value: Biogas
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/DispatchTimeSeries
+        value: "amiris-config/data/biomass.csv"
+      - attribute: Attributes/OperationMode
+        value: FROM_FILE
+
+
+AgentGroups:
+  - &forecaster 6
+  - &marketer 2
+
+Contracts:
+#################################
+# -- Registration --            #
+#################################
+  - SenderType: Biogas
+    ReceiverId: *marketer
+    ProductName: SetRegistration
+    FirstDeliveryTime: -37
+    DeliveryIntervalInSteps: 31536000
+
+#################################
+# -- Forecasting --             #
+#################################
+  - SenderId: *marketer
+    ReceiverType: Biogas
+    ProductName: ForecastRequestForward
+    FirstDeliveryTime: -25
+    DeliveryIntervalInSteps: 3600
+
+  - SenderType: Biogas
+    ReceiverId: *marketer
+    ProductName: MarginalCostForecast
+    FirstDeliveryTime: -22
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Bidding --                 #
+#################################
+  - SenderId: *marketer
+    ReceiverType: Biogas
+    ProductName: GateClosureForward
+    FirstDeliveryTime: -9
+    DeliveryIntervalInSteps: 3600
+
+  - SenderType: Biogas
+    ReceiverId: *marketer
+    ProductName: MarginalCost
+    FirstDeliveryTime: -1
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Dispatch --                #
+#################################
+  - SenderId: *marketer
+    ReceiverType: Biogas
+    ProductName: DispatchAssignment
+    FirstDeliveryTime: 5
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketer
+    ReceiverType: Biogas
+    ProductName: Payout
+    FirstDeliveryTime: 2626204
+    DeliveryIntervalInSteps: 2628000
+
+####################
+#   -- Output --   #
+####################
+  - SenderType: Biogas
+    ReceiverType: Biogas
+    ProductName: AnnualCostReport
+    FirstDeliveryTime: 1
+    DeliveryIntervalInSteps: 31536000

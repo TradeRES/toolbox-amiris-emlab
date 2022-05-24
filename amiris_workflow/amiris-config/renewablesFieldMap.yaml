@@ -20,6 +20,27 @@ Agents:
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/pv.csv"
 
+  # OtherPV
+  - column: Set
+    target: OtherPV
+    map:
+      - attribute: Type
+        value: VariableRenewableOperator
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/EnergyCarrier
+        value: PV
+      - attribute: Attributes/SupportInstrument
+        value: FIT
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/YieldProfile
+        value: "amiris-config/data/pv.csv"
+
   # WindOn
   - column: Set
     target: WindOn
@@ -40,6 +61,67 @@ Agents:
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/windon.csv"
+
+  # WindOff
+  - column: Set
+    target: WindOff
+    map:
+      - attribute: Type
+        value: VariableRenewableOperator
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/EnergyCarrier
+        value: WindOff
+      - attribute: Attributes/SupportInstrument
+        value: FIT
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/YieldProfile
+        value: "amiris-config/data/windoff.csv"
+
+  # RunOfRiver
+  - column: Set
+    target: RunOfRiver
+    map:
+      - attribute: Type
+        value: VariableRenewableOperator
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/EnergyCarrier
+        value: RunOfRiver
+      - attribute: Attributes/SupportInstrument
+        value: FIT
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/YieldProfile
+        value: "amiris-config/data/runofriver.csv"
+
+  # Other RES (Undefined)
+  - column: Set
+    target: Undefined
+    map:
+      - attribute: Type
+        value: VariableRenewableOperator
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Set
+        column: Set
+      - attribute: Attributes/EnergyCarrier
+        value: Other
+      - attribute: Attributes/InstalledPowerInMW
+        column: InstalledPowerInMW
+      - attribute: Attributes/OpexVarInEURperMWH
+        column: OpexVarInEURperMWH
+      - attribute: Attributes/YieldProfile
+        value: "amiris-config/data/otherres.csv"
 
 AgentGroups:
   - &forecaster 6

@@ -367,12 +367,12 @@ AgentTypes:
         AttributeType: enum
         Mandatory: false
         List: false
-        Values: [ 'PVRooftop', 'OtherPV', 'WindOn', 'WindOff', 'RunOfRiver' ]
+        Values: [ 'PVRooftop', 'OtherPV', 'WindOn', 'WindOff', 'RunOfRiver', 'Undefined' ]
       EnergyCarrier:
         AttributeType: enum
         Mandatory: true
         List: false
-        Values: [ 'PV', 'WindOn', 'WindOff', 'RunOfRiver' ]
+        Values: [ 'PV', 'WindOn', 'WindOff', 'RunOfRiver', 'Other' ]
       SupportInstrument:
         AttributeType: enum
         Mandatory: false
@@ -423,26 +423,38 @@ AgentTypes:
         Values: [ 'Biogas' ]
       InstalledPowerInMW:
         AttributeType: time_series
-        List: false
         Mandatory: true
       OpexVarInEURperMWH:
         AttributeType: time_series
-        List: false
         Mandatory: true
       FullLoadHoursPerYear:
         AttributeType: double
-        List: false
         Mandatory: false
       OperationMode:
         AttributeType: enum
-        List: false
         Mandatory: true
         Values: [ 'CONTINUOUS', 'DAY_NIGHT', 'FROM_FILE' ]
       DispatchTimeSeries:
         AttributeType: time_series
-        List: false
         Mandatory: false
-    Products: [ 'MarginalCost', 'MarginalCostForecast', 'SetRegistration' ]
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+    Products: [ 'MarginalCost', 'MarginalCostForecast', 'SetRegistration', 'AnnualCostReport' ]
 
   PredefinedPlantBuilder:
     Attributes:
