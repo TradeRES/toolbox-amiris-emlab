@@ -25,29 +25,36 @@ class ShortInvestmentdecision(Investmentdecision):
     def act(self):
         self.setAgent("Producer1")
         # TODO if there would be more agents, the future capacity should be analyzed per agent
-        for installedpowerplant in self.reps.get_operational_power_plants_by_owner(self.agent.name):
+        for operationalInvestablePlants in self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name, self.quickInvestabletechnologies):
             print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
-        PowerPlantstoInvest = []
 
-        for powerplant in installedpowerplant:
-            # checks if the technology can be invested and if not it removes the technology from the investable technology list quickInvestabletechnologies
-            self.calculateandCheckFutureCapacityExpectation(powerplant)
+        PowerPlantstoInvest = []
+        technologies = []
+        returns = []
+
+        for powerplant in operationalInvestablePlants:
+            # checks if the technology can be invested and if not it removes the technology from the investable technology list quick Investabletechnologies
+            self.calculateandCheckFutureCapacityExpectation(powerplant.technology)
             # for now the returns calculations are done considering that future years will have the profit of the current year
             # TODO the profit should consider the past year profits.
-            powerplantprofit = self.calculatePowerPlantReturns(powerplant)
+            returns.append( self.calculatePowerPlantReturns(powerplant) )
+            technologies.append(powerplant.technology.name)
 
-            if powerplantprofit > self.reps.short_term_investment_minimal_irr:
-                if powerplant.technology in self.quickInvestabletechnologies:
-                    PowerPlantstoInvest.append([powerplant.name, powerplant.technology, powerplantprofit])
-            # TODO         newpowerplantname
-            newpowerplantname = 1
-            if len(PowerPlantstoInvest) > 0:
-                for planttoInvest in PowerPlantstoInvest:
-                    newplant = self.invest(planttoInvest, newpowerplantname)
-                    self.reps.dbrw.stage_new_power_plant(newplant)
+        df = pd.DataFrame( technologies,returns, columns=["Technologies", "Returns"])
+        sorted = df.groupby('Technologies').mean().sort_values(by=['Returns'])
+        filteredReturns = sorted.drop(sorted[sorted.value < self.reps.short_term_investment_minimal_irr].index)
+        technologies = filteredReturns.index.tolist()
+        # TODO         newpowerplantname 
+        PowerPlantstoInvest.append([])
 
-    def calculateandCheckFutureCapacityExpectation(self, powerplant):
-        technology = powerplant.technology
+        newpowerplantname = 1
+        if len(PowerPlantstoInvest) > 0:
+            for planttoInvest in PowerPlantstoInvest:
+                newplant = self.invest(planttoInvest, newpowerplantname)
+                self.reps.dbrw.stage_new_power_plant(newplant)
+
+    def calculateandCheckFutureCapacityExpectation(self, technology):
+
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
         # in contrast to long term investment decision, this is calculated for the current year
         self.expectedInstalledCapacityOfTechnology = \
@@ -84,7 +91,7 @@ class ShortInvestmentdecision(Investmentdecision):
         depriaciationTime = technology.depreciation_time
         # interestRate = technology.interest_rate
         buildingTime = technology.expected_leadtime
-        operatingProfit = powerplant.get_Profit()
+        operatingProfit = powerplant.get_Profit() # Todo change this to the last 3 years????
         equalTotalDownPaymentInstallement = totalInvestment / buildingTime
         investmentCashFlow = [0 for i in range(depriaciationTime + buildingTime)]
         for i in range(0, buildingTime):

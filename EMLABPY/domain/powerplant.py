@@ -196,7 +196,7 @@ class PowerPlant(ImportObject):
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
-        self.setDismantleTime(1000)  # TODO why first set to 1000?
+        self.setDismantleTime(1000)  # TODO why first set to 1000?!!!!!
         if self.dismantleTime < 1000:
             self.setExpectedEndOfLife = self.dismantleTime
         else:
@@ -247,8 +247,10 @@ class PowerPlant(ImportObject):
         # Construction not yet finished.
         return False
 
-    def isExpectedToBeOperational(self, futuretick):
-        if self.commissionedYear <= futuretick:
+    def isExpectedToBeOperational(self, futuretick, futureyear):
+        # if the plants commissioned year is less than the future tick, then passes from in pipeline to operational
+        if self.commissionedYear <= futureyear:
+            # also plants that are not having a
             if self.getExpectedEndOfLife() > futuretick:
                 # Powerplant is not expected to be dismantled
                 return True

@@ -19,6 +19,7 @@ dist
 amiris/
 *amiris-jar-with-dependencies*
 data/powerplantsGermany/
+amiris_workflow/amiris-config/data
 data/amiris/
 data/competes/
 emlabpy/logs

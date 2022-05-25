@@ -89,6 +89,31 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/prepare_market.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/amiris_wrapper.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/decommission.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/short_investments.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/prepare_future_market.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/amiris_future.json"
                 }
             ],
             "Importer": [
@@ -164,17 +189,6 @@
             ]
         },
         "connections": [
-            {
-                "name": "from amiris excel to ScenarioImporter",
-                "from": [
-                    "amiris excel",
-                    "right"
-                ],
-                "to": [
-                    "ScenarioImporter",
-                    "left"
-                ]
-            },
             {
                 "name": "from fameSetup gas to Amiris Gas",
                 "from": [
@@ -319,28 +333,6 @@
                 ]
             },
             {
-                "name": "from importer time series to test",
-                "from": [
-                    "importer time series",
-                    "right"
-                ],
-                "to": [
-                    "test",
-                    "left"
-                ]
-            },
-            {
-                "name": "from example time series to importer time series",
-                "from": [
-                    "example time series",
-                    "right"
-                ],
-                "to": [
-                    "importer time series",
-                    "left"
-                ]
-            },
-            {
                 "name": "from TraderesDB to convert_from_common_db_to_bb_db",
                 "from": [
                     "TraderesDB",
@@ -451,17 +443,6 @@
                 ]
             },
             {
-                "name": "from decommission to Prepare Data Amiris",
-                "from": [
-                    "decommission",
-                    "right"
-                ],
-                "to": [
-                    "Prepare Data Amiris",
-                    "left"
-                ]
-            },
-            {
                 "name": "from strategic Reserve to short investments",
                 "from": [
                     "strategic Reserve",
@@ -484,24 +465,35 @@
                 ]
             },
             {
-                "name": "from prepare future market to AMIRIS2",
+                "name": "from EmlabDB to Prepare Data Amiris",
                 "from": [
-                    "prepare future market",
+                    "EmlabDB",
                     "right"
                 ],
                 "to": [
-                    "AMIRIS2",
+                    "Prepare Data Amiris",
                     "left"
                 ]
             },
             {
-                "name": "from AMIRIS2 to AMIRISDB",
+                "name": "from decommission to EmlabDB",
                 "from": [
-                    "AMIRIS2",
+                    "decommission",
                     "right"
                 ],
                 "to": [
-                    "AMIRISDB",
+                    "EmlabDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from decommission to Prepare Data Amiris",
+                "from": [
+                    "decommission",
+                    "right"
+                ],
+                "to": [
+                    "Prepare Data Amiris",
                     "left"
                 ]
             },
@@ -509,7 +501,7 @@
                 "name": "from AMIRISDB to BestInvestment",
                 "from": [
                     "AMIRISDB",
-                    "right"
+                    "left"
                 ],
                 "to": [
                     "BestInvestment",
@@ -517,14 +509,36 @@
                 ]
             },
             {
-                "name": "from EmlabDB to decommission",
+                "name": "from AMIRIS future to AMIRISDB",
                 "from": [
-                    "EmlabDB",
+                    "AMIRIS future",
+                    "left"
+                ],
+                "to": [
+                    "AMIRISDB",
+                    "right"
+                ]
+            },
+            {
+                "name": "from prepare future market to AMIRIS future",
+                "from": [
+                    "prepare future market",
                     "right"
                 ],
                 "to": [
-                    "decommission",
-                    "left"
+                    "AMIRIS future",
+                    "right"
+                ]
+            },
+            {
+                "name": "from short investments to EmlabDB2",
+                "from": [
+                    "short investments",
+                    "right"
+                ],
+                "to": [
+                    "EmlabDB2",
+                    "right"
                 ]
             }
         ],
@@ -558,22 +572,6 @@
                 "port": "44999",
                 "database": "traderes"
             }
-        },
-        "ScenarioImporter": {
-            "type": "Importer",
-            "description": "",
-            "x": -1018.0967125593666,
-            "y": 262.98719970349777,
-            "specification": "amiris simple scenario",
-            "cancel_on_error": false,
-            "purge_before_writing": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "<project>/data/scenariofromAMIRIS.xlsx",
-                    true
-                ]
-            ]
         },
         "Scenario_gas": {
             "type": "Data Connection",
@@ -738,8 +736,8 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 546.0703610455207,
-            "y": -535.2621172763943,
+            "x": -655.0864845181004,
+            "y": -511.4033874409373,
             "specification": "Best Investment",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -749,7 +747,7 @@
                 },
                 {
                     "type": "resource",
-                    "arg": "db_url@AMRISDB"
+                    "arg": "db_url@AMIRISDB"
                 },
                 {
                     "type": "literal",
@@ -786,22 +784,6 @@
                     true
                 ]
             ]
-        },
-        "test": {
-            "type": "Data Store",
-            "description": "",
-            "x": -963.879427447061,
-            "y": 531.6827492817056,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/test/test.sqlite"
-                }
-            }
         },
         "Initialize Clock": {
             "type": "Tool",
@@ -877,36 +859,6 @@
                 }
             ],
             "specification": ""
-        },
-        "example time series": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -1334.0600838901703,
-            "y": 530.034373002359,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "scripts/ConventionalPlantOperator exampletimeseries.xlsx"
-                }
-            ],
-            "db_references": []
-        },
-        "importer time series": {
-            "type": "Importer",
-            "description": "",
-            "x": -1135.3563693188257,
-            "y": 533.2254464871972,
-            "specification": "import time series example",
-            "cancel_on_error": false,
-            "purge_before_writing": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "<project>/scripts/ConventionalPlantOperator exampletimeseries.xlsx",
-                    true
-                ]
-            ]
         },
         "Prepare Data Amiris": {
             "type": "Tool",
@@ -1005,26 +957,12 @@
                 ]
             ]
         },
-        "amiris excel": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -1164.271318004346,
-            "y": 295.58865335040446,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "data/scenariofromAMIRIS.xlsx"
-                }
-            ],
-            "db_references": []
-        },
         "AMIRIS": {
             "type": "Tool",
             "description": "",
             "x": -565.7136957523044,
             "y": -198.3833676786337,
-            "specification": "",
+            "specification": "AMIRIS wrapper",
             "execute_in_work": true,
             "cmd_line_args": []
         },
@@ -1040,49 +978,82 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -999.0832594231392,
-            "y": -219.58083138195846,
-            "specification": "",
+            "x": -1202.9410648559756,
+            "y": -148.23059948046557,
+            "specification": "Decommission",
             "execute_in_work": true,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_decommission_module"
+                }
+            ]
         },
         "short investments": {
             "type": "Tool",
             "description": "",
             "x": 63.68133794218954,
             "y": -184.77510034884173,
-            "specification": "",
+            "specification": "Short investments",
             "execute_in_work": true,
             "cmd_line_args": []
         },
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 291.6651547941593,
-            "y": -133.77123640935127,
-            "specification": "",
-            "execute_in_work": true,
-            "cmd_line_args": []
-        },
-        "AMIRIS2": {
-            "type": "Tool",
-            "description": "",
-            "x": 502.19037930723675,
-            "y": -195.1744268923321,
-            "specification": "",
+            "x": 59.83742332624075,
+            "y": -395.10702605721536,
+            "specification": "Prepare future market",
             "execute_in_work": true,
             "cmd_line_args": []
         },
         "AMIRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": 703.9437194656025,
-            "y": -192.98145580365428,
+            "x": -366.3120892319338,
+            "y": -519.9043532719401,
             "url": {
-                "dialect": "",
+                "dialect": "sqlite",
                 "host": "",
                 "port": "",
-                "database": ""
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/amrisdb/AMRISDB.sqlite"
+                }
+            }
+        },
+        "AMIRIS future": {
+            "type": "Tool",
+            "description": "",
+            "x": -160.28501707424505,
+            "y": -516.413742629157,
+            "specification": "Amiris future",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "EmlabDB2": {
+            "type": "Data Store",
+            "description": "",
+            "x": 19.017174170392593,
+            "y": -19.75072200438899,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/emlabdb/EmlabDB.sqlite"
+                }
             }
         }
     }

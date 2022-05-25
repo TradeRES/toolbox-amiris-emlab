@@ -162,7 +162,7 @@ class Investmentdecision(DefaultModule):
                                                        self.reps.node)
         print(candidatepowerplant)
         technology = candidatepowerplant.technology
-        technologyCapacityLimit = self.findLimitsByTechnology(technology)
+        technologyCapacityLimit = self.findLimitsByTechnology(technology) # Todo: add the constraint about capacity limits
         self.expectedInstalledCapacityOfTechnology = \
             self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(technology,
                                                                                      self.futureInvestmentyear)

@@ -185,7 +185,7 @@ class Repository:
         expectedOperationalcapacity = 0
         plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
         for plant in plantsoftechnology:
-            if PowerPlant.isExpectedToBeOperational(plant, tick):
+            if PowerPlant.isExpectedToBeOperational(plant, tick, (self.current_year + tick)):
                 expectedOperationalcapacity.sum()
         return expectedOperationalcapacity
 
@@ -215,6 +215,10 @@ class Repository:
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == self.power_plant_status_operational]
+
+    def get_operational_power_plants_by_owner_and_technologies(self, owner: EnergyProducer, listofTechnologies) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.owner == owner and i.status == self.power_plant_status_operational and i.technology.name in listofTechnologies]
 
     def get_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -427,6 +431,12 @@ class Repository:
                         if i.techtype == techtype and i.fuel == fuel)
         except StopIteration:
             logging.warning('PowerGeneratingTechnology not found for ' + techtype + ' and ' + fuel)
+            return None
+
+    def get_unique_technologies_names(self ):
+        try:
+            return next(i.name for i in self.power_generating_technologies.values())
+        except StopIteration:
             return None
 
     # PowerGridNode

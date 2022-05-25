@@ -23,7 +23,7 @@ class CreatingFinancialReports(DefaultModule):
     def createFinancialReportsForNewInvestments(self):
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWithConstructionStartTimeInTick(self.reps.current_tick), self.reps.current_tick)
 
-    def createFinancialReportsForPowerPlantsAndTick(self, plants, tick):
+    def createFinancialReportsForPowerPlantsAndTick(self, plants, tick): # todo -> probably this is needed only for operational power plants
         financialPowerPlantReports = []
         for plant in plants.values():
             financialPowerPlantReport = FinancialPowerPlantReport(plant.name, self.reps)
@@ -33,14 +33,6 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setProduction(totalSupply)
             financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR)
             financialPowerPlantReport.setProfit(plant.Profit)
-            # if plant.isOperational(tick):
-            #     operationalStatus = "operational"
-            # elif plant.isInPipeline(tick):
-            #     operationalStatus = "inPipeline"
-            # else:
-            #     operationalStatus = "decommissioned"
-            #
-            # financialPowerPlantReport.setPowerPlantStatus(operationalStatus)
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
