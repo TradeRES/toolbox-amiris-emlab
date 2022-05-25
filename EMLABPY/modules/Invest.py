@@ -68,13 +68,13 @@ class Investmentdecision(DefaultModule):
             if bestCandidatePowerPlant is not None:
                 # investing in best candidate power plant as it passed the checks.
                 if candidatepowerplant.isViableInvestment:
-                    newplant = self.invest(bestCandidatePowerPlant, bestCandidatePowerPlant.name)
+                    newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
         else:
             print("Agent cannot invest anymore - no more budget")
 
-    def invest(self, bestCandidatePowerPlant, newpowerplantname): # todo assign age and commissioned year
-        newplant = PowerPlant( newpowerplantname )  # the name of the candidate power plant was assigned as the next available id from the installed power plants
+    def invest(self, bestCandidatePowerPlant): # todo assign age and commissioned year
+        newplant = PowerPlant( bestCandidatePowerPlant.name )  # the name of the candidate power plant was assigned as the next available id from the installed power plants
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,
                                    bestCandidatePowerPlant.capacity, bestCandidatePowerPlant.technology)

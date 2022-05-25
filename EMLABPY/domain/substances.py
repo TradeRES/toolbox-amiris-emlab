@@ -46,7 +46,7 @@ class Substance(ImportObject):
             self.simulatedPrice = parameter_value
 
     def get_price_for_next_tick(self, reps, tick, year, substance):
-        if tick == 0 or substance.name == "CO2" :
+        if tick == 0 or substance.name == "CO2":
             if substance.name == "electricity":
                 self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year. TODO
             else:
@@ -55,11 +55,11 @@ class Substance(ImportObject):
                 self.newSimulatedPrice = np.interp(year, xp, fp)
             return self.newSimulatedPrice
         else:
-            calculatedfuturePrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance, "futurePrice")
-            df = pd.DataFrame(calculatedfuturePrices['data'])
+            calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance, "simulatedPrice")
+            df = pd.DataFrame(calculatedPrices['data'])
             df.set_index(0, inplace=True)
             last_value = df.loc[str(year - 1)][1]
-            random_number = random.triangular(-1, 0, 1) # TODO this was (-1,  1, 0 ) for competes integration
+            random_number = random.triangular(-1, 1, 0) # low, high, mode
             if random_number < 0:
                 self.newSimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.top - self.trend.min)))
             else:
@@ -67,8 +67,8 @@ class Substance(ImportObject):
         return self.newSimulatedPrice
 
     def get_price_for_future_tick(self, reps, futureYear, substance):
-        if reps.current_tick >= 2:
-            self.initializeGeometricTrendRegression(reps, substance)
+        if reps.current_tick >= 2 or substance.name != "CO2":
+            self.initializeGeometricTrendRegression(reps, substance) # TODO should this
             self.newFuturePrice = self.geometricRegression.predict(futureYear)
             return self.newFuturePrice
         else:

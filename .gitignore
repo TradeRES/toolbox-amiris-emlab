@@ -15,6 +15,7 @@ dist
 *.log
 *.h5f
 *.pb
+
 amiris/
 *amiris-jar-with-dependencies*
 data/powerplantsGermany/

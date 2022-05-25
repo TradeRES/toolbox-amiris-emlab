@@ -56,7 +56,7 @@ class PrepareCandidatePowerPlants(PrepareMarket):
             fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
             if fictional_age > powerplant.technology.expected_lifetime:
                 powerplant.fictional_status = self.reps.power_plant_status_to_be_decommissioned
-                print("to be decommisioned", powerplant.name, "äge", fictional_age,
+                print("to be decommisioned", powerplant.name, "age", fictional_age,
                       "technology", powerplant.technology.name ,"lifetime", powerplant.technology.expected_lifetime )
                 # todo add some exception for plants under startegic reserve
             elif powerplant.commissionedYear <= self.simulation_year:
@@ -64,7 +64,7 @@ class PrepareCandidatePowerPlants(PrepareMarket):
                 self.power_plants_list[powerplant.name] = powerplant
             elif powerplant.commissionedYear > self.simulation_year:
                 powerplant.fictional_status = self.reps.power_plant_status_inPipeline
-                print("--------------------------------------------------------- in pileline", powerplant.name)
+                print("--------------------- in pipeline", powerplant.name)
             else:
                 print("status not set", powerplant.name)
 
@@ -88,7 +88,7 @@ class PrepareCandidatePowerPlants(PrepareMarket):
             futureprice = substance.get_price_for_future_tick(self.reps, self.simulation_year, substance)
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     futureprice)  # todo: save this as a map in DB
-
+    #
     # def createCandidatePowerPlants(self):
     #     self.getlastIds()  # from installed power plants
     #     self.iteration = self.reps.dbrw.get_last_iteration(self.simulation_year)
@@ -146,3 +146,5 @@ class PrepareCandidatePowerPlants(PrepareMarket):
     #     self.lastconventionalId = lastbuiltconventional[-1]
     #     if len(lastbuiltstorage) > 0:  # TODO: give numeration to storage so that it doesnt overlap with renewables
     #         self.laststorageId = lastbuiltstorage[-1]
+
+

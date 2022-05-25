@@ -30,7 +30,7 @@ class PrepareMarket(DefaultModule):
         self.write_conventionals()
         self.write_renewables()
         self.write_storage()
-        self.write_scenario_data_emlab("simulatedPrices")
+        self.write_scenario_data_emlab("simulatedPrice")
         self.write_times()
         self.writer.save()
         self.writer.close()
@@ -124,7 +124,7 @@ class PrepareMarket(DefaultModule):
         Lcoe = []
 
         for id, pp in self.power_plants_list.items():
-            if pp.technology.type == "VariableRenewableOperator":
+            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[pp.technology.name] != "Biogas" :
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
@@ -140,6 +140,35 @@ class PrepareMarket(DefaultModule):
 
         df = pd.DataFrame(data=d)
         df.to_excel(self.writer, sheet_name="renewables")
+
+    def write_biogas(self):
+        identifier = []
+        InstalledPowerInMW = []
+        OpexVarInEURperMWH = []
+        Set = []
+        SupportInstrument = []
+        FIT = []
+        Premium = []
+        Lcoe = []
+
+        for id, pp in self.power_plants_list.items():
+            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[pp.technology.name] == "Biogas" :
+                identifier.append(pp.id)
+                InstalledPowerInMW.append(pp.capacity)
+                OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                Set.append(self.reps.dictionaryTechSet[pp.technology.name])
+                SupportInstrument.append("-")
+                FIT.append("-")
+                Premium.append("-")
+                Lcoe.append("-")
+
+        d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
+             'OpexVarInEURperMWH': OpexVarInEURperMWH,
+             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
+
+        df = pd.DataFrame(data=d)
+        df.to_excel(self.writer, sheet_name="biogas")
+
 
     def write_storage(self):
         identifier = []

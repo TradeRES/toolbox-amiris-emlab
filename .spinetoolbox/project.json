@@ -673,7 +673,13 @@
             "description": "",
             "x": -1597.465992967677,
             "y": -364.5982524376421,
-            "file_references": [],
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/EMLAB parameters.xlsx"
+                }
+            ],
             "db_references": []
         },
         "Import EMLAB Init": {
@@ -685,7 +691,12 @@
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": []
+            "file_selection": [
+                [
+                    "<project>/data/EMLAB parameters.xlsx",
+                    true
+                ]
+            ]
         },
         "Traderes CommonDB": {
             "type": "Data Connection",

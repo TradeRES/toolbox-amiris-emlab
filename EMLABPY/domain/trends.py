@@ -2,6 +2,7 @@
 This file contains all Trend classes: mathematical definitions of functions.
 
 Jim Hommes - 13-5-2021
+Ingrid Sanchez 02-03-22
 """
 from random import random
 
