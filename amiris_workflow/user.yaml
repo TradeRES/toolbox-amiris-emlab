@@ -18,131 +18,131 @@ global:
     csvSeparator: ";"
 
 workflow:
-#   # Add conventionals (append to scenario skeleton)
-#   - action:
-#       project: general
-#       call: parse_excel
-#       data:
-#         read_from_dmgr: null
-#         write_to_dmgr: powerPlants
-#       args:
-#         excelFile: ../data/amiris/amiris_data_structure.xlsx
-#         excelSheet: conventionals
-#         excelHeader: True
-#
-#   - action:
-#       project: general
-#       call: write_AMIRIS_config
-#       data:
-#         read_from_dmgr: powerPlants
-#         write_to_dmgr: null
-#       args:
-#         AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
-#         templateFile: amiris-config/scenario_template.yaml
-#         outputFile: scenario.yaml
-#
-#   - actionCheck:
-#       project: general
-#       call: checkpoint
-#       tag: conventionals_processed
-#
-#   # Add storages (append to scenario)
-#   - action:
-#       project: general
-#       call: parse_excel
-#       data:
-#         read_from_dmgr: null
-#         write_to_dmgr: storages
-#       args:
-#         excelFile: ../data/amiris/amiris_data_structure.xlsx
-#         excelSheet: storages
-#         excelHeader: True
-#
-#   - action:
-#       project: general
-#       call: write_AMIRIS_config
-#       data:
-#         read_from_dmgr: storages
-#         write_to_dmgr: null
-#       args:
-#         AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
-#         templateFile: amiris-config/scenario.yaml
-#         outputFile: scenario.yaml
-#
-#   - actionCheck:
-#       project: general
-#       call: checkpoint
-#       tag: storages_processed
-#
-#   # Add renewables, but biogas (append to scenario)
-#   - action:
-#       project: general
-#       call: parse_excel
-#       data:
-#         read_from_dmgr: null
-#         write_to_dmgr: renewables
-#       args:
-#         excelFile: ../data/amiris/amiris_data_structure.xlsx
-#         excelSheet: renewables
-#         excelHeader: True
-#
-#   - action:
-#       project: general
-#       call: write_AMIRIS_config
-#       data:
-#         read_from_dmgr: renewables
-#         write_to_dmgr: null
-#       args:
-#         AMIRISConfigFieldMap: amiris-config/renewablesFieldMap.yaml
-#         templateFile: amiris-config/scenario.yaml
-#         outputFile: scenario.yaml
-#
-#   # Add biogas (append to scenario)
-#   - action:
-#       project: general
-#       call: parse_excel
-#       data:
-#         read_from_dmgr: null
-#         write_to_dmgr: biogas
-#       args:
-#         excelFile: ../data/amiris/amiris_data_structure.xlsx
-#         excelSheet: biogas
-#         excelHeader: True
-#
-#   - action:
-#       project: general
-#       call: write_AMIRIS_config
-#       data:
-#         read_from_dmgr: biogas
-#         write_to_dmgr: null
-#       args:
-#         AMIRISConfigFieldMap: amiris-config/biogasFieldMap.yaml
-#         templateFile: amiris-config/scenario.yaml
-#         outputFile: scenario.yaml
-#
-#   - actionCheck:
-#       project: general
-#       call: checkpoint
-#       tag: renewables_processed
-#
-#   - action:
-#       project: general
-#       call: create_AMIRIS_protobuf
-#       args:
-#         input: amiris-config/scenario.yaml
-#         output: amiris-config/config.pb
-#
-#   - action:
-#       project: general
-#       call: run_AMIRIS
-#       args:
-#         input: "amiris-config/config.pb"
-#         model:
-#           jar: 'amiris/amiris-core_1.2-jar-with-dependencies.jar'
-#           vm: '-ea -Xmx2000M'
-#           fame_args: '-Dlog4j.configuration=file:amiris/log4j.properties'
-#           runner: 'de.dlr.gitlab.fame.setup.FameRunner'
-#           fame_setup: 'amiris/fameSetup.yaml'
+  # Add conventionals (append to scenario skeleton)
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: powerPlants
+      args:
+        excelFile: ../data/amiris/amiris_data_structure.xlsx
+        excelSheet: conventionals
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: powerPlants
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
+        templateFile: amiris-config/scenario_template.yaml
+        outputFile: scenario.yaml
+
+  - actionCheck:
+      project: general
+      call: checkpoint
+      tag: conventionals_processed
+
+  # Add storages (append to scenario)
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: storages
+      args:
+        excelFile: ../data/amiris/amiris_data_structure.xlsx
+        excelSheet: storages
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: storages
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
+        templateFile: amiris-config/scenario.yaml
+        outputFile: scenario.yaml
+
+  - actionCheck:
+      project: general
+      call: checkpoint
+      tag: storages_processed
+
+  # Add renewables, but biogas (append to scenario)
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: renewables
+      args:
+        excelFile: ../data/amiris/amiris_data_structure.xlsx
+        excelSheet: renewables
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: renewables
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/renewablesFieldMap.yaml
+        templateFile: amiris-config/scenario.yaml
+        outputFile: scenario.yaml
+
+  # Add biogas (append to scenario)
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: biogas
+      args:
+        excelFile: ../data/amiris/amiris_data_structure.xlsx
+        excelSheet: biogas
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_AMIRIS_config
+      data:
+        read_from_dmgr: biogas
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/biogasFieldMap.yaml
+        templateFile: amiris-config/scenario.yaml
+        outputFile: scenario.yaml
+
+  - actionCheck:
+      project: general
+      call: checkpoint
+      tag: renewables_processed
+
+  - action:
+      project: general
+      call: create_AMIRIS_protobuf
+      args:
+        input: amiris-config/scenario.yaml
+        output: amiris-config/config.pb
+
+  - action:
+      project: general
+      call: run_AMIRIS
+      args:
+        input: "amiris-config/config.pb"
+        model:
+          jar: 'amiris/amiris-core_1.2-jar-with-dependencies.jar'
+          vm: '-ea -Xmx2000M'
+          fame_args: '-Dlog4j.configuration=file:amiris/log4j.properties'
+          runner: 'de.dlr.gitlab.fame.setup.FameRunner'
+          fame_setup: 'amiris/fameSetup.yaml'
 
   - action:
       project: general
