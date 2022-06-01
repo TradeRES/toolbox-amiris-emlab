@@ -1,0 +1,20 @@
+{
+    "name": "Capacity Mechanism",
+    "tooltype": "python",
+    "includes": [
+        "emlab.py"
+    ],
+    "description": "Give in the argument which type of mechanism should be executed",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": true,
+    "includes_main_path": "../../../emlabpy",
+    "execution_settings": {
+        "env": "",
+        "kernel_spec_name": "amiris",
+        "use_jupyter_console": true,
+        "executable": ""
+    }
+}

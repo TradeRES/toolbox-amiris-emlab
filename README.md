@@ -4,12 +4,12 @@ The soft linking of AMIRIS and EMLabpy intends to investigate the investment
 incentives in a future flexible power system. 
 EMLabpy is based in EMLab and is rewritten in a modular way into python to easily couple with AMIRIS. 
 
-## Workflow
+# Workflow
 The integration is best illustrated with following diagram. 
 ![](data/workflow.jpg)
 
-## Folder structure
-
+# Folder structure
+## EMLABpy
 ### `emlabpy`
 This code is based on the model EMLab. http://emlab.tudelft.nl/
 
@@ -17,31 +17,39 @@ This code is based on the model EMLab. http://emlab.tudelft.nl/
 
 This folder stores the code triggered from Spinetoolbox to do the data exchange
 
-### `amiris`
+### `data`
 
-This is the code from the amiris project https://gitlab.com/dlr-ve/esy/amiris/amiris/
+This folder could be used for storing the original data files.
+Please add metadata and licensing information as well.
 
-### `amiris_workflow`
+### `logs`
+The logging from all the workflow can be found in this folder
 
-This workflow define the steps to feed data , run and export data from AMIRIS
+### `logs`
+The result plots from the EMLabpy - AMIRIS soft coupling
 
-### `actions`
+## AMIRIS
+### `amiris` 
 
-These are the actions to run AMIRIS and which order is specified in the amiris_workflow
-
-### `amiris_workflow`
-
-Here is the tool that imports all the needed data to run AMIRIS into yaml files.
-It also runs AMIRIS and exports the data to files to be imported back to EMLAB.
+This is the code from the AMIRIS project https://gitlab.com/dlr-ve/esy/amiris/amiris/
+Outdated -> the code is now packed in amiris_workflow
 
 ### `examples`
 
 This folder contains the data to run Amiris https://gitlab.com/dlr-ve/esy/amiris/examples
 
-### `data`
+## AMIRIS IoVRMR
 
-This folder could be used for storing the original data files.
-Please add metadata and licensing information as well.
+### `amiris_workflow`
+
+Here is the tool that imports all the needed data to run AMIRIS into yaml files.
+It also runs AMIRIS and exports the data to files to be imported back to EMLAB.
+### `actions`
+
+These are the actions to run AMIRIS and which order is specified in the amiris_workflow
+
+
+
 
 ## License and Terms of Use
 

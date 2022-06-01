@@ -14,10 +14,6 @@ class Loan:
         self.numberOfPaymentsDone = 0
         self.loanStartTime = 0
 
-    #    @RelatedTo(type = "LEND_TO_AGENT", elementClass = EMLabAgent.class, direction = Direction.OUTGOING)
-    #    @RelatedTo(type = "LEND_BY_AGENT", elementClass = EMLabAgent.class, direction = Direction.OUTGOING)
-    #    @RelatedTo(type = "LOAN_POWERPLANT", elementClass = PowerPlant.class, direction = Direction.OUTGOING)
-
     def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
         annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
 #        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))

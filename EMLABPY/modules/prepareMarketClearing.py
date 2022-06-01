@@ -19,7 +19,7 @@ class PrepareMarket(DefaultModule):
         self.empty = None
         self.Years = []
         self.writer = None
-        self.path = '../data/amiris/amiris_data_structure.xlsx'
+        self.path = 'data/amiris/amiris_data_structure.xlsx'
         self.power_plants_list = self.reps.power_plants
         reps.dbrw.stage_init_next_prices_structure()
 

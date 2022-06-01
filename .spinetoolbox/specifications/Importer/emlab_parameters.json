@@ -974,23 +974,45 @@
                         ]
                     }
                 }
+            ],
+            "EnergyConsumer": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "CapacityMarkets",
+            "ElectricitySpotMarkets",
+            "EnergyConsumers",
             "EnergyProducers",
             "StepTrends",
             "TargetInvestorTargets",
             "FuelPriceTrends",
             "TechnologiesEmlab",
             "NewTechnologies",
-            "COMPETESfuelPrices",
             "dutchGermanPlants2015_from_emla",
             "dictTech",
             "dictFuel",
             "TechnologiesEmlabTemporal",
             "CO2",
-            "CandidatePowerPlants"
+            "CandidatePowerPlants",
+            "EnergyConsumer"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1019,7 +1041,8 @@
             "TechnologiesEmlabTemporal": {},
             "dictvariables": {},
             "CO2": {},
-            "CandidatePowerPlants": {}
+            "CandidatePowerPlants": {},
+            "EnergyConsumer": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1045,7 +1068,8 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float"
+                "6": "float",
+                "7": "string"
             },
             "EnergyConsumers": {
                 "0": "string",

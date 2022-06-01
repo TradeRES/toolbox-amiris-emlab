@@ -19,7 +19,8 @@ from domain.trends import *
 from domain.zones import *
 from domain.contract import *
 from domain.loans import Loan
-from util.globalNames import *
+import globalNames
+
 
 class Repository:
     """
@@ -31,7 +32,6 @@ class Repository:
         """
         Initialize all Repository variables
         """
-
         self.node = ""
         self.country = ""
         self.dbrw = None
@@ -43,10 +43,10 @@ class Repository:
         self.lookAhead = 0
         self.current_year = 0
         self.simulation_length = 0
-        self.dictionaryFuelNames= dict()
-        self.dictionaryFuelNumbers= dict()
+        self.dictionaryFuelNames = dict()
+        self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()
-        self.dictionaryTechSet =dict()
+        self.dictionaryTechSet = dict()
         self.newTechnology = dict()
         self.energy_producers = dict()
         self.target_investors = dict()
@@ -73,16 +73,6 @@ class Repository:
         self.load = dict()
         self.emissions = dict()
         self.exports = dict()
-
-        self.power_plant_dispatch_plan_status_accepted = 'Accepted'
-        self.power_plant_dispatch_plan_status_failed = 'Failed'
-        self.power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
-        self.power_plant_dispatch_plan_status_awaiting = 'Awaiting'
-
-        self.power_plant_status_operational = 'Operational'
-        #self.power_plant_status_inPipeline = 'InPipeline' # TODO change the rest to global variables
-        self.power_plant_status_decommissioned = 'Decommissioned'
-        self.power_plant_status_to_be_decommissioned = 'TobeDecommissioned'
 
         self.marketForSubstance = {}
         self.electricitySpotMarketForNationalGovernment = {}
@@ -191,15 +181,16 @@ class Repository:
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
         plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology == technology
-                              and i.status == self.power_plant_status_operational]
+                              and i.status == globalNames.power_plant_status_operational]
         return sum(plantsoftechnology)
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology == technology
-                    and pp.status == power_plant_status_inPipeline])  # pp.isInPipeline(tick)
+                    and pp.status == globalNames.power_plant_status_inPipeline])  # pp.isInPipeline(tick)
 
     def calculateCapacityOfPowerPlantsInPipeline(self):
-        return sum([i.capacity for i in self.power_plants.values() if i.status == power_plant_status_inPipeline])
+        return sum(
+            [i.capacity for i in self.power_plants.values() if i.status == globalNames.power_plant_status_inPipeline])
 
     def findPowerGeneratingTechnologyTargetByTechnology(self, technology):
         for i in self.target_investors.values():
@@ -214,23 +205,31 @@ class Repository:
 
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner == owner and i.status == self.power_plant_status_operational]
+                if i.owner == owner and i.status == globalNames.power_plant_status_operational]
 
-    def get_operational_power_plants_by_owner_and_technologies(self, owner: EnergyProducer, listofTechnologies) -> List[PowerPlant]:
+    def get_operational_and_to_be_decommissioned_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner == owner and i.status == self.power_plant_status_operational and i.technology.name in listofTechnologies]
+                if i.owner == owner and (
+                        i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_to_be_decommissioned)]
+
+    def get_operational_power_plants_by_owner_and_technologies(self, owner: EnergyProducer, listofTechnologies) -> List[
+        PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if
+                i.owner == owner and i.status == globalNames.power_plant_status_operational and i.technology.name in listofTechnologies]
 
     def get_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.owner == owner]
 
-    def get_power_plants_to_be_decommisioned(self, owner) -> List[PowerPlant]:
+    def get_power_plants_to_be_decommissioned(self, owner) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner == owner and i.status == self.power_plant_status_to_be_decommissioned]
+                if i.owner == owner and i.status == globalNames.power_plant_status_to_be_decommissioned]
 
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
-        for power_plant in [i for i in self.power_plants.values() if i.status == self.power_plant_status_operational]:
+        for power_plant in [i for i in self.power_plants.values() if
+                            i.status == globalNames.power_plant_status_operational]:
             revenues = self.get_power_plant_electricity_spot_market_revenues_by_tick(power_plant, time)
             mc = power_plant.calculate_marginal_cost_excl_co2_market_cost(self, time)
             total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time,
@@ -270,7 +269,7 @@ class Repository:
         else:
             res = {}
         for power_plant in [i for i in self.power_plants.values() if
-                            i.status == self.power_plant_status_operational and i.name not in res.keys()]:
+                            i.status == globalNames.power_plant_status_operational and i.name not in res.keys()]:
             # Total Capacity is in MWh
             total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time,
                                                                                                 self.electricity_spot_markets[
@@ -302,19 +301,30 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.plant == plant and i.tick == time]
 
-    def set_power_plant_dispatch_plan_production(self,
-                                                 ppdp: PowerPlantDispatchPlan,
-                                                 status: str, accepted_amount: float):
+    def set_power_plant_CapacityMarket_production(self, ppdp,
+                                                  status: str, accepted_amount: float):
         ppdp.status = status
         ppdp.accepted_amount = accepted_amount
-        self.dbrw.stage_power_plant_dispatch_plan(ppdp, self.current_tick)
+        self.dbrw.stage_power_plant_CM_plan(ppdp, self.current_tick)
 
-    def create_or_update_power_plant_dispatch_plan(self, plant: PowerPlant,
-                                                   bidder: EnergyProducer,
-                                                   bidding_market: Market,
-                                                   amount: float,
-                                                   price: float,
-                                                   time: int) -> PowerPlantDispatchPlan:
+    def get_accepted_CM_ppdp(self, ppdp):
+        return [i for i in self.ppdp.values() if
+                i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
+
+        # def set_power_plant_dispatch_plan_production(self,
+
+    #                                              ppdp: PowerPlantDispatchPlan,
+    #                                              status: str, accepted_amount: float):
+    #     ppdp.status = status
+    #     ppdp.accepted_amount = accepted_amount
+    #     self.dbrw.stage_power_plant_dispatch_plan(ppdp, self.current_tick)
+
+    def create_or_update_power_plant_CapacityMarket_plan(self, plant: PowerPlant,
+                                                         bidder: EnergyProducer,
+                                                         bidding_market: Market,
+                                                         amount: float,
+                                                         price: float,
+                                                         time: int) -> PowerPlantDispatchPlan:
         ppdp = next((ppdp for ppdp in self.power_plant_dispatch_plans.values() if ppdp.plant == plant and \
                      ppdp.bidding_market == bidding_market and
                      ppdp.tick == time), None)
@@ -351,7 +361,8 @@ class Repository:
     def create_or_update_market_clearing_point(self,
                                                market: Market,
                                                price: float,
-                                               capacity: float,
+
+                                               volume: float,
                                                time: int) -> MarketClearingPoint:
         mcp = next((mcp for mcp in self.market_clearing_points.values() if mcp.market == market and mcp.tick == time),
                    None)
@@ -362,8 +373,9 @@ class Repository:
 
         mcp.market = market
         mcp.price = price
-        mcp.capacity = capacity
+
         mcp.tick = time
+        mcp.volume = volume
         self.market_clearing_points[mcp.name] = mcp
         self.dbrw.stage_market_clearing_point(mcp, time)
         return mcp
@@ -433,7 +445,7 @@ class Repository:
             logging.warning('PowerGeneratingTechnology not found for ' + techtype + ' and ' + fuel)
             return None
 
-    def get_unique_technologies_names(self ):
+    def get_unique_technologies_names(self):
         try:
             return next(i.name for i in self.power_generating_technologies.values())
         except StopIteration:

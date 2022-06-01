@@ -25,7 +25,6 @@ class Investmentdecision(DefaultModule):
         self.capacityOfTechnologyInPipeline = 0
         self.operationalCapacityOfTechnology = 0
         self.capacityInPipeline = 0
-
         self.investmentCashFlow = []
         # from AbstractInvestInPowerGenerationTechnologiesRole
         self.useFundamentalCO2Forecast = False

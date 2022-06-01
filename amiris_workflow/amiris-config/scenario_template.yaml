@@ -58,11 +58,11 @@ Agents:
         - ValueOfLostLoad: 3000.0
           DemandSeries: "amiris-config/data/load.csv"
 
-  - Type: PriceForecaster
+  - Type: MeritOrderForecaster # PriceForecaster
     Id: 6
     Attributes:
       DistributionMethod: SAME_SHARES
-      ForecastPeriodInHours: 24
+      ForecastPeriodInHours: 168
       ForecastRequestOffsetInSeconds: 27
 #
 #  - Type: VariableRenewableOperator

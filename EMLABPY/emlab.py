@@ -17,6 +17,9 @@ from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from modules.prepareMarketClearing import PrepareMarket
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
+from domain.StrategicReserveOperator import *
+from modules.strategicreserve import *
+
 from modules.co2market import *
 from modules.Invest import *
 from modules.prepareCandidatePowerPlants import *
@@ -30,6 +33,7 @@ logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.tx
 # logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
 run_capacity_market = False
+run_strategic_reserve = False
 run_electricity_spot_market = False
 run_future_power_plants = False
 run_co2_market = False
@@ -40,6 +44,7 @@ run_next_year_market = False
 run_financial_results = False
 run_prepare_next_year_market_clearing = False
 run_initialize_power_plants = False
+
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -47,6 +52,8 @@ run_initialize_power_plants = False
 for arg in sys.argv[3:]:
     if arg == 'run_capacity_market':
         run_capacity_market = True
+    if arg == 'run_strategic_reserve':
+        run_strategic_reserve = True
     if arg == 'run_future_power_plants':
         run_future_power_plants = True
     if arg == 'run_co2_market':
@@ -79,10 +86,11 @@ try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
     print("repository complete")
 
+
     # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
 
     if run_initialize_power_plants:
-        pp_counter = 20  # start in 20 # TODO make dynamic depending on number of candidate power plants
+        pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"],
                                                     "DE")  # TODO this shouldn't be hard coded
@@ -98,10 +106,10 @@ try:  # Try statement to always close DB properly
     # From here on modules will be run according to the previously set booleans
     if run_decommission_module:
         logging.info('Start Run dismantle')
-        dismantling = Dismantle(reps)
-        dismantling.act_and_commit()
         payingLoans = PayForLoansRole(reps)
         payingLoans.act_and_commit()
+        dismantling = Dismantle(reps)
+        dismantling.act_and_commit()
         logging.info('End Run dismantle')
 
     if run_financial_results:
@@ -130,6 +138,14 @@ try:  # Try statement to always close DB properly
         capacity_market_clear.act_and_commit()
         logging.info('End Run Capacity Market')
 
+    if run_strategic_reserve:
+        logging.info('Start strategic reserve')
+
+        strategic_reserve_operator = StrategicReserveOperator(reps)
+        strategic_reserve = StrategicReserve(strategic_reserve_operator)  # This function adds rep to class capacity markets
+        strategic_reserve.act_and_commit()
+        logging.info('End strategic reserve')
+
     if run_co2_market:
         logging.info('Start Run CO2 Market')
         market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)
@@ -155,7 +171,6 @@ try:  # Try statement to always close DB properly
         logging.info('End Run short term Investment')
 
     logging.info('End Run Modules')
-
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('Commit Initialization Modules')
 

@@ -1,6 +1,7 @@
 from domain.cashflow import CashFlow
 from modules.defaultmodule import DefaultModule
 from util.repository import Repository
+from domain.loans import Loan
 import logging
 
 class PayForLoansRole(DefaultModule):
@@ -22,7 +23,7 @@ class PayForLoansRole(DefaultModule):
                     loan.setNumberOfPaymentsDone(loan.getNumberOfPaymentsDone() + 1)
 
                     logging.info("Paying {0} (euro) for loan {1}", [payment, loan])
-                    logging.info( "Number of payments done {0}, total needed: {1}", [loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()])
+                    logging.info( "Number of payments done {0}, total needed: {1}", [loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments() ])
 
             downpayment = plant.getDownpayment()
             if downpayment is not None:

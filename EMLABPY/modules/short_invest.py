@@ -36,15 +36,15 @@ class ShortInvestmentdecision(Investmentdecision):
             # checks if the technology can be invested and if not it removes the technology from the investable technology list quick Investabletechnologies
             self.calculateandCheckFutureCapacityExpectation(powerplant.technology)
             # for now the returns calculations are done considering that future years will have the profit of the current year
-            # TODO the profit should consider the past year profits.
-            returns.append( self.calculatePowerPlantReturns(powerplant) )
+            # TODO the profit should consider the past year profits?
+            returns.append( self.calculatePowerPlantReturns(powerplant))
             technologies.append(powerplant.technology.name)
 
         df = pd.DataFrame( technologies,returns, columns=["Technologies", "Returns"])
         sorted = df.groupby('Technologies').mean().sort_values(by=['Returns'])
         filteredReturns = sorted.drop(sorted[sorted.value < self.reps.short_term_investment_minimal_irr].index)
         technologies = filteredReturns.index.tolist()
-        # TODO         newpowerplantname 
+        # TODO         newpowerplantname
         PowerPlantstoInvest.append([])
 
         newpowerplantname = 1
@@ -54,13 +54,11 @@ class ShortInvestmentdecision(Investmentdecision):
                 self.reps.dbrw.stage_new_power_plant(newplant)
 
     def calculateandCheckFutureCapacityExpectation(self, technology):
-
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
         # in contrast to long term investment decision, this is calculated for the current year
         self.expectedInstalledCapacityOfTechnology = \
             self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(technology,
                                                                                      self.reps.current_tick)
-
         technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology)
         # TODO:This part considers that if technology is not covered by the subsidies, the government would add subsidies?....
         # in contrast to long term investment decision, this is calculated for the current year

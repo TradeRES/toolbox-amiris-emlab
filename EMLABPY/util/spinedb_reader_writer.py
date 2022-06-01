@@ -8,6 +8,7 @@ import logging
 from spinedb_api import Map
 from twine.repository import Repository
 
+import globalNames
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
 from util.repository import *
@@ -141,6 +142,7 @@ class SpineDBReaderWriter:
                                             ('Price', mcp.price),
                                             ('TotalCapacity', mcp.capacity)], current_tick)
 
+
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)
         self.stage_object_parameter_values('EnergyProducers', power_plant.owner.name, [('cash', cash)], time)
@@ -189,16 +191,25 @@ class SpineDBReaderWriter:
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 
-    def stage_power_plant_status(self, power_plants):
+    def stage_power_plant_status_and_age(self, power_plants):
         self.stage_object(self.powerplant_installed_classname, "Status")
         for power_plant_name, values in power_plants.items():
             self.db.import_object_parameter_values(
-                [(self.powerplant_installed_classname, power_plant_name, "Status", values.status, '0')])
+                [(self.powerplant_installed_classname, power_plant_name, "Status", values.status, '0'),
+                 (self.powerplant_installed_classname, power_plant_name, "Age", values.age, '0')])
 
     def stage_decommission_time(self, powerplant_name, tick):
-        self.stage_object_parameters("PowerPlantsInstalled", ['dismantleTime'])
-        self.stage_object("PowerPlantsInstalled", "dismantleTime")
-        self.db.import_object_parameter_values("PowerPlantsInstalled", powerplant_name, "dismantleTime", tick, '0')
+        self.stage_object_parameters(self.powerplant_installed_classname, ['dismantleTime'])
+        self.stage_object(self.powerplant_installed_classname, "dismantleTime")
+        self.db.import_object_parameter_values(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')
+
+    def stage_power_plant_CM_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
+        #self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
+        self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
+                                           [
+                                               ('Market', ppdp.bidding_market.name),
+                                               ('ppdp.bidding_market.name', ppdp.accepted_amount),
+                                               ('Status', ppdp.status)], current_tick)
 
     def stage_power_plant_dispatch_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
         self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
@@ -271,24 +282,24 @@ class SpineDBReaderWriter:
 
     def stage_init_next_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
-        self.stage_object_parameters(self.fuel_classname, ['simulatedPrice'])
+        self.stage_object_parameters(self.fuel_classname, [globalNames.simulated_prices])
 
     def stage_init_future_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
-        self.stage_object_parameters(self.fuel_classname, ['futurePrice'])
+        self.stage_object_parameters(self.fuel_classname, [globalNames.future_prices])
 
     def stage_simulated_fuel_prices(self, tick, price, substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
         # print(self.fuel_classname, substance.name, "simulatedPrice", tick,"-", type(price), price)
         self.db.import_object_parameter_values(
-            [(self.fuel_classname, substance.name, "simulatedPrice", Map([str(tick)], [price]), '0')])
+            [(self.fuel_classname, substance.name, globalNames.simulated_prices, Map([str(tick)], [price]), '0')])
 
     def stage_future_fuel_prices(self, year, substance, futurePrice):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
         self.db.import_object_parameter_values(
-            [(self.fuel_classname, substance.name, "futurePrice", Map([str(year)], [futurePrice]), '0')])
+            [(self.fuel_classname, substance.name, globalNames.future_prices , Map([str(year)], [futurePrice]), '0')])
 
 
 
@@ -420,23 +431,22 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # node contain the # TODO complete this to the scenario
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
-
-
+    elif object_class_name == 'ElectricitySpotMarkets':
+        add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
+    # elif object_class_name == 'CO2Auction':
+    #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
 
     else:
         logging.info('Object Class not defined: ' + object_class_name)
     # elif object_class_name == 'Zones':
     #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
-    # elif object_class_name == 'ElectricitySpotMarkets':
-    #     add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-    # elif object_class_name == 'CO2Auction':
-    #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
+
+
     # elif object_class_name == 'Hourly Demand':
     #     add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
     # elif object_class_name == 'PowerGridNodes':
     #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
-    # elif object_class_name == 'PowerPlants':
-    #     add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+
     # elif object_class_name == 'PowerPlantDispatchPlans':
     #     add_parameter_value_to_repository(reps, db_line, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
     # elif object_class_name == 'MarketClearingPoints':

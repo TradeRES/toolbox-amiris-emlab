@@ -1,5 +1,7 @@
+import logging
 
 from domain.import_object import *
+
 class PowerPlantDispatchPlan(ImportObject):
     def __init__(self, name):
         super().__init__(name)

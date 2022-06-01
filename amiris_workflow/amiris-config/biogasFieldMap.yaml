@@ -82,8 +82,8 @@ Contracts:
 ####################
 #   -- Output --   #
 ####################
-  - SenderType: Biogas
-    ReceiverType: Biogas
-    ProductName: AnnualCostReport
-    FirstDeliveryTime: 1
-    DeliveryIntervalInSteps: 31536000
+#   - SenderType: Biogas
+#     ReceiverType: Biogas
+#     ProductName: AnnualCostReport
+#     FirstDeliveryTime: 1
+#     DeliveryIntervalInSteps: 31536000

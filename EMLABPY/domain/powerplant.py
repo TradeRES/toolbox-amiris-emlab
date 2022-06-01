@@ -8,7 +8,7 @@ from random import random
 import logging
 
 from domain.loans import Loan
-
+import globalNames
 
 class PowerPlant(ImportObject):
     def __init__(self, name):
@@ -23,7 +23,7 @@ class PowerPlant(ImportObject):
         self.efficiency = 0
         # TODO: Implement GetActualEfficiency
         self.banked_allowances = [0 for i in range(100)]
-        self.status = 'NOTSET'  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
+        self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.fictional_status = 'NOTSET'
         self.loan = None
         self.downpayment = None
@@ -109,6 +109,10 @@ class PowerPlant(ImportObject):
         elif parameter_name == 'SelfDischargeRatePerHour':
             self.selfDischargeRatePerHour = float(parameter_value)
 
+
+
+
+
     '''
      # FROM HERE EQUATIONS ARE OLD   
     
@@ -183,7 +187,7 @@ class PowerPlant(ImportObject):
         self.setDismantleTime(1000)
         self.setExpectedEndOfLife(
             tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        self.status = 'InPipeline'
+        self.status = globalNames.power_plant_status_inPipeline
 
     # createPowerPlant from initial database
     def specifyPowerPlantsInstalled(self, tick, energyProducer, location):  # TODO add this information to the database
@@ -203,6 +207,7 @@ class PowerPlant(ImportObject):
             self.setExpectedEndOfLife(
                 tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.setloan(energyProducer)
+        self.setPowerPlantsStatusforInstalledPowerPlants()
         return self
 
     def setloan(self, energyProducer):
@@ -222,9 +227,9 @@ class PowerPlant(ImportObject):
     def setPowerPlantsStatusforInstalledPowerPlants(self):
         if self.age is not None:
             if self.age >= self.technology.expected_lifetime:
-                self.status = "TobeDecommissioned"
+                self.status = globalNames.power_plant_status_to_be_decommissioned
             else:
-                self.status = "Operational"
+                self.status = globalNames.power_plant_status_operational
         else:
             print("power plant dont have an age ", self.name)
 

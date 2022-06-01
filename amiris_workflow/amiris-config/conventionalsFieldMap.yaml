@@ -390,8 +390,8 @@ Contracts:
 ####################
 #   -- Output --   #
 ####################
-  - SenderType: ConventionalPlantOperator
-    ReceiverType: ConventionalPlantOperator
-    ProductName: AnnualCostReport
-    FirstDeliveryTime: 1
-    DeliveryIntervalInSteps: 31536000
+#   - SenderType: ConventionalPlantOperator
+#     ReceiverType: ConventionalPlantOperator
+#     ProductName: AnnualCostReport
+#     FirstDeliveryTime: 1
+#     DeliveryIntervalInSteps: 31536000

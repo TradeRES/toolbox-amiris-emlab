@@ -185,8 +185,8 @@ Contracts:
 ####################
 #   -- Output --   #
 ####################
-  - SenderType: VariableRenewableOperator
-    ReceiverType: VariableRenewableOperator
-    ProductName: AnnualCostReport
-    FirstDeliveryTime: 1
-    DeliveryIntervalInSteps: 31536000
+#   - SenderType: VariableRenewableOperator
+#     ReceiverType: VariableRenewableOperator
+#     ProductName: AnnualCostReport
+#     FirstDeliveryTime: 1
+#     DeliveryIntervalInSteps: 31536000

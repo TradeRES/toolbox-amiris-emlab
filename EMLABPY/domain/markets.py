@@ -1,10 +1,11 @@
 """
 This file contains all Market and Market operation classes.
-
 Jim Hommes - 13-5-2021
+Sanchez 5-22
 """
 from domain.import_object import *
 from spinedb_api import Map
+import pandas as pd
 
 class Market(ImportObject):
     """
@@ -12,10 +13,56 @@ class Market(ImportObject):
     """
     pass
 
-
 class ElectricitySpotMarket(Market):
+    def __init__(self, name):
+        super().__init__(name)
+        self.valueOfLostLoad = 0
+        self.hourlyDemand = None
+        self.demandGrowthTrend = 0.0
+        self.zone = ""
+        self.substance = ""
 
-    pass
+    def getValueOfLostLoad(self):
+        return self.valueOfLostLoad
+
+    def setValueOfLostLoad(self, valueOfLostLoad):
+        self.valueOfLostLoad = valueOfLostLoad
+
+    def getDemandGrowthTrend(self):
+        return self.demandGrowthTrend
+
+    def setDemandGrowthTrend(self, demandGrowthTrend):
+        self.demandGrowthTrend = demandGrowthTrend
+
+    def getHourlyDemand(self):
+        return self.hourlyDemand
+
+    def setHourlyDemand(self, hourlydemand):
+        self.hourlyDemand = hourlydemand
+
+    def getZone(self):
+        return self.zone
+
+    def setZone(self, zone):
+        self.zone = zone
+
+    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+        if parameter_name == 'valueOfLostLoad':
+            self.valueOfLostLoad = int(parameter_value)
+        if parameter_name == 'growthTrend':
+            self.demandGrowthTrend = str(parameter_value)
+        # if parameter_name == 'referencePrice':
+        #     self.referencePrice = parameter_value
+        if parameter_name == 'zone':
+            self.zone = str(parameter_value)
+        if parameter_name == 'substance':
+            self.substance = str(parameter_value)
+        if parameter_name == 'demand':
+            self.hourlyDemand = pd.read_csv(str(parameter_value))
+
+    def peakLoadbyZoneMarket(self):
+        return max(self.hourlyDemand)
+
 
 
 
@@ -71,6 +118,7 @@ class SlopingDemandCurve:
         self.um_volume = d_peak * (1 + irm + um)
         self.d_peak = d_peak
         self.price_cap = price_cap
+        self.m = self.price_cap / (self.um_volume - self.lm_volume)
 
     def get_price_at_volume(self, volume):
         m = self.price_cap / (self.um_volume - self.lm_volume)
@@ -86,9 +134,11 @@ class SlopingDemandCurve:
         if price >= self.price_cap:
             return None
         elif price == 0:
+            print("BID PRICE IS ZERO")
             return None
         else:
             return ((self.price_cap - price) / m) + self.lm_volume
+
 
 
 class MarketStabilityReserve(ImportObject):
