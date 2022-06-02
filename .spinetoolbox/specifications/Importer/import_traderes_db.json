@@ -274,8 +274,7 @@
         },
         "selected_tables": [
             "node",
-            "unit",
-            "grid__node__unit__io"
+            "unit"
         ],
         "table_options": {
             "grid": {},
@@ -311,13 +310,21 @@
                 "0": "string",
                 "1": "string",
                 "2": "string",
-                "3": "float"
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
             },
             "node2020": {
                 "0": "string",
                 "1": "string",
                 "2": "string",
                 "3": "float"
+            },
+            "flow__unit": {
+                "0": "string",
+                "1": "string"
             }
         },
         "table_row_types": {},

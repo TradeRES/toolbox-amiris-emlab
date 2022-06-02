@@ -166,6 +166,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/technology_potential_and_capacities.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_amiris_results.json"
                 }
             ],
             "Exporter": [
@@ -415,17 +420,6 @@
                 ]
             },
             {
-                "name": "from AMIRIS to AMRISDB",
-                "from": [
-                    "AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "AMRISDB",
-                    "left"
-                ]
-            },
-            {
                 "name": "from short investments to prepare future market",
                 "from": [
                     "short investments",
@@ -467,28 +461,6 @@
                 "to": [
                     "Prepare Data Amiris",
                     "left"
-                ]
-            },
-            {
-                "name": "from AMIRISDB to BestInvestment",
-                "from": [
-                    "AMIRISDB",
-                    "left"
-                ],
-                "to": [
-                    "BestInvestment",
-                    "right"
-                ]
-            },
-            {
-                "name": "from AMIRIS future to AMIRISDB",
-                "from": [
-                    "AMIRIS future",
-                    "left"
-                ],
-                "to": [
-                    "AMIRISDB",
-                    "right"
                 ]
             },
             {
@@ -567,6 +539,61 @@
                     "prepare future market",
                     "bottom"
                 ]
+            },
+            {
+                "name": "from AMIRIS future to BestInvestment",
+                "from": [
+                    "AMIRIS future",
+                    "bottom"
+                ],
+                "to": [
+                    "BestInvestment",
+                    "right"
+                ]
+            },
+            {
+                "name": "from AMRISDB to short investments",
+                "from": [
+                    "AMRISDB",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMRISDB to prepare future market",
+                "from": [
+                    "AMRISDB",
+                    "right"
+                ],
+                "to": [
+                    "prepare future market",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS to import AMIRIS",
+                "from": [
+                    "AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "import AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import AMIRIS to AMRISDB",
+                "from": [
+                    "import AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "AMRISDB",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -592,8 +619,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": -445.57666532889436,
-            "y": -202.24806705829383,
+            "x": -427.61783130985185,
+            "y": -258.7607079400858,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -608,8 +635,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1206.39674634275,
-            "y": -869.6185009895166,
+            "x": -1135.8605555213173,
+            "y": -920.6964322740023,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -780,8 +807,8 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 98.25916930498217,
-            "y": 45.51302346660834,
+            "x": -226.45869390767666,
+            "y": 225.59672926576837,
             "specification": "Best Investment",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -866,8 +893,8 @@
         "traderesLocal": {
             "type": "Data Store",
             "description": "",
-            "x": -602.3609424481997,
-            "y": -786.6614435590642,
+            "x": -613.3390302501991,
+            "y": -868.9971020740596,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -882,8 +909,8 @@
         "exporterTraderes": {
             "type": "Exporter",
             "description": "",
-            "x": -925.6351274472851,
-            "y": -976.3877871608652,
+            "x": -925.6351274472852,
+            "y": -998.3439627648642,
             "output_time_stamps": false,
             "cancel_on_error": true,
             "output_labels": [],
@@ -892,8 +919,8 @@
         "fromTraderestoEmlab": {
             "type": "Exporter",
             "description": "",
-            "x": -280.6321853221583,
-            "y": -859.2276215785529,
+            "x": -266.90957556965907,
+            "y": -881.1837971825518,
             "output_time_stamps": false,
             "cancel_on_error": true,
             "output_labels": [
@@ -907,8 +934,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -793.0001412335148,
-            "y": -197.03362900403002,
+            "x": -981.3746071262995,
+            "y": -262.12521747240146,
             "specification": "Prepare market",
             "execute_in_work": true,
             "cmd_line_args": [
@@ -929,8 +956,8 @@
         "convert_from_common_db_to_bb_db": {
             "type": "Tool",
             "description": "",
-            "x": -913.6328592059405,
-            "y": -823.0086617666822,
+            "x": -913.6328592059406,
+            "y": -869.6655349251795,
             "specification": "convert_from_common_db_to_bb_db",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1004,8 +1031,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -606.6396059201298,
-            "y": -198.3833676786337,
+            "x": -780.2236333806927,
+            "y": -260.6389922761523,
             "specification": "AMIRIS wrapper",
             "execute_in_work": true,
             "cmd_line_args": []
@@ -1035,8 +1062,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -64.94295115669037,
-            "y": -202.31477613505268,
+            "x": -293.91133416641185,
+            "y": -8.340994934121397,
             "specification": "Short investments",
             "execute_in_work": true,
             "cmd_line_args": []
@@ -1044,33 +1071,17 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 165.07547804350617,
-            "y": -204.11944527402997,
+            "x": -60.3836496893006,
+            "y": -15.52784786231112,
             "specification": "Prepare future market",
             "execute_in_work": true,
             "cmd_line_args": []
         },
-        "AMIRISDB": {
-            "type": "Data Store",
-            "description": "",
-            "x": 391.79167530540417,
-            "y": 25.774448965732745,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/amrisdb/AMRISDB.sqlite"
-                }
-            }
-        },
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 426.319695331253,
-            "y": -216.29040139843698,
+            "x": 54.80842824952108,
+            "y": 207.68619729407402,
             "specification": "Amiris future",
             "execute_in_work": true,
             "cmd_line_args": []
@@ -1078,8 +1089,8 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -353.21372307030555,
-            "y": 58.20339260099289,
+            "x": -584.3447785448179,
+            "y": 219.85333323960913,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1094,11 +1105,27 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -257.24857819775997,
-            "y": -200.73184510885815,
+            "x": -508.23138076824296,
+            "y": -12.140247697139301,
             "specification": "Capacity Mechanism",
             "execute_in_work": true,
             "cmd_line_args": []
+        },
+        "import AMIRIS": {
+            "type": "Importer",
+            "description": "",
+            "x": -601.3599211820633,
+            "y": -258.9310444536395,
+            "specification": "import amiris results",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    true
+                ]
+            ]
         }
     }
 }
