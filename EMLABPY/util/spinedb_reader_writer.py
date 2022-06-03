@@ -26,6 +26,7 @@ class SpineDBReaderWriter:
         self.run_module = run_module
 
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
+        self.Candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
@@ -38,7 +39,7 @@ class SpineDBReaderWriter:
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
 
-        if run_module == "run_investment_module":
+        if run_module == "run_short_investment_module":
             self.amirisdb = SpineDB(db_urls[1])
 
     def read_db_and_create_repository(self) -> Repository:
@@ -109,7 +110,7 @@ class SpineDBReaderWriter:
                                     ', parameter: ' + parameter_name)
 
         # the results of AMIRIS dispatch are extracted from the amiris DB
-        if self.run_module in ["run_investment_module", "run_short_investment_module"]:
+        if self.run_module in [ "run_short_investment_module"]:
             db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata,
                                                                                 candidatePowerPlants)
@@ -168,6 +169,14 @@ class SpineDBReaderWriter:
             self.stage_object(self.powerplant_installed_classname, power_plant_name)
             self.db.import_object_parameter_values(
                 [(self.powerplant_installed_classname, power_plant_name, 'Id', values.id, '0')])
+
+    def stage_candidate_power_plant_id(self, candidate_power_plants):
+        self.stage_object_class(self.Candidate_powerplant_installed_classname)
+        self.stage_object_parameters(self.Candidate_powerplant_installed_classname, ["Id"])
+        for power_plant_name, values in candidate_power_plants.items():
+            self.stage_object(self.Candidate_powerplant_installed_classname, power_plant_name)
+            self.db.import_object_parameter_values(
+                [(self.Candidate_powerplant_installed_classname, power_plant_name, 'Id', values.id, '0')])
 
     def stage_init_power_plant_structure(self):
         self.stage_object_class(self.powerplant_installed_classname)

@@ -486,17 +486,6 @@
                 ]
             },
             {
-                "name": "from AMRISDB to Capacity Mechanism",
-                "from": [
-                    "AMRISDB",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
                 "name": "from Capacity Mechanism to short investments",
                 "from": [
                     "Capacity Mechanism",
@@ -552,28 +541,6 @@
                 ]
             },
             {
-                "name": "from AMRISDB to short investments",
-                "from": [
-                    "AMRISDB",
-                    "right"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMRISDB to prepare future market",
-                "from": [
-                    "AMRISDB",
-                    "right"
-                ],
-                "to": [
-                    "prepare future market",
-                    "left"
-                ]
-            },
-            {
                 "name": "from AMIRIS to import AMIRIS",
                 "from": [
                     "AMIRIS",
@@ -585,13 +552,57 @@
                 ]
             },
             {
-                "name": "from import AMIRIS to AMRISDB",
+                "name": "from import AMIRIS to AMIRIS db",
                 "from": [
                     "import AMIRIS",
                     "right"
                 ],
                 "to": [
-                    "AMRISDB",
+                    "AMIRIS db",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS db to Capacity Mechanism",
+                "from": [
+                    "AMIRIS db",
+                    "bottom"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS db to short investments",
+                "from": [
+                    "AMIRIS db",
+                    "bottom"
+                ],
+                "to": [
+                    "short investments",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import AMIRIS to Capacity Mechanism",
+                "from": [
+                    "import AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from BestInvestment to Next year",
+                "from": [
+                    "BestInvestment",
+                    "bottom"
+                ],
+                "to": [
+                    "Next year",
                     "left"
                 ]
             }
@@ -619,8 +630,8 @@
         "AMRISDB": {
             "type": "Data Store",
             "description": "",
-            "x": -427.61783130985185,
-            "y": -258.7607079400858,
+            "x": -502.7976533409612,
+            "y": 714.5132043004907,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -784,8 +795,8 @@
         "transform Traderes": {
             "type": "Data Transformer",
             "description": "",
-            "x": -512.7014373782844,
-            "y": 742.4555503252162,
+            "x": -138.83421430466,
+            "y": 687.5945991133256,
             "specification": ""
         },
         "traderesCommon to Amiris": {
@@ -817,8 +828,8 @@
                     "arg": "db_url@EmlabDB2"
                 },
                 {
-                    "type": "resource",
-                    "arg": "db_url@AMIRISDB"
+                    "type": "literal",
+                    "arg": "none"
                 },
                 {
                     "type": "literal",
@@ -1032,7 +1043,7 @@
             "type": "Tool",
             "description": "",
             "x": -780.2236333806927,
-            "y": -260.6389922761523,
+            "y": -262.16918900632913,
             "specification": "AMIRIS wrapper",
             "execute_in_work": true,
             "cmd_line_args": []
@@ -1062,26 +1073,52 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -293.91133416641185,
-            "y": -8.340994934121397,
+            "x": -343.66276242909964,
+            "y": -28.478477802352202,
             "specification": "Short investments",
             "execute_in_work": true,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS db"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_short_investment_module"
+                }
+            ]
         },
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -60.3836496893006,
-            "y": -15.52784786231112,
+            "x": -94.7358263468708,
+            "y": -39.219004177876776,
             "specification": "Prepare future market",
             "execute_in_work": true,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_future_market"
+                }
+            ]
         },
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 54.80842824952108,
-            "y": 207.68619729407402,
+            "x": 73.7613533019736,
+            "y": 130.68993926848563,
             "specification": "Amiris future",
             "execute_in_work": true,
             "cmd_line_args": []
@@ -1105,11 +1142,24 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -508.23138076824296,
-            "y": -12.140247697139301,
+            "x": -550.8754621362611,
+            "y": -22.80126803914385,
             "specification": "Capacity Mechanism",
             "execute_in_work": true,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS db"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_capacity_market"
+                }
+            ]
         },
         "import AMIRIS": {
             "type": "Importer",
@@ -1126,6 +1176,31 @@
                     true
                 ]
             ]
+        },
+        "AMIRIS db": {
+            "type": "Data Store",
+            "description": "",
+            "x": -457.269099118252,
+            "y": -260.2542213066646,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/amiris_db/AMIRIS db.sqlite"
+                }
+            }
+        },
+        "Next year": {
+            "type": "Tool",
+            "description": "",
+            "x": -148.76524607264508,
+            "y": 346.3054703873102,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
         }
     }
 }

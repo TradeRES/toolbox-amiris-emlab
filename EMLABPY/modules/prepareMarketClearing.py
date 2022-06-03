@@ -1,17 +1,16 @@
-"""
-This code prepares the information for next years market clearing:
--fuel prices and demand. the demand is as the node "electricity"
-For the first 2 years the fuel prices are considering interpolating.
-For the next years the fuel prices are considered with a geometric trend
 
-"""
 from modules.defaultmodule import DefaultModule
 import pandas as pd
 from datetime import datetime, timedelta
 
 
 class PrepareMarket(DefaultModule):
+    """
+    This function prepares the information for next years market clearing:
+    -fuel prices and demand. the demand is as the node "electricity".
+    The fuel prices are stochastically simulated with a triangular trend
 
+    """
     def __init__(self, reps):
         super().__init__("Next year prices", reps)
         self.tick = 0

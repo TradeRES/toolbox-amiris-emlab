@@ -6,7 +6,7 @@ from domain.powerplant import *
 from domain.CandidatePowerPlant import *
 from domain.cashflow import CashFlow
 import numpy_financial as npf
-
+import pandas as pd
 from domain.actors import *
 from util.repository import Repository
 from helpers.helper_functions import get_current_ticks
@@ -44,17 +44,20 @@ class Investmentdecision(DefaultModule):
         # self.pgtNodeLimit = Double.MAX_VALUE
 
     def act(self):
+        df = self.read_csv_results_and_filter_candidate_plants()
         self.setAgent("Producer1")
         self.setTimeHorizon()
         # TODO if there would be more agents, the future capacity should be analyzed per agent
         # for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
 
-        if self.agent.readytoInvest == True :
+        if self.agent.readytoInvest == True:
             bestCandidatePowerPlant = None
             highestValue = 0
             # calculate which is the power plant (technology) with the highest NPV
             # TODO: start with cheapest technology? because if agent cannot pay for it it cannot pay for any?
+            #  for now there is only one energyproducer
             for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
+
                 print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
                 self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
                 projectvalue = self.getProjectValue(candidatepowerplant, self.agent)
@@ -72,8 +75,9 @@ class Investmentdecision(DefaultModule):
         else:
             print("Agent cannot invest anymore - no more budget")
 
-    def invest(self, bestCandidatePowerPlant): # todo assign age and commissioned year
-        newplant = PowerPlant( bestCandidatePowerPlant.name )  # the name of the candidate power plant was assigned as the next available id from the installed power plants
+    def invest(self, bestCandidatePowerPlant):  # todo assign age and commissioned year
+        newplant = PowerPlant(
+            bestCandidatePowerPlant.name)  # the name of the candidate power plant was assigned as the next available id from the installed power plants
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,
                                    bestCandidatePowerPlant.capacity, bestCandidatePowerPlant.technology)
@@ -144,7 +148,7 @@ class Investmentdecision(DefaultModule):
         annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
         annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
         annuity = totalLoan * ((1 + interestRate) ** payBackTime * (interestRate)) / (
-                    (1 + interestRate) ** payBackTime - 1)
+                (1 + interestRate) ** payBackTime - 1)
         print(annuitybyhand - annuity)  # TODO check which one is correct
         return annuity
 
@@ -161,7 +165,8 @@ class Investmentdecision(DefaultModule):
                                                        self.reps.node)
         print(candidatepowerplant)
         technology = candidatepowerplant.technology
-        technologyCapacityLimit = self.findLimitsByTechnology(technology) # Todo: add the constraint about capacity limits
+        technologyCapacityLimit = self.findLimitsByTechnology(
+            technology)  # Todo: add the constraint about capacity limits
         self.expectedInstalledCapacityOfTechnology = \
             self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(technology,
                                                                                      self.futureInvestmentyear)
@@ -181,7 +186,8 @@ class Investmentdecision(DefaultModule):
         self.check(technology.name, candidatepowerplant)
 
     def check(self, technology, candidatepowerplant):
-        if (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) and self.capacityOfTechnologyInPipeline > 9000:
+        if (
+                self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) and self.capacityOfTechnologyInPipeline > 9000:
             logging.info(" will not invest in {} technology because there's too much capacity in the pipeline",
                          self.technology)
             # TODO: if the candidate power plants would be parallellized, setting this technology as not investable could that technology simulation
@@ -211,6 +217,12 @@ class Investmentdecision(DefaultModule):
             return 100000000000  # if there is no declared limit, use a very high number
 
     # Returns the Node Limit by Technology or the max double numer if none was found
+    def read_csv_results_and_filter_candidate_plants(self):
+        df = pd.read_csv('.\\amiris_workflow\\output\\amiris_results.csv')
+        df['commissionyear'] = df['identifier'].astype(str).str[0:4]
+        results = df[df['commissionyear'] == str(9999)]
+        self.reps.update_candidate_plant_results(results)
+        return
 
     def calculateNodeLimit(self):
         pgtLimit = getReps().findOneByTechnologyAndNode(self.technology, self.node)

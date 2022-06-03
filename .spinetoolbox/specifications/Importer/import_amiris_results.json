@@ -10,7 +10,7 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "results"
+                                "value": "AMIRISResults"
                             },
                             {
                                 "map_type": "Object",

@@ -25,17 +25,8 @@ class CandidatePowerPlant(PowerPlant):
         self.flagOutputChanged = True
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'AwardedPowerInMWH':
-            self.AwardedPowerinMWh = parameter_value
-        elif parameter_name == 'CostsInEUR':
-            self.CostsinEUR = float(parameter_value)
-        elif parameter_name == 'OfferedPowerInMW':
-            self.OfferedPowerinMW = float(parameter_value)
-        elif parameter_name == 'ReceivedMoneyInEUR':
-            self.ReceivedMoneyinEUR = float(parameter_value)
-
-        elif parameter_name == 'Id':
-            self.name = parameter_value
+        if parameter_name == 'Id':
+            self.id = parameter_value
         elif parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
             self.efficiency = self.technology.efficiency
@@ -44,7 +35,10 @@ class CandidatePowerPlant(PowerPlant):
         elif parameter_name == 'Owner':
             self.owner = parameter_value
 
-
+    def add_values_from_df(self, results):
+            self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
+            self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO
+            self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
 
     def get_technology(self, time):
         return self.technology

@@ -344,6 +344,16 @@ class Repository:
         self.dbrw.stage_power_plant_dispatch_plan(ppdp, time)
         return ppdp
 
+    def update_candidate_plant_results(self, results):
+        try:
+            for index, result in results.iterrows():
+                print(result)
+                candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
+                candidate.add_values_from_df(result)
+        except StopIteration:
+            logging.warning('candidate technology not found' + result)
+        return None
+
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:

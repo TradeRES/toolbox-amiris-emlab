@@ -59,11 +59,8 @@ class Substance(ImportObject):
             df = pd.DataFrame(calculatedPrices['data'])
             df.set_index(0, inplace=True)
             last_value = df.loc[str(year - 1)][1]
-            random_number = random.triangular(-1, 1, 0) # low, high, mode
-            if random_number < 0:
-                self.newSimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.top - self.trend.min)))
-            else:
-                self.newSimulatedPrice = last_value * (self.trend.top + (random_number * (self.trend.max - self.trend.top)))
+            random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
+            self.newSimulatedPrice = last_value * random_number
         return self.newSimulatedPrice
 
     def get_price_for_future_tick(self, reps, futureYear, substance):

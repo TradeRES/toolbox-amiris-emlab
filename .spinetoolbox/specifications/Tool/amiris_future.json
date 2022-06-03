@@ -2,15 +2,17 @@
     "name": "Amiris future",
     "tooltype": "python",
     "includes": [
-        "emlab.py"
+        "run.py"
     ],
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [],
+    "outputfiles": [
+        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
+    ],
     "cmdline_args": [],
     "execute_in_work": true,
-    "includes_main_path": "../../../emlabpy",
+    "includes_main_path": "../../../amiris_workflow",
     "execution_settings": {
         "env": "",
         "kernel_spec_name": "amiris",

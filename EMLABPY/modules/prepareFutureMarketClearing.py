@@ -1,11 +1,16 @@
-"""Ths function creates the power plants that will be analyzed as possible investments
-    creates the Candidate Power Plants and these are assigned a capacity of 1 MW not to modify the
-"""
+
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
 
 
-class PrepareCandidatePowerPlants(PrepareMarket):
+class PrepareFutureMarketClearing(PrepareMarket):
+
+    """ This function creates the power plants that will be analyzed as possible investments. It
+        creates the Candidate Power Plants and these are assigned a capacity of 1 MW not to modify the
+        For the first 2 years the fuel prices are considering interpolating.
+        For the next years the fuel prices are considered with a geometric trend.
+    """
+
 
     def __init__(self, reps):
         super().__init__(reps)
@@ -22,15 +27,16 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         reps.dbrw.stage_init_future_prices_structure()
         self.agent = "Producer1"
         self.power_plants_list = self.reps.candidatePowerPlants
-        self.power_plants_ids_list = list(range(1, len(reps.candidatePowerPlants) + 1, 1))
+        # self.power_plants_ids_list = list(range(1, len(reps.candidatePowerPlants) + 1, 1))
         self.iteration = 0  # the number of times that the future clearing has been done per year.
+
 
     def act(self):
         self.setTimeHorizon()
         self.setExpectations()
         self.specifyIdsandCapacityCandidatePowerPlants()
         self.filter_power_plants_to_be_operational()
-        # funtions to save the power plants
+        # functions to save the power plants
         self.openwriter()
         self.write_scenario_data_emlab("futurePrice")
         self.write_conventionals()
@@ -39,34 +45,32 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         self.write_times()
         self.writer.save()
 
-    def specifyIdsandCapacityCandidatePowerPlants(self):
-        pp_counter = 0
-        for p, power_plant in self.power_plants_list.items():
-            pp_counter += 1
-            power_plant.id = (int(str(9999) +  # once installed, this will change to the commissioned year
-                                  str("{:02d}".format(
-                                      int(self.reps.dictionaryTechNumbers[power_plant.technology.name]))) +
-                                  str("{:05d}".format(pp_counter))
-                                  ))
-            power_plant.capacity = 1  # See general description
+    def filter_power_plants_to_be_operational(self):  # TODO should ooperational costs be raised?
 
-    def filter_power_plants_to_be_operational(self): # TODO add increase of operational costs
+        """
+        This function assign a fictional future status to power plants
+        If the plants have passed their expected lifetime then these are in theory decommissioned and not added to the list of power plants.
+
+        :return:
+        """
+
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.agent)
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
             if fictional_age > powerplant.technology.expected_lifetime:
-                powerplant.fictional_status = self.reps.power_plant_status_to_be_decommissioned
+                powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
                 print("to be decommisioned", powerplant.name, "age", fictional_age,
-                      "technology", powerplant.technology.name ,"lifetime", powerplant.technology.expected_lifetime )
+                      "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
                 # todo add some exception for plants under startegic reserve
             elif powerplant.commissionedYear <= self.simulation_year:
-                powerplant.fictional_status = self.reps.power_plant_status_operational
+                powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list[powerplant.name] = powerplant
             elif powerplant.commissionedYear > self.simulation_year:
-                powerplant.fictional_status = self.reps.power_plant_status_inPipeline
+                powerplant.fictional_status = globalNames.power_plant_status_inPipeline
                 print("--------------------- in pipeline", powerplant.name)
             else:
                 print("status not set", powerplant.name)
+
 
     def setTimeHorizon(self):
         """
@@ -78,6 +82,7 @@ class PrepareCandidatePowerPlants(PrepareMarket):
         self.simulation_year = self.reps.current_year + self.reps.energy_producers[
             self.agent].getInvestmentFutureTimeHorizon()
         self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
+
 
     def setExpectations(self):
         """
@@ -146,5 +151,3 @@ class PrepareCandidatePowerPlants(PrepareMarket):
     #     self.lastconventionalId = lastbuiltconventional[-1]
     #     if len(lastbuiltstorage) > 0:  # TODO: give numeration to storage so that it doesnt overlap with renewables
     #         self.laststorageId = lastbuiltstorage[-1]
-
-

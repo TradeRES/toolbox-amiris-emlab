@@ -22,7 +22,7 @@ from modules.strategicreserve import *
 
 from modules.co2market import *
 from modules.Invest import *
-from modules.prepareCandidatePowerPlants import *
+from modules.prepareFutureMarketClearing import *
 from modules.dismantle import *
 
 # Initialize Logging
@@ -35,7 +35,7 @@ logging.info('Starting EM-Lab Run')
 run_capacity_market = False
 run_strategic_reserve = False
 run_electricity_spot_market = False
-run_future_power_plants = False
+run_future_market = False
 run_co2_market = False
 run_investment_module = False
 run_short_investment_module = False
@@ -54,8 +54,8 @@ for arg in sys.argv[3:]:
         run_capacity_market = True
     if arg == 'run_strategic_reserve':
         run_strategic_reserve = True
-    if arg == 'run_future_power_plants':
-        run_future_power_plants = True
+    if arg == 'run_future_market':
+        run_future_market = True
     if arg == 'run_co2_market':
         run_co2_market = True
     if arg == 'run_investment_module':
@@ -71,7 +71,7 @@ for arg in sys.argv[3:]:
     if arg == 'run_initialize_power_plants':
         run_initialize_power_plants = True
 
-if run_investment_module or run_short_investment_module:
+if run_short_investment_module:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
     amiris_url = sys.argv[2]
@@ -99,7 +99,18 @@ try:  # Try statement to always close DB properly
                                   str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
                                   ))
+            pp_counter = 0
+        for p, power_plant in reps.candidatePowerPlants.items():
+            pp_counter += 1
+            power_plant.id = (int(str(9999) +  # TODO once installed, this will change to the commissioned year
+                                  str("{:02d}".format(
+                                      int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
+                                  str("{:05d}".format(pp_counter))
+                                  ))
+            power_plant.capacity = 1  # See general description
         spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
+        spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
+
 
     spinedb_reader_writer.commit('Initialize all module import structures')
     print('Start Run Modules')
@@ -124,10 +135,10 @@ try:  # Try statement to always close DB properly
         preparing_market.act_and_commit()
         logging.info('End Run market preparation for next year ')
 
-    if run_future_power_plants:
-        creating_power_plants = PrepareCandidatePowerPlants(reps)
+    if run_future_market:
+        future_market = PrepareFutureMarketClearing(reps)
         logging.info('Start creating future power plants')
-        creating_power_plants.act_and_commit()
+        future_market.act_and_commit()
         logging.info('Start creating future power plants')
 
     if run_capacity_market:
@@ -140,7 +151,6 @@ try:  # Try statement to always close DB properly
 
     if run_strategic_reserve:
         logging.info('Start strategic reserve')
-
         strategic_reserve_operator = StrategicReserveOperator(reps)
         strategic_reserve = StrategicReserve(strategic_reserve_operator)  # This function adds rep to class capacity markets
         strategic_reserve.act_and_commit()
@@ -181,5 +191,5 @@ finally:
     logging.info('Closing database connections...')
     print("finished emlab")
     spinedb_reader_writer.db.close_connection()
-    if run_investment_module:
+    if run_short_investment_module:
         spinedb_reader_writer.amirisdb.close_connection()
