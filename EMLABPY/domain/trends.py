@@ -116,28 +116,6 @@ class TriangularTrend(Trend):
         self.reps.dbrw.stage_fuel_prices(self.values)
         return self.values[time]
 
-
-class HourlyLoad(ImportObject):
-    """
-    The hourly demand per year. The object name is the same as the bus.
-    """
-
-    def __init__(self, name: str):
-        super().__init__(name)
-        self.demand_map = dict()
-
-    def add_parameter_value(self, reps, parameter_name: str, parameter_value: str, alternative: str):
-        if parameter_name == 'Hourly Demand':
-            for line in parameter_value.to_dict()['data']:
-                resdict = dict()
-                for subline in line[1]['data']:
-                    resdict[subline[0]] = subline[1]
-                self.demand_map[line[0]] = resdict
-
-    def get_hourly_demand_by_year(self, year):
-        return self.demand_map[str(year)]
-
-
 class TimeSeriesImpl():
 
     def __init__(self):
@@ -206,3 +184,23 @@ class GeometricTrendRegression(Trend):
     #     while i < len(data) and super().getN() > 0:
     #         self.removeData(data[i][0], math.log(data[i][1]))
     #         i += 1
+
+# class HourlyLoad(ImportObject):
+#     """
+#     The hourly demand per year. The object name is the same as the bus.
+#     """
+#
+#     def __init__(self, name: str):
+#         super().__init__(name)
+#         self.demand_map = dict()
+#
+#     def add_parameter_value(self, reps, parameter_name: str, parameter_value: str, alternative: str):
+#         if parameter_name == 'Hourly Demand':
+#             for line in parameter_value.to_dict()['data']:
+#                 resdict = dict()
+#                 for subline in line[1]['data']:
+#                     resdict[subline[0]] = subline[1]
+#                 self.demand_map[line[0]] = resdict
+#
+#     def get_hourly_demand_by_year(self, year):
+#         return self.demand_map[str(year)]

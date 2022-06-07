@@ -58,7 +58,7 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            self.hourlyDemand = pd.read_csv(str(parameter_value))
+            self.hourlyDemand = pd.read_csv(str(parameter_value),  delimiter= ";", header=None )
 
     def peakLoadbyZoneMarket(self):
         return max(self.hourlyDemand)
@@ -77,6 +77,8 @@ class CapacityMarket(Market):
         return SlopingDemandCurve(float(self.parameters['InstalledReserveMargin']),
                                   float(self.parameters['LowerMargin']),
                                   float(self.parameters['UpperMargin']), d_peak, float(self.parameters['PriceCap']))
+
+
 
 
 class CO2Market(Market):

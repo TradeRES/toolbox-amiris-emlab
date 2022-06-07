@@ -62,10 +62,10 @@ class PrepareMarket(DefaultModule):
         demand = ["./timeseries/demand/load.csv"] * len(self.Years)
 
         for k, substance in self.reps.substances.items():
+            simulatedPrices = self.reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, calculatedprices)
+            df_prices = pd.DataFrame(simulatedPrices['data'])
+            df_prices.set_index(0, inplace=True)
             for year in self.Years:
-                simulatedPrices = self.reps.dbrw.get_calculated_simulated_fuel_prices(substance, calculatedprices)
-                df_prices = pd.DataFrame(simulatedPrices['data'])
-                df_prices.set_index(0, inplace=True)
                 fuel_price = df_prices.loc[str(year)][1]
                 if substance.name == "nuclear":
                     FuelPrice_NUCLEAR.append(fuel_price)

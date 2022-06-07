@@ -1,5 +1,5 @@
 {
-    "name": "import amiris results",
+    "name": "import demand",
     "item_type": "Importer",
     "mapping": {
         "table_mappings": {
@@ -10,33 +10,43 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "PowerPlantDispatchPlans"
+                                "value": "constant"
                             },
                             {
                                 "map_type": "Object",
-                                "position": 0
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "ObjectMetadata",
-                                "position": "hidden",
-                                "value": ""
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": -1
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
-                                "position": "hidden",
-                                "value": ""
+                                "position": "hidden"
                             },
                             {
-                                "map_type": "ParameterValue",
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "time_series"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ExpandedValue",
                                 "position": "hidden"
                             }
                         ]
@@ -50,7 +60,7 @@
         "table_options": {
             "data": {
                 "encoding": "ascii",
-                "delimiter": ",",
+                "delimiter": ";",
                 "quotechar": "\"",
                 "skip": 0,
                 "has_header": false
@@ -59,10 +69,7 @@
         "table_types": {
             "data": {
                 "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float"
+                "1": "string"
             }
         },
         "table_row_types": {},

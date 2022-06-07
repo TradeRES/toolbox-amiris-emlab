@@ -56,6 +56,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_leadtime = int(parameter_value)
         elif parameter_name == 'fixedOperatingCostModifierAfterLifetime':
             self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
+        elif parameter_name == 'PeakSegmentDependentAvailability':
+            self.peak_segment_dependent_availability = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicableForLongTermContract = parameter_value
         elif parameter_name == 'type':

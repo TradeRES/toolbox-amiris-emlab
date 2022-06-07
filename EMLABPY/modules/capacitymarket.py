@@ -32,20 +32,9 @@ class CapacityMarketSubmitBids(MarketModule):
                 # Retrieve vars
                 market = self.reps.get_capacity_market_for_plant(powerplant)
                 fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
-                capacity = powerplant.get_actual_nominal_capacity()
-
-                # Get Marginal Cost and Fixed Operating Costs
-                # emarket = self.reps.get_electricity_spot_market_for_plant(powerplant)
-                # mc = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
-                # powerplant_load_factor = 1  # TODO: Power Plant Load Factor
-                # this steps no longer necessary as revenues are given from AMIRIS
-                # clearing_point_price = self.reps.get_power_plant_dispatch_plan_price_by_plant_and_time_and_market(
-                #     powerplant, self.reps.current_tick, emarket)
-                # planned_dispatch = self.reps.get_total_accepted_amounts_by_power_plant_and_tick_and_market(powerplant,
-                #                                                                                            self.reps.current_tick,
-                #                                                                                            emarket)
-                # operational_profit = planned_dispatch * (clearing_point_price - mc)
-                operational_profit = 0  # TODO: retrieve from AMIRIS
+                capacity = powerplant.get_actual_nominal_capacity() # TODO check if this has to be changed
+                powerplant_load_factor = 1  # TODO: Power Plant Load Factor
+                operational_profit = self.reps.get_power_plant_electricity_spot_market_revenues_by_tick(powerplant.id , self.reps.current_tick)  # TODO: retrieve from AMIRIS
                 net_revenues = operational_profit - fixed_on_m_cost
                 price_to_bid = 0
                 if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
@@ -68,11 +57,11 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         for market in self.reps.capacity_markets.values():
-            node = self.reps.get_power_grid_node_by_zone(market.parameters['zone'])
+
             peak_load = max(
-                self.reps.get_hourly_demand_by_power_grid_node_and_year(node, self.reps.current_tick +
-                                                                        self.reps.start_simulation_year))
-            expectedDemandFactor = self.dbrw.get_calculated_simulated_fuel_prices(self, "electricity", globalNames.simulated_prices)
+                self.reps.get_hourly_demand_by_power_grid_node_and_year(market.parameters['zone'])[1]  ) # todo later it should be also per year
+            expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices, self.reps.current_tick)
+
 
             peakExpectedDemand = peak_load * (1+expectedDemandFactor)
 

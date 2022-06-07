@@ -314,8 +314,17 @@ class SpineDBReaderWriter:
 
     def get_calculated_simulated_fuel_prices(self, substance, parametername):
         calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
-            self.fuel_classname, substance.name, parametername, 0)
+            self.fuel_classname, substance, parametername, 0)
         return calculated_fuel_prices[0]['parameter_value'].to_dict()
+
+    def get_calculated_simulated_fuel_prices_by_year(self, substance, parametername, year):
+        calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
+            self.fuel_classname, substance, parametername, 0)
+        cfp = calculated_fuel_prices[0]['parameter_value'].to_dict()
+        df = pd.DataFrame(cfp['data'])
+        df.set_index(0, inplace=True)
+        value = df.loc[str(year)][1]
+        return value
 
     """
     General
@@ -442,22 +451,24 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
+
+    elif object_class_name == 'PowerPlantDispatchPlans':
+        add_parameter_value_to_repository(reps, db_line, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
     # elif object_class_name == 'CO2Auction':
     #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
-
+    # elif object_class_name == 'Hourly Demand':
+    #     add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
     # elif object_class_name == 'Zones':
     #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
 
 
-    # elif object_class_name == 'Hourly Demand':
-    #     add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
+
     # elif object_class_name == 'PowerGridNodes':
     #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
 
-    # elif object_class_name == 'PowerPlantDispatchPlans':
-    #     add_parameter_value_to_repository(reps, db_line, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
+
     # elif object_class_name == 'MarketClearingPoints':
     #     add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     # elif object_class_name == 'NationalGovernments':

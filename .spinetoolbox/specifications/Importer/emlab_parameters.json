@@ -509,16 +509,7 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "table_name",
-                                "value": "TechnologiesEmlab",
-                                "skip_columns": [
-                                    11,
-                                    12,
-                                    13,
-                                    14,
-                                    15,
-                                    16,
-                                    17
-                                ]
+                                "value": "TechnologiesEmlab"
                             },
                             {
                                 "map_type": "Object",
@@ -911,7 +902,8 @@
                             },
                             {
                                 "map_type": "Object",
-                                "position": "table_name"
+                                "position": "table_name",
+                                "value": "CO2"
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -981,14 +973,32 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden"
+                                "position": "table_name",
+                                "value": "EnergyConsumer"
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden"
+                                "position": 0
                             },
                             {
                                 "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
                                 "position": "hidden"
                             }
                         ]
@@ -1011,8 +1021,7 @@
             "dictFuel",
             "TechnologiesEmlabTemporal",
             "CO2",
-            "CandidatePowerPlants",
-            "EnergyConsumer"
+            "CandidatePowerPlants"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1030,7 +1039,12 @@
             "TargetInvestorTargets": {},
             "FuelPriceTrends": {},
             "explanation": {},
-            "TechnologiesEmlab": {},
+            "TechnologiesEmlab": {
+                "row": 0,
+                "column": 0,
+                "read_until_col": true,
+                "read_until_row": false
+            },
             "Fuels": {},
             "NewTechnologies": {},
             "not chosen technologies": {},
@@ -1156,7 +1170,8 @@
             },
             "TargetInvestorTargets": {
                 "0": "string",
-                "1": "float"
+                "1": "float",
+                "2": "string"
             },
             "FuelPriceTrends": {
                 "0": "string",
@@ -1182,17 +1197,7 @@
                 "7": "float",
                 "8": "float",
                 "9": "float",
-                "10": "float",
-                "11": "float",
-                "12": "float",
-                "13": "float",
-                "14": "float",
-                "15": "float",
-                "16": "float",
-                "17": "float",
-                "18": "string",
-                "19": "string",
-                "20": "string"
+                "10": "string"
             },
             "Fuels": {
                 "0": "string",
@@ -1205,7 +1210,15 @@
             "explanation": {
                 "0": "string",
                 "1": "string",
-                "2": "string"
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string"
             },
             "NewTechnologies": {
                 "0": "string",
@@ -1250,7 +1263,8 @@
                 "4": "string",
                 "5": "string",
                 "6": "string",
-                "7": "string"
+                "7": "string",
+                "8": "string"
             },
             "dictFuel": {
                 "0": "string",
@@ -1279,6 +1293,12 @@
                 "3": "string"
             },
             "CandidatePowerPlants": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float"
+            },
+            "EnergyConsumer": {
                 "0": "string",
                 "1": "float",
                 "2": "float",

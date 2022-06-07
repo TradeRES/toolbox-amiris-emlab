@@ -84,6 +84,9 @@ else:
 
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
+    for p, power_plant in reps.power_plants.items():
+        power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"],
+                                                "DE")
     print("repository complete")
 
 
@@ -91,6 +94,7 @@ try:  # Try statement to always close DB properly
 
     if run_initialize_power_plants:
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
+        # adding id to power plants and candidate power plants
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"],
                                                     "DE")  # TODO this shouldn't be hard coded
@@ -145,7 +149,7 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run Capacity Market')
         capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
         capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
-        capacity_market_submit_bids.act_and_commit()
+       # capacity_market_submit_bids.act_and_commit()
         capacity_market_clear.act_and_commit()
         logging.info('End Run Capacity Market')
 

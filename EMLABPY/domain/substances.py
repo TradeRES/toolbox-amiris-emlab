@@ -55,7 +55,7 @@ class Substance(ImportObject):
                 self.newSimulatedPrice = np.interp(year, xp, fp)
             return self.newSimulatedPrice
         else:
-            calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance, "simulatedPrice")
+            calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, "simulatedPrice")
             df = pd.DataFrame(calculatedPrices['data'])
             df.set_index(0, inplace=True)
             last_value = df.loc[str(year - 1)][1]
@@ -76,7 +76,7 @@ class Substance(ImportObject):
 
     def initializeGeometricTrendRegression(self, reps, substance):
         self.geometricRegression = GeometricTrendRegression("geometrictrendRegression" + self.name)
-        calculatedfuturePrices =  reps.dbrw.get_calculated_simulated_fuel_prices(substance, "futurePrice")
+        calculatedfuturePrices =  reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, "futurePrice")
         x = []
         y = []
         for i in calculatedfuturePrices['data']:

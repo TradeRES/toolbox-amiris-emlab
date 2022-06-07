@@ -552,39 +552,6 @@
                 ]
             },
             {
-                "name": "from import AMIRIS to AMIRIS db",
-                "from": [
-                    "import AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS db",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS db to Capacity Mechanism",
-                "from": [
-                    "AMIRIS db",
-                    "bottom"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS db to short investments",
-                "from": [
-                    "AMIRIS db",
-                    "bottom"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
                 "name": "from import AMIRIS to Capacity Mechanism",
                 "from": [
                     "import AMIRIS",
@@ -603,6 +570,39 @@
                 ],
                 "to": [
                     "Next year",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import AMIRIS to AMIRIS DB",
+                "from": [
+                    "import AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "AMIRIS DB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to Capacity Mechanism",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to short investments",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "short investments",
                     "left"
                 ]
             }
@@ -627,22 +627,6 @@
         ]
     },
     "items": {
-        "AMRISDB": {
-            "type": "Data Store",
-            "description": "",
-            "x": -502.7976533409612,
-            "y": 714.5132043004907,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/amrisdb/AMRISDB.sqlite"
-                }
-            }
-        },
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
@@ -1045,7 +1029,7 @@
             "x": -780.2236333806927,
             "y": -262.16918900632913,
             "specification": "AMIRIS wrapper",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": []
         },
         "decommission": {
@@ -1165,7 +1149,7 @@
             "type": "Importer",
             "description": "",
             "x": -601.3599211820633,
-            "y": -258.9310444536395,
+            "y": -269.350042162505,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1177,11 +1161,20 @@
                 ]
             ]
         },
-        "AMIRIS db": {
+        "Next year": {
+            "type": "Tool",
+            "description": "",
+            "x": -148.76524607264508,
+            "y": 346.3054703873102,
+            "specification": "",
+            "execute_in_work": true,
+            "cmd_line_args": []
+        },
+        "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -457.269099118252,
-            "y": -260.2542213066646,
+            "x": -411.5469532040075,
+            "y": -277.7578376747896,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1192,15 +1185,6 @@
                     "path": ".spinetoolbox/items/amiris_db/AMIRIS db.sqlite"
                 }
             }
-        },
-        "Next year": {
-            "type": "Tool",
-            "description": "",
-            "x": -148.76524607264508,
-            "y": 346.3054703873102,
-            "specification": "",
-            "execute_in_work": true,
-            "cmd_line_args": []
         }
     }
 }
