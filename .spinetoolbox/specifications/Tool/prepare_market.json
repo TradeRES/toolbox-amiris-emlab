@@ -7,7 +7,9 @@
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [],
+    "outputfiles": [
+        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\data\\amiris\\amiris_data_structure.xlsx"
+    ],
     "cmdline_args": [],
     "execute_in_work": true,
     "includes_main_path": "../../../emlabpy",

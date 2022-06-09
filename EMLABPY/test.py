@@ -1,38 +1,19 @@
-import random
-#
-# class Parent:
-#     def __init__(self, name, reps):
-#         self.name = name
-#         self.reps = reps
-#
-#     def getName(self):
-#         return self.name
-#
-#
-# class Child(Parent):
-#     def __init__(self, reps):
-#         super().__init__("Child", reps)
-#         self.age = 2
-#
-#
-#     def getAge(self):
-#         return self.age
-#
-#
-# class Grandchild(Child):
-#     def __init__(self, reps):
-#         #Parent().__init__("Ingrid", reps)
-#         self.location = 3
-#
-#
-#     def getLocation(self):
-#         return self.location
-#
-# #gc = Child("reps")
-# #print(gc.getName(), gc.getAge(), gc.reps)
-# gc = Grandchild("reps")
-# print(gc.getName(), gc.getAge(), gc.getLocation(), gc.reps)
+class Employee:
+
+    def __init__(self, name):
+        self.name = name
+        self.amount = None
+        self.price = None
+
+    def adding_new_attr(self, attr, value):
+        setattr(self, attr, value)
 
 
+a = Employee("Juan")
+names = [("amount", "1"),("price", "2")]
 
-
+# for i in names:
+#     a.__setattr__(i[0], i[1])
+for i in names:
+    a.adding_new_attr(i[0], i[1])
+print(a)

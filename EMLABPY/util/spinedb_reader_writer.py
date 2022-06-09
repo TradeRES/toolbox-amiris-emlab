@@ -20,14 +20,14 @@ class SpineDBReaderWriter:
     The class that handles all writing and reading to the SpineDB.
     """
 
-    def __init__(self, run_module, *db_urls: str):
+    def __init__(self, open_amiris, *db_urls: str):
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first is always emlab
-        self.run_module = run_module
 
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.Candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
+        self.bids_classname = 'Bids'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.candidate_power_plants_list_classname = "CandidatePowerPlantsList"
@@ -38,8 +38,8 @@ class SpineDBReaderWriter:
         self.Conventionals_classname = "Conventionals"
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
-
-        if run_module == "run_short_investment_module":
+        self.amirisdb = None
+        if open_amiris:
             self.amirisdb = SpineDB(db_urls[1])
 
     def read_db_and_create_repository(self) -> Repository:
@@ -110,7 +110,7 @@ class SpineDBReaderWriter:
                                     ', parameter: ' + parameter_name)
 
         # the results of AMIRIS dispatch are extracted from the amiris DB
-        if self.run_module in [ "run_short_investment_module"]:
+        if self.amirisdb is not None:
             db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata,
                                                                                 candidatePowerPlants)
@@ -124,11 +124,14 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.market_clearing_point_object_classname)
         self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'TotalCapacity'])
 
-    def stage_init_power_plant_dispatch_plan_structure(self):
-        self.stage_object_class(self.powerplant_dispatch_plan_classname)
-        self.stage_object_parameters(self.powerplant_dispatch_plan_classname,
-                                     ['Plant', 'Market', 'Price', 'Capacity', 'EnergyProducer', 'AcceptedAmount',
-                                      'powerPlantStatus'])
+    def stage_init_bids_structure(self):
+        self.stage_object_class(self.bids_classname)
+        self.stage_object_parameters(self.bids_classname,
+                                     ['plant', 'market', 'price', 'amount', 'bidder', 'accepted_amount',
+                                      'status', "tick"])
+
+
+
 
     def stage_init_power_plants_list(self, iteration):
         self.stage_object_class(self.candidate_power_plants_list_classname)
@@ -212,24 +215,18 @@ class SpineDBReaderWriter:
         self.stage_object(self.powerplant_installed_classname, "dismantleTime")
         self.db.import_object_parameter_values(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')
 
-    def stage_power_plant_CM_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
-        #self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
-        self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
-                                           [
-                                               ('Market', ppdp.bidding_market.name),
-                                               ('ppdp.bidding_market.name', ppdp.accepted_amount),
-                                               ('Status', ppdp.status)], current_tick)
 
-    def stage_power_plant_dispatch_plan(self, ppdp: PowerPlantDispatchPlan, current_tick: int):
-        self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
-        self.stage_object_parameter_values(self.powerplant_dispatch_plan_classname, ppdp.name,
-                                           [('Plant', ppdp.plant.name),
-                                            ('Market', ppdp.bidding_market.name),
-                                            ('Price', ppdp.price),
-                                            ('Capacity', ppdp.amount),
-                                            ('EnergyProducer', ppdp.bidder.name),
-                                            ('AcceptedAmount', ppdp.accepted_amount),
-                                            ('Status', ppdp.status)], current_tick)
+    def stage_bids(self, bid: Bid, current_tick: int):
+        self.stage_object(self.bids_classname, bid.name)
+        self.stage_object_parameter_values(self.bids_classname, bid.name,
+                                           [('plant', bid.plant.name),
+                                            ('market', bid.market.name),
+                                            ('price', bid.price),
+                                            ('amount', bid.amount),
+                                            ('tick', bid.tick),
+                                            ('bidder', bid.bidder.name),
+                                            ('accepted_amount', bid.accepted_amount),
+                                            ('status', bid.status)], current_tick)
 
     def stage_new_power_plants_ids(self, powerPlantsList, iteration, futureYear):
         object_name = str(futureYear)
@@ -309,8 +306,6 @@ class SpineDBReaderWriter:
         self.stage_object(self.fuel_classname, object_name)
         self.db.import_object_parameter_values(
             [(self.fuel_classname, substance.name, globalNames.future_prices , Map([str(year)], [futurePrice]), '0')])
-
-
 
     def get_calculated_simulated_fuel_prices(self, substance, parametername):
         calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
@@ -429,8 +424,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
     elif object_class_name == 'EnergyProducers':
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
-
-
     elif object_class_name == 'Targets':
         add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
 
@@ -443,8 +436,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'electricity':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    # TODO data from traderes excel, has to be changed by the database
-
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # node contain the # TODO complete this to the scenario
@@ -452,8 +443,9 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
 
-    elif object_class_name == 'PowerPlantDispatchPlans':
-        add_parameter_value_to_repository(reps, db_line, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
+    elif object_class_name == 'Bids':
+        add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
+
     # elif object_class_name == 'CO2Auction':
     #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
     # elif object_class_name == 'Hourly Demand':
@@ -494,6 +486,8 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
                 add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
             else:
                 add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants_list, PowerPlant)
+        elif object_class_name == 'PowerPlantDispatchPlans':
+            add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
         #
         # elif object_class_name == :
         #     if object_name in candidatePowerPlants:

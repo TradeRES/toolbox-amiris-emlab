@@ -9,13 +9,9 @@ class PowerPlantDispatchPlan(ImportObject):
         self.accepted_amount = 0
         self.revenues = 0
         self.variable_costs = 0
-
-        self.tick = -1
-        self.amount = None
-        self.price = None
+        self.plant = None
+        self.tick = 0
         self.status = 'Awaiting confirmation'
-        self.bidder = None
-        self.bidding_market = None
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         self.tick = reps.current_year # alternative

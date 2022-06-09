@@ -27,7 +27,6 @@ class DefaultModule:
         self.act()
         self.reps.dbrw.commit('Commit: ' + self.name + ' at ' + str(datetime.now()))
 
-
     def __str__(self):
         return str(vars(self))
 

@@ -11,7 +11,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
         For the next years the fuel prices are considered with a geometric trend.
     """
 
-
     def __init__(self, reps):
         super().__init__(reps)
         self.newPowerPlant = None

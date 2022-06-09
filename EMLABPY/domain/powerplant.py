@@ -24,10 +24,11 @@ class PowerPlant(ImportObject):
         # TODO: Implement GetActualEfficiency
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
-        self.fictional_status = 'NOTSET'
+        self.fictional_status =  globalNames.power_plant_status_not_set
         self.loan = None
         self.downpayment = None
-        self.dismantleTime = 0
+        self.dismantleTime = 0 # in terms of tick
+        self.expectedEndOfLife = 0 # in terms of tick
         # scenario from artificial emlab parameters
         self.constructionStartTime = 0
         self.actualLeadtime = 0
@@ -38,7 +39,7 @@ class PowerPlant(ImportObject):
         self.actualInvestedCapital = 0
         self.actualFixedOperatingCost = 0
         self.actualEfficiency = 0
-        self.expectedEndOfLife = 0
+
         self.actualNominalCapacity = 0
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
@@ -201,10 +202,12 @@ class PowerPlant(ImportObject):
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
         self.setDismantleTime(1000)  # TODO why first set to 1000?!!!!!
+
+        # as a default the expected end of life is assigned by the technology expected lifetime
         if self.dismantleTime < 1000:
             self.setExpectedEndOfLife = self.dismantleTime
         else:
-            self.setExpectedEndOfLife(
+            self.setExpectedEndOfLife( # set in terms of tick
                 tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.setloan(energyProducer)
         self.setPowerPlantsStatusforInstalledPowerPlants()

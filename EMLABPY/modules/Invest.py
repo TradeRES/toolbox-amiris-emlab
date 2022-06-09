@@ -12,7 +12,7 @@ from util.repository import Repository
 from helpers.helper_functions import get_current_ticks
 import sys
 import logging
-
+import math
 
 class Investmentdecision(DefaultModule):
     """
@@ -37,7 +37,7 @@ class Investmentdecision(DefaultModule):
 
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
-        # self.viableInvestment = False
+        self.continueInvestment = True
         # self.expectedInstalledCapacityOfTechnologyInNode = 0
         # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
         # self.node = None
@@ -57,16 +57,20 @@ class Investmentdecision(DefaultModule):
             # TODO: start with cheapest technology? because if agent cannot pay for it it cannot pay for any?
             #  for now there is only one energyproducer
             for candidatepowerplant in self.reps.get_candidate_power_plants_by_owner(self.agent.name):
+                if candidatepowerplant.isViableInvestment:
+                    candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
+                                                                   self.reps.node)
+                    self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
+                    projectvalue = self.getProjectValue(candidatepowerplant, self.agent)
+                    print("projectvalue", projectvalue)
+                    if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
+                        highestValue = projectvalue / candidatepowerplant.capacity
+                        bestCandidatePowerPlant = candidatepowerplant
+                    else:
 
-                print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
-                self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
-                projectvalue = self.getProjectValue(candidatepowerplant, self.agent)
-                print("projectvalue", projectvalue)
-                bestCandidatePowerPlant = candidatepowerplant
-                if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
-                    highestValue = projectvalue / candidatepowerplant.capacity
-                    bestCandidatePowerPlant = candidatepowerplant
-            print("bestPlant is ", bestCandidatePowerPlant)
+
+                        print("stop ")
+                print("bestPlant is ", bestCandidatePowerPlant.name, " ",  bestCandidatePowerPlant.technology.name)
             if bestCandidatePowerPlant is not None:
                 # investing in best candidate power plant as it passed the checks.
                 if candidatepowerplant.isViableInvestment:
@@ -80,7 +84,7 @@ class Investmentdecision(DefaultModule):
             bestCandidatePowerPlant.name)  # the name of the candidate power plant was assigned as the next available id from the installed power plants
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,
-                                   bestCandidatePowerPlant.capacity, bestCandidatePowerPlant.technology)
+                                   bestCandidatePowerPlant.capacityTobeInstalled, bestCandidatePowerPlant.technology)
         print("{0} invests in technology {1} at tick {2}".format(self.agent, newplant.name, self.reps.current_tick))
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
@@ -103,36 +107,37 @@ class Investmentdecision(DefaultModule):
     def getProjectValue(self, candidatepowerplant, agent):
         # technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
         technology = candidatepowerplant.technology
-        totalInvestment = self.getActualInvestedCapital(candidatepowerplant, technology)
+        totalInvestment = self.getActualInvestedCapitalperMW(candidatepowerplant, technology)
         candidatepowerplant.InvestedCapital = totalInvestment
-        depriacationTime = technology.depreciation_time
+        depreciationTime = technology.depreciation_time
         interestRate = technology.interest_rate
         buildingTime = technology.expected_leadtime
         operatingProfit = candidatepowerplant.get_Profit()
-        return self.calculateDiscountedCashFlowForPlant(depriacationTime, buildingTime, totalInvestment,
+        return self.calculateDiscountedCashFlowForPlant(depreciationTime, buildingTime, totalInvestment,
                                                         operatingProfit, agent)
 
-    def calculateDiscountedCashFlowForPlant(self, depriacationTime, buildingTime, totalInvestment, operatingProfit,
+    def calculateDiscountedCashFlowForPlant(self, depreciationTime, buildingTime, totalInvestment, operatingProfit,
                                             agent):
         wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate \
                + agent.debtRatioOfInvestments * agent.loanInterestRate
-        equalTotalDownPaymentInstallement = totalInvestment / buildingTime
-        investmentCashFlow = [0 for i in range(depriacationTime + buildingTime)]
+        equalTotalDownPaymentInstallment = totalInvestment / buildingTime
+        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallement
-        for i in range(buildingTime, depriacationTime + buildingTime):
+            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+        for i in range(buildingTime, depreciationTime + buildingTime):
             investmentCashFlow[i] = operatingProfit
+            print("WACC  ", wacc, " ", investmentCashFlow )
         discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
         return discountedprojectvalue
 
-    def getActualInvestedCapital(self, candidatepowerplant, technology):
+    def getActualInvestedCapitalperMW(self, candidatepowerplant, technology):
         investmentCostperTechnology = technology.investment_cost
         investmentCostperMW = self.getinvestmentcosts(investmentCostperTechnology,
                                                       (technology.expected_permittime + technology.expected_leadtime))
-        return investmentCostperMW * candidatepowerplant.capacity
+        return investmentCostperMW
 
     def getinvestmentcosts(self, investmentCostperTechnology, time):
-        return pow(1.05, time) * investmentCostperTechnology
+        return pow(1.05, time) * investmentCostperTechnology # TODO check this
 
     def createSpreadOutDownPayments(self, agent, manufacturer, totalDownPayment, plant):
         buildingTime = plant.getActualLeadtime()
@@ -148,8 +153,7 @@ class Investmentdecision(DefaultModule):
         annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
         annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
         annuity = totalLoan * ((1 + interestRate) ** payBackTime * (interestRate)) / (
-                (1 + interestRate) ** payBackTime - 1)
-        print(annuitybyhand - annuity)  # TODO check which one is correct
+                (1 + interestRate) ** payBackTime - 1) # TODO check which one is correct
         return annuity
 
     def setPowerPlantExpectations(self, powerplant, time):
@@ -161,19 +165,14 @@ class Investmentdecision(DefaultModule):
     def calculateandCheckFutureCapacityExpectation(self, candidatepowerplant):
         # TODO the specification should have happened before
         # checking if the technology can be installed or not
-        CandidatePowerPlant.specifyTemporaryPowerPlant(candidatepowerplant, self.reps.current_year, self.agent,
-                                                       self.reps.node)
-        print(candidatepowerplant)
         technology = candidatepowerplant.technology
         technologyCapacityLimit = self.findLimitsByTechnology(
             technology)  # Todo: add the constraint about capacity limits
         self.expectedInstalledCapacityOfTechnology = \
-            self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(technology,
-                                                                                     self.futureInvestmentyear)
-
+            self.reps.calculateCapacityOfExpectedOperationalCapacityperTechnology(technology,
+                                                                                  self.futureInvestmentyear)
         technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology)
         # TODO:This part considers that if technology is not covered by the subsidies, the government would add subsidies?....
-
         if technologyTarget is not None:
             technologyTargetCapacity = self.reps.trends[str(technologyTarget)].getValue(self.futureTimePoint)
             if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology):
@@ -186,10 +185,8 @@ class Investmentdecision(DefaultModule):
         self.check(technology.name, candidatepowerplant)
 
     def check(self, technology, candidatepowerplant):
-        if (
-                self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) and self.capacityOfTechnologyInPipeline > 9000:
-            logging.info(" will not invest in {} technology because there's too much capacity in the pipeline",
-                         self.technology)
+        if (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) and self.capacityOfTechnologyInPipeline > 9000:
+            logging.info(" will not invest in {} technology because there's too much capacity in the pipeline" + technology)
             # TODO: if the candidate power plants would be parallellized, setting this technology as not investable could that technology simulation
             candidatepowerplant.setViableInvestment(False)
             return
@@ -199,13 +196,13 @@ class Investmentdecision(DefaultModule):
 
         # elif (self.expectedInstalledCapacityOfTechnology + self.candidatepowerplant.getActualNominalCapacity()) / (marketInformation.maxExpectedLoad + self.plant.getActualNominalCapacity()) >\
         #         self.technology.getMaximumInstalledCapacityFractionInCountry():
-        #     logging.info(" will not invest in {} technology because there's too much of this type in the market", technology)
+        #     logging.info(" will not invest in {} technology because there's too much of this type in the market" + technology)
         # if self.capacityInPipeline > 0.2 * marketInformation.maxExpectedLoad:
         #     logging.info( "Not investing because more than 20% of demand in pipeline.")
 
-        #     logging.info(Lagent +" will not invest in {} technology as he does not have enough money for downpayment", self.technology)
+        #     logging.info(Lagent +" will not invest in {} technology as he does not have enough money for downpayment" + self.technology)
         else:
-            logging.info(technology, " passes capacity limit.  will now calculate financial viability.")
+            logging.info(technology + " passes capacity limit.  will now calculate financial viability.")
             candidatepowerplant.setViableInvestment(True)
             return
 

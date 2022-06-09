@@ -33,7 +33,7 @@ class PowerGeneratingTechnology(ImportObject):
 
         # here are missing info
         self.energyToPowerRatio = 0
-        self.applicable_for_long_term_contract = False
+
         self.co2_capture_efficiency = 0
         self.techtype = ''
         self.efficiency_time_series = None
@@ -43,7 +43,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.maximum_installed_capacity_fraction_per_agent = 0
         self.base_segment_dependent_availability = 0
         self.peak_segment_dependent_availability = 0
-        self.applicableForLongTermContract = False
+        self.applicable_for_long_term_contract = False
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
@@ -59,7 +59,7 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'PeakSegmentDependentAvailability':
             self.peak_segment_dependent_availability = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':
-            self.applicableForLongTermContract = parameter_value
+            self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':
             self.type = parameter_value
         #From here are the inputs from emlab electricity = traderes
@@ -73,7 +73,7 @@ class PowerGeneratingTechnology(ImportObject):
              self.maximum_installed_capacity_in_country = parameter_value*1000 # capacities from GW to MW (emlab)
 
         elif parameter_name == 'interest_rate':
-            self.interest_rate = int(parameter_value)
+            self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
             self.initializeFixedCostsTrend()
@@ -83,7 +83,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.investment_cost = float(parameter_value)*1000
             self.initializeInvestmenttrend()
         elif parameter_name == 'EnergyToPowerRatio':
-            self.energyToPowerRatio = int(parameter_value)
+            self.energyToPowerRatio = float(parameter_value)
 
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
@@ -230,10 +230,10 @@ class PowerGeneratingTechnology(ImportObject):
         return self.getName()
 
     def isApplicableForLongTermContract(self):
-        return self.applicableForLongTermContract
+        return self.applicable_for_long_term_contract
 
     def setApplicableForLongTermContract(self, applicableForLongTermContract):
-        self.applicableForLongTermContract = applicableForLongTermContract
+        self.applicable_for_long_term_contract = applicableForLongTermContract
 
     def getInvestmentCost(self, time):
      #   print(help(self.investment_cost_time_series))

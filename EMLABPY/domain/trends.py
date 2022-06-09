@@ -164,7 +164,7 @@ class GeometricTrendRegression(Trend):
         regr.fit(self.X, self.Y)
         y_pred = regr.predict([[predictedYear]])
         print(self.X, self.Y, "predictedYear", predictedYear, 'y_pred', y_pred[0][0])
-        return  math.exp(y_pred[0][0] )# todo is this correct? why not linear
+        return  y_pred[0][0]# todo is this correct? why not linear
 
     # def removeData(self, x, y):
     #     list.remove(x, math.log(y))

@@ -873,7 +873,7 @@
             "type": "Data Store",
             "description": "",
             "x": -1129.0306585996389,
-            "y": -397.0323219649334,
+            "y": -398.87229167629886,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1068,7 +1068,7 @@
                 },
                 {
                     "type": "resource",
-                    "arg": "db_url@AMIRIS db"
+                    "arg": "db_url@AMIRIS DB"
                 },
                 {
                     "type": "literal",
@@ -1137,7 +1137,7 @@
                 },
                 {
                     "type": "resource",
-                    "arg": "db_url@AMIRIS db"
+                    "arg": "db_url@AMIRIS DB"
                 },
                 {
                     "type": "literal",
@@ -1173,8 +1173,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -411.5469532040075,
-            "y": -277.7578376747896,
+            "x": -411.54695320400754,
+            "y": -279.9603842940392,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

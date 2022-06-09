@@ -24,9 +24,9 @@ class ShortInvestmentdecision(Investmentdecision):
 
     def act(self):
         self.setAgent("Producer1")
+        print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
         # TODO if there would be more agents, the future capacity should be analyzed per agent
-        for operationalInvestablePlants in self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name, self.quickInvestabletechnologies):
-            print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
+        operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name, self.quickInvestabletechnologies)
 
         PowerPlantstoInvest = []
         technologies = []
@@ -57,8 +57,8 @@ class ShortInvestmentdecision(Investmentdecision):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
         # in contrast to long term investment decision, this is calculated for the current year
         self.expectedInstalledCapacityOfTechnology = \
-            self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology(technology,
-                                                                                     self.reps.current_tick)
+            self.reps.calculateCapacityOfExpectedOperationalCapacityperTechnology(technology,
+                                                                                  self.reps.current_tick)
         technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology)
         # TODO:This part considers that if technology is not covered by the subsidies, the government would add subsidies?....
         # in contrast to long term investment decision, this is calculated for the current year
@@ -84,7 +84,7 @@ class ShortInvestmentdecision(Investmentdecision):
 
     def calculatePowerPlantReturns(self, powerplant):
         technology = powerplant.technology
-        totalInvestment = self.getActualInvestedCapital(powerplant, technology)
+        totalInvestment = self.getActualInvestedCapitalperMW(powerplant, technology) * powerplant.capacity
         powerplant.InvestedCapital = totalInvestment
         depriaciationTime = technology.depreciation_time
         # interestRate = technology.interest_rate

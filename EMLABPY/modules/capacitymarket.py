@@ -21,7 +21,7 @@ class CapacityMarketSubmitBids(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Submit Bids', reps)
-        reps.dbrw.stage_init_power_plant_dispatch_plan_structure()
+        reps.dbrw.stage_init_bids_structure()
 
     def act(self):
         # For every EnergyProducer
@@ -34,8 +34,12 @@ class CapacityMarketSubmitBids(MarketModule):
                 fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
                 capacity = powerplant.get_actual_nominal_capacity() # TODO check if this has to be changed
                 powerplant_load_factor = 1  # TODO: Power Plant Load Factor
-                operational_profit = self.reps.get_power_plant_electricity_spot_market_revenues_by_tick(powerplant.id , self.reps.current_tick)  # TODO: retrieve from AMIRIS
-                net_revenues = operational_profit - fixed_on_m_cost
+                dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
+                #attention this is provisional
+                if dispatch is None:
+                    net_revenues = - fixed_on_m_cost
+                else:
+                    net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
                 price_to_bid = 0
                 if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                     price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() *
@@ -57,18 +61,13 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         for market in self.reps.capacity_markets.values():
-
             peak_load = max(
                 self.reps.get_hourly_demand_by_power_grid_node_and_year(market.parameters['zone'])[1]  ) # todo later it should be also per year
             expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices, self.reps.current_tick)
+            peakExpectedDemand = peak_load * (expectedDemandFactor)
 
-
-            peakExpectedDemand = peak_load * (1+expectedDemandFactor)
-
-            # Retrieve vars
             sdc = market.get_sloping_demand_curve(peakExpectedDemand)
-            sorted_ppdp = self.reps.get_sorted_power_plant_dispatch_plans_by_market_and_time(market,
-                                                                                             self.reps.current_tick)
+            sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
             clearing_price = 0
             total_supply = 0
@@ -78,31 +77,28 @@ class CapacityMarketClearing(MarketModule):
                     if ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
                         total_supply += ppdp.amount
                         clearing_price = ppdp.price
+                        ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
+                        ppdp.accepted_amount = ppdp.amount
 
-                        self.reps.set_power_plant_CapacityMarket_production(ppdp,
-                                                                            globalNames.power_plant_dispatch_plan_status_accepted,
-                                                                            ppdp.amount)
-                        self.createCashFlowforCM()
                     elif ppdp.price < sdc.get_price_at_volume(total_supply):
                         clearing_price = ppdp.price
-                        self.reps.set_power_plant_CapacityMarket_production(ppdp,
-                                                                            globalNames.power_plant_dispatch_plan_status_partly_accepted,
-                                                                            sdc.get_volume_at_price(
-                                                                                clearing_price) - total_supply)
+                        ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
+                        ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
                         total_supply += sdc.get_volume_at_price(clearing_price)
                         self.isTheMarketCleared = True
-                        self.createCashFlowforCM()
                 else:
-                    self.reps.set_power_plant_CapacityMarket_production(ppdp,
-                                                                        globalNames.power_plant_dispatch_plan_status_failed,
-                                                                        0)
+                    ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
+                    ppdp.accepted_amount = 0
+
+            self.reps.set_power_plant_CapacityMarket_production(ppdp)
             # save clearing point
             if self.isTheMarketCleared == True:
                 self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                                  self.reps.current_tick)
                 self.createCashFlowforCM( market, sorted_ppdp, clearing_price )
             else:
-                logging.WARN("market uncleared at price ", clearing_price, " at volume ", total_supply)
+                print("Market is not cleared")
+               # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
 
             # VERIFICATION #
 

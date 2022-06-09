@@ -19,10 +19,11 @@ class CandidatePowerPlant(PowerPlant):
         self.viableInvestment = True # initially all candidate power plants should be investable
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
-        self.capacitytobeInstalled = 0
+        self.capacity = 0
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True
+        self.capacityTobeInstalled = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'Id':
@@ -31,7 +32,7 @@ class CandidatePowerPlant(PowerPlant):
             self.technology = reps.power_generating_technologies[parameter_value]
             self.efficiency = self.technology.efficiency
         elif parameter_name == 'Capacity':
-            self.capacitytobeInstalled = int(parameter_value) # the real capacity will be defined once the investment decision is made
+            self.capacityTobeInstalled = int(parameter_value) # the real capacity will be defined once the investment decision is made
         elif parameter_name == 'Owner':
             self.owner = parameter_value
 
@@ -51,20 +52,20 @@ class CandidatePowerPlant(PowerPlant):
     def setInvestedCapital(self):
         pass
 
-    def specifyTemporaryPowerPlant(self, tick, energyProducer, location):
+    def specifyTemporaryPowerPlant(self, tick, energyProducer, location ):
         self.setOwner(energyProducer)
         self.setLocation(location)
         self.setConstructionStartTime()
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
-        self.setDismantleTime(1000)
+        self.setDismantleTime(1000) # TODO
         #self.calculateAndSetActualInvestedCapital(tick)
         self.calculateAndSetActualFixedOperatingCosts(tick)
         self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        print("specifyTemporaryPowerPlant tick", tick,  "permit", self.getActualPermittime() ,
-              "actuallead" ,self.getActualLeadtime() ,"lifetime",  self.getTechnology().getExpectedLifetime(),
-              "setExpectedEndOfLife", self.expectedEndOfLife)
+        # print("specifyTemporaryPowerPlant tick", tick,  "permit", self.getActualPermittime() ,
+        #       "actuallead" ,self.getActualLeadtime() ,"lifetime",  self.getTechnology().getExpectedLifetime(),
+        #       "setExpectedEndOfLife", self.expectedEndOfLife)
         return self
 
     def setConstructionStartTime(self):
@@ -79,6 +80,9 @@ class CandidatePowerPlant(PowerPlant):
     def setViableInvestment(self, viableInvestment):
         self.viableInvestment = viableInvestment
 
+    def get_candidate_power_plant_capacity_by_id(self, id):
+        return [i.capacity for i in self.candidatePowerPlants.values()
+                if i.id == id]
 
 class FutureStorageTrader(ImportObject):
     def __init__(self, name):

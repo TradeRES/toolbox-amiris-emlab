@@ -13,7 +13,7 @@ class TargetInvestmentRole(DefaultModule):
         for target in targetInvestor.getPowerGenerationTechnologyTargets():
             pgt = target.getPowerGeneratingTechnology()
             futureTimePoint = self.reps.current_tick + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
-            expectedInstalledCapacity = self.reps.calculateCapacityOfExpectedOperationalPowerPlantsperTechnology( pgt, futureTimePoint)
+            expectedInstalledCapacity = self.reps.calculateCapacityOfExpectedOperationalCapacityperTechnology(pgt, futureTimePoint)
             pgtNodeLimit = pgt.getMaximumCapacityinCountry()
             targetCapacity = target.getTrend().getValue(futureTimePoint)
             installedCapacityDeviation = 0

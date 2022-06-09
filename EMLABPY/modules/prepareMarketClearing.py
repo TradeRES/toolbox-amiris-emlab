@@ -20,7 +20,7 @@ class PrepareMarket(DefaultModule):
         self.writer = None
         self.path = 'data/amiris/amiris_data_structure.xlsx'
         self.power_plants_list = self.reps.power_plants
-        reps.dbrw.stage_init_next_prices_structure()
+        reps.dbrw.stage_init_bids_structure()
 
     def act(self):
         self.setTimeHorizon()
