@@ -144,7 +144,8 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
                                            [('Market', mcp.market.name),
                                             ('Price', mcp.price),
-                                            ('TotalCapacity', mcp.capacity)], current_tick)
+                                            ('Time', mcp.time),
+                                            ('Volume', mcp.volume)], current_tick)
 
 
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
@@ -160,6 +161,12 @@ class SpineDBReaderWriter:
         param_name = 'Reserve'
         self.stage_object_parameter('MarketStabilityReserve', param_name)
         self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
+
+    def set_power_plant_CapacityMarket_production(self, bids, current_tick):
+        for bid in bids:
+            self.stage_object_parameter_values("Bids", bid.name,
+                                               [('accepted_amount', bid.accepted_amount),
+                                                ('status', bid.status)], current_tick)
 
     """
     Power plants
@@ -442,10 +449,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-
     elif object_class_name == 'Bids':
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
-
+    elif object_class_name == 'MarketClearingPoints':
+        add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     # elif object_class_name == 'CO2Auction':
     #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
     # elif object_class_name == 'Hourly Demand':
@@ -461,8 +468,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
 
 
-    # elif object_class_name == 'MarketClearingPoints':
-    #     add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
+
     # elif object_class_name == 'NationalGovernments':
     #     add_parameter_value_to_repository(reps, db_line, reps.national_governments, NationalGovernment)
     # elif object_class_name == 'Governments':

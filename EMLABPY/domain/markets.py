@@ -3,15 +3,25 @@ This file contains all Market and Market operation classes.
 Jim Hommes - 13-5-2021
 Sanchez 5-22
 """
+from domain.actors import EMLabAgent
 from domain.import_object import *
 from spinedb_api import Map
 import pandas as pd
 
-class Market(ImportObject):
+class Market(EMLabAgent):
     """
     The parent class of all markets.
     """
-    pass
+    def __init__(self, name):
+        super().__init__(name)
+    #     self.cash = 0
+    #
+    # def getCash(self):
+    #     return self.cash
+    #
+    # def setCash(self, cash):
+    #     self.cash = cash
+
 
 class ElectricitySpotMarket(Market):
     def __init__(self, name):
@@ -79,8 +89,6 @@ class CapacityMarket(Market):
                                   float(self.parameters['UpperMargin']), d_peak, float(self.parameters['PriceCap']))
 
 
-
-
 class CO2Market(Market):
     pass
 
@@ -91,10 +99,11 @@ class MarketClearingPoint(ImportObject):
         self.market = None
         self.price = 0
         self.capacity = 0
+        self.volume = 0
+        self.time = 0
         self.tick = -1
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        self.tick = int(alternative)
         if parameter_name == 'Price':
             self.price = float(parameter_value)
         if parameter_name == 'Market':
@@ -106,7 +115,10 @@ class MarketClearingPoint(ImportObject):
                 self.market = reps.co2_markets[parameter_value]
         if parameter_name == 'TotalCapacity':
             self.capacity = float(parameter_value)
-
+        if parameter_name == 'Time':
+            self.tick = int(parameter_value)
+        if parameter_name == 'Volume':
+            self.volume = int(parameter_value)
 
 class SlopingDemandCurve:
     """

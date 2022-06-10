@@ -298,13 +298,10 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.name == plant and i.tick == time]
 
-    def set_power_plant_CapacityMarket_production(self, ppdp):
-        self.stage_object_parameter_values("Bids", ppdp.name,
-                                           [('accepted_amount', ppdp.accepted_amount),
-                                            ('status', ppdp.status)], self.current_tick)
 
-    def get_accepted_CM_ppdp(self, ppdp):
-        return [i for i in self.ppdp.values() if
+
+    def get_accepted_CM_bids(self):
+        return [i for i in self.bids.values() if
                 i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
 
         # def set_power_plant_dispatch_plan_production(self,
@@ -368,7 +365,6 @@ class Repository:
     def create_or_update_market_clearing_point(self,
                                                market: Market,
                                                price: float,
-
                                                volume: float,
                                                time: int) -> MarketClearingPoint:
         mcp = next((mcp for mcp in self.market_clearing_points.values() if mcp.market == market and mcp.tick == time),
@@ -380,7 +376,6 @@ class Repository:
 
         mcp.market = market
         mcp.price = price
-
         mcp.tick = time
         mcp.volume = volume
         self.market_clearing_points[mcp.name] = mcp
