@@ -183,7 +183,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": 0,
+                                "position": "hidden",
+                                "value": "unit",
                                 "read_start_row": 94
                             },
                             {
@@ -274,7 +275,8 @@
         },
         "selected_tables": [
             "node",
-            "unit"
+            "unit",
+            "grid__node__unit__io"
         ],
         "table_options": {
             "grid": {},

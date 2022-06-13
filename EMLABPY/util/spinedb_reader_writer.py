@@ -207,6 +207,12 @@ class SpineDBReaderWriter:
                                             ('Technology', powerplant.technology.name)],
                                            '0')
 
+    def stage_candidate_pp_investment_status(self, candidatepowerplant):
+        object_name = candidatepowerplant.name
+        self.stage_object(self.candidate_power_plants_list_classname, object_name)
+        self.stage_object_parameter_values(self.candidate_power_plants_list_classname, object_name,
+                                           [('ViableInvestment', candidatepowerplant.viableInvestment)], '0')
+
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 
@@ -441,8 +447,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'unit':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-    elif object_class_name == 'electricity':
-        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+
+    # elif object_class_name == 'electricity':
+    #     add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # node contain the # TODO complete this to the scenario

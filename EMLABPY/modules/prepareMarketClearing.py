@@ -19,7 +19,7 @@ class PrepareMarket(DefaultModule):
         self.Years = []
         self.writer = None
         self.path = 'data/amiris/amiris_data_structure.xlsx'
-        self.power_plants_list = self.reps.power_plants
+        self.power_plants_list =  self.reps.get_investable_candidate_power_plants()
         reps.dbrw.stage_init_bids_structure()
 
     def act(self):

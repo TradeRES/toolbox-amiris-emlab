@@ -155,9 +155,14 @@ class Repository:
     #     return annuity
 
     # PowerPlants
-    def get_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
+
+    def get_investable_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values()
-                if i.owner == owner]
+                if i.viableInvestment is True and i.owner == owner]
+
+    def get_investable_candidate_power_plants(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
+        return [i for i in self.candidatePowerPlants.values()
+                if i.viableInvestment]
 
     def calculateCapacityOfExpectedOperationalCapacityperTechnology(self, technology, tick):
         expectedOperationalcapacity = 0
@@ -298,8 +303,6 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.name == plant and i.tick == time]
 
-
-
     def get_accepted_CM_bids(self):
         return [i for i in self.bids.values() if
                 i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
@@ -341,7 +344,7 @@ class Repository:
     def update_candidate_plant_results(self, results):
         try:
             for index, result in results.iterrows():
-                print(result)
+                print(result.REVENUES_IN_EURO)
                 candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
                 candidate.add_values_from_df(result)
         except StopIteration:

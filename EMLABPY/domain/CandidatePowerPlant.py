@@ -35,6 +35,8 @@ class CandidatePowerPlant(PowerPlant):
             self.capacityTobeInstalled = int(parameter_value) # the real capacity will be defined once the investment decision is made
         elif parameter_name == 'Owner':
             self.owner = parameter_value
+        elif parameter_name == 'ViableInvestment':
+            self.viableInvestment = bool(parameter_value)
 
     def add_values_from_df(self, results):
             self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH

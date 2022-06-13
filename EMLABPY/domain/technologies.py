@@ -16,7 +16,7 @@ class PowerGeneratingTechnology(ImportObject):
         super().__init__(name)
         self.capacity = 0
         self.annuity = 0
-        self.investment_cost = None
+        self.investment_cost_eur_MW = None
         self.fixed_operating_costs = None
         self.variable_operating_costs = None
         self.efficiency = 0
@@ -79,8 +79,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.initializeFixedCostsTrend()
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
-        elif parameter_name == 'investment_cost': # these are in eur/kw Traderes-> *1000 eur /MW emlab
-            self.investment_cost = float(parameter_value)*1000
+        elif parameter_name == 'investment_cost': # these are already transmofred eur/kw Traderes-> *1000 eur /MW emlab
+            self.investment_cost_eur_MW = float(parameter_value)
             self.initializeInvestmenttrend()
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
@@ -100,7 +100,7 @@ class PowerGeneratingTechnology(ImportObject):
 
     def initializeInvestmenttrend(self):
         self.investment_cost_time_series = GeometricTrend("geometrictrend" + self.name)
-        self.investment_cost_time_series.start = self.investment_cost
+        self.investment_cost_time_series.start = self.investment_cost_eur_MW
         self.investment_cost_time_series.growth_rate = 0.00
 
     def initializeFixedCostsTrend(self):

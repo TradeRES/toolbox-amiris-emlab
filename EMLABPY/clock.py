@@ -12,6 +12,13 @@ from util.spinedb import SpineDB
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 
+def reset_candidate_investable_status():
+    class_name = "CandidatePowerPlants"
+    candidate_powerplants = [i for i in db_emlab.query_object_parameter_values_by_object_class(class_name)]
+    for candidate in candidate_powerplants:
+        db_emlab.import_object_parameter_values([(class_name, candidate["object_name"] , "ViableInvestment",  bool(1) , '0')])
+
+
 try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
@@ -29,9 +36,7 @@ try:
                              if i['parameter_name'] == 'Start Year')
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
-            #todo ERASE this when DB is complete
-            db_emlab.import_data({'object_parameters': [["unit",  "efficiency_full_load"]]})
-            db_emlab.import_object_parameter_values([("unit", "Hydropower_ROR", "efficiency_full_load", 0.7, '0')])
+            reset_candidate_investable_status()
 
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
@@ -54,6 +59,8 @@ try:
             updated_year = step + Current_year
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
+            reset_candidate_investable_status()
+
             db_emlab.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + ')')
 
