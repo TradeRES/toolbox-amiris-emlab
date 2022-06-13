@@ -1,19 +1,16 @@
-class Employee:
+people = {1: {'Name': 'John', 'Age': '27', 'Sex': 'Male'},
+          2: {'Name': 'Marie', 'Age': '22', 'Sex': 'Female'},
+          3: {'Name': 'sdf', 'Age': '22', 'Sex': 'Female'}}
 
-    def __init__(self, name):
-        self.name = name
-        self.amount = None
-        self.price = None
+# for p_id, p_info in people.items():
+#     print("\nPerson ID:", p_id)
+#
+#     for key in p_info:
+#         print(key + ':', p_info[key])
 
-    def adding_new_attr(self, attr, value):
-        setattr(self, attr, value)
+def inf():
+    return    [d for d in people.values() if d['Age'] == "22"]
 
 
-a = Employee("Juan")
-names = [("amount", "1"),("price", "2")]
-
-# for i in names:
-#     a.__setattr__(i[0], i[1])
-for i in names:
-    a.adding_new_attr(i[0], i[1])
-print(a)
+b = inf()
+print(b)

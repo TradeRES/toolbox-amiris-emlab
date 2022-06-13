@@ -160,9 +160,8 @@ class Repository:
         return [i for i in self.candidatePowerPlants.values()
                 if i.viableInvestment is True and i.owner == owner]
 
-    def get_investable_candidate_power_plants(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
-        return [i for i in self.candidatePowerPlants.values()
-                if i.viableInvestment]
+    def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
+        return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
     def calculateCapacityOfExpectedOperationalCapacityperTechnology(self, technology, tick):
         expectedOperationalcapacity = 0

@@ -776,18 +776,11 @@
             ],
             "db_references": []
         },
-        "transform Traderes": {
-            "type": "Data Transformer",
-            "description": "",
-            "x": -138.83421430466,
-            "y": 687.5945991133256,
-            "specification": ""
-        },
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1331.9992071826246,
-            "y": -864.2682040301231,
+            "x": -1339.27276207857,
+            "y": -642.4247797037858,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -872,7 +865,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1129.0306585996389,
+            "x": -1125.3938811516662,
             "y": -398.87229167629886,
             "url": {
                 "dialect": "sqlite",
@@ -966,15 +959,6 @@
                 }
             ]
         },
-        "testtool": {
-            "type": "Tool",
-            "description": "",
-            "x": -1524.5947105166292,
-            "y": 443.8693460997781,
-            "specification": "test tool",
-            "execute_in_work": true,
-            "cmd_line_args": []
-        },
         "increment Clock": {
             "type": "Tool",
             "description": "",
@@ -1011,7 +995,7 @@
             "type": "Importer",
             "description": "",
             "x": -1352.362830471694,
-            "y": -500.24706706230893,
+            "y": -502.0654557862954,
             "specification": "technology potential and capacities",
             "cancel_on_error": false,
             "purge_before_writing": false,

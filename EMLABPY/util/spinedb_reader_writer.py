@@ -382,6 +382,7 @@ class SpineDBReaderWriter:
 
 
 def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: dict, class_to_create):
+
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
@@ -469,14 +470,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         logging.info('Object Class not defined: ' + object_class_name)
     # elif object_class_name == 'Zones':
     #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
-
-
-
     # elif object_class_name == 'PowerGridNodes':
     #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
-
-
-
     # elif object_class_name == 'NationalGovernments':
     #     add_parameter_value_to_repository(reps, db_line, reps.national_governments, NationalGovernment)
     # elif object_class_name == 'Governments':
@@ -494,23 +489,11 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-        if object_class_name in [self.Conventionals_classname, self.VariableRenewable_classname,
-                                 self.Storages_classname]:
-            if object_name in candidatePowerPlants:
-                add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
-            else:
-                add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants_list, PowerPlant)
-        elif object_class_name == 'PowerPlantDispatchPlans':
+        if object_class_name == 'PowerPlantDispatchPlans':
             add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
-        #
-        # elif object_class_name == :
+        # if object_class_name in [self.Conventionals_classname, self.VariableRenewable_classname,
+        #                          self.Storages_classname]:
         #     if object_name in candidatePowerPlants:
         #         add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
         #     else:
-        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)
-        #
-        # elif object_class_name == :
-        #     if object_name in candidatePowerPlants:
-        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
-        #     else:
-        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants, PowerPlant)
+        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants_list, PowerPlant)

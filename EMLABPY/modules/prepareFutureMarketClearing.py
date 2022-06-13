@@ -33,7 +33,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
     def act(self):
         self.setTimeHorizon()
         self.setExpectations()
-        self.specifyIdsandCapacityCandidatePowerPlants()
+      #  self.specifyIdsandCapacityCandidatePowerPlants()
         self.filter_power_plants_to_be_operational()
         # functions to save the power plants
         self.openwriter()
@@ -58,8 +58,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
             if fictional_age > powerplant.technology.expected_lifetime:
                 powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
-                print("to be decommisioned", powerplant.name, "age", fictional_age,
-                      "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
+                # print("to be decommisioned", powerplant.name, "age", fictional_age,
+                #       "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
                 # todo add some exception for plants under startegic reserve
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
