@@ -8,6 +8,6 @@ __email__ = 'felix.nitsch@dlr.de'
 import sys
 
 import ioproc.runners as run
-
-sys.path.append("../../")
+print("here")
+#sys.path.append("../../")
 run.start()
