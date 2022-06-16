@@ -10,7 +10,10 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "PowerPlantDispatchPlans"
+                                "value": "PowerPlantDispatchPlans",
+                                "skip_columns": [
+                                    4
+                                ]
                             },
                             {
                                 "map_type": "Object",
@@ -18,8 +21,7 @@
                             },
                             {
                                 "map_type": "ObjectMetadata",
-                                "position": "hidden",
-                                "value": ""
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "ParameterDefinition",
@@ -28,7 +30,7 @@
                             {
                                 "map_type": "Alternative",
                                 "position": "hidden",
-                                "value": "0"
+                                "value": "latest"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",

@@ -63,7 +63,8 @@ class Investmentdecision(DefaultModule):
                         candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
                                                                        self.reps.node)
                         self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
-                        projectvalue = self.getProjectValue(candidatepowerplant, self.agent)
+                        wacc, cf = self.getProjectValue(candidatepowerplant, self.agent)
+                        projectvalue = self.npv(wacc, cf)
                         print("projectvalue", projectvalue)
                         if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                             highestValue = projectvalue / candidatepowerplant.capacity
@@ -137,7 +138,9 @@ class Investmentdecision(DefaultModule):
         for i in range(buildingTime, technical_lifetime + buildingTime):
             investmentCashFlow[i] = operatingProfit - restPayment
         print("WACC  ", wacc, " ", [round(x) for x in investmentCashFlow] )
+        return wacc, investmentCashFlow
 
+    def npv(self, wacc, investmentCashFlow):
         discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
         return discountedprojectvalue
 

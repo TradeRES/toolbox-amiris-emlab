@@ -77,7 +77,7 @@ class PowerPlant(ImportObject):
         elif parameter_name == 'Capacity':
             self.capacity = parameter_value
         elif parameter_name == 'Owner':
-            self.owner = parameter_value
+            self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
             self.age = int(parameter_value)
 
@@ -191,9 +191,7 @@ class PowerPlant(ImportObject):
         self.status = globalNames.power_plant_status_inPipeline
 
     # createPowerPlant from initial database
-    def specifyPowerPlantsInstalled(self, tick, energyProducer, location):  # TODO add this information to the database
-        self.setOwner(energyProducer.name)
-        self.setLocation(location)
+    def specifyPowerPlantsInstalled(self, tick):  # TODO add this information to the database
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
@@ -209,7 +207,7 @@ class PowerPlant(ImportObject):
         else:
             self.setExpectedEndOfLife( # set in terms of tick
                 tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        self.setloan(energyProducer)
+        self.setloan(self.owner)
         self.setPowerPlantsStatusforInstalledPowerPlants()
         return self
 

@@ -489,7 +489,9 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-        if object_class_name == 'PowerPlantDispatchPlans':
+        # if object_class_name == 'PowerPlantDispatchPlans':
+        #     add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
+        if object_class_name == reps.current_year:
             add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
         # if object_class_name in [self.Conventionals_classname, self.VariableRenewable_classname,
         #                          self.Storages_classname]:

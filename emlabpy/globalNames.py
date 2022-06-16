@@ -19,4 +19,5 @@ modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "r
 
 
 
+years_path = "data\\years.csv"
 

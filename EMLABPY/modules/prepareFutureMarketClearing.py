@@ -25,7 +25,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
         self.agent = "Producer1"
-        self.power_plants_list = self.reps.candidatePowerPlants
+        self.power_plants_list =self.reps.get_investable_candidate_power_plants()
         # self.power_plants_ids_list = list(range(1, len(reps.candidatePowerPlants) + 1, 1))
         self.iteration = 0  # the number of times that the future clearing has been done per year.
 

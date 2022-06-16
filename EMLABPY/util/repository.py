@@ -168,7 +168,7 @@ class Repository:
         plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
         for plant in plantsoftechnology:
             if PowerPlant.isExpectedToBeOperational(plant, tick, (self.current_year + tick)):
-                expectedOperationalcapacity.sum()
+                expectedOperationalcapacity += plant.capacity
         return expectedOperationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
@@ -208,7 +208,12 @@ class Repository:
         PowerPlant]:
         return [i for i in self.power_plants.values()
                 if
-                i.owner == owner and i.status == globalNames.power_plant_status_operational and i.technology.name in listofTechnologies]
+                i.owner.name == owner and i.status == globalNames.power_plant_status_operational and i.technology.name in listofTechnologies]
+
+    def get_operational_power_plants(self) -> List[ PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if  i.status == globalNames.power_plant_status_operational]
+
 
     def get_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

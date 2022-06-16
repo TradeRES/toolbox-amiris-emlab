@@ -14,7 +14,7 @@ db_amiris = SpineDB(db_url_amiris)
 def addCoststoCandidatePowerPlants(db_amiris):
     """
     This function adds investment costs to candidate power plants
-    :param db_emlab: SpineDB
+    :param db_amiris: SpineDB
     """
 
 

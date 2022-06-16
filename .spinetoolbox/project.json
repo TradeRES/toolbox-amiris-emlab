@@ -171,6 +171,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/import_amiris_results.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/grouped_power_plants.json"
                 }
             ],
             "Exporter": [
@@ -605,6 +610,28 @@
                     "short investments",
                     "left"
                 ]
+            },
+            {
+                "name": "from power plants importer to EmlabDB",
+                "from": [
+                    "power plants importer",
+                    "right"
+                ],
+                "to": [
+                    "EmlabDB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from power plants to power plants importer",
+                "from": [
+                    "power plants",
+                    "right"
+                ],
+                "to": [
+                    "power plants importer",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -1019,8 +1046,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -1202.9410648559756,
-            "y": -148.23059948046557,
+            "x": -1148.4389955561296,
+            "y": -111.89588661390158,
             "specification": "Decommission",
             "execute_in_work": true,
             "cmd_line_args": [
@@ -1169,6 +1196,36 @@
                     "path": ".spinetoolbox/items/amiris_db/AMIRIS db.sqlite"
                 }
             }
+        },
+        "power plants importer": {
+            "type": "Importer",
+            "description": "",
+            "x": -1364.626137110474,
+            "y": -144.59614697859328,
+            "specification": "grouped power plants",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "<project>/data/DE_datapower_plants.xlsx",
+                    true
+                ]
+            ]
+        },
+        "power plants": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -1605.0172314623849,
+            "y": -86.75768818715596,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/DE_datapower_plants.xlsx"
+                }
+            ],
+            "db_references": []
         }
     }
 }

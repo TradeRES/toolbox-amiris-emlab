@@ -19,10 +19,7 @@ def get_current_ticks(db: SpineDB, offset: int):
 
 def get_traderes_technologies(db: SpineDB):
     """
-    This function retrieves the most recent system clock ticks and translates it also to the COMPETES clock ticks.
-
     :param db: SpineDB
-
     """
     class_name = "unit"
     technology = []

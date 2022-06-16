@@ -8,7 +8,6 @@ import sys
 import logging
 import os
 import time
-
 from modules.payLoans import PayForLoansRole
 from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
@@ -19,7 +18,6 @@ from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from domain.StrategicReserveOperator import *
 from modules.strategicreserve import *
-
 from modules.co2market import *
 from modules.Invest import *
 from modules.prepareFutureMarketClearing import *
@@ -84,26 +82,20 @@ else:
 
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
-    for p, power_plant in reps.power_plants.items():
-        power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"],
-                                                "DE")
-    print("repository complete")
-
 
     # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
-
     if run_initialize_power_plants:
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
-        # adding id to power plants and candidate power plants
+        # adding id to power plants
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick, reps.energy_producers["Producer1"],
-                                                    "DE")  # TODO this shouldn't be hard coded
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
                                   str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
                                   ))
-            pp_counter = 0
+        # adding id to candidate power plants
+        pp_counter = 0
         for p, power_plant in reps.candidatePowerPlants.items():
             pp_counter += 1
             power_plant.id = (int(str(9999) +  # TODO once installed, this will change to the commissioned year
@@ -114,15 +106,20 @@ try:  # Try statement to always close DB properly
             power_plant.capacity = 1  # See general description
         spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
+        print('Staged ID and status')
+    else:
+        for p, power_plant in reps.power_plants.items():
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick )
 
 
     spinedb_reader_writer.commit('Initialize all module import structures')
+    print("repository complete")
     print('Start Run Modules')
     # From here on modules will be run according to the previously set booleans
     if run_decommission_module:
         logging.info('Start Run dismantle')
-        payingLoans = PayForLoansRole(reps)
-        payingLoans.act_and_commit()
+        # payingLoans = PayForLoansRole(reps)
+        # payingLoans.act_and_commit()
         dismantling = Dismantle(reps)
         dismantling.act_and_commit()
         logging.info('End Run dismantle')

@@ -19,7 +19,7 @@ class ShortInvestmentdecision(Investmentdecision):
     """
 
     def __init__(self, reps: Repository):
-        super().__init__('Emlabpy short Investment decisions', reps)
+        super().__init__( reps)
         self.quickInvestabletechnologies = ["PV_utility_systems", "PV_residential", "PV_commercial_systems", "Lithium_ion_battery"]
 
     def act(self):
@@ -37,7 +37,7 @@ class ShortInvestmentdecision(Investmentdecision):
             self.calculateandCheckFutureCapacityExpectation(powerplant.technology)
             # for now the returns calculations are done considering that future years will have the profit of the current year
             # TODO the profit should consider the past year profits?
-            returns.append( self.calculatePowerPlantReturns(powerplant))
+            returns.append( self.calculatePowerPlantReturns(powerplant, self.agent))
             technologies.append(powerplant.technology.name)
 
         df = pd.DataFrame( technologies,returns, columns=["Technologies", "Returns"])
@@ -82,19 +82,23 @@ class ShortInvestmentdecision(Investmentdecision):
         else:
             logging.info(technology, " passes capacity limit.  will now calculate financial viability.")
 
-    def calculatePowerPlantReturns(self, powerplant):
+    def calculatePowerPlantReturns(self, powerplant, agent):
         technology = powerplant.technology
         totalInvestment = self.getActualInvestedCapitalperMW(powerplant, technology) * powerplant.capacity
         powerplant.InvestedCapital = totalInvestment
         depriaciationTime = technology.depreciation_time
+        technical_lifetime = technology.expected_lifetime
         # interestRate = technology.interest_rate
         buildingTime = technology.expected_leadtime
         operatingProfit = powerplant.get_Profit() # Todo change this to the last 3 years????
-        equalTotalDownPaymentInstallement = totalInvestment / buildingTime
+        equalTotalDownPaymentInstallment = (totalInvestment* agent.debtRatioOfInvestments) / buildingTime
+        restPayment = totalInvestment* (1-agent.debtRatioOfInvestments)/ technical_lifetime
         investmentCashFlow = [0 for i in range(depriaciationTime + buildingTime)]
+
         for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallement
-        for i in range(buildingTime, depriaciationTime + buildingTime):
-            investmentCashFlow[i] = operatingProfit
+            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+        for i in range(buildingTime, technical_lifetime + buildingTime):
+            investmentCashFlow[i] = operatingProfit - restPayment
+
         internalRateReturn = npf.irr(investmentCashFlow, len(investmentCashFlow))
         return internalRateReturn

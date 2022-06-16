@@ -75,7 +75,7 @@ def generate_plots():
     # EMLab Plots
     print('Establishing and querying SpineDB...')
 
-    emlab_spinedb = SpineDB('sqlite:///C:\\Users\\isanchezjimene\\Documents\\Spine_EMLab_COMPETES\\.spinetoolbox\\items\\db_emlab\\DB.sqlite')
+    emlab_spinedb = SpineDB('sqlite:///C:\\Users\\isanchezjimene\\Documents\\Spine_EMLab_COMPETES\\.spinetoolbox\\items\\db_amiris\\DB.sqlite')
     competes_spinedb = SpineDB('sqlite:///C:\\Users\\isanchezjimene\\Documents\\Spine_EMLab_COMPETES\\.spinetoolbox\\items\\db_competes\\DB COMPETES.sqlite')
     config_spinedb = SpineDB('sqlite:///C:\\Users\\isanchezjimene\\Documents\\Spine_EMLab_COMPETES\\.spinetoolbox\\items\\simulation_configuration_parameters\\Simulation Configuration Parameters.sqlite')
     #sqlite_prepend = "sqlite:///"

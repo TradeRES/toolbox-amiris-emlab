@@ -19,7 +19,7 @@ class PrepareMarket(DefaultModule):
         self.Years = []
         self.writer = None
         self.path = 'data/amiris/amiris_data_structure.xlsx'
-        self.power_plants_list =  self.reps.get_investable_candidate_power_plants()
+        self.power_plants_list = self.reps.get_operational_power_plants()
         reps.dbrw.stage_init_bids_structure()
 
     def act(self):
@@ -96,7 +96,7 @@ class PrepareMarket(DefaultModule):
         BlockSizeInMW = []
         InstalledPowerInMW = []
 
-        for name, pp in self.power_plants_list.items():
+        for pp in self.power_plants_list:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
@@ -122,7 +122,7 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
 
-        for id, pp in self.power_plants_list.items():
+        for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[pp.technology.name] != "Biogas" :
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
@@ -150,7 +150,7 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
 
-        for id, pp in self.power_plants_list.items():
+        for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[pp.technology.name] == "Biogas" :
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
@@ -177,7 +177,7 @@ class PrepareMarket(DefaultModule):
         InitialEnergyLevelInMWH = []
         InstalledPowerInMW = []
         StorageType = []
-        for id, pp in self.power_plants_list.items():
+        for  pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
                 ChargingEfficiency.append(pp.actualEfficiency)  # todo this should be charging efficiency specifically
