@@ -350,7 +350,9 @@
             "Solar_potential": {},
             "Transmission_capacities": {},
             "Generation_capacities": {},
-            "technologyPotentials": {}
+            "technologyPotentials": {
+                "encoding": "utf-32"
+            }
         },
         "table_types": {
             "Wind_potential": {

@@ -85,15 +85,6 @@ try:  # Try statement to always close DB properly
 
     # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
     if run_initialize_power_plants:
-        pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
-        # adding id to power plants
-        for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
-            pp_counter += 1
-            power_plant.id = (int(str(power_plant.commissionedYear) +
-                                  str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
-                                  str("{:05d}".format(pp_counter))
-                                  ))
         # adding id to candidate power plants
         pp_counter = 0
         for p, power_plant in reps.candidatePowerPlants.items():
@@ -104,12 +95,23 @@ try:  # Try statement to always close DB properly
                                   str("{:05d}".format(pp_counter))
                                   ))
             power_plant.capacity = 1  # See general description
+
+        pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
+        # adding id to power plants
+        for p, power_plant in reps.power_plants.items():
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
+            pp_counter += 1
+            power_plant.id = (int(str(power_plant.commissionedYear) +
+                                  str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
+                                  str("{:05d}".format(pp_counter))
+                                  ))
+        # saving ids
         spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
-        print('Staged ID and status')
-    else:
+        print('Staged IDs')
+    else: # if the id initialization was done, it is not needed to store it again.
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick )
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
 
     spinedb_reader_writer.commit('Initialize all module import structures')

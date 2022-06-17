@@ -21,7 +21,7 @@ from domain.contract import *
 from domain.loans import Loan
 import globalNames
 from domain.bids import Bid
-
+from numpy import mean
 
 class Repository:
     """
@@ -155,6 +155,15 @@ class Repository:
     #     return annuity
 
     # PowerPlants
+    def get_id_last_power_plant(self) -> int:
+        # the last 5 numbers are the power plant list
+        return sorted([str(i.id)[-4:] for i in self.power_plants.values()])[-1]
+
+    def get_average_profits(self, powerplants):
+        return mean([pp.get_Profit()for pp in powerplants])
+
+    def get_candidate_power_plants_of_technologies(self, technologies) -> List[CandidatePowerPlant]:
+        return [i for i in self.candidatePowerPlants.values() if i.technology in technologies]
 
     def get_investable_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values()
@@ -163,7 +172,7 @@ class Repository:
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
-    def calculateCapacityOfExpectedOperationalCapacityperTechnology(self, technology, tick):
+    def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, tick):
         expectedOperationalcapacity = 0
         plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
         for plant in plantsoftechnology:

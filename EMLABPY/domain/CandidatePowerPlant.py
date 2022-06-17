@@ -46,15 +46,13 @@ class CandidatePowerPlant(PowerPlant):
     def get_technology(self, time):
         return self.technology
 
-    def get_Profit(self):
-        if not self.Profit:
-            Profit = self.ReceivedMoneyinEUR - self.CostsinEUR
-        return Profit
+
 
     def setInvestedCapital(self):
         pass
 
-    def specifyTemporaryPowerPlant(self, tick, energyProducer, location ):
+    def specifyTemporaryPowerPlant(self, tick, energyProducer, location):
+
         self.setOwner(energyProducer)
         self.setLocation(location)
         self.setConstructionStartTime()

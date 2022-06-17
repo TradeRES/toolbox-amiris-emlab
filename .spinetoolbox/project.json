@@ -119,6 +119,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/capacity_mechanism.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/define_amiris_results_year.json"
                 }
             ],
             "Importer": [
@@ -632,6 +637,39 @@
                     "power plants importer",
                     "left"
                 ]
+            },
+            {
+                "name": "from decommission to years",
+                "from": [
+                    "decommission",
+                    "right"
+                ],
+                "to": [
+                    "years",
+                    "left"
+                ]
+            },
+            {
+                "name": "from years to specify year",
+                "from": [
+                    "years",
+                    "right"
+                ],
+                "to": [
+                    "specify year",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to specify year",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "specify year",
+                    "right"
+                ]
             }
         ],
         "jumps": [
@@ -1038,7 +1076,7 @@
             "type": "Tool",
             "description": "",
             "x": -780.2236333806927,
-            "y": -262.16918900632913,
+            "y": -264.39509596851013,
             "specification": "AMIRIS wrapper",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1184,7 +1222,7 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -411.54695320400754,
+            "x": -409.32104624182654,
             "y": -279.9603842940392,
             "url": {
                 "dialect": "sqlite",
@@ -1226,6 +1264,34 @@
                 }
             ],
             "db_references": []
+        },
+        "years": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -974.9472494352977,
+            "y": -102.39172026032807,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/years.csv"
+                }
+            ],
+            "db_references": []
+        },
+        "specify year": {
+            "type": "Tool",
+            "description": "",
+            "x": -790.1969715742714,
+            "y": -113.5212550712333,
+            "specification": "define AMIRIS results year",
+            "execute_in_work": true,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                }
+            ]
         }
     }
 }

@@ -139,6 +139,11 @@ class PowerPlant(ImportObject):
         capacity = self.get_actual_nominal_capacity()
         return per_mw * capacity
 
+    def get_Profit(self):
+        if not self.Profit:
+            Profit = self.ReceivedMoneyinEUR - self.CostsinEUR
+        return Profit
+
     def get_actual_nominal_capacity(self):
         return self.capacity
         # if self.capacity == 0:

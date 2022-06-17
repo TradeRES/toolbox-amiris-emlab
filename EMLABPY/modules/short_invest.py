@@ -1,16 +1,9 @@
-from domain.energyproducer import EnergyProducer
-from domain.technologies import PowerGeneratingTechnology
 from modules.Invest import Investmentdecision
-from modules.defaultmodule import DefaultModule
 import numpy_financial as npf
-
-from domain.actors import *
 from util.repository import Repository
-from helpers.helper_functions import get_current_ticks
-import sys
 import logging
-import pandas as pd
 
+import pandas as pd
 
 class ShortInvestmentdecision(Investmentdecision):
     """
@@ -19,86 +12,103 @@ class ShortInvestmentdecision(Investmentdecision):
     """
 
     def __init__(self, reps: Repository):
-        super().__init__( reps)
-        self.quickInvestabletechnologies = ["PV_utility_systems", "PV_residential", "PV_commercial_systems", "Lithium_ion_battery"]
+        super().__init__(reps)
+        self.quickInvestabletechnologies = ["PV_utility_systems",
+                                            "Lithium_ion_battery"]  # later add  "PV_residential", "PV_commercial_systems",
 
     def act(self):
         self.setAgent("Producer1")
         print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
         # TODO if there would be more agents, the future capacity should be analyzed per agent
-        operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name, self.quickInvestabletechnologies)
+        # checks if the technology technical limits are passed
+        # if not it removes the technology from the list quick Investabletechnologies
+        # and dont proceed with the returns calculation
 
-        PowerPlantstoInvest = []
-        technologies = []
-        returns = []
+        for quick_technology in self.quickInvestabletechnologies:
+            self.calculateandCheckFutureCapacityExpectation(self.reps.power_generating_technologies[quick_technology])
 
-        for powerplant in operationalInvestablePlants:
-            # checks if the technology can be invested and if not it removes the technology from the investable technology list quick Investabletechnologies
-            self.calculateandCheckFutureCapacityExpectation(powerplant.technology)
-            # for now the returns calculations are done considering that future years will have the profit of the current year
+            # note that the list is updated in the step before!!!!!!!!!!!
+        technologies_highreturns =[]
+        for quick_technology in self.quickInvestabletechnologies:
+            operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,
+                                                                                                       quick_technology)
+            # if the technology can be invested, then calculate the returns
             # TODO the profit should consider the past year profits?
-            returns.append( self.calculatePowerPlantReturns(powerplant, self.agent))
-            technologies.append(powerplant.technology.name)
+            average_profit = self.reps.get_average_profits(operationalInvestablePlants)
+            if pd.isna(average_profit):
+                pass
+            else:
+                cashflow = self.getProjectCashFlow(self.reps.power_generating_technologies[quick_technology], average_profit,  self.agent)
+                pp_return_per_tech = self.irr(cashflow)
+                if pp_return_per_tech > self.reps.short_term_investment_minimal_irr:
+                    technologies_highreturns.append(pp_return_per_tech)
 
-        df = pd.DataFrame( technologies,returns, columns=["Technologies", "Returns"])
-        sorted = df.groupby('Technologies').mean().sort_values(by=['Returns'])
-        filteredReturns = sorted.drop(sorted[sorted.value < self.reps.short_term_investment_minimal_irr].index)
-        technologies = filteredReturns.index.tolist()
-        # TODO         newpowerplantname
-        PowerPlantstoInvest.append([])
-
-        newpowerplantname = 1
-        if len(PowerPlantstoInvest) > 0:
+        if len(technologies_highreturns) > 0:
+            PowerPlantstoInvest = self.reps.get_candidate_power_plants_of_technologies(technologies_highreturns)
             for planttoInvest in PowerPlantstoInvest:
-                newplant = self.invest(planttoInvest, newpowerplantname)
-                self.reps.dbrw.stage_new_power_plant(newplant)
+                new_plant = self.invest(planttoInvest)
+                self.reps.dbrw.stage_new_power_plant(new_plant)
+        else:
+            print("no Investment in quick technologies ")
 
     def calculateandCheckFutureCapacityExpectation(self, technology):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
         # in contrast to long term investment decision, this is calculated for the current year
-        self.expectedInstalledCapacityOfTechnology = \
-            self.reps.calculateCapacityOfExpectedOperationalCapacityperTechnology(technology,
-                                                                                  self.reps.current_tick)
-        technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology)
-        # TODO:This part considers that if technology is not covered by the subsidies, the government would add subsidies?....
-        # in contrast to long term investment decision, this is calculated for the current year
-        if technologyTarget is not None:
-            technologyTargetCapacity = self.reps.trends[str(technologyTarget)].getValue(self.reps.current_tick)
-            if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology):
-                self.expectedInstalledCapacityOfTechnology = technologyTargetCapacity
-
+        self.expectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(
+            technology,
+            self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)
         self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
-            technology)
+            technology.name)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
-        self.capacityInPipeline = self.reps.calculateCapacityOfPowerPlantsInPipeline()
 
         # the check is not done for candidate power plant, but for installed power plants
-        if (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) and self.capacityOfTechnologyInPipeline > 9000:
-            logging.info(" will not invest in {} technology because there's too much capacity in the pipeline", self.technology)
-            # TODO: if the candidate power plants would be parallellized, setting this technology as not investable could that technology simulation
-            self.quickInvestabletechnologies.remove(technology)
-            return
-            # TODO: add the maxExpected Load amd agent cash
+        if (
+                self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) or self.capacityOfTechnologyInPipeline > 9000:
+            logging.info(" will not invest in '%s  technology because there's too much capacity in the pipeline",
+                         self.technology)
+            self.quickInvestabletechnologies.remove(technology.name)
+            return False
+        elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit  :
+            logging.info(" will not invest in '%s  technology because the capacity limits are achieved", technology)
+            self.quickInvestabletechnologies.remove(technology.name)
+            return False
         else:
-            logging.info(technology, " passes capacity limit.  will now calculate financial viability.")
+            logging.info( " '%s passes capacity limit.  will now calculate financial viability.", technology)
+            return True
+            # TODO: add the maxExpected Load amd agent cash
 
-    def calculatePowerPlantReturns(self, powerplant, agent):
-        technology = powerplant.technology
-        totalInvestment = self.getActualInvestedCapitalperMW(powerplant, technology) * powerplant.capacity
-        powerplant.InvestedCapital = totalInvestment
-        depriaciationTime = technology.depreciation_time
+    def irr(self, investmentCashFlow):
+        print(investmentCashFlow)
+        IRR = npf.irr(investmentCashFlow)
+        if pd.isna(IRR):
+            return -100
+        else:
+             return round(IRR, 4)
+
+
+    # Todo change this to the last 3 years profit ????
+    def getProjectCashFlow(self, technology ,average_profit, agent):
+        totalInvestment = self.getActualInvestedCapitalperMW( technology)
+        depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
-        # interestRate = technology.interest_rate
         buildingTime = technology.expected_leadtime
-        operatingProfit = powerplant.get_Profit() # Todo change this to the last 3 years????
-        equalTotalDownPaymentInstallment = (totalInvestment* agent.debtRatioOfInvestments) / buildingTime
-        restPayment = totalInvestment* (1-agent.debtRatioOfInvestments)/ technical_lifetime
-        investmentCashFlow = [0 for i in range(depriaciationTime + buildingTime)]
+        # get average profit per technology
+        operatingProfit = average_profit
+        equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
+        restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / technical_lifetime
+        investmentCashFlow = [0 for i in range(technical_lifetime + buildingTime)]
 
         for i in range(0, buildingTime):
             investmentCashFlow[i] = - equalTotalDownPaymentInstallment
         for i in range(buildingTime, technical_lifetime + buildingTime):
             investmentCashFlow[i] = operatingProfit - restPayment
+        return  investmentCashFlow
 
-        internalRateReturn = npf.irr(investmentCashFlow, len(investmentCashFlow))
-        return internalRateReturn
+
+        # returns.append(pp_returns)
+        # technologies.append(powerplant.technology.name)
+        # # calculate returns per technology
+        # df = pd.DataFrame(technologies, returns, columns=["Technologies", "Returns"])
+        # sorted = df.groupby('Technologies').mean().sort_values(by=['Returns'])
+        # filteredReturns = sorted.drop(sorted[sorted.value < self.reps.short_term_investment_minimal_irr].index)
+        # technologies_highreturns = filteredReturns.index.tolist()
