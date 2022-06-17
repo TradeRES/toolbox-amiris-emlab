@@ -25,7 +25,7 @@ class SpineDBReaderWriter:
         self.db = SpineDB(db_urls[0])  # the first is always emlab
 
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
-        self.Candidate_powerplant_installed_classname = 'CandidatePowerPlants'
+        self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.bids_classname = 'Bids'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
@@ -130,9 +130,6 @@ class SpineDBReaderWriter:
                                      ['plant', 'market', 'price', 'amount', 'bidder', 'accepted_amount',
                                       'status', "tick"])
 
-
-
-
     def stage_init_power_plants_list(self, iteration):
         self.stage_object_class(self.candidate_power_plants_list_classname)
         self.stage_object_parameters(self.candidate_power_plants_list_classname,
@@ -181,12 +178,12 @@ class SpineDBReaderWriter:
                 [(self.powerplant_installed_classname, power_plant_name, 'Id', values.id, '0')])
 
     def stage_candidate_power_plant_id(self, candidate_power_plants):
-        self.stage_object_class(self.Candidate_powerplant_installed_classname)
-        self.stage_object_parameters(self.Candidate_powerplant_installed_classname, ["Id"])
+        self.stage_object_class(self.candidate_powerplant_installed_classname)
+        self.stage_object_parameters(self.candidate_powerplant_installed_classname, ["Id"])
         for power_plant_name, values in candidate_power_plants.items():
-            self.stage_object(self.Candidate_powerplant_installed_classname, power_plant_name)
+            self.stage_object(self.candidate_powerplant_installed_classname, power_plant_name)
             self.db.import_object_parameter_values(
-                [(self.Candidate_powerplant_installed_classname, power_plant_name, 'Id', values.id, '0')])
+                [(self.candidate_powerplant_installed_classname, power_plant_name, 'Id', values.id, '0')])
 
     def stage_init_power_plant_structure(self):
         self.stage_object_class(self.powerplant_installed_classname)
@@ -195,22 +192,28 @@ class SpineDBReaderWriter:
                                       "Technology"])
 
     def stage_new_power_plant(self, powerplant):
-        object_name = powerplant.name
+        object_name = str(powerplant.name)
         self.stage_object(self.powerplant_installed_classname, object_name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, object_name,
-                                           [('Age', powerplant.age),
+                                           [("Id", object_name),
+                                            ('Age', powerplant.age),
                                             ('Efficiency', powerplant.actualEfficiency),
                                             ('Capacity', powerplant.capacity),
                                             ('Location', powerplant.location),
                                             ('Owner', powerplant.owner.name),
                                             ('Status', powerplant.status),
-                                            ('Technology', powerplant.technology.name)],
-                                           '0')
+                                            ('Technology', powerplant.technology.name)], "0")
+
+
+    def stage_candidate_pp_investment_status_structure(self):
+        self.stage_object_class(self.candidate_powerplant_installed_classname)
+        self.stage_object_parameter(self.candidate_powerplant_installed_classname, 'ViableInvestment')
+
 
     def stage_candidate_pp_investment_status(self, candidatepowerplant):
         object_name = candidatepowerplant.name
-        self.stage_object(self.candidate_power_plants_list_classname, object_name)
-        self.stage_object_parameter_values(self.candidate_power_plants_list_classname, object_name,
+        self.stage_object(self.candidate_powerplant_installed_classname, object_name)
+        self.stage_object_parameter_values(self.candidate_powerplant_installed_classname, object_name,
                                            [('ViableInvestment', candidatepowerplant.viableInvestment)], '0')
 
     def stage_init_power_plants_status(self):
@@ -355,13 +358,19 @@ class SpineDBReaderWriter:
             self.stage_object_parameter(object_class, object_parameter)
 
     def stage_object(self, object_class: str, object_name: str):
+        """"
+        object name has to be a string!!!!
+        """
+
         self.stage_objects([(object_class, object_name)])
+
 
     def stage_objects(self, arr_of_tuples: list):
         self.db.import_objects(arr_of_tuples)
 
     def stage_object_parameter_values(self,
                                       object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
+
         import_arr = [(object_class_name, object_name, i[0], i[1], str(alternative)) for i in arr_of_tuples]
         self.db.import_object_parameter_values(import_arr)
 

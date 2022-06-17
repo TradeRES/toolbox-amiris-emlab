@@ -19,7 +19,7 @@ class CandidatePowerPlant(PowerPlant):
         self.viableInvestment = True # initially all candidate power plants should be investable
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
-        self.capacity = 0
+        self.capacity = 1 # all power plants are first tested for a capacity of 1
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True

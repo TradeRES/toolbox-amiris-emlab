@@ -16,6 +16,9 @@ class ShortInvestmentdecision(Investmentdecision):
         self.quickInvestabletechnologies = ["PV_utility_systems",
                                             "Lithium_ion_battery"]  # later add  "PV_residential", "PV_commercial_systems",
 
+        reps.dbrw.stage_init_power_plant_structure()
+        reps.dbrw.stage_candidate_pp_investment_status_structure()
+
     def act(self):
         self.setAgent("Producer1")
         print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
@@ -47,7 +50,9 @@ class ShortInvestmentdecision(Investmentdecision):
             PowerPlantstoInvest = self.reps.get_candidate_power_plants_of_technologies(technologies_highreturns)
             for planttoInvest in PowerPlantstoInvest:
                 new_plant = self.invest(planttoInvest)
+
                 self.reps.dbrw.stage_new_power_plant(new_plant)
+
         else:
             print("no Investment in quick technologies ")
 
