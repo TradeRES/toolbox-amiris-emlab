@@ -7,6 +7,13 @@ system. EMLabpy is based in EMLab and is rewritten in a modular way into python 
 
 The integration is best illustrated with following diagram.
 ![](data/workflow.jpg)
+# How to run it
+To run EMLabpy from the spinetoolbox, it needs to be packed as a python module. 
+To do so, run the following commands in the toolbox-amiris-emlab folder:
+
+python setup.py install
+
+python -m pip install .
 
 # Folder structure
 

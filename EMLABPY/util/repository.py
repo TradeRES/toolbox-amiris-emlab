@@ -19,7 +19,7 @@ from domain.trends import *
 from domain.zones import *
 from domain.contract import *
 from domain.loans import Loan
-import globalNames
+from util import globalNames
 from domain.bids import Bid
 from numpy import mean
 

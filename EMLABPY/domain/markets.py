@@ -8,20 +8,15 @@ from domain.import_object import *
 from spinedb_api import Map
 import pandas as pd
 
+from util import globalNames
+
+
 class Market(EMLabAgent):
     """
     The parent class of all markets.
     """
     def __init__(self, name):
         super().__init__(name)
-    #     self.cash = 0
-    #
-    # def getCash(self):
-    #     return self.cash
-    #
-    # def setCash(self, cash):
-    #     self.cash = cash
-
 
 class ElectricitySpotMarket(Market):
     def __init__(self, name):
@@ -68,7 +63,7 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            self.hourlyDemand = pd.read_csv(str(parameter_value),  delimiter= ";", header=None )
+            self.hourlyDemand = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None )
 
     def peakLoadbyZoneMarket(self):
         return max(self.hourlyDemand)

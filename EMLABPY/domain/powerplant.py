@@ -8,7 +8,7 @@ from random import random
 import logging
 
 from domain.loans import Loan
-import globalNames
+from util import globalNames
 
 class PowerPlant(ImportObject):
     def __init__(self, name):
@@ -239,8 +239,8 @@ class PowerPlant(ImportObject):
         else:
             print("power plant dont have an age ", self.name)
 
-    def addoneYeartoAge(self):
-        self.age += 1
+
+
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()

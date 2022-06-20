@@ -380,17 +380,6 @@
                 ]
             },
             {
-                "name": "from increment Clock to EmlabDB",
-                "from": [
-                    "increment Clock",
-                    "left"
-                ],
-                "to": [
-                    "EmlabDB",
-                    "right"
-                ]
-            },
-            {
                 "name": "from Traderes Excel to traderesExcel to DB",
                 "from": [
                     "Traderes Excel",
@@ -733,7 +722,7 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import sys\ncounter = int(sys.argv[1])  # Loop counter is supplied as first command line argument\nexit(0 if counter < 3 else 1)  # Exit code 0 = continue, anything else = break"
+                    "script": "import pandas as pd\nimport os\nyearspath = os.path.join(os.path.join(os.getcwd()),\"data\\\\years.csv\")\nyears = pd.read_csv(yearspath, delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(sys.argv[1])  # Loop counter is supplied as first \nexit(0 if current_year >= final_year else 1)\n"
                 },
                 "cmd_line_args": []
             }
@@ -1072,24 +1061,6 @@
                 }
             ]
         },
-        "increment Clock": {
-            "type": "Tool",
-            "description": "",
-            "x": -941.7473327360062,
-            "y": -635.2982388188341,
-            "specification": "increment clock",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB"
-                },
-                {
-                    "type": "literal",
-                    "arg": "increment_clock"
-                }
-            ]
-        },
         "Traderes Excel": {
             "type": "Data Connection",
             "description": "",
@@ -1132,10 +1103,10 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -1148.4389955561296,
-            "y": -111.89588661390158,
+            "x": -1150.3402323956236,
+            "y": -113.96198054905446,
             "specification": "Decommission",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -1261,8 +1232,8 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1234.96520941889,
-            "y": 125.93843762717896,
+            "x": -1453.9711665450955,
+            "y": 92.8809346647329,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1325,8 +1296,8 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -974.9472494352977,
-            "y": -102.39172026032807,
+            "x": -948.8810423788497,
+            "y": -29.778714888794084,
             "file_references": [
                 {
                     "type": "path",

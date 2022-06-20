@@ -1,4 +1,5 @@
 from domain.powerplant import *
+
 import logging
 
 class CandidatePowerPlant(PowerPlant):

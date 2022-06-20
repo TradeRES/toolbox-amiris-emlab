@@ -9,11 +9,13 @@ Jim Hommes - 7-4-2021
 """
 import sys
 from util.spinedb import SpineDB
-import globalNames
+from util import globalNames
 import csv
-
+import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
+grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+print("grandparentpath", grandparentpath)
 
 def reset_candidate_investable_status():
     class_name = "CandidatePowerPlants"
@@ -22,15 +24,17 @@ def reset_candidate_investable_status():
         db_emlab.import_object_parameter_values([(class_name, candidate["object_name"] , "ViableInvestment",  bool(1) , '0')])
 
 def update_years_file(current_year , lookAhead, final_year):
-    filename = globalNames.years_path
     fieldnames = ['current', 'future', "final"]
-    with open(filename, 'w') as csvfile:
+    #grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+    file =  os.path.join(grandparentpath, globalNames.years_path)
+    with open(file, 'w') as csvfile:
         csvwriter = csv.writer(csvfile,delimiter ='/')
         # csv.DictWriter(csvfile, fieldnames=fieldnames)
         csvwriter.writerow([current_year, (current_year + lookAhead), final_year])
 
 def reset_invest_iteration():
-    with open(globalNames.continue_path, 'w') as csvfile:
+    file =  os.path.join(grandparentpath, globalNames.continue_path)
+    with open(file, 'w') as csvfile:
         fieldnames = ['continue']
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow([True])
@@ -41,6 +45,15 @@ try:
     object_parameter_value_name = 'SimulationTick'
 
     if len(sys.argv) >= 2:
+        lookAhead = next(int(i['parameter_value']) for i
+                         in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
+                         if i['parameter_name'] == "Look Ahead")
+        final_year = next(int(i['parameter_value']) for i
+                          in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
+                          if i['parameter_name'] == "End Year")
+        reset_candidate_investable_status()
+        reset_invest_iteration()
+
         if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')
             db_emlab.import_object_classes([class_name])
@@ -52,8 +65,8 @@ try:
                              if i['parameter_name'] == 'Start Year')
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
-            reset_candidate_investable_status()
 
+            update_years_file(StartYear , lookAhead, final_year)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
@@ -66,12 +79,7 @@ try:
             previous_tick = next(int(i['parameter_value']) for i
                                  in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                  if i['parameter_name'] == object_parameter_value_name)
-            lookAhead = next(int(i['parameter_value']) for i
-                             in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
-                             if i['parameter_name'] == "Look Ahead")
-            final_year = next(int(i['parameter_value']) for i
-                             in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
-                             if i['parameter_name'] == "End Year")
+
             new_tick = step + previous_tick
             print('Incrementing Clock to ' + str(new_tick))
 
@@ -80,9 +88,7 @@ try:
             updated_year = step + Current_year
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
-            reset_candidate_investable_status()
             update_years_file(updated_year , lookAhead, final_year)
-            reset_invest_iteration()
             db_emlab.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
 

@@ -60,7 +60,9 @@ emlabpy/modules/strategicreserve.py
 emlabpy/modules/targetInvestment.py
 emlabpy/modules/test.py
 emlabpy/util/__init__.py
+emlabpy/util/clock.py
 emlabpy/util/defineResultsYear.py
+emlabpy/util/globalNames.py
 emlabpy/util/repository.py
 emlabpy/util/spinedb.py
 emlabpy/util/spinedb_reader_writer.py

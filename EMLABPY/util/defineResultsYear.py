@@ -1,13 +1,17 @@
 import sys
 from util.spinedb import SpineDB
 import pandas as pd
-import globalNames
+from util import globalNames
+import os
 
-years = pd.read_csv(globalNames.years_path, delimiter ='/')
+grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+yearspath = os.path.join(grandparentpath, globalNames.years_path)
+years = pd.read_csv(yearspath, delimiter ='/')
 current_year = years.columns[0]
 future_year = years.columns[1]
 db_url = sys.argv[1]
 db_amiris = SpineDB(db_url)
+
 
 try:
     class_name = "PowerPlantDispatchPlans"

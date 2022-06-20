@@ -1,3 +1,5 @@
+import os
+
 power_plant_dispatch_plan_status_accepted = 'Accepted'
 power_plant_dispatch_plan_status_failed = 'Failed'
 power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
@@ -17,7 +19,11 @@ simulated_prices = "simulatedPrice"
 
 modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "run_strategic_reserve"]
 
-amiris_results_path = '.\\amiris_workflow\\output\\amiris_results.csv'
-continue_path = '.\\amiris_workflow\\output\\continue.csv'
-years_path = ".\\data\\years.csv"
 
+# source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
+
+continue_path = 'amiris_workflow\\output\\continue.csv'
+years_path = "data\\years.csv"
+parentpath =  os.path.join(os.path.dirname(os.getcwd()))
+load_path = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
+amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')

@@ -1,7 +1,7 @@
 from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.markets import ElectricitySpotMarket
-import globalNames
+from util import globalNames
 from domain.cashflow import *
 
 

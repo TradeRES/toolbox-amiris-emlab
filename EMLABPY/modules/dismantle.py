@@ -1,4 +1,4 @@
-import globalNames
+from util import globalNames
 from modules.defaultmodule import DefaultModule
 from util.repository import Repository
 import logging
@@ -46,8 +46,8 @@ class Dismantle(DefaultModule):
 
 
     def add_one_year_to_age(self):
-        for powerplant in self.reps.power_plants():
-            powerplant.addoneYeartoAge()
+        for powerplantname, powerplant in self.reps.power_plants.items():
+            powerplant.age += 1
 
 
     def calculateAveragePastOperatingProfit(self, plant, horizon):
@@ -70,14 +70,13 @@ class Dismantle(DefaultModule):
         for powerplantname, powerplant in self.reps.power_plants.items():
             technology = self.reps.power_generating_technologies[powerplant.technology.name]
             if powerplant.age > technology.expected_lifetime:
-                print("plant to be decommisioned age", powerplant.age, "lifetime ", technology.expected_lifetime)
-                powerplant.status = self.reps.power_plant_status_to_be_decommissioned
+                powerplant.status = globalNames.power_plant_status_to_be_decommissioned
             elif powerplant.commissionedYear <= self.reps.current_year:
-                powerplant.status = self.reps.power_plant_status_operational
+                powerplant.status = globalNames.power_plant_status_operational
                 if powerplant.commissionedYear == self.reps.current_year:
                     powerplant.age = 0
             elif powerplant.commissionedYear > self.reps.current_year:
-                powerplant.status = self.reps.power_plant_status_inPipeline
+                powerplant.status = globalNames.power_plant_status_inPipeline
             else:
                 print("status not set", powerplant.name)
 

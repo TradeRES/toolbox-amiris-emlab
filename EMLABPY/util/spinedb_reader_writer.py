@@ -7,8 +7,7 @@ Jim Hommes - 25-3-2021
 import logging
 from spinedb_api import Map
 from twine.repository import Repository
-
-import globalNames
+from util import globalNames
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
 from util.repository import *

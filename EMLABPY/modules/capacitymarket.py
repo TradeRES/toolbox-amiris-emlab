@@ -7,7 +7,7 @@ Sanchez 31-05-2022
 import json
 import logging
 
-import globalNames
+from util import globalNames
 from domain.cashflow import CashFlow
 from modules.marketmodule import MarketModule
 from util.repository import Repository
