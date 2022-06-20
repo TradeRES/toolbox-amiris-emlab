@@ -13,6 +13,7 @@ from helpers.helper_functions import get_current_ticks
 import sys
 import logging
 import math
+import csv
 
 
 class Investmentdecision(DefaultModule):
@@ -35,7 +36,6 @@ class Investmentdecision(DefaultModule):
         self.marketInformation = None
         self.agent = None
         self.budget_year0 = 0
-        self.amiris_results_path = '.\\amiris_workflow\\output\\amiris_results.csv'
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
@@ -85,6 +85,8 @@ class Investmentdecision(DefaultModule):
                     return
                 else:
                     logging.info("all power plants are unprofitable")
+                    self.stop_iteration()
+                    self.agent.readytoInvest = False
             else:
                 logging.info("all technologies are unprofitable")
                 # todo stop iteration in spinetoolbox
@@ -240,11 +242,19 @@ class Investmentdecision(DefaultModule):
 
     # Returns the Node Limit by Technology or the max double numer if none was found
     def read_csv_results_and_filter_candidate_plants(self):
-        df = pd.read_csv(self.amiris_results_path)
+        df = pd.read_csv(globalNames.amiris_results_path)
         df['commissionyear'] = df['identifier'].astype(str).str[0:4]
+        # the candidate power plants wer given an id of 9999.
+        # Only these candidate power plants need to be analyzed
         results = df[df['commissionyear'] == str(9999)]
         self.reps.update_candidate_plant_results(results)
         return
+
+    def stop_iteration(self):
+        with open(globalNames.continue_path, 'w') as csvfile:
+            fieldnames = ['continue']
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow([False])
 
     def calculateNodeLimit(self):
         pgtLimit = getReps().findOneByTechnologyAndNode(self.technology, self.node)

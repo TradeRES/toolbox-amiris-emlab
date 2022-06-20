@@ -17,7 +17,7 @@ simulated_prices = "simulatedPrice"
 
 modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "run_strategic_reserve"]
 
-
-
-years_path = "data\\years.csv"
+amiris_results_path = '.\\amiris_workflow\\output\\amiris_results.csv'
+continue_path = '.\\amiris_workflow\\output\\continue.csv'
+years_path = ".\\data\\years.csv"
 

@@ -1,8 +1,9 @@
 import sys
 from util.spinedb import SpineDB
 import pandas as pd
-filename = "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\data\\years.csv"
-years = pd.read_csv(filename, delimiter ='/')
+import globalNames
+
+years = pd.read_csv(globalNames.years_path, delimiter ='/')
 current_year = years.columns[0]
 future_year = years.columns[1]
 db_url = sys.argv[1]

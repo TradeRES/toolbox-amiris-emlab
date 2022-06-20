@@ -124,6 +124,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/define_amiris_results_year.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/clock.json"
                 }
             ],
             "Importer": [
@@ -562,17 +567,6 @@
                 ]
             },
             {
-                "name": "from import AMIRIS to Capacity Mechanism",
-                "from": [
-                    "import AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
                 "name": "from BestInvestment to Next year",
                 "from": [
                     "BestInvestment",
@@ -670,6 +664,39 @@
                     "specify year",
                     "right"
                 ]
+            },
+            {
+                "name": "from EmlabDB2 to Next year",
+                "from": [
+                    "EmlabDB2",
+                    "left"
+                ],
+                "to": [
+                    "Next year",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from specify year to Capacity Mechanism",
+                "from": [
+                    "specify year",
+                    "right"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import AMIRIS to specify year",
+                "from": [
+                    "import AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "specify year",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -685,7 +712,28 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "exit(1)"
+                    "script": "import sys\ncontinue_bool = int(sys.argv[1])  # Loop counter is supplied as first command line argument\nprint(continue_bool)\nexit(1 if continue_bool == True else 0)  # Exit code 0 = continue, anything else = break"
+                },
+                "cmd_line_args": [
+                    {
+                        "type": "resource",
+                        "arg": "amiris_workflow/output/continue.csv"
+                    }
+                ]
+            },
+            {
+                "name": "from Next year to decommission",
+                "from": [
+                    "Next year",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
+                    "left"
+                ],
+                "condition": {
+                    "type": "python-script",
+                    "script": "import sys\ncounter = int(sys.argv[1])  # Loop counter is supplied as first command line argument\nexit(0 if counter < 3 else 1)  # Exit code 0 = continue, anything else = break"
                 },
                 "cmd_line_args": []
             }
@@ -860,8 +908,8 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": -226.45869390767666,
-            "y": 225.59672926576837,
+            "x": -208.65532418499967,
+            "y": 222.25859744276644,
             "specification": "Best Investment",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -930,8 +978,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1125.3938811516662,
-            "y": -398.87229167629886,
+            "x": -1127.4821324144714,
+            "y": -398.8722916762989,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -987,10 +1035,10 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -981.3746071262995,
-            "y": -262.12521747240146,
+            "x": -914.5505667165243,
+            "y": -389.5085445035352,
             "specification": "Prepare market",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -1075,8 +1123,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -780.2236333806927,
-            "y": -264.39509596851013,
+            "x": -761.4293720154435,
+            "y": -391.77842299964396,
             "specification": "AMIRIS wrapper",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1109,7 +1157,7 @@
             "x": -343.66276242909964,
             "y": -28.478477802352202,
             "specification": "Short investments",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -1128,10 +1176,10 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -94.7358263468708,
-            "y": -39.219004177876776,
+            "x": -96.82407760967627,
+            "y": -39.21900417787677,
             "specification": "Prepare future market",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -1153,14 +1201,14 @@
             "x": 73.7613533019736,
             "y": 130.68993926848563,
             "specification": "Amiris future",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": []
         },
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -584.3447785448179,
-            "y": 219.85333323960913,
+            "x": -563.4622659167633,
+            "y": 171.8235541950833,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1178,7 +1226,7 @@
             "x": -550.8754621362611,
             "y": -22.80126803914385,
             "specification": "Capacity Mechanism",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -1197,8 +1245,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -601.3599211820633,
-            "y": -269.350042162505,
+            "x": -793.4790373601666,
+            "y": -248.46752953445028,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1213,11 +1261,20 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -148.76524607264508,
-            "y": 346.3054703873102,
-            "specification": "",
-            "execute_in_work": true,
-            "cmd_line_args": []
+            "x": -1234.96520941889,
+            "y": 125.93843762717896,
+            "specification": "clock",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "literal",
+                    "arg": "\"increment_clock\""
+                }
+            ]
         },
         "AMIRIS DB": {
             "type": "Data Store",
@@ -1285,7 +1342,7 @@
             "x": -790.1969715742714,
             "y": -113.5212550712333,
             "specification": "define AMIRIS results year",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",

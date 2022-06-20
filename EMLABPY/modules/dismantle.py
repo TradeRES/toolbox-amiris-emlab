@@ -18,7 +18,7 @@ class Dismantle(DefaultModule):
         self.set_powerplants_status()  # set status according to operational time
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
-        self.update_years_file()
+
 
 
     def decommision_by_age_and_profit(self):
@@ -86,12 +86,4 @@ class Dismantle(DefaultModule):
         print("     saving power plants status ...   ")
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
 
-    def update_years_file(self):
-        filename = globalNames.years_path
-        fieldnames = ['current', 'future']
-        with open(filename, 'w') as csvfile:
-            # creating a csv writer object
-            csvwriter = csv.writer(csvfile,delimiter ='/')
-            # csv.DictWriter(csvfile, fieldnames=fieldnames)
-            # writing the data rows
-            csvwriter.writerow([self.reps.current_year, (self.reps.current_year + self.reps.lookAhead)])
+

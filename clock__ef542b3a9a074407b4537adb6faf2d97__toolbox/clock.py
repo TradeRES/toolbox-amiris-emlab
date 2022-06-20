@@ -21,13 +21,13 @@ def reset_candidate_investable_status():
     for candidate in candidate_powerplants:
         db_emlab.import_object_parameter_values([(class_name, candidate["object_name"] , "ViableInvestment",  bool(1) , '0')])
 
-def update_years_file(current_year , lookAhead, final_year):
+def update_years_file(current_year , lookAhead):
     filename = globalNames.years_path
-    fieldnames = ['current', 'future', "final"]
+    fieldnames = ['current', 'future']
     with open(filename, 'w') as csvfile:
         csvwriter = csv.writer(csvfile,delimiter ='/')
         # csv.DictWriter(csvfile, fieldnames=fieldnames)
-        csvwriter.writerow([current_year, (current_year + lookAhead), final_year])
+        csvwriter.writerow([current_year, (current_year + lookAhead)])
 
 def reset_invest_iteration():
     with open(globalNames.continue_path, 'w') as csvfile:
@@ -69,9 +69,6 @@ try:
             lookAhead = next(int(i['parameter_value']) for i
                              in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
                              if i['parameter_name'] == "Look Ahead")
-            final_year = next(int(i['parameter_value']) for i
-                             in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
-                             if i['parameter_name'] == "End Year")
             new_tick = step + previous_tick
             print('Incrementing Clock to ' + str(new_tick))
 
@@ -81,7 +78,7 @@ try:
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
             reset_candidate_investable_status()
-            update_years_file(updated_year , lookAhead, final_year)
+            update_years_file(updated_year , lookAhead)
             reset_invest_iteration()
             db_emlab.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
