@@ -7,7 +7,9 @@
     "description": "initialize or increment clock",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [],
+    "outputfiles": [
+        "years.csv"
+    ],
     "cmdline_args": [],
     "execute_in_work": false,
     "includes_main_path": "../../../emlabpy/util",

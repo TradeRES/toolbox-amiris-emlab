@@ -50,7 +50,6 @@ class ShortInvestmentdecision(Investmentdecision):
             PowerPlantstoInvest = self.reps.get_candidate_power_plants_of_technologies(technologies_highreturns)
             for planttoInvest in PowerPlantstoInvest:
                 new_plant = self.invest(planttoInvest)
-
                 self.reps.dbrw.stage_new_power_plant(new_plant)
 
         else:

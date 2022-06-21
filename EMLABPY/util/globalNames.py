@@ -22,8 +22,10 @@ modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "r
 
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
 
-continue_path = 'amiris_workflow\\output\\continue.csv'
-years_path = "data\\years.csv"
-parentpath =  os.path.join(os.path.dirname(os.getcwd()))
+
+years_path = "years.csv"
+continue_path = 'continue.txt'
+#continue_path = os.path.join(parentpath, 'continue.txt')
+parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
 load_path = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')
