@@ -6,8 +6,9 @@ __maintainer__ = 'Felix Nitsch'
 __email__ = 'felix.nitsch@dlr.de'
 
 import sys
-
+import os
+print("current", os.getcwd())
 import ioproc.runners as run
-print("here")
+
 sys.path.append("../../")
 run.start()

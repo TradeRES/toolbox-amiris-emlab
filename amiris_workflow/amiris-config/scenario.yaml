@@ -45,11 +45,11 @@ Agents:
   Id: 6
   Type: MeritOrderForecaster
 - Attributes:
-    BlockSizeInMW: 0
+    BlockSizeInMW: 1
     Efficiency:
       Maximal: 0
       Minimal: 0
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     PortfolioBuildingOffsetInSeconds: 60
     Prototype:
       CyclingCostInEURperMW: 0.0
@@ -68,11 +68,11 @@ Agents:
   Id: 999917000061
   Type: ConventionalTrader
 - Attributes:
-    BlockSizeInMW: 0
+    BlockSizeInMW: 1
     Efficiency:
       Maximal: 0
       Minimal: 0
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     PortfolioBuildingOffsetInSeconds: 60
     Prototype:
       CyclingCostInEURperMW: 0.0
@@ -96,7 +96,7 @@ Agents:
       DischargingEfficiency: 0
       EnergyToPowerRatio: 0
       InitialEnergyLevelInMWH: 0
-      InstalledPowerInMW: 0
+      InstalledPowerInMW: 1
       SelfDischargeRatePerHour: 0.0
     ForecastRequestOffsetInSeconds: 22
     Strategy:
@@ -110,7 +110,7 @@ Agents:
   Type: StorageTrader
 - Attributes:
     EnergyCarrier: RunOfRiver
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     OpexVarInEURperMWH: .nan
     Set: RunOfRiver
     SupportInstrument: FIT
@@ -119,7 +119,7 @@ Agents:
   Type: VariableRenewableOperator
 - Attributes:
     EnergyCarrier: PV
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     OpexVarInEURperMWH: .nan
     Set: OtherPV
     SupportInstrument: FIT
@@ -128,7 +128,7 @@ Agents:
   Type: VariableRenewableOperator
 - Attributes:
     EnergyCarrier: WindOn
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     OpexVarInEURperMWH: 1.35
     Set: WindOn
     SupportInstrument: FIT
@@ -137,7 +137,7 @@ Agents:
   Type: VariableRenewableOperator
 - Attributes:
     EnergyCarrier: Other
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     OpexVarInEURperMWH: 0.0
     Set: Undefined
     YieldProfile: amiris-config/data/otherres.csv
@@ -145,7 +145,7 @@ Agents:
   Type: VariableRenewableOperator
 - Attributes:
     EnergyCarrier: WindOff
-    InstalledPowerInMW: 0
+    InstalledPowerInMW: 1
     OpexVarInEURperMWH: 2.7
     Set: WindOff
     SupportInstrument: FIT

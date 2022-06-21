@@ -773,7 +773,7 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1564.8279962228598,
+            "x": -1560.0463044871613,
             "y": 46.208346905852665,
             "specification": "Initialize clock",
             "execute_in_work": false,
@@ -817,8 +817,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -914.5505667165243,
-            "y": -389.5085445035352,
+            "x": -915.4966939326247,
+            "y": -389.5085445035351,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -869,8 +869,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -761.4293720154435,
-            "y": -391.77842299964396,
+            "x": -759.0385261475942,
+            "y": -393.4469095416189,
             "specification": "AMIRIS wrapper",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -878,8 +878,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -1155.1219241313222,
-            "y": -115.04742223986807,
+            "x": -1152.731078263473,
+            "y": -115.04742223986806,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -900,7 +900,7 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -343.66276242909964,
+            "x": -341.27191656125035,
             "y": -28.478477802352202,
             "specification": "Short investments",
             "execute_in_work": false,
@@ -969,7 +969,7 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -550.8754621362611,
+            "x": -548.4846162684119,
             "y": -22.80126803914385,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
@@ -991,7 +991,7 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -793.4790373601666,
+            "x": -791.0881914923173,
             "y": -248.46752953445028,
             "specification": "import amiris results",
             "cancel_on_error": false,
@@ -1007,7 +1007,7 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1382.0583129398287,
+            "x": -1377.2766212041302,
             "y": 32.961679183762094,
             "specification": "clock",
             "execute_in_work": false,
@@ -1085,14 +1085,18 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -790.1969715742714,
-            "y": -113.5212550712333,
+            "x": -787.8061257064221,
+            "y": -113.52125507123331,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
                     "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/emlabpy/years.csv"
                 }
             ]
         }

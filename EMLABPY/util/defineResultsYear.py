@@ -4,14 +4,16 @@ import pandas as pd
 from util import globalNames
 import os
 
-grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
-yearspath = os.path.join(grandparentpath, globalNames.years_path)
+# grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+# yearspath = os.path.join(grandparentpath, globalNames.years_path)
+
+db_url = sys.argv[1]
+db_amiris = SpineDB(db_url)
+yearspath = sys.argv[2]
+print(yearspath)
 years = pd.read_csv(yearspath, delimiter ='/')
 current_year = years.columns[0]
 future_year = years.columns[1]
-db_url = sys.argv[1]
-db_amiris = SpineDB(db_url)
-
 
 try:
     class_name = "PowerPlantDispatchPlans"
