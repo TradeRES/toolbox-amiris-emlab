@@ -215,50 +215,6 @@
         },
         "connections": [
             {
-                "name": "from fameSetup gas to Amiris Gas",
-                "from": [
-                    "fameSetup gas",
-                    "right"
-                ],
-                "to": [
-                    "Amiris Gas",
-                    "left"
-                ]
-            },
-            {
-                "name": "from run config gas to Amiris Gas",
-                "from": [
-                    "run config gas",
-                    "right"
-                ],
-                "to": [
-                    "Amiris Gas",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Amiris Gas to CombineResultsGas",
-                "from": [
-                    "Amiris Gas",
-                    "right"
-                ],
-                "to": [
-                    "CombineResultsGas",
-                    "left"
-                ]
-            },
-            {
-                "name": "from CombineResultsGas to amiris importer gas",
-                "from": [
-                    "CombineResultsGas",
-                    "right"
-                ],
-                "to": [
-                    "amiris importer gas",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabParameters to Import EMLAB Init",
                 "from": [
                     "EmlabParameters",
@@ -289,17 +245,6 @@
                 "to": [
                     "Config Importer",
                     "left"
-                ]
-            },
-            {
-                "name": "from Initialize Clock to EmlabDB",
-                "from": [
-                    "Initialize Clock",
-                    "left"
-                ],
-                "to": [
-                    "EmlabDB",
-                    "right"
                 ]
             },
             {
@@ -336,17 +281,6 @@
                 ]
             },
             {
-                "name": "from traderesLocal to fromTraderestoEmlab",
-                "from": [
-                    "traderesLocal",
-                    "right"
-                ],
-                "to": [
-                    "fromTraderestoEmlab",
-                    "left"
-                ]
-            },
-            {
                 "name": "from traderesCommon to Amiris to EmlabDB",
                 "from": [
                     "traderesCommon to Amiris",
@@ -354,28 +288,6 @@
                 ],
                 "to": [
                     "EmlabDB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from TraderesDB to convert_from_common_db_to_bb_db",
-                "from": [
-                    "TraderesDB",
-                    "right"
-                ],
-                "to": [
-                    "convert_from_common_db_to_bb_db",
-                    "left"
-                ]
-            },
-            {
-                "name": "from convert_from_common_db_to_bb_db to traderesLocal",
-                "from": [
-                    "convert_from_common_db_to_bb_db",
-                    "right"
-                ],
-                "to": [
-                    "traderesLocal",
                     "left"
                 ]
             },
@@ -398,17 +310,6 @@
                 ],
                 "to": [
                     "EmlabDB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Scenario_gas to run config gas",
-                "from": [
-                    "Scenario_gas",
-                    "right"
-                ],
-                "to": [
-                    "run config gas",
                     "left"
                 ]
             },
@@ -442,17 +343,6 @@
                 ],
                 "to": [
                     "Prepare Data Amiris",
-                    "left"
-                ]
-            },
-            {
-                "name": "from decommission to EmlabDB",
-                "from": [
-                    "decommission",
-                    "right"
-                ],
-                "to": [
-                    "EmlabDB",
                     "left"
                 ]
             },
@@ -622,17 +512,6 @@
                 ]
             },
             {
-                "name": "from decommission to years",
-                "from": [
-                    "decommission",
-                    "right"
-                ],
-                "to": [
-                    "years",
-                    "left"
-                ]
-            },
-            {
                 "name": "from years to specify year",
                 "from": [
                     "years",
@@ -686,6 +565,39 @@
                     "specify year",
                     "left"
                 ]
+            },
+            {
+                "name": "from EmlabDB to decommission",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
+                    "right"
+                ]
+            },
+            {
+                "name": "from Initialize Clock to Next year",
+                "from": [
+                    "Initialize Clock",
+                    "right"
+                ],
+                "to": [
+                    "Next year",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to Initialize Clock",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "Initialize Clock",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -701,7 +613,7 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\n#print(\"current\",os.getcwd())\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(0 if continue_str == \"False\" else 1)\n\n"
+                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\n#print(\"current\",os.getcwd())\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
                 },
                 "cmd_line_args": [
                     {
@@ -722,12 +634,12 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nprint(sys.argv[1])  # Loop counter is supplied as first \nyears = pd.read_csv(sys.argv[1], delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year, final_year)\nprint(type(current_year))\nexit(0 if current_year >= final_year else 1)"
+                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nprint(sys.argv[1])  # Loop counter is supplied as first \nyears = pd.read_csv(sys.argv[1], delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year, final_year)\nprint(type(current_year))\nexit(1 if current_year >= final_year else 0) # Exit code 0 = continue"
                 },
                 "cmd_line_args": [
                     {
                         "type": "resource",
-                        "arg": "years.csv"
+                        "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\emlabpy\\years.csv"
                     }
                 ]
             }
@@ -737,8 +649,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1135.8605555213173,
-            "y": -920.6964322740023,
+            "x": -1132.1256491125066,
+            "y": -971.1176687929432,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -746,104 +658,11 @@
                 "database": "traderes"
             }
         },
-        "Scenario_gas": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -1511.731550862546,
-            "y": 706.1854743380928,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "amiris/input/Austria2019/scenario_gas.yaml"
-                }
-            ],
-            "db_references": []
-        },
-        "run config gas": {
-            "type": "Tool",
-            "description": "",
-            "x": -1346.5075934605638,
-            "y": 705.2337610937858,
-            "specification": "run config2",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "<project>/amiris/input/Austria2019/scenario_gas.yaml"
-                }
-            ]
-        },
-        "fameSetup gas": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -1224.8302483206073,
-            "y": 785.7769378810275,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "scripts/fameSetup2.yaml"
-                }
-            ],
-            "db_references": []
-        },
-        "Amiris Gas": {
-            "type": "Tool",
-            "description": "",
-            "x": -1117.333646003598,
-            "y": 704.2537849396531,
-            "specification": "Amirisgas",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "literal",
-                    "arg": "-f"
-                },
-                {
-                    "type": "resource",
-                    "arg": "fameConfigGas.pb"
-                },
-                {
-                    "type": "literal",
-                    "arg": "--setup"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/scripts/fameSetup2.yaml"
-                }
-            ]
-        },
-        "CombineResultsGas": {
-            "type": "Tool",
-            "description": "",
-            "x": -879.279847950603,
-            "y": 704.7695292486225,
-            "specification": "Combine Results Gas",
-            "execute_in_work": false,
-            "cmd_line_args": []
-        },
-        "amiris importer gas": {
-            "type": "Importer",
-            "description": "",
-            "x": -669.0038915980899,
-            "y": 715.3733489892054,
-            "specification": "amiris importer gas",
-            "cancel_on_error": false,
-            "purge_before_writing": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\scripts\\AMIRIS_combinedGas.csv",
-                    true
-                ]
-            ]
-        },
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1597.465992967677,
-            "y": -364.5982524376421,
+            "x": -1645.282910324663,
+            "y": -500.8764669050523,
             "file_references": [
                 {
                     "type": "path",
@@ -856,8 +675,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1354.4115537432056,
-            "y": -367.04595292758233,
+            "x": -1368.7566289503015,
+            "y": -467.46147937725306,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -902,8 +721,8 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": -211.91164925744044,
-            "y": 214.6570089329175,
+            "x": -214.2311826111781,
+            "y": 214.65700893291748,
             "specification": "Best Investment",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -924,8 +743,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1587.9186620145424,
-            "y": -230.56731439055488,
+            "x": -1654.8623463143228,
+            "y": -383.58144993291023,
             "file_references": [
                 {
                     "type": "path",
@@ -939,7 +758,7 @@
             "type": "Importer",
             "description": "",
             "x": -1354.7928365067814,
-            "y": -253.6615965887782,
+            "y": -368.4221982455447,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -954,8 +773,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1091.440514388699,
-            "y": -690.1721803917321,
+            "x": -1564.8279962228598,
+            "y": 46.208346905852665,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -972,8 +791,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1127.4821324144714,
-            "y": -398.8722916762989,
+            "x": -1163.3448204322106,
+            "y": -456.2525925046822,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -982,22 +801,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/items/emlabdb/EmlabDB.sqlite"
-                }
-            }
-        },
-        "traderesLocal": {
-            "type": "Data Store",
-            "description": "",
-            "x": -613.3390302501991,
-            "y": -868.9971020740596,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/tradereslocal/traderesLocal.sqlite"
                 }
             }
         },
@@ -1010,21 +813,6 @@
             "cancel_on_error": true,
             "output_labels": [],
             "specification": "Exporter Traderes"
-        },
-        "fromTraderestoEmlab": {
-            "type": "Exporter",
-            "description": "",
-            "x": -266.90957556965907,
-            "y": -881.1837971825518,
-            "output_time_stamps": false,
-            "cancel_on_error": true,
-            "output_labels": [
-                {
-                    "in_label": "db_url@traderesLocal",
-                    "out_label": ""
-                }
-            ],
-            "specification": ""
         },
         "Prepare Data Amiris": {
             "type": "Tool",
@@ -1048,29 +836,11 @@
                 }
             ]
         },
-        "convert_from_common_db_to_bb_db": {
-            "type": "Tool",
-            "description": "",
-            "x": -913.6328592059406,
-            "y": -869.6655349251795,
-            "specification": "convert_from_common_db_to_bb_db",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@TraderesDB"
-                },
-                {
-                    "type": "resource",
-                    "arg": "db_url@traderesLocal"
-                }
-            ]
-        },
         "Traderes Excel": {
             "type": "Data Connection",
             "description": "",
-            "x": -1606.8824933489007,
-            "y": -500.6571372076935,
+            "x": -1676.2170235165304,
+            "y": -668.0163479571446,
             "file_references": [
                 {
                     "type": "path",
@@ -1083,8 +853,8 @@
         "traderesExcel to DB": {
             "type": "Importer",
             "description": "",
-            "x": -1352.362830471694,
-            "y": -502.0654557862954,
+            "x": -1359.5353680752419,
+            "y": -557.0549107468293,
             "specification": "technology potential and capacities",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1108,8 +878,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -1150.3402323956234,
-            "y": -115.04742223986808,
+            "x": -1155.1219241313222,
+            "y": -115.04742223986807,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1237,8 +1007,8 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1391.4901452005677,
-            "y": 35.352525051611394,
+            "x": -1382.0583129398287,
+            "y": 32.961679183762094,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1271,8 +1041,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1364.626137110474,
-            "y": -144.59614697859328,
+            "x": -1364.6261371104738,
+            "y": -273.7018238424556,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1287,8 +1057,8 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1605.0172314623849,
-            "y": -86.75768818715596,
+            "x": -1633.7073818765768,
+            "y": -270.8528200115521,
             "file_references": [
                 {
                     "type": "path",
@@ -1301,13 +1071,13 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -948.8810423788497,
-            "y": -29.778714888794084,
+            "x": -958.4444258502467,
+            "y": -123.02170373491685,
             "file_references": [
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/years.csv"
+                    "path": "emlabpy/years.csv"
                 }
             ],
             "db_references": []

@@ -28,7 +28,7 @@ if not os.path.isdir('logs'):
     os.makedirs('logs')
 logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.txt', level=logging.DEBUG)
 # Log to console? Uncomment next line
-# logging.getLogger().addHandler(logging.StreamHandler())
+#logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
 run_capacity_market = False
 run_strategic_reserve = False
@@ -69,6 +69,7 @@ for arg in sys.argv[3:]:
     if arg == 'run_initialize_power_plants':
         run_initialize_power_plants = True
 
+# following modules need the results from AMIRIS that are being stored in a DB
 if run_short_investment_module or run_capacity_market or run_strategic_reserve:
     emlab_url = sys.argv[1]
     logging.info('emlab database: ' + str(emlab_url))
@@ -83,13 +84,15 @@ else:
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
 
-    # for the first year, specify the power plants and if the the simultaion is not stairting then add one year
+    # for the first year, specify the power plants and add a unique id to the power plants.
+    # AMIRIS needs a unique, numeric ID
+
     if run_initialize_power_plants:
-        # adding id to candidate power plants
+        # adding id to candidate power plants. Add 9999 at the beginning, to distinguish from installed power plants
         pp_counter = 0
         for p, power_plant in reps.candidatePowerPlants.items():
             pp_counter += 1
-            power_plant.id = (int(str(9999) +  # TODO once installed, this will change to the commissioned year
+            power_plant.id = (int(str(9999) +  # once installed, this 9999 will change to the commissioned year
                                   str("{:02d}".format(
                                       int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
@@ -105,11 +108,12 @@ try:  # Try statement to always close DB properly
                                   str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
                                   ))
-        # saving ids
+        # saving ids in the DB
         spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
     else: # if the id initialization was done, it is not needed to store it again.
+        # then only set actual lead time, permit time, efficiencies, correct status
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
