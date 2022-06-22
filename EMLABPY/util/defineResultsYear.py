@@ -9,7 +9,7 @@ import os
 
 db_url = sys.argv[1]
 db_amiris = SpineDB(db_url)
-yearspath = sys.argv[2]
+yearspath = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_path)
 print(yearspath)
 years = pd.read_csv(yearspath, delimiter ='/')
 current_year = years.columns[0]
