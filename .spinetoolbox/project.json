@@ -129,16 +129,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/clock.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/test.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/test2.json"
                 }
             ],
             "Importer": [
@@ -357,6 +347,17 @@
                 ]
             },
             {
+                "name": "from decommission to Prepare Data Amiris",
+                "from": [
+                    "decommission",
+                    "right"
+                ],
+                "to": [
+                    "Prepare Data Amiris",
+                    "left"
+                ]
+            },
+            {
                 "name": "from prepare future market to AMIRIS future",
                 "from": [
                     "prepare future market",
@@ -365,6 +366,72 @@
                 "to": [
                     "AMIRIS future",
                     "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to BestInvestment",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "BestInvestment",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Capacity Mechanism to short investments",
+                "from": [
+                    "Capacity Mechanism",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to Capacity Mechanism",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to short investments",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to prepare future market",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "prepare future market",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from AMIRIS future to BestInvestment",
+                "from": [
+                    "AMIRIS future",
+                    "bottom"
+                ],
+                "to": [
+                    "BestInvestment",
+                    "right"
                 ]
             },
             {
@@ -379,6 +446,17 @@
                 ]
             },
             {
+                "name": "from BestInvestment to Next year",
+                "from": [
+                    "BestInvestment",
+                    "bottom"
+                ],
+                "to": [
+                    "Next year",
+                    "left"
+                ]
+            },
+            {
                 "name": "from import AMIRIS to AMIRIS DB",
                 "from": [
                     "import AMIRIS",
@@ -386,6 +464,17 @@
                 ],
                 "to": [
                     "AMIRIS DB",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to Capacity Mechanism",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Capacity Mechanism",
                     "left"
                 ]
             },
@@ -423,123 +512,46 @@
                 ]
             },
             {
-                "name": "from EmlabDB to Initialize Clock",
+                "name": "from years to specify year",
                 "from": [
-                    "EmlabDB",
+                    "years",
                     "right"
                 ],
                 "to": [
-                    "Initialize Clock",
+                    "specify year",
                     "left"
                 ]
             },
             {
-                "name": "from EmlabDB to Next year",
+                "name": "from AMIRIS DB to specify year",
                 "from": [
-                    "EmlabDB",
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "specify year",
                     "right"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to Next year",
+                "from": [
+                    "EmlabDB2",
+                    "left"
                 ],
                 "to": [
                     "Next year",
-                    "left"
+                    "bottom"
                 ]
             },
             {
-                "name": "from EmlabDB to decommission",
-                "from": [
-                    "EmlabDB",
-                    "right"
-                ],
-                "to": [
-                    "decommission",
-                    "left"
-                ]
-            },
-            {
-                "name": "from test2 to test",
-                "from": [
-                    "test2",
-                    "right"
-                ],
-                "to": [
-                    "test",
-                    "left"
-                ]
-            },
-            {
-                "name": "from decommission to Prepare Data Amiris",
-                "from": [
-                    "decommission",
-                    "right"
-                ],
-                "to": [
-                    "Prepare Data Amiris",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Initialize Clock to decommission",
-                "from": [
-                    "Initialize Clock",
-                    "right"
-                ],
-                "to": [
-                    "decommission",
-                    "left"
-                ]
-            },
-            {
-                "name": "from specify year to AMIRIS DB",
+                "name": "from specify year to Capacity Mechanism",
                 "from": [
                     "specify year",
-                    "left"
-                ],
-                "to": [
-                    "AMIRIS DB",
                     "right"
-                ]
-            },
-            {
-                "name": "from EmlabDB to Capacity Mechanism",
-                "from": [
-                    "EmlabDB",
-                    "bottom"
                 ],
                 "to": [
                     "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
-                "name": "from EmlabDB to short investments",
-                "from": [
-                    "EmlabDB",
-                    "bottom"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
-                "name": "from EmlabDB to prepare future market",
-                "from": [
-                    "EmlabDB",
-                    "bottom"
-                ],
-                "to": [
-                    "prepare future market",
-                    "left"
-                ]
-            },
-            {
-                "name": "from EmlabDB to BestInvestment",
-                "from": [
-                    "EmlabDB",
-                    "bottom"
-                ],
-                "to": [
-                    "BestInvestment",
                     "left"
                 ]
             },
@@ -555,58 +567,36 @@
                 ]
             },
             {
-                "name": "from Capacity Mechanism to short investments",
+                "name": "from EmlabDB to decommission",
                 "from": [
-                    "Capacity Mechanism",
+                    "EmlabDB",
                     "right"
                 ],
                 "to": [
-                    "short investments",
+                    "decommission",
+                    "right"
+                ]
+            },
+            {
+                "name": "from EmlabDB to Initialize Clock",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "Initialize Clock",
                     "left"
                 ]
             },
             {
-                "name": "from AMIRIS future to BestInvestment",
+                "name": "from Initialize Clock to Prepare Data Amiris",
                 "from": [
-                    "AMIRIS future",
+                    "Initialize Clock",
                     "right"
                 ],
                 "to": [
-                    "BestInvestment",
+                    "Prepare Data Amiris",
                     "left"
-                ]
-            },
-            {
-                "name": "from specify year to Capacity Mechanism",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to Capacity Mechanism",
-                "from": [
-                    "AMIRIS DB",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
-                "name": "from BestInvestment to Next year",
-                "from": [
-                    "BestInvestment",
-                    "bottom"
-                ],
-                "to": [
-                    "Next year",
-                    "bottom"
                 ]
             }
         ],
@@ -619,13 +609,18 @@
                 ],
                 "to": [
                     "prepare future market",
-                    "bottom"
+                    "left"
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\n#print(\"current\",os.getcwd())\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue"
+                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\n#print(\"current\",os.getcwd())\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
                 },
-                "cmd_line_args": []
+                "cmd_line_args": [
+                    {
+                        "type": "resource",
+                        "arg": "continue.txt"
+                    }
+                ]
             },
             {
                 "name": "from Next year to decommission",
@@ -639,9 +634,14 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nprint(sys.argv[1])  # Loop counter is supplied as first \nyears = pd.read_csv(sys.argv[1], delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year, final_year)\nprint(type(current_year))\nexit(1 if current_year >= final_year else 0) # Exit code 0 = continue"
+                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_path)\n#print(sys.argv[1])  # Loop counter is supplied as first \n#years = pd.read_csv(sys.argv[1], delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year, final_year)\nprint(type(current_year))\nexit(1 if current_year >= final_year else 0) # Exit code 0 = continue"
                 },
-                "cmd_line_args": []
+                "cmd_line_args": [
+                    {
+                        "type": "resource",
+                        "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\emlabpy\\years.csv"
+                    }
+                ]
             }
         ]
     },
@@ -649,8 +649,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1132.1256491125068,
-            "y": -985.9053751405377,
+            "x": -1132.1256491125066,
+            "y": -971.1176687929432,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -721,14 +721,14 @@
         "BestInvestment": {
             "type": "Tool",
             "description": "",
-            "x": 68.99619811067329,
-            "y": 223.50786458047537,
+            "x": -214.2311826111781,
+            "y": 214.65700893291748,
             "specification": "Best Investment",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@EmlabDB"
+                    "arg": "db_url@EmlabDB2"
                 },
                 {
                     "type": "literal",
@@ -773,8 +773,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -978.8959853018191,
-            "y": -462.67812462526587,
+            "x": -982.2937169058321,
+            "y": -523.2312538038027,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -791,8 +791,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1127.9413978419789,
-            "y": -279.235479553525,
+            "x": -1163.3448204322106,
+            "y": -456.2525925046822,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -817,8 +817,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -621.205743651326,
-            "y": -469.1662453315559,
+            "x": -734.6892294737194,
+            "y": -435.22997229774097,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -869,17 +869,22 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -466.96028977818503,
-            "y": -482.7111774553263,
+            "x": -580.9126274715036,
+            "y": -422.542363592477,
             "specification": "AMIRIS wrapper",
             "execute_in_work": false,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\data\\amiris\\amiris_data_structure.xlsx"
+                }
+            ]
         },
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -805.4971569492054,
-            "y": -465.8281697029177,
+            "x": -1152.731078263473,
+            "y": -115.04742223986806,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -900,14 +905,14 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -22.641113249167546,
-            "y": -274.08972202208275,
+            "x": -341.27191656125035,
+            "y": -28.478477802352202,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@EmlabDB"
+                    "arg": "db_url@EmlabDB2"
                 },
                 {
                     "type": "resource",
@@ -922,14 +927,14 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -154.35463931880236,
-            "y": -105.60042153456068,
+            "x": -96.82407760967627,
+            "y": -39.21900417787677,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@EmlabDB"
+                    "arg": "db_url@EmlabDB2"
                 },
                 {
                     "type": "literal",
@@ -944,8 +949,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 87.03763677331037,
-            "y": -112.70859103935541,
+            "x": 73.7613533019736,
+            "y": 130.68993926848563,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -953,8 +958,8 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -218.2788956620068,
-            "y": -1014.1911025776697,
+            "x": -563.4622659167633,
+            "y": 171.8235541950833,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -969,14 +974,14 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -17.433277414940342,
-            "y": -412.23891653168954,
+            "x": -548.4846162684119,
+            "y": -22.80126803914385,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@EmlabDB"
+                    "arg": "db_url@EmlabDB2"
                 },
                 {
                     "type": "resource",
@@ -991,30 +996,25 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -286.5894195815195,
-            "y": -547.183907639528,
+            "x": -446.09923631785443,
+            "y": -391.06168450113375,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    true
-                ]
-            ]
+            "file_selection": []
         },
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -995.1511834585754,
-            "y": -27.374691493284885,
+            "x": -1377.2766212041302,
+            "y": 32.961679183762094,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "db_url@EmlabDB"
+                    "arg": "db_url@EmlabDB2"
                 },
                 {
                     "type": "literal",
@@ -1025,8 +1025,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -130.51909334375398,
-            "y": -711.4395971124846,
+            "x": -255.5307891158613,
+            "y": -325.6818120882452,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1068,37 +1068,37 @@
             ],
             "db_references": []
         },
+        "years": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -958.4444258502467,
+            "y": -123.02170373491685,
+            "file_references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "emlabpy/years.csv"
+                }
+            ],
+            "db_references": []
+        },
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -22.207112192667555,
-            "y": -553.8513235372366,
+            "x": -787.8061257064221,
+            "y": -113.52125507123331,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",
                     "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/emlabpy/years.csv"
                 }
             ]
-        },
-        "test": {
-            "type": "Tool",
-            "description": "test loop",
-            "x": -1005.4007704289285,
-            "y": 341.203823653163,
-            "specification": "test",
-            "execute_in_work": false,
-            "cmd_line_args": []
-        },
-        "test2": {
-            "type": "Tool",
-            "description": "",
-            "x": -1248.0058610951828,
-            "y": 276.70859779338684,
-            "specification": "test2",
-            "execute_in_work": true,
-            "cmd_line_args": []
         }
     }
 }

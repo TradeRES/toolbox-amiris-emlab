@@ -1,0 +1,16 @@
+name: amiris-demo
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pip:
+    #- ipykernel # this is from toolbox-amiris-demo
+    #- fameio >=1.4.1
+    - matplotlib
+    - openpyxl
+    - ioproc>=2.0.9
+    - fameio>=1.5.0
+    - pandas
+    - h5py
+    - pytest
+    - seaborn

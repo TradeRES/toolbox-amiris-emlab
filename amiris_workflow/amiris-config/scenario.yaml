@@ -47,8 +47,8 @@ Agents:
 - Attributes:
     BlockSizeInMW: 1
     Efficiency:
-      Maximal: 0
-      Minimal: 0
+      Maximal: 0.5
+      Minimal: 0.5
     InstalledPowerInMW: 1
     PortfolioBuildingOffsetInSeconds: 60
     Prototype:
@@ -70,8 +70,8 @@ Agents:
 - Attributes:
     BlockSizeInMW: 1
     Efficiency:
-      Maximal: 0
-      Minimal: 0
+      Maximal: 0.5
+      Minimal: 0.5
     InstalledPowerInMW: 1
     PortfolioBuildingOffsetInSeconds: 60
     Prototype:

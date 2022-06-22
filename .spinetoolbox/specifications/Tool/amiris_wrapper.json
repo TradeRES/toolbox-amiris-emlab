@@ -14,9 +14,9 @@
     "execute_in_work": false,
     "includes_main_path": "../../../amiris_workflow",
     "execution_settings": {
-        "env": "",
-        "kernel_spec_name": "amiris",
-        "use_jupyter_console": true,
-        "executable": ""
+        "env": "conda",
+        "kernel_spec_name": "conda-env-amiris-spine-py",
+        "use_jupyter_console": false,
+        "executable": "C:/Programs/Anaconda3/envs/demo-amiris/python.exe"
     }
 }
