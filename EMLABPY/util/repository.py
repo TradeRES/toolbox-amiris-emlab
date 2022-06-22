@@ -22,6 +22,7 @@ from domain.loans import Loan
 from util import globalNames
 from domain.bids import Bid
 from numpy import mean
+from domain.StrategicReserveOperator import StrategicReserveOperator
 
 class Repository:
     """
@@ -84,6 +85,10 @@ class Repository:
         self.powerPlantsForAgent = {}
         self.loanList = []
         self.financialPowerPlantReports = None
+
+        # Create list of plants in SR
+        self.plants_in_SR = []
+        self.bids_sr = dict()
 
     """
     Repository functions:
@@ -210,7 +215,7 @@ class Repository:
 
     def get_operational_and_to_be_decommissioned_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner == owner and (
+                if i.owner.name == owner and (
                         i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
     def get_operational_power_plants_by_owner_and_technologies(self, owner: EnergyProducer, listofTechnologies) -> List[
@@ -484,6 +489,98 @@ class Repository:
             return None
 
         return
+
+    # Extra functions for strategic reserve
+    def calculateCapacityOfPowerPlantsInMarket(self, market):
+        if market == 'DutchCapacityMarket':
+            temp_location = 'NL'
+        elif market == 'GermanCapacityMarket':
+            temp_location = 'DE'
+        else:
+            temp_location = 'None'
+        return sum([i.capacity for i in self.power_plants.values() if i.location == temp_location])
+
+    def get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(self, market: Market) -> \
+            List[PowerPlantDispatchPlan]:
+        return sorted([i for i in self.bids_sr.values()
+                       if i.market.name == market.name], key=lambda i: i.price, reverse=True)
+
+    def get_accepted_SR_bids(self):
+        return [i for i in self.bids_sr.values() if
+                i.status == globalNames.power_plant_status_strategic_reserve]
+
+    def update_power_plant_status(self, plant: PowerPlant):
+        new_status = globalNames.power_plant_status_strategic_reserve
+        new_owner = 'StrategicReserveOperator'
+        for i in self.power_plants.values():
+            if i.name == plant:
+                i.status = new_status
+                i.owner = new_owner
+                self.power_plants[i.name] = i
+                self.dbrw.stage_power_plant_status(i)
+
+    # def get_power_plants_in_SR(self) -> List[StrategicReserveOperator]:
+    #     return [i for i in self.power_plants.values() if
+    #             i.status == globalNames.power_plant_status_strategic_reserve]
+    # i.name in self.StrategicReserveOperator.getPlants()]
+
+    def createStrategicReserveOperator(self, volume, zone, cash, plant):
+        name = ("SRO_" + zone)
+        operator = StrategicReserveOperator(name)
+        operator.setReserveVolume(volume)
+        operator.setZone(zone)
+        operator.setCash(cash)
+        operator.setPlants(plant)
+        return operator
+
+    def set_power_plants_in_SR(self, plant):
+        self.plants_in_SR.append(plant)
+
+    def get_power_plants_in_SR(self):
+        return self.plants_in_SR
+
+    def get_power_plants_in_SR_by_name(self):
+        return [i.name for i in self.plants_in_SR]
+
+    def get_fixed_costs_of_SR_plant(self, plant):
+        for i in self.power_plants.values():
+            if i.name == plant.name:
+                cost = i.actualFixedOperatingCost
+                return cost
+
+        # return [i.actualFixedOperatingCost for i in self.power_plants.values() if i.name == plant.name]
+
+    def get_strategic_reserve_price(self, operator: StrategicReserveOperator):
+        return operator.getReservePriceSR()
+
+
+    def create_or_update_power_plant_StrategicReserve_plan(self, plant: PowerPlant,
+                                                         bidder: EnergyProducer,
+                                                         market: Market,
+                                                         amount: float,
+                                                         price: float,
+                                                         time: int) -> Bid:
+        bid = next((bid for bid in self.bids_sr.values() if bid.plant == plant.name and \
+                    bid.market == market.name and
+                    bid.tick == time), None)
+        if bid is None:
+            # PowerPlantDispatchPlan not found, so create a new one
+            name = str(datetime.now())
+            bid = Bid(name)
+
+        bid.plant = plant
+        bid.bidder = bidder
+        bid.market = market
+        bid.amount = amount
+        bid.price = price
+        bid.status = globalNames.power_plant_dispatch_plan_status_awaiting
+        bid.accepted_amount = 0
+        bid.tick = time
+        self.bids_sr[bid.name] = bid
+        self.dbrw.stage_bids(bid, time)
+        return bid
+
+
 
     def __str__(self):
         return str(vars(self))

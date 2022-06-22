@@ -8,8 +8,10 @@ class StrategicReserveOperator(ImportObject):
 
         self.reserveVolume = 0
         self.zone = None
-        self.reservePriceSR = 0
+        self.reservePriceSR = 800
         self.reserveVolumePercentSR = 0.06 # todo add this to
+        self.cash = 0
+        self.list_of_plants = []
 
     def getReserveVolume(self):
         return self.reserveVolume
@@ -34,3 +36,15 @@ class StrategicReserveOperator(ImportObject):
 
     def setReserveVolumePercentSR(self, reserveVolumePercentSR):
         self.reserveVolumePercentSR = reserveVolumePercentSR
+
+    def getCash(self):
+        return self.cash
+
+    def setCash(self, cash):
+        self.cash += cash
+
+    def getPlants(self):
+        return self.list_of_plants
+
+    def setPlants(self, plant):
+        self.list_of_plants.append(plant)

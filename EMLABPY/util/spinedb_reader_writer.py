@@ -164,6 +164,13 @@ class SpineDBReaderWriter:
                                                [('accepted_amount', bid.accepted_amount),
                                                 ('status', bid.status)], current_tick)
 
+    def stage_power_plant_status(self, power_plant):
+        self.stage_object(self.powerplant_installed_classname, power_plant.name)
+        self.stage_object_parameter_values(self.powerplant_installed_classname, power_plant.name,
+                                           [('plant', power_plant.name),
+                                            ('status', power_plant.status),
+                                            ('owner', power_plant.owner)], '0')
+
     """
     Power plants
     """
