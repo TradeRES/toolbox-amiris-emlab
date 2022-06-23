@@ -1,20 +1,20 @@
 {
-    "name": "Short investments",
+    "name": "AMIRIS run",
     "tooltype": "python",
     "includes": [
-        "emlab.py"
+        "run.py"
     ],
-    "description": "short investments depending on current results",
+    "description": "amiris wrapper",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [],
     "cmdline_args": [],
-    "execute_in_work": false,
-    "includes_main_path": "../../../emlabpy",
+    "execute_in_work": true,
+    "includes_main_path": "../../../amiris_workflow",
     "execution_settings": {
         "env": "",
         "kernel_spec_name": "amiris",
         "use_jupyter_console": false,
-        "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+        "executable": "C:/Programs/Anaconda3/envs/iovrmr/python.exe"
     }
 }

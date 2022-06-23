@@ -15,7 +15,7 @@ import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
-print("grandparentpath", grandparentpath)
+
 
 def reset_candidate_investable_status():
     class_name = "CandidatePowerPlants"
@@ -25,19 +25,21 @@ def reset_candidate_investable_status():
 
 def update_years_file(current_year , lookAhead, final_year):
     fieldnames = ['current', 'future', "final"]
-    #grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
-    file =  os.path.join(grandparentpath, globalNames.years_path)
-    with open(file, 'w') as csvfile:
-        csvwriter = csv.writer(csvfile,delimiter ='/')
+    print("updated years file")
+    #TODO dont hard code the path, once the spine bug is fixed. then it can be exported to the output folder.
+    # the clock is executed in the util folder. So save the results in the parent folder: emlabpy
+    complete_path =  os.path.join(os.path.dirname(os.getcwd()),  globalNames.years_path)
+    print(complete_path)
+    with open(complete_path, 'w') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter ='/')
         # csv.DictWriter(csvfile, fieldnames=fieldnames)
         csvwriter.writerow([current_year, (current_year + lookAhead), final_year])
 
-def reset_invest_iteration():
-    file =  os.path.join(grandparentpath, globalNames.continue_path)
-    with open(file, 'w') as csvfile:
-        fieldnames = ['continue']
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow([True])
+# def reset_invest_iteration(): # this is no longer necessary as files are saved in the output folder
+#     print("reset continue file")
+#     f = open(globalNames.continue_path, "w")
+#     f.write(str(True))
+#     f.close()
 
 try:
     class_name = "Configuration"
@@ -52,7 +54,6 @@ try:
                           in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
                           if i['parameter_name'] == "End Year")
         reset_candidate_investable_status()
-        reset_invest_iteration()
 
         if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')

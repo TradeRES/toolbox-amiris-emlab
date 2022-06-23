@@ -19,8 +19,6 @@ class Dismantle(DefaultModule):
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
 
-
-
     def decommision_by_age_and_profit(self):
         for producer, producer_specs in self.reps.energy_producers.items():
             for plant in self.reps.get_power_plants_to_be_decommissioned(producer):

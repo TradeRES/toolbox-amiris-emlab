@@ -1,20 +1,20 @@
 {
-    "name": "Short investments",
+    "name": "test2",
     "tooltype": "python",
     "includes": [
-        "emlab.py"
+        "test2.py"
     ],
-    "description": "short investments depending on current results",
+    "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [],
     "cmdline_args": [],
-    "execute_in_work": false,
+    "execute_in_work": true,
     "includes_main_path": "../../../emlabpy",
     "execution_settings": {
         "env": "",
         "kernel_spec_name": "amiris",
-        "use_jupyter_console": false,
-        "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+        "use_jupyter_console": true,
+        "executable": ""
     }
 }

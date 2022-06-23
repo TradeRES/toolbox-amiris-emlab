@@ -9,7 +9,7 @@ import numpy_financial as npf
 import pandas as pd
 from domain.actors import *
 from util.repository import Repository
-from helpers.helper_functions import get_current_ticks
+
 import sys
 import logging
 import math
@@ -82,6 +82,8 @@ class Investmentdecision(DefaultModule):
                     print("bestPlant is ", bestCandidatePowerPlant.name," ", bestCandidatePowerPlant.technology.name)
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
+                    self.continue_iteration()
+
                     return
                 else:
                     logging.info("all power plants are unprofitable")
@@ -250,11 +252,20 @@ class Investmentdecision(DefaultModule):
         self.reps.update_candidate_plant_results(results)
         return
 
+    def continue_iteration(self):
+        file = globalNames.continue_path
+        print("saving to", file)
+        f = open(file, "w")
+        f.write(str(True))
+        f.close()
+
     def stop_iteration(self):
-        with open(globalNames.continue_path, 'w') as csvfile:
-            fieldnames = ['continue']
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerow([False])
+        parentpath =  os.path.join(os.path.dirname( os.path.dirname(os.getcwd()) ), "util")
+        print(" file ", parentpath)
+        file = globalNames.continue_path
+        f = open(file, "w")
+        f.write(str(False))
+        f.close()
 
     def calculateNodeLimit(self):
         pgtLimit = getReps().findOneByTechnologyAndNode(self.technology, self.node)

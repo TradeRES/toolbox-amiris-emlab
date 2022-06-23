@@ -2,7 +2,7 @@
 from modules.defaultmodule import DefaultModule
 import pandas as pd
 from datetime import datetime, timedelta
-
+from util import globalNames
 
 class PrepareMarket(DefaultModule):
     """
@@ -18,7 +18,7 @@ class PrepareMarket(DefaultModule):
         self.empty = None
         self.Years = []
         self.writer = None
-        self.path = 'data/amiris/amiris_data_structure.xlsx'
+        self.path = globalNames.amiris_data_path
         self.power_plants_list = self.reps.get_operational_power_plants()
         reps.dbrw.stage_init_bids_structure()
 
@@ -193,8 +193,8 @@ class PrepareMarket(DefaultModule):
              'InstalledPowerInMW': InstalledPowerInMW}
 
         df = pd.DataFrame(data=d)
+        print(self.path)
         df.to_excel(self.writer, sheet_name="storages")
 
     def openwriter(self):
-
         self.writer = pd.ExcelWriter(self.path, mode="a", engine='openpyxl', if_sheet_exists='replace')
