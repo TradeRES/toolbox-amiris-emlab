@@ -38,6 +38,7 @@ in toolbox-amiris-emlab folder
 ```
 python setup.py install -> if changes are done to the code
 conda create -n emlabpy python=3.8
+python -m pip install .
 conda activate emlabpy
 pip install -r requirements.txt
 pip install git+https://github.com/Spine-project/spinetoolbox-dev
