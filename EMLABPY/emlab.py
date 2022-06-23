@@ -17,7 +17,8 @@ from modules.prepareMarketClearing import PrepareMarket
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from domain.StrategicReserveOperator import *
-from modules.strategicreserve import *
+from modules.strategicreserve_new import *
+# from modules.strategicreserve import *
 from modules.co2market import *
 from modules.Invest import *
 from modules.prepareFutureMarketClearing import *
@@ -158,8 +159,11 @@ try:  # Try statement to always close DB properly
 
     if run_strategic_reserve:
         logging.info('Start strategic reserve')
-        strategic_reserve_operator = StrategicReserveOperator(reps)
-        strategic_reserve = StrategicReserve(strategic_reserve_operator)  # This function adds rep to class capacity markets
+        strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
+        # strategic_reserve_assignment = StrategicReserveAssignment(reps)
+        strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
+        strategic_reserve = StrategicReserveAssignment(reps, strategic_reserve_operator)  # This function adds rep to class capacity markets
+        strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
         logging.info('End strategic reserve')
 

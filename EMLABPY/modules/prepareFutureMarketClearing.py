@@ -1,6 +1,7 @@
 
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
+from domain.StrategicReserveOperator import StrategicReserveOperator
 
 
 class PrepareFutureMarketClearing(PrepareMarket):
@@ -54,6 +55,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         """
 
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.agent)
+        powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
             if fictional_age > powerplant.technology.expected_lifetime:
@@ -61,6 +63,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # print("to be decommisioned", powerplant.name, "age", fictional_age,
                 #       "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
                 # todo add some exception for plants under startegic reserve
+            elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
+                powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
+                powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                powerplant.owner = 'StrategicReserveOperator'
+                # powerplant.technology.variable_operating_costs = powerplant.technology.variable_operating_costs * 1.10 # added costs for startegic reserve
+                self.power_plants_list[powerplant.name] = powerplant
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list[powerplant.name] = powerplant

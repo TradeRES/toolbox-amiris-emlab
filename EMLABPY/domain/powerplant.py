@@ -120,16 +120,23 @@ class PowerPlant(ImportObject):
     '''
 
     def calculate_emission_intensity(self, reps):
-        emission = 0
-        substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
-        for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
-            # CO2 Density is a ton CO2 / MWh
-            co2_density = substance_in_fuel_mix.co2_density * (1 - float(
+        # emission = 0
+        # substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
+        # for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
+        #     # CO2 Density is a ton CO2 / MWh
+        #     co2_density = substance_in_fuel_mix.co2_density * (1 - float(
+        #         self.technology.co2_capture_efficiency))
+        #
+        #     # Returned value is ton CO2 / MWh
+        #     emission_for_this_fuel = substance_in_fuel_mix_object.share * co2_density / self.efficiency
+        #     emission += emission_for_this_fuel
+        # return emission
+        if self.technology.fuel != '':
+            co2_density = self.technology.fuel.co2_density * (1 - float(
                 self.technology.co2_capture_efficiency))
-
-            # Returned value is ton CO2 / MWh
-            emission_for_this_fuel = substance_in_fuel_mix_object.share * co2_density / self.efficiency
-            emission += emission_for_this_fuel
+            emission = co2_density / self.technology.efficiency
+        else:
+            emission = 0
         return emission
 
     def get_actual_fixed_operating_cost(self):
@@ -152,11 +159,17 @@ class PowerPlant(ImportObject):
         #     return self.capacity
 
     def calculate_marginal_fuel_cost_per_mw_by_tick(self, reps, time):
-        fc = 0
-        substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
-        for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
-            # Fuel price is Euro / MWh
-            fc += substance_in_fuel_mix_object.share * substance_in_fuel_mix.get_price_for_tick(time) / self.efficiency
+        # fc = 0
+        # substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
+        # for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
+        #     # Fuel price is Euro / MWh
+        #     fc += substance_in_fuel_mix_object.share * substance_in_fuel_mix.get_price_for_tick(time) / self.efficiency
+        # return fc
+        if self.technology.fuel != '':
+            fc = ((self.technology.fuel.futurePrice.values[0] + self.technology.fuel.futurePrice.values[1])/2) / \
+                 self.technology.efficiency
+        else:
+            fc = 0
         return fc
 
     def calculate_co2_tax_marginal_cost(self, reps):
