@@ -8,15 +8,15 @@
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [
-        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\emlabpy\\years.csv"
+        "<project_dir>years.csv"
     ],
     "cmdline_args": [],
     "execute_in_work": false,
     "includes_main_path": "../../../emlabpy/util",
     "execution_settings": {
         "env": "",
-        "kernel_spec_name": "amiris",
-        "use_jupyter_console": false,
+        "kernel_spec_name": "emlabpy",
+        "use_jupyter_console": true,
         "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
     }
 }

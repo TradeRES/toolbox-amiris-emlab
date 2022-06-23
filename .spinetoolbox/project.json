@@ -613,7 +613,7 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\n#print(\"current\",os.getcwd())\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
+                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\nprint(\"current\",os.getcwd(), \"file\" , continue_file)\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
                 },
                 "cmd_line_args": [
                     {
@@ -894,7 +894,7 @@
             "x": -90.04036259033094,
             "y": -122.31951316485709,
             "specification": "Prepare future market",
-            "execute_in_work": false,
+            "execute_in_work": true,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -913,8 +913,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 58.497994508446595,
-            "y": 34.02200024281464,
+            "x": 58.49799450844661,
+            "y": 34.84457956329402,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -941,7 +941,7 @@
             "x": -580.7072626103021,
             "y": -116.07734955514215,
             "specification": "Capacity Mechanism",
-            "execute_in_work": false,
+            "execute_in_work": true,
             "cmd_line_args": [
                 {
                     "type": "resource",
@@ -977,7 +977,7 @@
             "type": "Tool",
             "description": "",
             "x": -1131.366951752862,
-            "y": -14.524325951655221,
+            "y": -14.524325951655229,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1072,8 +1072,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -215.92711136601443,
-            "y": 126.46871368142814,
+            "x": -213.9052565587538,
+            "y": 126.46871368142816,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
