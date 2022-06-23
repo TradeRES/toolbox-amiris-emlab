@@ -513,7 +513,7 @@ class Repository:
         new_status = globalNames.power_plant_status_strategic_reserve
         new_owner = 'StrategicReserveOperator'
         for i in self.power_plants.values():
-            if i.name == plant:
+            if i.name == plant.name:
                 i.status = new_status
                 i.owner = new_owner
                 self.power_plants[i.name] = i
