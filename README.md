@@ -19,13 +19,7 @@ spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be execute
 
 https://docs.conda.io/en/latest/miniconda.html
 
-### spinetoolbox-dev  
-```
-conda create -n spinetoolbox-dev python=3.8
-conda activate spinetoolbox-dev
-pip install git+https://github.com/Spine-project/spinetoolbox-dev
-#pip install -r requirements.txt (from spinetoolbox folder)
-```
+
 
 ### AMIRIS (iovrmr)
 in toolbox-amiris-emlab folder
@@ -43,6 +37,26 @@ conda activate emlabpy
 pip install -r requirements.txt
 pip install git+https://github.com/Spine-project/spinetoolbox-dev
 ```
+### spinetoolbox-dev
+download spinetoolbox and install all requirements
+```
+conda create -n spinetoolbox-dev python=3.8
+conda activate spinetoolbox-dev
+pip install git+https://github.com/Spine-project/spinetoolbox-dev
+git clone https://github.com/Spine-project/Spine-Toolbox
+cd Spine-toolbox\
+pip install -r requirements.txt
+cd bin 
+upgrade_spine_reqs.bat
+```
+
+with the activate environment spinetoolbox-dev. type spinetoolbox to start the tool
+open the project and make a kernel called emlabpy, linking to the python.exe of this environment. 
+Also change the path on the Amiris future > basic console > conda enviroment
+
+###  kernel
+after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool
+Then click kernel spec editor and make a new kernel called emlabpy referencing to your miniconda environment
 
 # Folder structure
 

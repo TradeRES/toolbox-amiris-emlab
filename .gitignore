@@ -4,7 +4,7 @@
 **/__pycache__
 *.pyc
 *ipynb_checkpoints
-
+.spinetoolbox/items/amiris_future
 # Packaging
 build
 dist
