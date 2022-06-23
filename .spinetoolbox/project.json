@@ -567,17 +567,6 @@
                 ]
             },
             {
-                "name": "from Initialize Clock to Prepare Data Amiris",
-                "from": [
-                    "Initialize Clock",
-                    "right"
-                ],
-                "to": [
-                    "Prepare Data Amiris",
-                    "left"
-                ]
-            },
-            {
                 "name": "from Prepare Data Amiris to AMIRIS",
                 "from": [
                     "Prepare Data Amiris",
@@ -596,6 +585,17 @@
                 ],
                 "to": [
                     "import AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Initialize Clock to decommission",
+                "from": [
+                    "Initialize Clock",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
                     "left"
                 ]
             }
@@ -751,8 +751,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -897.4972791640155,
-            "y": -560.541686410202,
+            "x": -1003.9444822201107,
+            "y": -675.5046657107845,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -847,8 +847,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -1023.8404928959119,
-            "y": -366.04487795564523,
+            "x": -934.424842328792,
+            "y": -436.30003197266785,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
