@@ -15,6 +15,6 @@
         "env": "",
         "kernel_spec_name": "amiris",
         "use_jupyter_console": false,
-        "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+        "executable": "C:\\Programs\\Anaconda3\\envs\\amiris\\python.exe"
     }
 }

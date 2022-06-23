@@ -270,17 +270,6 @@
                 ]
             },
             {
-                "name": "from TraderesDB to exporterTraderes",
-                "from": [
-                    "TraderesDB",
-                    "right"
-                ],
-                "to": [
-                    "exporterTraderes",
-                    "left"
-                ]
-            },
-            {
                 "name": "from traderesCommon to Amiris to EmlabDB",
                 "from": [
                     "traderesCommon to Amiris",
@@ -596,6 +585,17 @@
                 ],
                 "to": [
                     "decommission",
+                    "left"
+                ]
+            },
+            {
+                "name": "from TraderesDB to exporterTraderes",
+                "from": [
+                    "TraderesDB",
+                    "right"
+                ],
+                "to": [
+                    "exporterTraderes",
                     "left"
                 ]
             }

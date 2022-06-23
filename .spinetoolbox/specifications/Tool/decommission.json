@@ -13,8 +13,8 @@
     "includes_main_path": "../../../emlabpy",
     "execution_settings": {
         "env": "",
-        "kernel_spec_name": "amiris",
-        "use_jupyter_console": false,
+        "kernel_spec_name": "emlabpy",
+        "use_jupyter_console": true,
         "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
     }
 }
