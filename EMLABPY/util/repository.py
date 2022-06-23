@@ -509,13 +509,15 @@ class Repository:
         return [i for i in self.bids_sr.values() if
                 i.status == globalNames.power_plant_status_strategic_reserve]
 
-    def update_power_plant_status(self, plant: PowerPlant):
+    def update_power_plant_status(self, plant: PowerPlant, price):
         new_status = globalNames.power_plant_status_strategic_reserve
         new_owner = 'StrategicReserveOperator'
+        new_price = price
         for i in self.power_plants.values():
             if i.name == plant.name:
                 i.status = new_status
                 i.owner = new_owner
+                i.technology.variable_operating_costs = new_price
                 self.power_plants[i.name] = i
                 self.dbrw.stage_power_plant_status(i)
 
