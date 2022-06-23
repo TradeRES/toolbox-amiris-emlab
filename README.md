@@ -12,39 +12,36 @@ To run EMLabpy from the spinetoolbox, it needs to be packed as a python module.
 To do so, run the following commands in the toolbox-amiris-emlab folder:
 
 ## Prepare environments
+To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created: 
+spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be executed
 
-install miniconda
+### install miniconda
 
 https://docs.conda.io/en/latest/miniconda.html
-### spinetoolbox 
-spinetoolbox-dev
 
+### spinetoolbox-dev  
+```
 conda create -n spinetoolbox-dev python=3.8
-
 conda activate spinetoolbox-dev
-
 pip install git+https://github.com/Spine-project/spinetoolbox-dev
+#pip install -r requirements.txt (from spinetoolbox folder)
+```
 
-pip install -r requirements.txt from spinetoolbox folder
-
-### AMIRIS
+### AMIRIS (iovrmr)
 in toolbox-amiris-emlab folder
-
+```
 conda env create -f environment.yml
+``` 
 
 ### EMLABpy
 in toolbox-amiris-emlab folder
-
-python setup.py install -> if changes are done
-
+```
+python setup.py install -> if changes are done to the code
 conda create -n emlabpy python=3.8
-
 conda activate emlabpy
-
 pip install -r requirements.txt
-
 pip install git+https://github.com/Spine-project/spinetoolbox-dev
-#python -m pip install .
+```
 
 # Folder structure
 
