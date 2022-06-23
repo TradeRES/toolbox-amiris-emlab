@@ -51,8 +51,14 @@ upgrade_spine_reqs.bat
 ```
 
 with the activate environment spinetoolbox-dev. type spinetoolbox to start the tool
-open the project and make a kernel called emlabpy, linking to the python.exe of this environment. 
-Also change the path on the Amiris future > basic console > conda enviroment
+make an emlabpy kernel as follows:
+In spinetooolbox > file? settings> tools > jupyter console> kernel spec editor>
+add
+iterpreter: path to your the python.exe in your conda environment emlabpy
+name: emlabpy
+make kernel specification > ok
+
+Also change the path on the (Amiris future tool > basic console) to the iovrmr conda enviroment
 
 ###  kernel
 after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool
