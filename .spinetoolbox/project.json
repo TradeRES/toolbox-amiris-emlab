@@ -369,13 +369,13 @@
                 ]
             },
             {
-                "name": "from EmlabDB2 to BestInvestment",
+                "name": "from EmlabDB2 to Invest",
                 "from": [
                     "EmlabDB2",
                     "right"
                 ],
                 "to": [
-                    "BestInvestment",
+                    "Invest",
                     "left"
                 ]
             },
@@ -424,13 +424,13 @@
                 ]
             },
             {
-                "name": "from AMIRIS future to BestInvestment",
+                "name": "from AMIRIS future to Invest",
                 "from": [
                     "AMIRIS future",
                     "bottom"
                 ],
                 "to": [
-                    "BestInvestment",
+                    "Invest",
                     "right"
                 ]
             },
@@ -446,9 +446,9 @@
                 ]
             },
             {
-                "name": "from BestInvestment to Next year",
+                "name": "from Invest to Next year",
                 "from": [
-                    "BestInvestment",
+                    "Invest",
                     "bottom"
                 ],
                 "to": [
@@ -602,9 +602,9 @@
         ],
         "jumps": [
             {
-                "name": "from BestInvestment to prepare future market",
+                "name": "from Invest to prepare future market",
                 "from": [
-                    "BestInvestment",
+                    "Invest",
                     "right"
                 ],
                 "to": [
@@ -716,28 +716,6 @@
                     "<project>/data/exported_toward_bb.xlsx",
                     true
                 ]
-            ]
-        },
-        "BestInvestment": {
-            "type": "Tool",
-            "description": "",
-            "x": -214.2311826111781,
-            "y": 214.65700893291748,
-            "specification": "Best Investment",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB2"
-                },
-                {
-                    "type": "literal",
-                    "arg": "none"
-                },
-                {
-                    "type": "literal",
-                    "arg": "run_investment_module"
-                }
             ]
         },
         "Config": {
@@ -1002,7 +980,12 @@
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": []
+            "file_selection": [
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    true
+                ]
+            ]
         },
         "Next year": {
             "type": "Tool",
@@ -1097,6 +1080,28 @@
                 {
                     "type": "resource",
                     "arg": "<project>/emlabpy/years.csv"
+                }
+            ]
+        },
+        "Invest": {
+            "type": "Tool",
+            "description": "",
+            "x": -214.2311826111781,
+            "y": 214.65700893291748,
+            "specification": "Invest",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_investment_module"
                 }
             ]
         }

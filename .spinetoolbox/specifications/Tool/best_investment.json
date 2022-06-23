@@ -1,5 +1,5 @@
 {
-    "name": "Best Investment",
+    "name": "Invest",
     "tooltype": "python",
     "includes": [
         "emlab.py"
