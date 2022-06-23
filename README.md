@@ -11,9 +11,27 @@ The integration is best illustrated with following diagram.
 To run EMLabpy from the spinetoolbox, it needs to be packed as a python module. 
 To do so, run the following commands in the toolbox-amiris-emlab folder:
 
-python setup.py install
+## Prepare environments
+### spinetoolbox 
+spinetoolbox-dev
+conda create -n spinetoolbox-dev python=3.8
+conda activate spinetoolbox-dev
+pip install git+https://github.com/Spine-project/spinetoolbox-dev
+pip install -r requirements.txt from spinetoolbox folder
 
-python -m pip install .
+### AMIRIS
+in toolbox-amiris-emlab folder
+conda env create -f environment.yml
+
+### EMLABpy
+in toolbox-amiris-emlab folder
+python setup.py install -> if changes are done
+
+conda create -n emlabpy python=3.8
+conda activate emlabpy
+pip install -r requirements.txt
+pip install git+https://github.com/Spine-project/spinetoolbox-dev
+#python -m pip install .
 
 # Folder structure
 

@@ -17,6 +17,6 @@
         "env": "conda",
         "kernel_spec_name": "conda-env-amiris-spine-py",
         "use_jupyter_console": false,
-        "executable": "C:/Programs/Anaconda3/envs/demo-amiris/python.exe"
+        "executable": "C:/Programs/Anaconda3/envs/iovrmr/python.exe"
     }
 }

@@ -57,6 +57,7 @@ emlabpy/modules/prepareFutureMarketClearing.py
 emlabpy/modules/prepareMarketClearing.py
 emlabpy/modules/short_invest.py
 emlabpy/modules/strategicreserve.py
+emlabpy/modules/strategicreserve_new.py
 emlabpy/modules/targetInvestment.py
 emlabpy/modules/test.py
 emlabpy/util/__init__.py

@@ -1,4 +1,4 @@
-name: amiris-demo
+name: amiris-spine # MISSING PACKAGES
 channels:
   - defaults
 dependencies:

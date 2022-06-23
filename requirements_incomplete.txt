@@ -4,3 +4,4 @@ numpy_financial
 sklearn
 twine
 ipykernel
+numpy==2.8.1

@@ -7,16 +7,14 @@
     "description": "calculates NPV for all possible PP",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [
-        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\emlabpy\\continue.txt"
-    ],
+    "outputfiles": [],
     "cmdline_args": [],
     "execute_in_work": false,
     "includes_main_path": "../../../emlabpy",
     "execution_settings": {
         "env": "",
-        "kernel_spec_name": "amiris",
+        "kernel_spec_name": "emlabpy",
         "use_jupyter_console": true,
-        "executable": ""
+        "executable": "C:/Programs/Anaconda3/envs/emlabpy/python.exe"
     }
 }
