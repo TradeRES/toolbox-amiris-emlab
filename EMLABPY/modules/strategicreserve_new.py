@@ -67,6 +67,7 @@ class StrategicReserveAssignment(MarketModule):
             # Retrieve vars
             market_capacity = self.reps.calculateCapacityOfPowerPlantsInMarket(market.name)
             strategic_reserve_capacity = market_capacity * self.operator.getReserveVolumePercentSR()
+            SR_price = self.operator.getReservePriceSR()
 
             # Sort the bids in descending order
             sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market)
@@ -85,8 +86,8 @@ class StrategicReserveAssignment(MarketModule):
                     # Add plant to the list of the StrategicReserveOperator
                     self.operator.setPlants(ppdp.plant)
                     self.reps.set_power_plants_in_SR(ppdp.plant)
-                    # Change plant status to 'InStrategicReserve' and owner to 'StrategicReserveOperator'
-                    self.reps.update_power_plant_status(ppdp.plant)
+                    # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
+                    self.reps.update_power_plant_status(ppdp.plant, SR_price)
                 else:
                     # When strategic reserve is full nothing actually changes for the power plant
                     ppdp.accepted_amount = 0
@@ -95,10 +96,10 @@ class StrategicReserveAssignment(MarketModule):
             self.operator.setReserveVolume(contracted_strategic_reserve_volume)
 
             # Pay the contracted plants in the strategic reserve
-            self.createCashFlowforSR(self.operator)
+            self.createCashFlowforSR(self.operator, market)
 
     # Cashflow function for the operation of the strategic reserve
-    def createCashFlowforSR(self, operator):
+    def createCashFlowforSR(self, operator, market):
         accepted_ppdp = self.reps.get_accepted_SR_bids()
         for accepted in accepted_ppdp:
             # Fixed operating costs of plants
@@ -108,12 +109,20 @@ class StrategicReserveAssignment(MarketModule):
             dispatch = self.reps.get_power_plant_electricity_dispatch(accepted.plant.id)
             # Costs to be paid by Strategic Reserve Operator
             if dispatch is None:
-                SR_payment = fixed_operating_costs
+                SR_payment_to_plant = fixed_operating_costs
+                SR_payment_to_operator = 0
             else:
-                SR_payment = fixed_operating_costs + dispatch.variable_costs
+                SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
+                SR_payment_to_operator = dispatch.revenues
+
             # from_agent, to, amount, type, time, plant
+            # Payment from operator to plant
             self.reps.createCashFlow(operator, self.reps.energy_producers[accepted.bidder.name],
-                                     SR_payment, "CAPMARKETPAYMENT", self.reps.current_tick,
+                                     SR_payment_to_plant, "CAPMARKETPAYMENT", self.reps.current_tick,
+                                     self.reps.power_plants[accepted.plant.name])
+            # Payment from market to operator
+            self.reps.createCashFlow(market, operator,
+                                     SR_payment_to_operator, "CAPMARKETPAYMENT", self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant.name])
             # Update cash of Strategic Reserve Operator
-            self.operator.setCash(-SR_payment)
+            # self.operator.setCash(-SR_payment)
