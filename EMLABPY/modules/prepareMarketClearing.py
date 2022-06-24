@@ -1,8 +1,8 @@
-
 from modules.defaultmodule import DefaultModule
 import pandas as pd
 from datetime import datetime, timedelta
 from util import globalNames
+
 
 class PrepareMarket(DefaultModule):
     """
@@ -11,6 +11,7 @@ class PrepareMarket(DefaultModule):
     The fuel prices are stochastically simulated with a triangular trend
 
     """
+
     def __init__(self, reps):
         super().__init__("Next year prices", reps)
         self.tick = 0
@@ -19,10 +20,12 @@ class PrepareMarket(DefaultModule):
         self.Years = []
         self.writer = None
         self.path = globalNames.amiris_data_path
-        self.power_plants_list = self.reps.get_operational_power_plants()
+        self.power_plants_list = []
         reps.dbrw.stage_init_bids_structure()
 
     def act(self):
+        for energy_producer in self.reps.energy_producers.values():
+            self.power_plants_list.append(self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
         self.setTimeHorizon()
         self.setExpectations()
         self.openwriter()
@@ -33,6 +36,7 @@ class PrepareMarket(DefaultModule):
         self.write_times()
         self.writer.save()
         self.writer.close()
+        print("saved to " , self.path)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
@@ -42,6 +46,7 @@ class PrepareMarket(DefaultModule):
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
             fuel_price = substance.get_price_for_next_tick(self.reps, self.tick, self.simulation_year, substance)
+            substance.simulatedPrice_inYear =  fuel_price
             self.reps.dbrw.stage_simulated_fuel_prices(self.simulation_year, fuel_price, substance)
 
     def write_times(self):
@@ -62,23 +67,19 @@ class PrepareMarket(DefaultModule):
         demand = ["./timeseries/demand/load.csv"] * len(self.Years)
 
         for k, substance in self.reps.substances.items():
-            simulatedPrices = self.reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, calculatedprices)
-            df_prices = pd.DataFrame(simulatedPrices['data'])
-            df_prices.set_index(0, inplace=True)
-            for year in self.Years:
-                fuel_price = df_prices.loc[str(year)][1]
-                if substance.name == "nuclear":
-                    FuelPrice_NUCLEAR.append(fuel_price)
-                elif substance.name == "lignite":
-                    FuelPrice_LIGNITE.append(fuel_price)
-                elif substance.name == "hard_coal":
-                    FuelPrice_HARD_COAL.append(fuel_price)
-                elif substance.name == "natural_gas":
-                    FuelPrice_NATURAL_GAS.append(fuel_price)
-                elif substance.name == "light_oil":
-                    FuelPrice_OIL.append(fuel_price)
-                elif substance.name == "CO2":
-                    Co2Prices.append(fuel_price)
+            fuel_price = substance.simulatedPrice_inYear
+            if substance.name == "nuclear":
+                FuelPrice_NUCLEAR.append(fuel_price)
+            elif substance.name == "lignite":
+                FuelPrice_LIGNITE.append(fuel_price)
+            elif substance.name == "hard_coal":
+                FuelPrice_HARD_COAL.append(fuel_price)
+            elif substance.name == "natural_gas":
+                FuelPrice_NATURAL_GAS.append(fuel_price)
+            elif substance.name == "light_oil":
+                FuelPrice_OIL.append(fuel_price)
+            elif substance.name == "CO2":
+                Co2Prices.append(fuel_price)
 
         d = {'Co2Prices': Co2Prices,
              'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
@@ -96,7 +97,7 @@ class PrepareMarket(DefaultModule):
         BlockSizeInMW = []
         InstalledPowerInMW = []
 
-        for pp in self.power_plants_list:
+        for pp in self.power_plants_list[0]:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
@@ -122,8 +123,9 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
 
-        for pp in self.power_plants_list:
-            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[pp.technology.name] != "Biogas" :
+        for pp in self.power_plants_list[0]:
+            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
+                pp.technology.name] != "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
@@ -150,8 +152,9 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
 
-        for pp in self.power_plants_list:
-            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[pp.technology.name] == "Biogas" :
+        for pp in self.power_plants_list[0]:
+            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
+                pp.technology.name] == "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
@@ -168,7 +171,6 @@ class PrepareMarket(DefaultModule):
         df = pd.DataFrame(data=d)
         df.to_excel(self.writer, sheet_name="biogas")
 
-
     def write_storage(self):
         identifier = []
         EnergyToPowerRatio = []
@@ -177,7 +179,7 @@ class PrepareMarket(DefaultModule):
         InitialEnergyLevelInMWH = []
         InstalledPowerInMW = []
         StorageType = []
-        for  pp in self.power_plants_list:
+        for pp in self.power_plants_list[0]:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
                 ChargingEfficiency.append(pp.actualEfficiency)  # todo this should be charging efficiency specifically

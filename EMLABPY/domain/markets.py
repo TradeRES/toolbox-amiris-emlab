@@ -7,7 +7,6 @@ from domain.actors import EMLabAgent
 from domain.import_object import *
 from spinedb_api import Map
 import pandas as pd
-
 from util import globalNames
 
 
@@ -69,8 +68,6 @@ class ElectricitySpotMarket(Market):
         return max(self.hourlyDemand)
 
 
-
-
 class CapacityMarket(Market):
     """"""
     def __init__(self, name: str):
@@ -82,7 +79,6 @@ class CapacityMarket(Market):
         return SlopingDemandCurve(float(self.parameters['InstalledReserveMargin']),
                                   float(self.parameters['LowerMargin']),
                                   float(self.parameters['UpperMargin']), d_peak, float(self.parameters['PriceCap']))
-
 
 class CO2Market(Market):
     pass
@@ -147,8 +143,6 @@ class SlopingDemandCurve:
             return None
         else:
             return ((self.price_cap - price) / m) + self.lm_volume
-
-
 
 class MarketStabilityReserve(ImportObject):
     """

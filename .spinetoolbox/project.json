@@ -129,6 +129,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/clock.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/initialize_power_plants.json"
                 }
             ],
             "Importer": [
@@ -578,9 +583,31 @@
                 ]
             },
             {
-                "name": "from Initialize Clock to decommission",
+                "name": "from TraderesDB to exporterTraderes",
+                "from": [
+                    "TraderesDB",
+                    "right"
+                ],
+                "to": [
+                    "exporterTraderes",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Initialize Clock to Initialize power plants",
                 "from": [
                     "Initialize Clock",
+                    "right"
+                ],
+                "to": [
+                    "Initialize power plants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Initialize power plants to decommission",
+                "from": [
+                    "Initialize power plants",
                     "right"
                 ],
                 "to": [
@@ -589,13 +616,13 @@
                 ]
             },
             {
-                "name": "from TraderesDB to exporterTraderes",
+                "name": "from EmlabDB to Initialize power plants",
                 "from": [
-                    "TraderesDB",
+                    "EmlabDB",
                     "right"
                 ],
                 "to": [
-                    "exporterTraderes",
+                    "Initialize power plants",
                     "left"
                 ]
             }
@@ -751,8 +778,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1003.9444822201107,
-            "y": -675.5046657107845,
+            "x": -1264.182383263412,
+            "y": -835.3650906373838,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -810,7 +837,7 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "run_new_power_plants"
+                    "arg": "run_prepare_next_year_market_clearing"
                 }
             ]
         },
@@ -847,8 +874,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -934.424842328792,
-            "y": -436.30003197266785,
+            "x": -919.4841903543221,
+            "y": -431.5700912804405,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1099,6 +1126,28 @@
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
+        },
+        "Initialize power plants": {
+            "type": "Tool",
+            "description": "run_initialize_power_plants",
+            "x": -1021.228932719026,
+            "y": -830.6438731143243,
+            "specification": "Initialize Power plants",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_initialize_power_plants"
+                }
+            ]
         }
     }
 }

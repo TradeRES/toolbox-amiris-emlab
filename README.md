@@ -19,8 +19,6 @@ spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be execute
 
 https://docs.conda.io/en/latest/miniconda.html
 
-
-
 ### AMIRIS (iovrmr)
 in toolbox-amiris-emlab folder
 ```
@@ -50,11 +48,11 @@ cd bin
 upgrade_spine_reqs.bat
 ```
 
-with the activate environment spinetoolbox-dev. type spinetoolbox to start the tool
-make an emlabpy kernel as follows:
-In spinetooolbox > file? settings> tools > jupyter console> kernel spec editor>
+with the activate environment spinetoolbox-dev. type spinetoolbox to start the tool in this environment.
+Once the project is open, make an emlabpy kernel as follows:
+In spinetooolbox > file > settings> tools > jupyter console> kernel spec editor>
 add
-iterpreter: path to your the python.exe in your conda environment emlabpy
+imterpreter: path to the python.exe in your conda environment emlabpy
 name: emlabpy
 make kernel specification > ok
 

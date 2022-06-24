@@ -211,12 +211,12 @@ class Investmentdecision(DefaultModule):
         if (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) \
                 or self.capacityOfTechnologyInPipeline > 9000:
             logging.info(
-                " will not invest in {} technology because there's too much capacity in the pipeline" + technology.name)
+                " will not invest in {} technology because there's too much capacity in the pipeline %s",  technology.name)
             # TODO: if the candidate power plants would be parallellized, setting this technology as not investable could that technology simulation
             candidatepowerplant.setViableInvestment(False)
             return
         elif technologyCapacityLimit > self.expectedInstalledCapacityOfTechnology:
-            logging.info(" will not invest in {} technology because the capacity limits are achieved" + technology.name)
+            logging.info(" will not invest in {} technology because the capacity limits are achieved %s", technology.name)
             candidatepowerplant.setViableInvestment(False)
             return
 
@@ -231,7 +231,7 @@ class Investmentdecision(DefaultModule):
 
         #     logging.info(Lagent +" will not invest in {} technology as he does not have enough money for downpayment" + self.technology)
         else:
-            logging.info(technology + " passes capacity limit.  will now calculate financial viability.")
+            logging.info("%s passes capacity limit.  will now calculate financial viability.", technology)
             candidatepowerplant.setViableInvestment(True)
             return
 

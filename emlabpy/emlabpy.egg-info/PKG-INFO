@@ -1,18 +1,17 @@
-Metadata-Version: 2.1
+Metadata-Version: 1.2
 Name: emlabpy
 Version: 0.0.0
 Summary: electricity markets ABM
+Home-page: UNKNOWN
 Author: Ingrid Sanchez, Jim Hommes
 Author-email: i.j.sanchezjimenez@tudelft.nl
 License: UNKNOWN
+Description: 
+                        modular python version of EMLAB
+                               
 Keywords: ABM,electricity markets
 Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Energy Modellers
 Classifier: License :: OSI Approved :: MIT License
 Requires-Python: >=3.6
-
-
-                modular python version of EMLAB
-                       
-

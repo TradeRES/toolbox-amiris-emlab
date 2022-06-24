@@ -4,6 +4,7 @@ from util.repository import Repository
 import logging
 import csv
 
+
 class Dismantle(DefaultModule):
     """
     The class that decides to decomission some technologies
@@ -23,30 +24,28 @@ class Dismantle(DefaultModule):
         for producer, producer_specs in self.reps.energy_producers.items():
             for plant in self.reps.get_power_plants_to_be_decommissioned(producer):
                 # TODO is the power plant subsidized ? then dismantle
-                print(plant.name)
                 horizon = producer_specs.getPastTimeHorizon()
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
+                # todo: for the first 3 years dont dismantle
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
                 if profit <= requiredProfit:
                     logging.info(
-                        "Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last ",
-                        horizon, " years: ", plant, " was ", profit, " which is less than required: ", requiredProfit)
+                        "Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
+                            .format(horizon, plant, profit, requiredProfit))
                     plant.dismantlePowerPlant(self.reps.current_tick)
                     self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
-                    plant.status = self.reps.power_plant_status_decommissioned
+                    plant.status = globalNames.power_plant_status_decommissioned
                 else:
                     print("dont dismantle but increase OPEX, because lifetime is over")
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
-                                1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
-                                             float(plant.getActualLifetime()) - (
+                            1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
+                                         float(plant.getActualLifetime()) - (
                                      (float(plant.getTechnology().getExpectedLifetime()))))
                     plant.setActualFixedOperatingCost(ModifiedOM)
-
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():
             powerplant.age += 1
-
 
     def calculateAveragePastOperatingProfit(self, plant, horizon):
         averagePastOperatingProfit = 0
@@ -63,7 +62,6 @@ class Dismantle(DefaultModule):
                     int(x[1]) for x in rep['data'] if int(x[0]) < self.reps.current_tick) / horizon
         return averagePastOperatingProfit
 
-
     def set_powerplants_status(self):
         for powerplantname, powerplant in self.reps.power_plants.items():
             technology = self.reps.power_generating_technologies[powerplant.technology.name]
@@ -78,9 +76,6 @@ class Dismantle(DefaultModule):
             else:
                 print("status not set", powerplant.name)
 
-
     def save_powerplants_status_and_age(self):
         print("     saving power plants status ...   ")
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
-
-

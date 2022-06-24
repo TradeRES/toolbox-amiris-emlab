@@ -236,7 +236,7 @@ class SpineDBReaderWriter:
     def stage_decommission_time(self, powerplant_name, tick):
         self.stage_object_parameters(self.powerplant_installed_classname, ['dismantleTime'])
         self.stage_object(self.powerplant_installed_classname, "dismantleTime")
-        self.db.import_object_parameter_values(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')
+        self.db.import_object_parameter_values([(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')])
 
 
     def stage_bids(self, bid: Bid, current_tick: int):
@@ -297,7 +297,6 @@ class SpineDBReaderWriter:
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
             self.financial_reports_object_classname, powerplant.name, "profit", 0)
         if not financialresults:
-            print(" no financial results ")
             return
         return financialresults[0]['parameter_value'].to_dict()
 

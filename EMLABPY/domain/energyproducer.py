@@ -92,15 +92,15 @@ class EnergyProducer(EMLabAgent):
         for i in range(-horizon, 1):
             #JAVA TO PYTHON CONVERTER TODO TASK: Java to Python Converter cannot determine whether both operands of this division are integer types - if they are then you should change 'lhs / rhs' to 'math.trunc(lhs / float(rhs))':
             averagePastOperatingProfit += calculatePastOperatingProfitInclFixedOMCost(pp, getCurrentTick() + i) / horizon
-        logging.INFO(pp + " has had an average operating profit of " + averagePastOperatingProfit)
+        logging.INFO(" %s has had an average operating profit of %s", pp  , averagePastOperatingProfit)
         return averagePastOperatingProfit
 
     def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):
         rep = self.reps.findFinancialPowerPlantReportsForPlantForTime(plant, clearingTick)
         if rep is not None:
-            logger.finer(plant + " report: tick " + clearingTick + " revenue: " + rep.getOverallRevenue() + " var cost: " + rep.getVariableCosts() + " fixed om cost: " + rep.getFixedOMCosts())
+            logging.INFO(" %s report: tick %s , revenue: %s  + rep.getOverallRevenue()  var cost: rep.getVariableCosts()  fixed om cost: rep.getFixedOMCosts()"  , plant , clearingTick)
             return rep.getOverallRevenue() - rep.getVariableCosts() - rep.getFixedOMCosts()
-        logging.INFO("No financial report for " + plant + " for tick " + clearingTick + " so returning 0")
+        logging.INFO("No financial report for %s for tick %s, so returning 0",  plant , clearingTick)
         return Double.MAX_VALUE #TODO avoid dismantling simply becuase you have no data for the full horizon?
 
     def isWillingToInvest(self):

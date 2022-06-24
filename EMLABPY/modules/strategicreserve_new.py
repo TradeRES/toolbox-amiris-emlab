@@ -1,6 +1,5 @@
 """
 The file responsible for all strategic reserve operations.
-
 Bart van Nobelen - 26-05-2022
 """
 
@@ -13,7 +12,6 @@ class StrategicReserveSubmitBids(MarketModule):
     """
     The class that submits all bids to the Strategic Reserve Market
     """
-
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
         # reps.dbrw.stage_init_plant_status()
@@ -21,11 +19,11 @@ class StrategicReserveSubmitBids(MarketModule):
     def act(self):
         # For every EnergyProducer
         for energy_producer in self.reps.energy_producers.values():
-
             # For every PowerPlant owned by energyProducer
             for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
                     energy_producer.name):
                 # Retrieve vars
+                # TODO why capacity market?
                 market = self.reps.get_capacity_market_for_plant(powerplant)
                 capacity = powerplant.get_actual_nominal_capacity()
 
@@ -47,6 +45,7 @@ class StrategicReserveSubmitBids(MarketModule):
                 # Place bids on market (full capacity at cost price per MW)
                 # Remove this if statement when everything works
                 if market != None:
+                    # TODO why new function?
                     self.reps.create_or_update_power_plant_StrategicReserve_plan(powerplant, energy_producer,
                                                                                market, capacity, normalised_costs,
                                                                                self.reps.current_tick)
@@ -66,6 +65,7 @@ class StrategicReserveAssignment(MarketModule):
         for market in self.reps.capacity_markets.values():
             # Retrieve vars
             market_capacity = self.reps.calculateCapacityOfPowerPlantsInMarket(market.name)
+            # todo is it really times market capacity?
             strategic_reserve_capacity = market_capacity * self.operator.getReserveVolumePercentSR()
             SR_price = self.operator.getReservePriceSR()
 
@@ -117,6 +117,7 @@ class StrategicReserveAssignment(MarketModule):
 
             # from_agent, to, amount, type, time, plant
             # Payment from operator to plant
+
             self.reps.createCashFlow(operator, self.reps.energy_producers[accepted.bidder.name],
                                      SR_payment_to_plant, "CAPMARKETPAYMENT", self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant.name])

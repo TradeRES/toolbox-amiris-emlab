@@ -73,13 +73,13 @@ for arg in sys.argv[3:]:
 # following modules need the results from AMIRIS that are being stored in a DB
 if run_short_investment_module or run_capacity_market or run_strategic_reserve:
     emlab_url = sys.argv[1]
-    logging.info('emlab database: ' + str(emlab_url))
+    logging.info('emlab database: %s' , str(emlab_url))
     amiris_url = sys.argv[2]
-    logging.info('amiris database: ' + str(amiris_url))
+    logging.info('amiris database:  %s' , str(amiris_url))
     spinedb_reader_writer = SpineDBReaderWriter(True, emlab_url, amiris_url)
 else:
     emlab_url = sys.argv[1]
-    logging.info('emlab database: ' + str(emlab_url))
+    logging.info('emlab database:  %s' , str(emlab_url))
     spinedb_reader_writer = SpineDBReaderWriter(False, emlab_url)
 
 try:  # Try statement to always close DB properly

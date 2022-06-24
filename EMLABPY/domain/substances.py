@@ -16,7 +16,9 @@ class Substance(ImportObject):
         self.initialprice2020 = 0
         self.initialprice2040 = 0
         self.futurePrice = []
+        self.futurePrice_inYear = 0
         self.simulatedPrice = []
+        self.simulatedPrice_inYear = 0
         self.resource_limit2020 = 0
         self.values = []
         self.geometricRegression = None
