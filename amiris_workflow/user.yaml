@@ -26,7 +26,7 @@ workflow:
         read_from_dmgr: null
         write_to_dmgr: powerPlants
       args:
-        excelFile: ../data/amiris/amiris_data_structure.xlsx
+        excelFile: ../amiris_data_structure.xlsx
         excelSheet: conventionals
         excelHeader: True
 
