@@ -15,9 +15,9 @@ To do so, run the following commands in the toolbox-amiris-emlab folder:
 To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created: 
 spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be executed
 
-### install miniconda
+### install anaconda
 
-https://docs.conda.io/en/latest/miniconda.html
+
 
 ### AMIRIS (iovrmr)
 in toolbox-amiris-emlab folder
@@ -61,6 +61,10 @@ Also change the path on the (Amiris future tool > basic console) to the iovrmr c
 ###  kernel
 after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool
 Then click kernel spec editor and make a new kernel called emlabpy referencing to your miniconda environment
+
+
+## Other steps
+add data in amiris_workflow\amiris-config\data\load.csv
 
 # Folder structure
 
