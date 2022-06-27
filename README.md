@@ -65,7 +65,7 @@ Then click kernel spec editor and make a new kernel called emlabpy referencing t
 
 ## Other steps
 add data in amiris_workflow\amiris-config\data\load.csv
-
+add amiris folder in amiris_workflow\ with executable, setup.yaml and log
 # Folder structure
 
 ## EMLABpy
