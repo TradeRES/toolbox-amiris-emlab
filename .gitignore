@@ -22,7 +22,6 @@ data/powerplantsGermany/
 amiris_workflow/amiris-config/data
 amiris_workflow/amiris
 amiris_workflow/amiris-config/scenario.yaml
-data/amiris/
 data/competes/
 emlabpy/logs
 test.py

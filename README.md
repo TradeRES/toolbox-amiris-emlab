@@ -66,6 +66,9 @@ Then click kernel spec editor and make a new kernel called emlabpy referencing t
 ## Other steps
 add data in amiris_workflow\amiris-config\data\load.csv
 add amiris folder in amiris_workflow\ with executable, setup.yaml and log
+
+everytime there is a new change in the code (including git pull) , the emlabpy environment has to be updated. For that double click file install_emlabpy.bat
+
 # Folder structure
 
 ## EMLABpy
