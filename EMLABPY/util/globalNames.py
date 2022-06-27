@@ -29,6 +29,6 @@ continue_path = 'continue.txt'
 #continue_path = os.path.join(parentpath, 'continue.txt')
 parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
 #amiris_data_path =  os.path.join(parentpath, 'amiris_data_structure.xlsx')
-amiris_data_path = 'amiris_data_structure.xlsx'
+amiris_data_path =  os.path.join(  parentpath, 'amiris_workflow\\amiris_data_structure.xlsx' )
 load_path = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')
