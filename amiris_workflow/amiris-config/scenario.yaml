@@ -4404,47 +4404,191 @@ Agents:
 - Attributes:
     DispatchTimeSeries: amiris-config/data/biomass.csv
     EnergyCarrier: Biogas
-    InstalledPowerInMW: 1.0
+    InstalledPowerInMW: 1125.6
     OperationMode: FROM_FILE
     OpexVarInEURperMWH: 1.9
     Set: Biogas
-  Id: 99990100004
+  Id: 20140100021
   Type: Biogas
 - Attributes:
     DispatchTimeSeries: amiris-config/data/biomass.csv
     EnergyCarrier: Biogas
-    InstalledPowerInMW: 53.7
+    InstalledPowerInMW: 731.0
     OperationMode: FROM_FILE
     OpexVarInEURperMWH: 1.9
     Set: Biogas
-  Id: 20150100064
+  Id: 20130100022
   Type: Biogas
 - Attributes:
     DispatchTimeSeries: amiris-config/data/biomass.csv
     EnergyCarrier: Biogas
-    InstalledPowerInMW: 54.0
+    InstalledPowerInMW: 256.0
     OperationMode: FROM_FILE
     OpexVarInEURperMWH: 1.9
     Set: Biogas
-  Id: 20040100250
+  Id: 20020100023
   Type: Biogas
 - Attributes:
     DispatchTimeSeries: amiris-config/data/biomass.csv
     EnergyCarrier: Biogas
-    InstalledPowerInMW: 378.0
+    InstalledPowerInMW: 169.3934
     OperationMode: FROM_FILE
     OpexVarInEURperMWH: 1.9
     Set: Biogas
-  Id: 20060100329
+  Id: 20010100034
   Type: Biogas
 - Attributes:
     DispatchTimeSeries: amiris-config/data/biomass.csv
     EnergyCarrier: Biogas
-    InstalledPowerInMW: 95.4
+    InstalledPowerInMW: 81.2
     OperationMode: FROM_FILE
     OpexVarInEURperMWH: 1.9
     Set: Biogas
-  Id: 20070100330
+  Id: 20000100045
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 90.80000000000001
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19980100056
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 95.8
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19970100067
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 93.1
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19960100078
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 117.9
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19950100089
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 171.0
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19890100100
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 123.5
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19820100111
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 252.61
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19800100122
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 89.8
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20120100133
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 280.2
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 19710100134
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 89.05
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20100100215
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 127.8
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20080100226
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 217.8
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20070100237
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 91.5
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20060100248
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 66.78
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20050100259
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 166.92
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20040100270
+  Type: Biogas
+- Attributes:
+    DispatchTimeSeries: amiris-config/data/biomass.csv
+    EnergyCarrier: Biogas
+    InstalledPowerInMW: 206.65
+    OperationMode: FROM_FILE
+    OpexVarInEURperMWH: 1.9
+    Set: Biogas
+  Id: 20030100281
   Type: Biogas
 Contracts:
 - DeliveryIntervalInSteps: 3600
@@ -23186,176 +23330,736 @@ Contracts:
   FirstDeliveryTime: -37
   ProductName: SetRegistration
   ReceiverId: 2
-  SenderId: 99990100004
+  SenderId: 20140100021
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -25
   ProductName: ForecastRequestForward
-  ReceiverId: 99990100004
+  ReceiverId: 20140100021
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -22
   ProductName: MarginalCostForecast
   ReceiverId: 2
-  SenderId: 99990100004
+  SenderId: 20140100021
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -9
   ProductName: GateClosureForward
-  ReceiverId: 99990100004
+  ReceiverId: 20140100021
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -1
   ProductName: MarginalCost
   ReceiverId: 2
-  SenderId: 99990100004
+  SenderId: 20140100021
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: 5
   ProductName: DispatchAssignment
-  ReceiverId: 99990100004
+  ReceiverId: 20140100021
   SenderId: 2
 - DeliveryIntervalInSteps: 2628000
   FirstDeliveryTime: 2626204
   ProductName: Payout
-  ReceiverId: 99990100004
+  ReceiverId: 20140100021
   SenderId: 2
 - DeliveryIntervalInSteps: 31536000
   FirstDeliveryTime: -37
   ProductName: SetRegistration
   ReceiverId: 2
-  SenderId: 20150100064
+  SenderId: 20130100022
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -25
   ProductName: ForecastRequestForward
-  ReceiverId: 20150100064
+  ReceiverId: 20130100022
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -22
   ProductName: MarginalCostForecast
   ReceiverId: 2
-  SenderId: 20150100064
+  SenderId: 20130100022
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -9
   ProductName: GateClosureForward
-  ReceiverId: 20150100064
+  ReceiverId: 20130100022
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -1
   ProductName: MarginalCost
   ReceiverId: 2
-  SenderId: 20150100064
+  SenderId: 20130100022
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: 5
   ProductName: DispatchAssignment
-  ReceiverId: 20150100064
+  ReceiverId: 20130100022
   SenderId: 2
 - DeliveryIntervalInSteps: 2628000
   FirstDeliveryTime: 2626204
   ProductName: Payout
-  ReceiverId: 20150100064
+  ReceiverId: 20130100022
   SenderId: 2
 - DeliveryIntervalInSteps: 31536000
   FirstDeliveryTime: -37
   ProductName: SetRegistration
   ReceiverId: 2
-  SenderId: 20040100250
+  SenderId: 20020100023
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -25
   ProductName: ForecastRequestForward
-  ReceiverId: 20040100250
+  ReceiverId: 20020100023
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -22
   ProductName: MarginalCostForecast
   ReceiverId: 2
-  SenderId: 20040100250
+  SenderId: 20020100023
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -9
   ProductName: GateClosureForward
-  ReceiverId: 20040100250
+  ReceiverId: 20020100023
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -1
   ProductName: MarginalCost
   ReceiverId: 2
-  SenderId: 20040100250
+  SenderId: 20020100023
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: 5
   ProductName: DispatchAssignment
-  ReceiverId: 20040100250
+  ReceiverId: 20020100023
   SenderId: 2
 - DeliveryIntervalInSteps: 2628000
   FirstDeliveryTime: 2626204
   ProductName: Payout
-  ReceiverId: 20040100250
+  ReceiverId: 20020100023
   SenderId: 2
 - DeliveryIntervalInSteps: 31536000
   FirstDeliveryTime: -37
   ProductName: SetRegistration
   ReceiverId: 2
-  SenderId: 20060100329
+  SenderId: 20010100034
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -25
   ProductName: ForecastRequestForward
-  ReceiverId: 20060100329
+  ReceiverId: 20010100034
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -22
   ProductName: MarginalCostForecast
   ReceiverId: 2
-  SenderId: 20060100329
+  SenderId: 20010100034
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -9
   ProductName: GateClosureForward
-  ReceiverId: 20060100329
+  ReceiverId: 20010100034
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -1
   ProductName: MarginalCost
   ReceiverId: 2
-  SenderId: 20060100329
+  SenderId: 20010100034
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: 5
   ProductName: DispatchAssignment
-  ReceiverId: 20060100329
+  ReceiverId: 20010100034
   SenderId: 2
 - DeliveryIntervalInSteps: 2628000
   FirstDeliveryTime: 2626204
   ProductName: Payout
-  ReceiverId: 20060100329
+  ReceiverId: 20010100034
   SenderId: 2
 - DeliveryIntervalInSteps: 31536000
   FirstDeliveryTime: -37
   ProductName: SetRegistration
   ReceiverId: 2
-  SenderId: 20070100330
+  SenderId: 20000100045
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -25
   ProductName: ForecastRequestForward
-  ReceiverId: 20070100330
+  ReceiverId: 20000100045
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -22
   ProductName: MarginalCostForecast
   ReceiverId: 2
-  SenderId: 20070100330
+  SenderId: 20000100045
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -9
   ProductName: GateClosureForward
-  ReceiverId: 20070100330
+  ReceiverId: 20000100045
   SenderId: 2
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: -1
   ProductName: MarginalCost
   ReceiverId: 2
-  SenderId: 20070100330
+  SenderId: 20000100045
 - DeliveryIntervalInSteps: 3600
   FirstDeliveryTime: 5
   ProductName: DispatchAssignment
-  ReceiverId: 20070100330
+  ReceiverId: 20000100045
   SenderId: 2
 - DeliveryIntervalInSteps: 2628000
   FirstDeliveryTime: 2626204
   ProductName: Payout
-  ReceiverId: 20070100330
+  ReceiverId: 20000100045
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19980100056
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19980100056
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19980100056
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19980100056
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19980100056
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19980100056
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19980100056
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19970100067
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19970100067
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19970100067
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19970100067
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19970100067
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19970100067
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19970100067
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19960100078
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19960100078
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19960100078
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19960100078
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19960100078
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19960100078
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19960100078
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19950100089
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19950100089
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19950100089
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19950100089
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19950100089
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19950100089
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19950100089
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19890100100
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19890100100
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19890100100
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19890100100
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19890100100
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19890100100
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19890100100
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19820100111
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19820100111
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19820100111
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19820100111
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19820100111
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19820100111
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19820100111
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19800100122
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19800100122
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19800100122
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19800100122
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19800100122
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19800100122
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19800100122
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20120100133
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20120100133
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20120100133
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20120100133
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20120100133
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20120100133
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20120100133
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 19710100134
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 19710100134
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 19710100134
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 19710100134
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 19710100134
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 19710100134
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 19710100134
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20100100215
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20100100215
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20100100215
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20100100215
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20100100215
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20100100215
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20100100215
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20080100226
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20080100226
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20080100226
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20080100226
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20080100226
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20080100226
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20080100226
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20070100237
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20070100237
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20070100237
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20070100237
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20070100237
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20070100237
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20070100237
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20060100248
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20060100248
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20060100248
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20060100248
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20060100248
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20060100248
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20060100248
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20050100259
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20050100259
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20050100259
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20050100259
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20050100259
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20050100259
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20050100259
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20040100270
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20040100270
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20040100270
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20040100270
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20040100270
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20040100270
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20040100270
+  SenderId: 2
+- DeliveryIntervalInSteps: 31536000
+  FirstDeliveryTime: -37
+  ProductName: SetRegistration
+  ReceiverId: 2
+  SenderId: 20030100281
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -25
+  ProductName: ForecastRequestForward
+  ReceiverId: 20030100281
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -22
+  ProductName: MarginalCostForecast
+  ReceiverId: 2
+  SenderId: 20030100281
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -9
+  ProductName: GateClosureForward
+  ReceiverId: 20030100281
+  SenderId: 2
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: -1
+  ProductName: MarginalCost
+  ReceiverId: 2
+  SenderId: 20030100281
+- DeliveryIntervalInSteps: 3600
+  FirstDeliveryTime: 5
+  ProductName: DispatchAssignment
+  ReceiverId: 20030100281
+  SenderId: 2
+- DeliveryIntervalInSteps: 2628000
+  FirstDeliveryTime: 2626204
+  ProductName: Payout
+  ReceiverId: 20030100281
   SenderId: 2
 GeneralProperties:
   Output:

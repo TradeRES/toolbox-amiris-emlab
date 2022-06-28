@@ -33,6 +33,7 @@ class PrepareMarket(DefaultModule):
         self.write_renewables()
         self.write_storage()
         self.write_scenario_data_emlab("simulatedPrice")
+        self.write_biogas()
         self.write_times()
         self.writer.save()
         self.writer.close()
