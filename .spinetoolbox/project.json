@@ -968,7 +968,7 @@
             "x": -580.7072626103021,
             "y": -116.07734955514215,
             "specification": "Capacity Mechanism",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",

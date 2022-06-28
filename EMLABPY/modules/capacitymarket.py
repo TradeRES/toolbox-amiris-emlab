@@ -68,7 +68,7 @@ class CapacityMarketClearing(MarketModule):
                     1])  # todo later it should be also per year
             expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                                globalNames.simulated_prices,
-                                                                                               self.reps.current_tick)
+                                                                                               self.reps.current_year)
             peakExpectedDemand = peak_load * (expectedDemandFactor)
 
             sdc = market.get_sloping_demand_curve(peakExpectedDemand)

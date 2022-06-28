@@ -22,6 +22,7 @@ class PrepareMarket(DefaultModule):
         self.path = globalNames.amiris_data_path
         self.power_plants_list = []
         reps.dbrw.stage_init_bids_structure()
+        reps.dbrw.stage_init_next_prices_structure()
 
     def act(self):
         for energy_producer in self.reps.energy_producers.values():
@@ -47,7 +48,8 @@ class PrepareMarket(DefaultModule):
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
             fuel_price = substance.get_price_for_next_tick(self.reps, self.tick, self.simulation_year, substance)
-            substance.simulatedPrice_inYear =  fuel_price
+            substance.simulatedPrice_inYear = fuel_price
+            print("staging", self.simulation_year, fuel_price, substance)
             self.reps.dbrw.stage_simulated_fuel_prices(self.simulation_year, fuel_price, substance)
 
     def write_times(self):
