@@ -25,16 +25,18 @@ class PrepareMarket(DefaultModule):
         reps.dbrw.stage_init_next_prices_structure()
 
     def act(self):
+        totallist = []
         for energy_producer in self.reps.energy_producers.values():
-            self.power_plants_list.append(self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
+            totallist.append(self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
+        self.power_plants_list = totallist[0]
         self.setTimeHorizon()
         self.setExpectations()
         self.openwriter()
         self.write_conventionals()
         self.write_renewables()
         self.write_storage()
-        self.write_scenario_data_emlab("simulatedPrice")
         self.write_biogas()
+        self.write_scenario_data_emlab("simulatedPrice")
         self.write_times()
         self.writer.save()
         self.writer.close()
@@ -49,7 +51,6 @@ class PrepareMarket(DefaultModule):
         for k, substance in self.reps.substances.items():
             fuel_price = substance.get_price_for_next_tick(self.reps, self.tick, self.simulation_year, substance)
             substance.simulatedPrice_inYear = fuel_price
-            print("staging", self.simulation_year, fuel_price, substance)
             self.reps.dbrw.stage_simulated_fuel_prices(self.simulation_year, fuel_price, substance)
 
     def write_times(self):
@@ -100,7 +101,7 @@ class PrepareMarket(DefaultModule):
         BlockSizeInMW = []
         InstalledPowerInMW = []
 
-        for pp in self.power_plants_list[0]:
+        for pp in self.power_plants_list:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
@@ -126,7 +127,7 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
 
-        for pp in self.power_plants_list[0]:
+        for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] != "Biogas":
                 identifier.append(pp.id)
@@ -155,7 +156,7 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
 
-        for pp in self.power_plants_list[0]:
+        for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] == "Biogas":
                 identifier.append(pp.id)
@@ -182,7 +183,7 @@ class PrepareMarket(DefaultModule):
         InitialEnergyLevelInMWH = []
         InstalledPowerInMW = []
         StorageType = []
-        for pp in self.power_plants_list[0]:
+        for pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
                 ChargingEfficiency.append(pp.actualEfficiency)  # todo this should be charging efficiency specifically

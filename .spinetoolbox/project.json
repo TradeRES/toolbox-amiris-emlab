@@ -921,7 +921,7 @@
             "x": -90.04036259033094,
             "y": -122.31951316485709,
             "specification": "Prepare future market",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",

@@ -229,9 +229,9 @@ class Repository:
                 if  i.status == globalNames.power_plant_status_operational]
 
 
-    def get_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
+    def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner == owner]
+                if i.owner.name == owner]
 
     def get_power_plants_to_be_decommissioned(self, owner) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
