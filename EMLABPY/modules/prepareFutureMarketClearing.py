@@ -65,9 +65,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # todo add some exception for plants under startegic reserve
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
-                # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
-                # powerplant.owner = 'StrategicReserveOperator'
-                # powerplant.technology.variable_operating_costs = powerplant.technology.variable_operating_costs * 1.10 # added costs for startegic reserve
+                # set the power plant costs to the strategic reserve price
+                powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                powerplant.owner = 'StrategicReserveOperator'
                 self.power_plants_list[powerplant.name] = powerplant
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
