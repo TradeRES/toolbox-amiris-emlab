@@ -22,18 +22,16 @@ class SpineDBReaderWriter:
     def __init__(self, open_amiris, *db_urls: str):
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first is always emlab
-
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.bids_classname = 'Bids'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
-        self.candidate_power_plants_list_classname = "CandidatePowerPlantsList"
+        self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
-
         self.Conventionals_classname = "Conventionals"
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
@@ -65,8 +63,9 @@ class SpineDBReaderWriter:
                 reps.lookAhead = int(row['parameter_value'])
             elif row['parameter_name'] == 'CurrentYear':
                 reps.current_year = int(row['parameter_value'])
-            elif row[
-                'parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
+            elif row['parameter_name'] == 'InvestmentIteration':
+                reps.investmentIteration = int(row['parameter_value'])
+            elif row['parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
             elif row[
                 'parameter_name'] == 'short_term_investment_minimal_irr':  # changed from node(emlab) to country because in traderes Node is used for fuels
@@ -129,10 +128,7 @@ class SpineDBReaderWriter:
                                      ['plant', 'market', 'price', 'amount', 'bidder', 'accepted_amount',
                                       'status', "tick"])
 
-    def stage_init_power_plants_list(self, iteration):
-        self.stage_object_class(self.candidate_power_plants_list_classname)
-        self.stage_object_parameters(self.candidate_power_plants_list_classname,
-                                     [str(iteration)])  # parameter name = iteration
+
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name
@@ -142,7 +138,6 @@ class SpineDBReaderWriter:
                                             ('Price', mcp.price),
                                             ('Time', mcp.time),
                                             ('Volume', mcp.volume)], current_tick)
-
 
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)
@@ -170,7 +165,8 @@ class SpineDBReaderWriter:
                                            [('plant', power_plant.name),
                                             ('status', power_plant.status),
                                             ('owner', power_plant.owner),
-                                            ('variable_operating_costs', power_plant.technology.variable_operating_costs)], '0')
+                                            ('variable_operating_costs',
+                                             power_plant.technology.variable_operating_costs)], '0')
 
     """
     Power plants
@@ -195,7 +191,8 @@ class SpineDBReaderWriter:
     def stage_init_power_plant_structure(self):
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameters(self.powerplant_installed_classname,
-                                     ["Id", "Age", "Efficiency", "Capacity", "Location", "Owner", "Status",
+                                     ["Id", "Age", "Efficiency", "DischargingEfficiency", "Capacity", "Location",
+                                      "Owner", "Status",
                                       "Technology"])
 
     def stage_new_power_plant(self, powerplant):
@@ -205,17 +202,16 @@ class SpineDBReaderWriter:
                                            [("Id", object_name),
                                             ('Age', powerplant.age),
                                             ('Efficiency', powerplant.actualEfficiency),
+                                            ('DischargingEfficiency', powerplant.dischargingEfficiency),
                                             ('Capacity', powerplant.capacity),
                                             ('Location', powerplant.location),
                                             ('Owner', powerplant.owner.name),
                                             ('Status', powerplant.status),
                                             ('Technology', powerplant.technology.name)], "0")
 
-
     def stage_candidate_pp_investment_status_structure(self):
         self.stage_object_class(self.candidate_powerplant_installed_classname)
         self.stage_object_parameter(self.candidate_powerplant_installed_classname, 'ViableInvestment')
-
 
     def stage_candidate_pp_investment_status(self, candidatepowerplant):
         object_name = candidatepowerplant.name
@@ -235,9 +231,8 @@ class SpineDBReaderWriter:
 
     def stage_decommission_time(self, powerplant_name, tick):
         self.stage_object_parameters(self.powerplant_installed_classname, ['dismantleTime'])
-        self.stage_object(self.powerplant_installed_classname, "dismantleTime")
-        self.db.import_object_parameter_values([(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')])
-
+        self.db.import_object_parameter_values(
+            [(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')])
 
     def stage_bids(self, bid: Bid, current_tick: int):
         self.stage_object(self.bids_classname, bid.name)
@@ -251,22 +246,30 @@ class SpineDBReaderWriter:
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], current_tick)
 
-    def stage_new_power_plants_ids(self, powerPlantsList, iteration, futureYear):
-        object_name = str(futureYear)
-        parameter_name = str(iteration)
-        self.stage_object(self.candidate_power_plants_list_classname, object_name)
-        self.db.import_object_parameter_values(
-            [(self.candidate_power_plants_list_classname, object_name, parameter_name, powerPlantsList, "0")])
+    def stage_init_candidate_plants_value(self, iteration, futureYear):
+        year_iteration = str( futureYear) + "-" + str(iteration)
+        self.stage_object_class(self.candidate_plants_NPV_classname)
+        self.stage_object_parameters(self.candidate_plants_NPV_classname,
+                                     [ year_iteration])  # parameter name = investmentIteration
+
+    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear):
+        year_iteration = str( futureYear) + "-" + str(iteration)
+        self.stage_object(self.candidate_plants_NPV_classname, powerplant )
+        # self.stage_object_parameter_values("Bids", bid.name,
+        #                                    [('accepted_amount', bid.accepted_amount),
+        #                                     ('status', bid.status)], current_tick)
+        self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
+                                           [(year_iteration, powerPlantvalue)] , "0")
 
     def get_last_iteration(self, year):
         last = self.db.query_object_parameter_values_by_object_class_and_object_name(
-            self.candidate_power_plants_list_classname, year)
+            self.candidate_plants_NPV_classname, year)
         if not last:
             lastiteration = 0
         else:
             lastiteration = max(int(i['parameter_name']) for i in
                                 self.db.query_object_parameter_values_by_object_class_and_object_name(
-                                    self.candidate_power_plants_list_classname, year))
+                                    self.candidate_plants_NPV_classname, year))
         return lastiteration
 
     """
@@ -327,7 +330,7 @@ class SpineDBReaderWriter:
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
         self.db.import_object_parameter_values(
-            [(self.fuel_classname, substance.name, globalNames.future_prices , Map([str(year)], [futurePrice]), '0')])
+            [(self.fuel_classname, substance.name, globalNames.future_prices, Map([str(year)], [futurePrice]), '0')])
 
     def get_calculated_simulated_fuel_prices(self, substance, parametername):
         calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
@@ -370,7 +373,6 @@ class SpineDBReaderWriter:
 
         self.stage_objects([(object_class, object_name)])
 
-
     def stage_objects(self, arr_of_tuples: list):
         self.db.import_objects(arr_of_tuples)
 
@@ -397,7 +399,6 @@ class SpineDBReaderWriter:
 
 
 def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: dict, class_to_create):
-
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
@@ -507,7 +508,8 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
         # if object_class_name == 'PowerPlantDispatchPlans':
         #     add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
         if object_class_name == reps.current_year:
-            add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
+            add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans,
+                                              PowerPlantDispatchPlan)
         # if object_class_name in [self.Conventionals_classname, self.VariableRenewable_classname,
         #                          self.Storages_classname]:
         #     if object_name in candidatePowerPlants:

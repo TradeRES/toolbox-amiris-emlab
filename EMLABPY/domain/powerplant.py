@@ -45,7 +45,6 @@ class PowerPlant(ImportObject):
         self.electricityOutput = 0
         self.flagOutputChanged = True
         # from Amiris
-        self.chargingEfficiency = 0
         # from Amiris results
         self.subsidized = False
         self.AwardedPowerinMWh = 0
@@ -191,6 +190,7 @@ class PowerPlant(ImportObject):
 
     # createPowerPlant from target investment or from investment algorithm chosen power plant
     def specifyPowerPlant(self, tick, year, energyProducer, location, capacity, pgt):
+        self.dischargingEfficiency = 0
         self.setCapacity(capacity)
         self.setTechnology(pgt)
         self.setOwner(energyProducer)

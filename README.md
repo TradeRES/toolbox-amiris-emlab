@@ -3,6 +3,10 @@
 The soft linking of AMIRIS and EMLabpy intends to investigate the investment incentives in a future flexible power
 system. EMLabpy is based in EMLab and is rewritten in a modular way into python to easily couple with AMIRIS.
 
+<p align="center">
+  <a href="#page_with_curl-license">License</a> •
+</p>
+
 # Workflow
 
 The integration is best illustrated with following diagram.
@@ -16,8 +20,6 @@ To run this project 3 anaconda environments (or any other virtual environment of
 spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be executed
 
 ### install anaconda
-
-
 
 ### AMIRIS (iovrmr)
 in toolbox-amiris-emlab folder
@@ -47,8 +49,8 @@ pip install -r requirements.txt
 cd bin 
 upgrade_spine_reqs.bat
 ```
+In the toolbox-amiris-emlab folder activate  the environment spinetoolbox-dev. type spinetoolbox to start the tool in this environment, and in this folder.
 
-with the activate environment spinetoolbox-dev. type spinetoolbox to start the tool in this environment.
 Once the project is open, make an emlabpy kernel as follows:
 In spinetooolbox > file > settings> tools > jupyter console> kernel spec editor>
 add
@@ -63,10 +65,10 @@ after making the enviroments emlabpy and iovrmr, the kernels can be created in t
 Then click kernel spec editor and make a new kernel called emlabpy referencing to your miniconda environment
 
 
-## Other steps
+## Other steps to run AMIRIS
 add data in amiris_workflow\amiris-config\data\load.csv
 add amiris folder in amiris_workflow\ with executable, setup.yaml and log
-
+add the empty folder amiris_workflow\amiris\folder
 everytime there is a new change in the code (including git pull) , the emlabpy environment has to be updated. For that double click file install_emlabpy.bat
 
 # Folder structure
@@ -132,7 +134,7 @@ The file traderes.pb contain the encrypted results.
 
 
 
-## License and Terms of Use
+## :page_with_curl: License and Terms of Use
 
 The Spine Toolbox project example provided here can be used without any limitations. This does not apply to any data
 files contained within or any parts of the models EMLab and AMIRIS.

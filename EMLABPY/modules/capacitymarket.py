@@ -31,6 +31,7 @@ class CapacityMarketSubmitBids(MarketModule):
             for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
                     energy_producer.name):
                 # Retrieve vars
+
                 market = self.reps.get_capacity_market_for_plant(powerplant)
                 fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
                 capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed

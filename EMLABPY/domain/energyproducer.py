@@ -72,7 +72,7 @@ class EnergyProducer(EMLabAgent):
         #     gtr = GeometricTrendRegression()
         #     for clearingPoint in cps:
         #         gtr.addData(clearingPoint.getTime(), clearingPoint.getPrice())
-        #     expectedFuelPrices.update({substance: gtr.predict(futureTimePoint)})
+        #     expectedFuelPrices.update({substance: gtr.predict(futureTick)})
         return expectedFuelPrices
 
     #    @RelatedTo(type = "PRODUCER_INVESTMENTROLE", elementClass = GenericInvestmentRole.class, direction = Direction.OUTGOING)

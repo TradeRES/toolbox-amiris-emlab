@@ -85,9 +85,14 @@ else:
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
 
+
+    spinedb_reader_writer.commit('Initialize all module import structures')
+    print("repository complete")
+    print('Start Run Modules')
+
+
     # for the first year, specify the power plants and add a unique id to the power plants.
     # AMIRIS needs a unique, numeric ID
-
     if run_initialize_power_plants:
         # adding id to candidate power plants. Add 9999 at the beginning, to distinguish from installed power plants
         pp_counter = 0
@@ -119,9 +124,6 @@ try:  # Try statement to always close DB properly
             power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
 
-    spinedb_reader_writer.commit('Initialize all module import structures')
-    print("repository complete")
-    print('Start Run Modules')
     # From here on modules will be run according to the previously set booleans
     if run_decommission_module:
         logging.info('Start Run dismantle')

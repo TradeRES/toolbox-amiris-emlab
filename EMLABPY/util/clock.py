@@ -54,7 +54,7 @@ try:
                           in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
                           if i['parameter_name'] == "End Year")
         reset_candidate_investable_status()
-
+        print("reset power plants status")
         if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')
             db_emlab.import_object_classes([class_name])

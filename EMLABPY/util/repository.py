@@ -37,6 +37,7 @@ class Repository:
         self.node = ""
         self.country = ""
         self.dbrw = None
+        self.agent = "Producer1"
         self.current_tick = 0
         self.time_step = 0
         self.start_simulation_year = 0
@@ -45,6 +46,7 @@ class Repository:
         self.lookAhead = 0
         self.current_year = 0
         self.simulation_length = 0
+        self.investmentIteration = 0
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()

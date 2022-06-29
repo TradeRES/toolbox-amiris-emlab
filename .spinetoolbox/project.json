@@ -640,12 +640,12 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import os\nimport sys\n\ncontinue_file = sys.argv[1]\nprint(\"current\",os.getcwd(), \"file\" , continue_file)\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
+                    "script": "import os\nimport sys\n\ncontinue_file = os.path.join(os.getcwd(),\"emlabpy\",  \"continue.txt\")\nprint(\"current\",os.getcwd(), \"file\" , continue_file)\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
                 },
                 "cmd_line_args": [
                     {
                         "type": "resource",
-                        "arg": "continue.txt"
+                        "arg": "<project_dir>continue.txt"
                     }
                 ]
             },
@@ -661,12 +661,12 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_path)\n#print(sys.argv[1])  # Loop counter is supplied as first \n#years = pd.read_csv(sys.argv[1], delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year, final_year)\nprint(type(current_year))\nexit(1 if current_year >= final_year else 0) # Exit code 0 = continue"
+                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.csv\")\nprint(\"forced\", years_file)\n\nprint(sys.argv[1])  # Loop counter is supplied as first \nyears = pd.read_csv(years_file, delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year, final_year)\n\nexit(1 if current_year >= final_year else 0) # Exit code 0 = continue\n\n"
                 },
                 "cmd_line_args": [
                     {
                         "type": "resource",
-                        "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\emlabpy\\years.csv"
+                        "arg": "<project_dir>years.csv"
                     }
                 ]
             }
@@ -1003,7 +1003,7 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1131.366951752862,
+            "x": -1132.6281444544022,
             "y": -14.524325951655229,
             "specification": "clock",
             "execute_in_work": false,
@@ -1099,8 +1099,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -213.9052565587538,
-            "y": 126.46871368142816,
+            "x": -212.6440638572134,
+            "y": 121.42394287526675,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
