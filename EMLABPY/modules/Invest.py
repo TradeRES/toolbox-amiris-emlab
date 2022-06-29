@@ -37,11 +37,12 @@ class Investmentdecision(DefaultModule):
         self.agent = None
         self.budget_year0 = 0
         self.continueInvestment = True
-        self.last_installed_id = reps.get_id_last_power_plant()
+
+       # !!! leave the order. -> agent> time horizon> init candidate power plants
         self.setAgent(reps.agent)
         self.setTimeHorizon()
-        # TODO if there would be more agents, the future capacity should be analyzed per agent
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
+        self.last_installed_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
@@ -68,9 +69,7 @@ class Investmentdecision(DefaultModule):
 
                     cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
                     projectvalue = self.npv(self.agent, cashflow)
-                    #print("projectvalue", projectvalue)
                     # save the list of power plants values that have been candidates per investmentIteration.
-                    print(candidatepowerplant.name , projectvalue)
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name , projectvalue , self.reps.investmentIteration, self.futureInvestmentyear)
 
                     if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):

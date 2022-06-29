@@ -255,9 +255,6 @@ class SpineDBReaderWriter:
     def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear):
         year_iteration = str( futureYear) + "-" + str(iteration)
         self.stage_object(self.candidate_plants_NPV_classname, powerplant )
-        # self.stage_object_parameter_values("Bids", bid.name,
-        #                                    [('accepted_amount', bid.accepted_amount),
-        #                                     ('status', bid.status)], current_tick)
         self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
                                            [(year_iteration, powerPlantvalue)] , "0")
 
