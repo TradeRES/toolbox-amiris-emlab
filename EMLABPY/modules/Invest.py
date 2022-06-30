@@ -45,7 +45,7 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.setTimeHorizon()
-        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear, self.now)
+        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear, "Invested")
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
         reps.dbrw.stage_init_future_prices_structure()
@@ -91,9 +91,9 @@ class Investmentdecision(DefaultModule):
                     print("bestPlant is ", bestCandidatePowerPlant.name, " ", bestCandidatePowerPlant.technology.name)
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
-                    self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
+                    self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, self.now,
                                                                       self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear, self.now)
+                                                                      self.futureInvestmentyear, "Invested")
                     self.continue_iteration()
                     return
                 else:

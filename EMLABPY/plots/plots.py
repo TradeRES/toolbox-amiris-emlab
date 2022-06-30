@@ -11,9 +11,7 @@ import sys
 
 def prepare_investment_and_decom_data(year):
 
-
-    investments = pandas.read_excel(path_and_filename_investments, 'New Generation Capacity', skiprows=2, usecols="A:D")
-    investments = investments.dropna()
+    investments =
     nl_investments = investments[investments['Node'] == 'NED'].copy()
 
     print('Preparing Investment plot data')
