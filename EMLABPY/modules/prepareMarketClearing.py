@@ -27,7 +27,8 @@ class PrepareMarket(DefaultModule):
     def act(self):
         totallist = []
         for energy_producer in self.reps.energy_producers.values():
-            totallist.append(self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
+            totallist.append(
+                self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
         self.power_plants_list = totallist[0]
         self.setTimeHorizon()
         self.setExpectations()
@@ -40,7 +41,7 @@ class PrepareMarket(DefaultModule):
         self.write_times()
         self.writer.save()
         self.writer.close()
-        print("saved to " , self.path)
+        print("saved to ", self.path)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
@@ -138,7 +139,9 @@ class PrepareMarket(DefaultModule):
                 FIT.append("-")
                 Premium.append("-")
                 Lcoe.append("-")
-
+            if self.reps.dictionaryTechSet[
+                pp.technology.name] == "Hydropower_reservoir_medium":
+                print("siiii")
         d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
              'OpexVarInEURperMWH': OpexVarInEURperMWH,
              'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}

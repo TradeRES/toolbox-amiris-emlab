@@ -29,6 +29,7 @@ class SpineDBReaderWriter:
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
+
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
@@ -65,7 +66,8 @@ class SpineDBReaderWriter:
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'InvestmentIteration':
                 reps.investmentIteration = int(row['parameter_value'])
-            elif row['parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
+            elif row[
+                'parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
             elif row[
                 'parameter_name'] == 'short_term_investment_minimal_irr':  # changed from node(emlab) to country because in traderes Node is used for fuels
@@ -127,8 +129,6 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.bids_classname,
                                      ['plant', 'market', 'price', 'amount', 'bidder', 'accepted_amount',
                                       'status', "tick"])
-
-
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
         object_name = mcp.name
@@ -247,27 +247,27 @@ class SpineDBReaderWriter:
                                             ('status', bid.status)], current_tick)
 
     def stage_init_candidate_plants_value(self, iteration, futureYear):
-        year_iteration = str( futureYear) + "-" + str(iteration)
+        year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
+        self.stage_init_alternative("Invested")
         self.stage_object_parameters(self.candidate_plants_NPV_classname,
-                                     [ year_iteration])  # parameter name = investmentIteration
+                                     [year_iteration])  # parameter name = investmentIteration
 
-    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear):
-        year_iteration = str( futureYear) + "-" + str(iteration)
-        self.stage_object(self.candidate_plants_NPV_classname, powerplant )
+    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear, alternative):
+        year_iteration = str(futureYear) + "-" + str(iteration)
+        self.stage_object(self.candidate_plants_NPV_classname, powerplant)
         self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
-                                           [(year_iteration, powerPlantvalue)] , "0")
+                                           [(year_iteration, powerPlantvalue)], alternative)
 
-    def get_last_iteration(self, year):
-        last = self.db.query_object_parameter_values_by_object_class_and_object_name(
-            self.candidate_plants_NPV_classname, year)
-        if not last:
-            lastiteration = 0
-        else:
-            lastiteration = max(int(i['parameter_name']) for i in
-                                self.db.query_object_parameter_values_by_object_class_and_object_name(
-                                    self.candidate_plants_NPV_classname, year))
-        return lastiteration
+    def get_last_iteration(self):
+        return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
+            self.configuration_object_classname, "SimulationYears",
+            "InvestmentIteration", "0")
+
+    def stage_iteration(self, nextinvestmentIteration):
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [("InvestmentIteration", nextinvestmentIteration)], "0")
+
 
     """
     Financial results

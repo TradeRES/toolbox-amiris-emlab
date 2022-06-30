@@ -640,7 +640,7 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import os\nimport sys\n\ncontinue_file = os.path.join(os.getcwd(),\"emlabpy\",  \"continue.txt\")\nprint(\"current\",os.getcwd(), \"file\" , continue_file)\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
+                    "script": "import os\nimport sys\n\ncontinue_file = os.path.join(os.getcwd(),\"emlabpy\",  \"continue.txt\")\nprint(\"current\",os.getcwd(), \"file\" , continue_file)\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nprint(continue_str)\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
                 },
                 "cmd_line_args": [
                     {
@@ -796,8 +796,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1131.1221740903204,
-            "y": -556.3123890400258,
+            "x": -1131.1221740903202,
+            "y": -574.0244574654012,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -949,8 +949,8 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -643.1709173940711,
-            "y": -6.248965062731658,
+            "x": -643.1709173940712,
+            "y": 1.3419214052863353,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
