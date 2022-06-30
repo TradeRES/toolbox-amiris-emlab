@@ -14,7 +14,7 @@ import csv
 import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
-grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+
 
 
 def reset_candidate_investable_status():

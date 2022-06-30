@@ -48,7 +48,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.writer.save()
         self.writer.close()
 
-    def filter_power_plants_to_be_operational(self):  # TODO should operational costs be raised?
+    def filter_power_plants_to_be_operational(self):  # TODO should operational costs be raised for old plants?
         """
         This function assign a fictional future status to power plants
         If the plants have passed their expected lifetime then these are

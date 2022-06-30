@@ -14,6 +14,8 @@ import sys
 import logging
 import math
 import csv
+from datetime import datetime
+
 
 
 class Investmentdecision(DefaultModule):
@@ -39,9 +41,11 @@ class Investmentdecision(DefaultModule):
         self.continueInvestment = True
 
         # !!! leave the order. -> agent> time horizon> init candidate power plants
+        now = datetime.now()
+        self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.setTimeHorizon()
-        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
+        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear, self.now)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
         reps.dbrw.stage_init_future_prices_structure()
@@ -89,7 +93,7 @@ class Investmentdecision(DefaultModule):
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
                                                                       self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear, "Invested")
+                                                                      self.futureInvestmentyear, self.now)
                     self.continue_iteration()
                     return
                 else:

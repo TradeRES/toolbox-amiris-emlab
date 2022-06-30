@@ -246,10 +246,10 @@ class SpineDBReaderWriter:
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], current_tick)
 
-    def stage_init_candidate_plants_value(self, iteration, futureYear):
+    def stage_init_candidate_plants_value(self, iteration, futureYear, now):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
-        self.stage_init_alternative("Invested")
+        self.stage_init_alternative(now)
         self.stage_object_parameters(self.candidate_plants_NPV_classname,
                                      [year_iteration])  # parameter name = investmentIteration
 
