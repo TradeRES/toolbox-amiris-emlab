@@ -70,7 +70,7 @@ class Repository:
         self.zones = dict()
         self.national_governments = dict()
         self.governments = dict()
-
+        self.investments = dict()
         self.bigBank = BigBank("0")
         self.manufacturer = PowerPlantManufacturer("0")
 
@@ -230,6 +230,9 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if  i.status == globalNames.power_plant_status_operational]
 
+    def get_investments(self) -> List[ PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if  i.status == globalNames.power_plant_status_operational]
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

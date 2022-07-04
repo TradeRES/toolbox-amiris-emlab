@@ -7,6 +7,8 @@ Jim Hommes - 25-3-2021
 import logging
 from spinedb_api import Map
 from twine.repository import Repository
+
+from domain.investments import Investments
 from util import globalNames
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
@@ -18,10 +20,10 @@ class SpineDBReaderWriter:
     """
     The class that handles all writing and reading to the SpineDB.
     """
-
-    def __init__(self, open_amiris, *db_urls: str):
+    def __init__(self, open_db, *db_urls: str):
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first is always emlab
+        print("DB", db_urls[0])
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
@@ -29,7 +31,6 @@ class SpineDBReaderWriter:
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
-
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
@@ -37,8 +38,13 @@ class SpineDBReaderWriter:
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
         self.amirisdb = None
-        if open_amiris:
+        self.read_investments = False
+        if open_db == "Amiris":
+            print("opening amiris")
             self.amirisdb = SpineDB(db_urls[1])
+        if open_db == "Investments":
+            print("reading investments")
+            self.read_investments = True
 
     def read_db_and_create_repository(self) -> Repository:
         """
@@ -66,16 +72,13 @@ class SpineDBReaderWriter:
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'InvestmentIteration':
                 reps.investmentIteration = int(row['parameter_value'])
-            elif row[
-                'parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
+            elif row['parameter_name'] == 'Country':  # changed from node(emlab) to
+                # country because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
-            elif row[
-                'parameter_name'] == 'short_term_investment_minimal_irr':  # changed from node(emlab) to country because in traderes Node is used for fuels
+            elif row['parameter_name'] == 'short_term_investment_minimal_irr':  # changed from node(emlab) to country
+                # because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
 
-        candidatePowerPlants = [str(503), str(49)]  # todo: later this should not be hardcoded
-        # if reps.current_tick > 0:
-        #     candidatePowerPlants = self.getlistofpowerplants()
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
                                     self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
@@ -103,7 +106,7 @@ class SpineDBReaderWriter:
                 try:
                     db_line = next(i for i in object_parameter_values
                                    if i[0] == object_class_name and i[1] == object_name and i[2] == parameter_name)
-                    add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, candidatePowerPlants)
+                    add_parameter_value_to_repository_based_on_object_class_name(reps, db_line)
                 except StopIteration:
                     logging.warning('No value found for class: ' + object_class_name +
                                     ', object: ' + object_name +
@@ -112,9 +115,10 @@ class SpineDBReaderWriter:
         # the results of AMIRIS dispatch are extracted from the amiris DB
         if self.amirisdb is not None:
             db_amirisdata = self.amirisdb.export_data()
-            add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata,
-                                                                                candidatePowerPlants)
+            add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata)
+
         return reps
+
 
     """
     Markets
@@ -267,7 +271,6 @@ class SpineDBReaderWriter:
     def stage_iteration(self, nextinvestmentIteration):
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [("InvestmentIteration", nextinvestmentIteration)], "0")
-
 
     """
     Financial results
@@ -427,7 +430,7 @@ def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationsh
             to_arr.append((unit[1][0], unit[1][1], unit[1][2]))
 
 
-def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, candidatePowerPlants):
+def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     """
     Function used to translate an object_parameter_value from SpineDB to a Repository dict entry.
 
@@ -461,10 +464,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
     elif object_class_name == 'unit':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-
-    # elif object_class_name == 'electricity':
-    #     add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
-
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # node contain the # TODO complete this to the scenario
@@ -475,10 +474,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
-    # elif object_class_name == 'CO2Auction':
-    #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
-    # elif object_class_name == 'Hourly Demand':
-    #     add_parameter_value_to_repository(reps, db_line, reps.load, HourlyLoad)
+    elif object_class_name == 'CandidatePlantsNPV' and reps.dbrw.read_investments == True:
+        add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
     # elif object_class_name == 'Zones':
@@ -495,21 +492,14 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line, 
     #     add_parameter_value_to_repository(reps, db_line, reps.power_plants_fuel_mix, SubstanceInFuelMix)
     # elif object_class_name == 'YearlyEmissions':
     #     add_parameter_value_to_repository(reps, db_line, reps.emissions, YearlyEmissions)
+    # elif object_class_name == 'CO2Auction':
+    #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
 
 
-def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata,
-                                                                        candidatePowerPlants):
+def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata):
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-        # if object_class_name == 'PowerPlantDispatchPlans':
-        #     add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans, PowerPlantDispatchPlan)
         if object_class_name == reps.current_year:
             add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans,
                                               PowerPlantDispatchPlan)
-        # if object_class_name in [self.Conventionals_classname, self.VariableRenewable_classname,
-        #                          self.Storages_classname]:
-        #     if object_name in candidatePowerPlants:
-        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.candidatePowerPlants, CandidatePowerPlant)
-        #     else:
-        #         add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plants_list, PowerPlant)

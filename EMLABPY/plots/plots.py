@@ -2,22 +2,15 @@ import matplotlib.pyplot as plt
 import os
 import pandas
 import numpy as np
+
 from util.spinedb_reader_writer import *
 from util.spinedb import SpineDB
 import pandas as pd
 import sys
-
-
+logging.basicConfig(level=logging.ERROR)
 
 def prepare_investment_and_decom_data(year):
 
-    investments =
-    nl_investments = investments[investments['Node'] == 'NED'].copy()
-
-    print('Preparing Investment plot data')
-    investments['CombinedIndex'] = [i[0] + ', ' + i[1] for i in
-                                    zip(investments['FUEL'].values, investments['FuelType'].values)]
-    index_years = list(range(years_to_generate[0], years_to_generate[-1] + look_ahead + 1))
 
     for index, row in investments.iterrows():
         # Extracting buildtime
@@ -61,12 +54,12 @@ def plot_investments(investment_sums, years_to_generate, path_to_plots, look_ahe
 
 
 def generate_plots():
-    # EMLab Plots
+    db_url = sys.argv[1]
     print('Establishing and querying SpineDB...')
-    db_url = sys.argv[0]
-    emlab_spinedb = SpineDB(db_url)
-    # Create plots directory if it does not exist yet
-    scenario = sys.argv[1]
+    spinedb_reader_writer = SpineDBReaderWriter("Investments", db_url)
+    reps = spinedb_reader_writer.read_db_and_create_repository()
+    spinedb_reader_writer.commit('Initialize all module import structures')
+    scenario = sys.argv[2]
     path_to_plots = os.path.join(os.getcwd(), scenario)
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
@@ -74,21 +67,9 @@ def generate_plots():
     # years_to_generate = [2020, 2021, 2022, 2023, 2024, 2025]
     years_to_generate = [2020]
 
-    spinedb_reader_writer = SpineDBReaderWriter(False, db_url)
-    reps = spinedb_reader_writer.read_db_and_create_repository()
+
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
 
-    static_fuel_technology_legend = sorted(
-        ['GAS, CCGT', 'COAL, PC (D)', 'LIGNITE, PC (D)', 'RESE, others (D)', 'GAS, CCS CCGT', 'NUCLEAR, -',
-         'BIOMASS, Cofiring (D)', 'BIOMASS, Standalone (D)', 'Derived GAS, CHP (D)', 'Derived GAS, IC (D)',
-         'GAS, CCGT (D)', 'GAS, CHP (D)', 'OIL, - (D)', 'GAS, GT (D)', 'GAS, CCS CCGT (D)', 'NUCLEAR, - (D)'])
-
-    co2_emission_sums = dict()
-    vre_nl_installed_capacity = dict()
-    nl_investment_sums = {i: [0] * len(range(years_to_generate[0], years_to_generate[-1] + look_ahead + 1)) for i in
-                          static_fuel_technology_legend}
-    investment_sums = {i: [0] * len(range(years_to_generate[0], years_to_generate[-1] + look_ahead + 1)) for i in
-                       static_fuel_technology_legend}
     annual_balance = dict()
     annual_installed_capacity = dict()
     residual_load_curves = pd.DataFrame()
@@ -96,21 +77,18 @@ def generate_plots():
     price_duration_curves = pd.DataFrame()
 
     try:
-        emlab_spine_powerplants = emlab_spinedb.query_object_parameter_values_by_object_class('PowerPlants')
-        emlab_spine_technologies = emlab_spinedb.query_object_parameter_values_by_object_class(
-            'PowerGeneratingTechnologies')
-
+        emlab_spine_powerplants = reps.power_plants
+        print("asdas")
+        # emlab_spine_powerplants = emlab_spinedb.query_object_parameter_values_by_object_class('PowerPlants')
+        # emlab_spine_technologies = emlab_spinedb.query_object_parameter_values_by_object_class('PowerGeneratingTechnologies')
+        pass
     finally:
-        emlab_spinedb.close_connection()
+        spinedb_reader_writer.db.close_connection()
     print('Done')
-
     # Generate plots
     print('Start generating plots per year')
     for year in years_to_generate:
         print('Preparing and plotting for year ' + str(year))
-        # path_and_filename_dispatch = path_to_competes_results + '/' + filename_to_load_dispatch.replace('?', str(year))
-        # path_and_filename_investments = path_to_competes_results + '/' + filename_to_load_investment.replace('?',
-        #                                                                                                      str(year + look_ahead))
 
         # Preparing Data
         investment_sums, nl_investment_sums = prepare_investment_and_decom_data(path_and_filename_investments,
@@ -121,13 +99,11 @@ def generate_plots():
                                                                                 emlab_spine_technologies,
                                                                                 look_ahead, nl_investment_sums)
 
-
-        # plot_nl_unit_generation(path_and_filename_dispatch, year, path_to_plots)
         plt.close('all')
 
     print('Plotting prepared data')
 
-    plot_investments(investment_sums, years_to_generate, path_to_plots, look_ahead)
+    plot_investments(investment_sums, years_to_generate, path_to_plots, reps.look_ahead)
 
     # print('Showing plots...')
     # plt.show()

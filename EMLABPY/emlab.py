@@ -76,21 +76,14 @@ if run_short_investment_module or run_capacity_market or run_strategic_reserve:
     logging.info('emlab database: %s' , str(emlab_url))
     amiris_url = sys.argv[2]
     logging.info('amiris database:  %s' , str(amiris_url))
-    spinedb_reader_writer = SpineDBReaderWriter(True, emlab_url, amiris_url)
+    spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
 else:
     emlab_url = sys.argv[1]
     logging.info('emlab database:  %s' , str(emlab_url))
-    spinedb_reader_writer = SpineDBReaderWriter(False, emlab_url)
+    spinedb_reader_writer = SpineDBReaderWriter("none", emlab_url)
 
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
-
-
-    spinedb_reader_writer.commit('Initialize all module import structures')
-    print("repository complete")
-    print('Start Run Modules')
-
-
     # for the first year, specify the power plants and add a unique id to the power plants.
     # AMIRIS needs a unique, numeric ID
     if run_initialize_power_plants:
@@ -101,8 +94,9 @@ try:  # Try statement to always close DB properly
             power_plant.id = (int(str(9999) +  # once installed, this 9999 will change to the commissioned year
                                   str("{:02d}".format(
                                       int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
-                                  str("{:05d}".format(pp_counter))
+                                  str("{:05d}".format(int(power_plant.name)))
                                   ))
+            print(power_plant.id)
             power_plant.capacity = 1  # See general description
 
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
@@ -123,7 +117,9 @@ try:  # Try statement to always close DB properly
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
-
+    spinedb_reader_writer.commit('Initialize all module import structures')
+    print("repository complete")
+    print('Start Run Modules')
     # From here on modules will be run according to the previously set booleans
     if run_decommission_module:
         logging.info('Start Run dismantle')
