@@ -73,7 +73,7 @@ class Repository:
         self.investments = dict()
         self.bigBank = BigBank("0")
         self.manufacturer = PowerPlantManufacturer("0")
-
+        self.decommissioned = dict()
         self.market_stability_reserves = dict()
         self.load = dict()
         self.emissions = dict()
@@ -226,9 +226,9 @@ class Repository:
                 if
                 i.owner.name == owner and i.status == globalNames.power_plant_status_operational and i.technology.name in listofTechnologies]
 
-    def get_operational_power_plants(self) -> List[ PowerPlant]:
+    def get_power_plants_by_status(self, status) -> List[ PowerPlant]:
         return [i for i in self.power_plants.values()
-                if  i.status == globalNames.power_plant_status_operational]
+                if  i.status == status]
 
     def get_investments(self) -> List[ PowerPlant]:
         return [i for i in self.power_plants.values()

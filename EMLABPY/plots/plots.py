@@ -9,22 +9,17 @@ import pandas as pd
 import sys
 logging.basicConfig(level=logging.ERROR)
 
-def prepare_investment_and_decom_data(year):
+def prepare_investment_and_decom_data(year, reps):
+    for index, row in reps.investments.iterrows():
+        print(row)
+        # investments
 
 
-    for index, row in investments.iterrows():
-        # Extracting buildtime
-        online_in_year = get_year_online_by_technology(emlab_spine_technologies, row['FUEL'], row['FuelType'], year)
+    # decommissioning
 
-        if row['CombinedIndex'] not in investment_sums.keys():
-            investment_sums[row['CombinedIndex']] = [0] * len(index_years)
+    decommissioned = reps.get_power_plants_by_status(globalNames.power_plant_status_decommissioned)
 
-        investment_sums[row['CombinedIndex']][index_years.index(online_in_year)] += row['MW']
 
-    print('Preparing Decom plot data')
-    decommissioning['Technology'] = [
-        emlab_spine_powerplants_fuel_dict[i] + ', ' + emlab_spine_powerplants_tech_dict[i] + ' (D)' for i in
-        decommissioning['unit'].values]
     decommissioning_grouped_and_summed = decommissioning.groupby('Technology')['MW'].sum()
     index_years = list(range(years_to_generate[0], years_to_generate[-1] + look_ahead + 1))
 
@@ -66,10 +61,7 @@ def generate_plots():
 
     # years_to_generate = [2020, 2021, 2022, 2023, 2024, 2025]
     years_to_generate = [2020]
-
-
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
-
     annual_balance = dict()
     annual_installed_capacity = dict()
     residual_load_curves = pd.DataFrame()
@@ -89,16 +81,8 @@ def generate_plots():
     print('Start generating plots per year')
     for year in years_to_generate:
         print('Preparing and plotting for year ' + str(year))
-
         # Preparing Data
-        investment_sums, nl_investment_sums = prepare_investment_and_decom_data(path_and_filename_investments,
-                                                                                investment_sums,
-                                                                                years_to_generate, year,
-                                                                                spine_powerplants_tech_dict,
-                                                                                spine_powerplants_fuel_dict,
-                                                                                emlab_spine_technologies,
-                                                                                look_ahead, nl_investment_sums)
-
+        investment_sums = prepare_investment_and_decom_data(year, reps)
         plt.close('all')
 
     print('Plotting prepared data')

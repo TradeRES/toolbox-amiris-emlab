@@ -7,14 +7,13 @@ Jim Hommes - 25-3-2021
 import logging
 from spinedb_api import Map
 from twine.repository import Repository
-
 from domain.investments import Investments
 from util import globalNames
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
 from util.repository import *
 from util.spinedb import SpineDB
-
+from domain.powerplant import Decommissioned
 
 class SpineDBReaderWriter:
     """
@@ -233,10 +232,16 @@ class SpineDBReaderWriter:
                 [(self.powerplant_installed_classname, power_plant_name, "Status", values.status, '0'),
                  (self.powerplant_installed_classname, power_plant_name, "Age", values.age, '0')])
 
+    def stage_list_decommissioned_plants(self, decommissioned_list):
+        self.stage_object_parameters("Decommissioned", ['Decommissioned'])
+        self.db.import_object_parameter_values(
+            [("Decommissioned", "Decommissioned", "Decommissioned", decommissioned_list, '0')])
+
     def stage_decommission_time(self, powerplant_name, tick):
         self.stage_object_parameters(self.powerplant_installed_classname, ['dismantleTime'])
         self.db.import_object_parameter_values(
             [(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')])
+
 
     def stage_bids(self, bid: Bid, current_tick: int):
         self.stage_object(self.bids_classname, bid.name)
@@ -476,10 +481,11 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     elif object_class_name == 'CandidatePlantsNPV' and reps.dbrw.read_investments == True:
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
+    elif object_class_name == 'Decommissioned':
+        add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
-    # elif object_class_name == 'Zones':
-    #     add_parameter_value_to_repository(reps, db_line, reps.zones, Zone)
+
     # elif object_class_name == 'PowerGridNodes':
     #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
     # elif object_class_name == 'NationalGovernments':

@@ -112,10 +112,15 @@ try:  # Try statement to always close DB properly
         spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
-    else: # if the id initialization was done, it is not needed to store it again.
+    else:
+        # ignore decommissioned power plants
+        reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in (
+            reps.decommissioned["Decommissioned"]).Decommissioned}
+        # if the id initialization was done, it is not needed to store it again.
         # then only set actual lead time, permit time, efficiencies, correct status
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps.current_tick)
+
 
     spinedb_reader_writer.commit('Initialize all module import structures')
     print("repository complete")

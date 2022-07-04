@@ -10,6 +10,7 @@ import logging
 from domain.loans import Loan
 from util import globalNames
 
+
 class PowerPlant(ImportObject):
     def __init__(self, name):
         super().__init__(name)
@@ -24,11 +25,11 @@ class PowerPlant(ImportObject):
         # TODO: Implement GetActualEfficiency
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
-        self.fictional_status =  globalNames.power_plant_status_not_set
+        self.fictional_status = globalNames.power_plant_status_not_set
         self.loan = None
         self.downpayment = None
-        self.dismantleTime = 0 # in terms of tick
-        self.expectedEndOfLife = 0 # in terms of tick
+        self.dismantleTime = 0  # in terms of tick
+        self.expectedEndOfLife = 0  # in terms of tick
         # scenario from artificial emlab parameters
         self.constructionStartTime = 0
         self.actualLeadtime = 0
@@ -39,12 +40,10 @@ class PowerPlant(ImportObject):
         self.actualInvestedCapital = 0
         self.actualFixedOperatingCost = 0
         self.actualEfficiency = 0
-
         self.actualNominalCapacity = 0
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True
-        # from Amiris
         # from Amiris results
         self.subsidized = False
         self.AwardedPowerinMWh = 0
@@ -60,12 +59,15 @@ class PowerPlant(ImportObject):
         self.actualDischargingEfficiency = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'Status':
-            if parameter_value != 'Decommissioned':  # do not import decommissioned power plants to the repository
-                self.status = parameter_value
-        elif parameter_name == 'Efficiency': # the efficiency stored in the DB is the actual one
+        # do not import decommissioned power plants to the repository if it is not the plotting step
+        if reps.dbrw.read_investments == False and self.name in (
+                reps.decommissioned["Decommissioned"]).Decommissioned:
+            return
+        elif parameter_name == 'Status':
+            self.status = parameter_value
+        elif parameter_name == 'Efficiency':  # the efficiency stored in the DB is the actual one
             self.actualEfficiency = float(parameter_value)
-        elif parameter_name == 'DischargingEfficiency': # the efficiency stored in the DB is the actual one
+        elif parameter_name == 'DischargingEfficiency':  # the efficiency stored in the DB is the actual one
             self.actualDischargingEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
             self.location = parameter_value
@@ -79,12 +81,13 @@ class PowerPlant(ImportObject):
             self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
             self.age = int(parameter_value)
-
+        elif parameter_name == 'dismantleTime':
+            self.dismantleTime = int(parameter_value)
             # for emlab data the commissioned year can be read from the age
             self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'ComissionedYear':
             # for amiris data the age can be read from the commisioned year
-            print(self.name , "assigned age by commissioned year ")
+            print(self.name, "assigned age by commissioned year ")
             self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
@@ -108,15 +111,6 @@ class PowerPlant(ImportObject):
             self.initialEnergyLevelInMWH = float(parameter_value)
         elif parameter_name == 'SelfDischargeRatePerHour':
             self.selfDischargeRatePerHour = float(parameter_value)
-
-
-
-
-
-    '''
-     # FROM HERE EQUATIONS ARE OLD   
-    
-    '''
 
     def calculate_emission_intensity(self, reps):
         # emission = 0
@@ -165,7 +159,7 @@ class PowerPlant(ImportObject):
         #     fc += substance_in_fuel_mix_object.share * substance_in_fuel_mix.get_price_for_tick(time) / self.efficiency
         # return fc
         if self.technology.fuel != '':
-            fc = ((self.technology.fuel.futurePrice.values[0] + self.technology.fuel.futurePrice.values[1])/2) / \
+            fc = ((self.technology.fuel.futurePrice.values[0] + self.technology.fuel.futurePrice.values[1]) / 2) / \
                  self.technology.efficiency
         else:
             fc = 0
@@ -223,7 +217,7 @@ class PowerPlant(ImportObject):
         if self.dismantleTime < 1000:
             self.setExpectedEndOfLife = self.dismantleTime
         else:
-            self.setExpectedEndOfLife( # set in terms of tick
+            self.setExpectedEndOfLife(  # set in terms of tick
                 tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.setloan(self.owner)
         self.setPowerPlantsStatusforInstalledPowerPlants()
@@ -232,7 +226,7 @@ class PowerPlant(ImportObject):
     def setloan(self, energyProducer):
         loan = Loan()
         loan.setFrom(energyProducer.name)
-        loan.setTo(None) # TODO check if this is really so or ot should be bank
+        loan.setTo(None)  # TODO check if this is really so or ot should be bank
         amountPerPayment = loan.determineLoanAnnuities(
             self.getActualInvestedCapital() * energyProducer.getDebtRatioOfInvestments(),
             self.getTechnology().getDepreciationTime(), energyProducer.getLoanInterestRate())
@@ -251,9 +245,6 @@ class PowerPlant(ImportObject):
                 self.status = globalNames.power_plant_status_operational
         else:
             print("power plant dont have an age ", self.name)
-
-
-
 
     def isOperational(self, currentTick):
         finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
@@ -372,7 +363,7 @@ class PowerPlant(ImportObject):
 
     def getIntermittentTechnologyNodeLoadFactor(self):
         return self.reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(),
-                                                                                 self.getTechnology())
+                                                                                      self.getTechnology())
 
     # general
     def setName(self, label):
@@ -524,3 +515,13 @@ class PowerPlant(ImportObject):
     def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
         self.historicalCvarDummyPlant = historicalCvarDummyPlant
 
+
+class Decommissioned(ImportObject):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        if parameter_value == None:
+            self.Decommissioned = []
+        else:
+            setattr(self, parameter_name, parameter_value)

@@ -12,6 +12,7 @@ class Dismantle(DefaultModule):
 
     def __init__(self, reps: Repository):
         super().__init__('Dismantle decisions', reps)
+        self.decommissioned_list = (self.reps.decommissioned["Decommissioned"]).Decommissioned
         reps.dbrw.stage_init_power_plants_status()
 
     def act(self):
@@ -19,6 +20,7 @@ class Dismantle(DefaultModule):
         self.set_powerplants_status()  # set status according to operational time
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
+        self.save_decommissioned_list()
 
     def decommision_by_age_and_profit(self):
         for producer, producer_specs in self.reps.energy_producers.items():
@@ -35,6 +37,7 @@ class Dismantle(DefaultModule):
                     plant.dismantlePowerPlant(self.reps.current_tick)
                     self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
                     plant.status = globalNames.power_plant_status_decommissioned
+                    self.decommissioned_list.append(plant.name)
                 else:
                     print("dont dismantle but increase OPEX, because lifetime is over")
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
@@ -79,3 +82,6 @@ class Dismantle(DefaultModule):
     def save_powerplants_status_and_age(self):
         print("     saving power plants status ...   ")
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
+
+    def save_decommissioned_list(self):
+        self.reps.dbrw.stage_list_decommissioned_plants(self.decommissioned_list )

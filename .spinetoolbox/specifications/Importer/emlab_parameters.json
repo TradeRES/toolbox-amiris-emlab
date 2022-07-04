@@ -966,6 +966,47 @@
                         ]
                     }
                 }
+            ],
+            "Decommissioned": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "Decommissioned"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "table_name",
+                                "value": "Decommissioned"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "table_name",
+                                "value": "Decommissioned"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden",
+                                "value": "null"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -982,7 +1023,8 @@
             "dictFuel",
             "TechnologiesEmlabTemporal",
             "CO2",
-            "CandidatePowerPlants"
+            "CandidatePowerPlants",
+            "Decommissioned"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1016,7 +1058,8 @@
             "TechnologiesEmlabTemporal": {},
             "dictvariables": {},
             "CO2": {},
-            "CandidatePowerPlants": {}
+            "CandidatePowerPlants": {},
+            "Decommissioned": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1257,6 +1300,9 @@
                 "1": "float",
                 "2": "float",
                 "3": "float"
+            },
+            "Decommissioned": {
+                "0": "string"
             }
         },
         "table_row_types": {
