@@ -330,14 +330,6 @@ class Repository:
         return [i for i in self.bids.values() if
                 i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
 
-        # def set_power_plant_dispatch_plan_production(self,
-
-    #                                              ppdp: PowerPlantDispatchPlan,
-    #                                              status: str, accepted_amount: float):
-    #     ppdp.status = status
-    #     ppdp.accepted_amount = accepted_amount
-    #     self.dbrw.stage_power_plant_dispatch_plan(ppdp, self.current_tick)
-
     def create_or_update_power_plant_CapacityMarket_plan(self, plant: PowerPlant,
                                                          bidder: EnergyProducer,
                                                          market: Market,
@@ -475,7 +467,7 @@ class Repository:
 
     def get_unique_technologies_names(self):
         try:
-            return next(i.name for i in self.power_generating_technologies.values())
+            return [i.name for i in self.power_generating_technologies.values()]
         except StopIteration:
             return None
 

@@ -121,6 +121,7 @@ class Investmentdecision(DefaultModule):
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,
                                    bestCandidatePowerPlant.capacityTobeInstalled, bestCandidatePowerPlant.technology)
+
         print("{0} invests in technology {1} at tick {2}, with id{3}".format(self.agent.name,
                                                                              bestCandidatePowerPlant.technology.name,
                                                                              self.reps.current_tick, newid))

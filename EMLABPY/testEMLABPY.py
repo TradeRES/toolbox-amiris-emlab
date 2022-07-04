@@ -1,4 +1,25 @@
 
+
+import pandas as pd
+
+# create a dataframe
+# with 3 rows amd 3  columns
+record = {'Math': [10, 20, 30,
+                   40, 70],
+          'Science': [40, 50, 60,
+                      90, 50],
+          'English': [70, 80, 66,
+                      75, 88]}
+df = pd.DataFrame(record)
+
+My_list = [1,2,3,4,5]
+
+for i in My_list:
+    print(i)
+    df.at[0, "English"] += i
+    print(df)
+
+
 # from domain.import_object import *
 # from twine.repository import Repository
 #

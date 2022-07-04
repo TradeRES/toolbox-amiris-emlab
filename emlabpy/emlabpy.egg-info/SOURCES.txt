@@ -12,6 +12,7 @@ emlabpy/domain/emissions.py
 emlabpy/domain/energyproducer.py
 emlabpy/domain/financialReports.py
 emlabpy/domain/import_object.py
+emlabpy/domain/investments.py
 emlabpy/domain/loans.py
 emlabpy/domain/markets.py
 emlabpy/domain/newTechnology.py

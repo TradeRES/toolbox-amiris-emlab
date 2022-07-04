@@ -84,8 +84,12 @@ else:
 
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
+    # Ignore decommissioned power plants
+    reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in (
+        reps.decommissioned["Decommissioned"]).Decommissioned}
     # for the first year, specify the power plants and add a unique id to the power plants.
     # AMIRIS needs a unique, numeric ID
+
     if run_initialize_power_plants:
         # adding id to candidate power plants. Add 9999 at the beginning, to distinguish from installed power plants
         pp_counter = 0
@@ -96,7 +100,6 @@ try:  # Try statement to always close DB properly
                                       int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(int(power_plant.name)))
                                   ))
-            print(power_plant.id)
             power_plant.capacity = 1  # See general description
 
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
@@ -113,14 +116,11 @@ try:  # Try statement to always close DB properly
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
     else:
-        # ignore decommissioned power plants
-        reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in (
-            reps.decommissioned["Decommissioned"]).Decommissioned}
+
         # if the id initialization was done, it is not needed to store it again.
         # then only set actual lead time, permit time, efficiencies, correct status
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps.current_tick)
-
 
     spinedb_reader_writer.commit('Initialize all module import structures')
     print("repository complete")

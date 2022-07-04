@@ -1,34 +1,37 @@
 import matplotlib.pyplot as plt
 import os
-import pandas
-import numpy as np
-
-from util.spinedb_reader_writer import *
-from util.spinedb import SpineDB
 import pandas as pd
 import sys
+from util.spinedb_reader_writer import *
+from util.spinedb import SpineDB
+import numpy as np
+
 logging.basicConfig(level=logging.ERROR)
 
-def prepare_investment_and_decom_data(year, reps):
-    for index, row in reps.investments.iterrows():
-        print(row)
-        # investments
 
+def prepare_investment_and_decom_data(years_to_generate, reps, annual_installed_capacity,
+                                      annual_decommissioned_capacity, annual_operational_capacity,
+                                      annual_capacity_to_be_decommissioned):
 
-    # decommissioning
+    for year in years_to_generate:
+        for pp_name, pp in reps.power_plants.items():
+            print(pp.technology.name, year, pp.capacity)
+            if pp.status == globalNames.power_plant_status_operational:
+                annual_operational_capacity.at[year, pp.technology.name] +=  pp.capacity
+                print(annual_operational_capacity.at[year, pp.technology.name])
+                #annual_operational_capacity.loc[year, pp.technology.name] += pp.capacity
+            # elif pp.status == globalNames.power_plant_status_decommissioned:
+            #     annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
+            # elif pp.status == globalNames.power_plant_status_decommissioned:
+            #     annual_installed_capacity.at[year, pp.technology.name] += pp.capacity
+            # elif pp.status == globalNames.power_plant_status_to_be_decommissioned:
+            #     annual_capacity_to_be_decommissioned.at[year, pp.technology.name] += pp.capacity
 
-    decommissioned = reps.get_power_plants_by_status(globalNames.power_plant_status_decommissioned)
-
-
-    decommissioning_grouped_and_summed = decommissioning.groupby('Technology')['MW'].sum()
-    index_years = list(range(years_to_generate[0], years_to_generate[-1] + look_ahead + 1))
-
-    for tech, mw_sum in decommissioning_grouped_and_summed.iteritems():
-        if tech not in investment_sums.keys():
-            investment_sums[tech] = [0] * len(index_years)
-        investment_sums[tech][index_years.index(year + look_ahead)] = -1 * mw_sum
-
-    return investment_sums
+    print("here")
+    # investments_grouped_and_summed = reps.investments.groupby('Technology').sum()
+    # decommissioning_grouped_and_summed = decommissioned.groupby('Technology').sum()
+    # index_years = list(range(years_to_generate[0], years_to_generate[-1] + reps.lookAhead + 1))
+    return
 
 
 def plot_investments(investment_sums, years_to_generate, path_to_plots, look_ahead):
@@ -56,6 +59,7 @@ def generate_plots():
     spinedb_reader_writer.commit('Initialize all module import structures')
     scenario = sys.argv[2]
     path_to_plots = os.path.join(os.getcwd(), scenario)
+    unique_technologies = reps.get_unique_technologies_names()
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
 
@@ -63,26 +67,27 @@ def generate_plots():
     years_to_generate = [2020]
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
     annual_balance = dict()
-    annual_installed_capacity = dict()
+    annual_installed_capacity = pd.DataFrame(columns=unique_technologies, index= years_to_generate)
+    annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index= years_to_generate)
+    annual_operational_capacity = pd.DataFrame(columns=unique_technologies, index= years_to_generate)
+    annual_capacity_to_be_decommissioned = pd.DataFrame(columns=unique_technologies, index= years_to_generate)
+
     residual_load_curves = pd.DataFrame()
     load_duration_curves = pd.DataFrame()
     price_duration_curves = pd.DataFrame()
+    technologies = pd.DataFrame(columns=unique_technologies)
 
-    try:
-        emlab_spine_powerplants = reps.power_plants
-        print("asdas")
-        # emlab_spine_powerplants = emlab_spinedb.query_object_parameter_values_by_object_class('PowerPlants')
-        # emlab_spine_technologies = emlab_spinedb.query_object_parameter_values_by_object_class('PowerGeneratingTechnologies')
-        pass
-    finally:
-        spinedb_reader_writer.db.close_connection()
+    spinedb_reader_writer.db.close_connection()
     print('Done')
     # Generate plots
     print('Start generating plots per year')
     for year in years_to_generate:
         print('Preparing and plotting for year ' + str(year))
         # Preparing Data
-        investment_sums = prepare_investment_and_decom_data(year, reps)
+        investment_sums = prepare_investment_and_decom_data(years_to_generate, reps, annual_installed_capacity,
+                                                            annual_decommissioned_capacity, annual_operational_capacity,
+                                                            annual_capacity_to_be_decommissioned)
+
         plt.close('all')
 
     print('Plotting prepared data')

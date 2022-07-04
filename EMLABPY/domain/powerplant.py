@@ -33,7 +33,7 @@ class PowerPlant(ImportObject):
         # scenario from artificial emlab parameters
         self.constructionStartTime = 0
         self.actualLeadtime = 0
-        self.actualPermittime = 0
+        self.actualPermittime = 0 # todo clear this functionalities
         self.actualLifetime = 0
         self.commissionedYear = 0
         self.label = ""
@@ -211,8 +211,7 @@ class PowerPlant(ImportObject):
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
-        self.setDismantleTime(1000)  # TODO why first set to 1000?!!!!!
-
+        self.setDismantleTime(1000)  # TODO set this first to 1000 and then it changes in later stage?
         # as a default the expected end of life is assigned by the technology expected lifetime
         if self.dismantleTime < 1000:
             self.setExpectedEndOfLife = self.dismantleTime
@@ -241,6 +240,9 @@ class PowerPlant(ImportObject):
         if self.age is not None:
             if self.age >= self.technology.expected_lifetime:
                 self.status = globalNames.power_plant_status_to_be_decommissioned
+            elif self.age < 0:
+                print("negative age ", self.name)
+                self.status = globalNames.power_plant_status_inPipeline
             else:
                 self.status = globalNames.power_plant_status_operational
         else:
@@ -272,7 +274,7 @@ class PowerPlant(ImportObject):
         else:
             return False
 
-    def isInPipeline(self, currentTick):
+    def isInPipeline(self, currentTick): # Todo, if this is not used, then erase
         finishedConstruction = self.constructionStartTime + self.actualPermittime + self.actualLeadtime
         if finishedConstruction <= currentTick:
             return False
