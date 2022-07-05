@@ -89,7 +89,6 @@ class Investmentdecision(DefaultModule):
 
                 if bestCandidatePowerPlant is not None:
                     # investing in best candidate power plant as it passed the checks.
-                    print("bestPlant is ", bestCandidatePowerPlant.name, " ", bestCandidatePowerPlant.technology.name)
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_investment_decisions(candidatepowerplant.name, self.now,
@@ -116,7 +115,7 @@ class Investmentdecision(DefaultModule):
                          int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
                      str("{:05d}".format(int(self.new_id)))
                      ))
-        print("newid", self.new_id)
+        #print("newid", self.new_id)
         newplant = PowerPlant(newid)
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,

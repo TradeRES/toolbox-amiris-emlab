@@ -79,19 +79,19 @@ class SpineDBReaderWriter:
                 # because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
 
-        # reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
-        #                             in
-        #                             self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
-        #                                                                                                   "AmirisFuelName")}
-        # reps.dictionaryTechSet = {i['parameter_name']: i['parameter_value'] for i
-        #                           in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
-        #                                                                                                    "AmirisSet")}
-        # reps.dictionaryFuelNumbers = {i['parameter_name']: i[('parameter_value')] for i
-        #                               in self.db.query_object_parameter_values_by_object_class_and_object_name(
-        #         "Dictionary", "FuelNumber")}
-        # reps.dictionaryTechNumbers = {i['parameter_name']: i[('parameter_value')] for i
-        #                               in self.db.query_object_parameter_values_by_object_class_and_object_name(
-        #         "Dictionary", "TechNumber")}
+        reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
+                                    in
+                                    self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
+                                                                                                          "AmirisFuelName")}
+        reps.dictionaryTechSet = {i['parameter_name']: i['parameter_value'] for i
+                                  in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
+                                                                                                           "AmirisSet")}
+        reps.dictionaryFuelNumbers = {i['parameter_name']: i[('parameter_value')] for i
+                                      in self.db.query_object_parameter_values_by_object_class_and_object_name(
+                "Dictionary", "FuelNumber")}
+        reps.dictionaryTechNumbers = {i['parameter_name']: i[('parameter_value')] for i
+                                      in self.db.query_object_parameter_values_by_object_class_and_object_name(
+                "Dictionary", "TechNumber")}
         parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
                                 in
                                 self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration",

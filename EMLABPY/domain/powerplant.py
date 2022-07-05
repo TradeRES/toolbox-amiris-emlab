@@ -241,7 +241,6 @@ class PowerPlant(ImportObject):
             if self.age >= self.technology.expected_lifetime:
                 self.status = globalNames.power_plant_status_to_be_decommissioned
             elif self.age < 0:
-                print("negative age ", self.name)
                 self.status = globalNames.power_plant_status_inPipeline
             else:
                 self.status = globalNames.power_plant_status_operational
