@@ -74,7 +74,7 @@ class CandidatePowerPlant(PowerPlant):
                                         self.technology.expected_permittime +
                                         round(random() * self.technology.expected_lifetime)) + 2
 
-    # candidate power plants can be invested or not
+    # candidate power plants can be invested_quantity or not
     def isViableInvestment(self):
         return self.viableInvestment
 

@@ -30,6 +30,7 @@ class SpineDBReaderWriter:
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
+        self.investment_decisions_classname = "InvestmentDecisions"
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
@@ -54,7 +55,7 @@ class SpineDBReaderWriter:
         reps.dbrw = self
         db_data = self.db.export_data()
         self.stage_init_alternative("0")
-
+        self.stage_init_alternative("Invested")
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
@@ -78,19 +79,19 @@ class SpineDBReaderWriter:
                 # because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
 
-        reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
-                                    in
-                                    self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
-                                                                                                          "AmirisFuelName")}
-        reps.dictionaryTechSet = {i['parameter_name']: i['parameter_value'] for i
-                                  in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
-                                                                                                           "AmirisSet")}
-        reps.dictionaryFuelNumbers = {i['parameter_name']: i[('parameter_value')] for i
-                                      in self.db.query_object_parameter_values_by_object_class_and_object_name(
-                "Dictionary", "FuelNumber")}
-        reps.dictionaryTechNumbers = {i['parameter_name']: i[('parameter_value')] for i
-                                      in self.db.query_object_parameter_values_by_object_class_and_object_name(
-                "Dictionary", "TechNumber")}
+        # reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
+        #                             in
+        #                             self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
+        #                                                                                                   "AmirisFuelName")}
+        # reps.dictionaryTechSet = {i['parameter_name']: i['parameter_value'] for i
+        #                           in self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
+        #                                                                                                    "AmirisSet")}
+        # reps.dictionaryFuelNumbers = {i['parameter_name']: i[('parameter_value')] for i
+        #                               in self.db.query_object_parameter_values_by_object_class_and_object_name(
+        #         "Dictionary", "FuelNumber")}
+        # reps.dictionaryTechNumbers = {i['parameter_name']: i[('parameter_value')] for i
+        #                               in self.db.query_object_parameter_values_by_object_class_and_object_name(
+        #         "Dictionary", "TechNumber")}
         parameter_priorities = {i['parameter_name']: i['parameter_value'] for i
                                 in
                                 self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration",
@@ -115,7 +116,6 @@ class SpineDBReaderWriter:
         if self.amirisdb is not None:
             db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata)
-
         return reps
 
 
@@ -255,18 +255,32 @@ class SpineDBReaderWriter:
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], current_tick)
 
-    def stage_init_candidate_plants_value(self, iteration, futureYear, alternative):
+    def stage_init_candidate_plants_value(self, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
-        self.stage_init_alternative(alternative)
+        #self.stage_init_alternative(alternative)
         self.stage_object_parameters(self.candidate_plants_NPV_classname,
-                                     [year_iteration])  # parameter name = investmentIteration
+                                     [year_iteration])
 
-    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear, alternative):
+    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear ):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object(self.candidate_plants_NPV_classname, powerplant)
         self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
-                                           [(year_iteration, powerPlantvalue)], alternative)
+                                           [(year_iteration, powerPlantvalue)], "0")
+
+    def stage_init_investment_decisions(self, iteration, futureYear):
+        year_iteration = str(futureYear) + "-" + str(iteration)
+        self.stage_object_class(self.investment_decisions_classname)
+        self.stage_object_parameters(self.investment_decisions_classname, [year_iteration])
+
+    def stage_investment_decisions(self, powerplant, now, iteration, futureYear):
+        year_iteration = str(futureYear) + "-" + str(iteration)
+        self.stage_object(self.investment_decisions_classname, powerplant)
+        self.stage_object_parameter_values(self.investment_decisions_classname, powerplant,
+                                           [(year_iteration, now)], "0")
+
+
+
 
     def get_last_iteration(self):
         return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
@@ -481,6 +495,11 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     elif object_class_name == 'CandidatePlantsNPV' and reps.dbrw.read_investments == True:
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
+    elif object_class_name == reps.dbrw.investment_decisions_classname and reps.dbrw.read_investments == True:
+        add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
+
+
+
     elif object_class_name == 'Decommissioned':
         add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
     else:

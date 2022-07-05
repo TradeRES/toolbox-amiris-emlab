@@ -1,5 +1,4 @@
-
-
+import matplotlib.pyplot as plt
 import pandas as pd
 
 # create a dataframe
@@ -10,15 +9,17 @@ record = {'Math': [10, 20, 30,
                       90, 50],
           'English': [70, 80, 66,
                       75, 88]}
+
 df = pd.DataFrame(record)
+df['asd'] = pd.Series([4, 4, 4, 4])
+df['sdas'] = pd.Series([3, 3, 3])
 
-My_list = [1,2,3,4,5]
-
-for i in My_list:
-    print(i)
-    df.at[0, "English"] += i
-    print(df)
-
+plt.figure()
+axs7 = df.plot.line()
+axs7.set_axisbelow(True)
+plt.xlabel('Years', fontsize='medium')
+plt.ylabel('Capacity (MW)', fontsize='medium')
+plt.show()
 
 # from domain.import_object import *
 # from twine.repository import Repository
@@ -28,17 +29,17 @@ for i in My_list:
 # class I(ImportObject):
 #     def __init__(self, name):
 #         super().__init__(name)
-#         self.invested = {}
+#         self.invested_quantity = {}
 #         self.project_value_year =  {}
 #
 #     def add_parameter_value(self, parameter_name: str, parameter_value, alternative: str):
 #         print( parameter_name, parameter_value, alternative)
 #         year, iteration = parameter_name.split('-')
 #         if alternative == "Invested":
-#             # if year not in self.invested.keys():
-#             #     self.invested[year] = 1
+#             # if year not in self.invested_quantity.keys():
+#             #     self.invested_quantity[year] = 1
 #             # else:
-#             #     self.invested[year] += 1
+#             #     self.invested_quantity[year] += 1
 #             quit()
 #         else:
 #             if year not in self.project_value_year.keys():

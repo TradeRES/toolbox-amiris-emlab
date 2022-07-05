@@ -366,6 +366,18 @@ class Repository:
             logging.warning('candidate technology not found' + result)
         return None
 
+    def get_unique_candidate_power_plants(self):
+        try:
+            return [name for name, i in self.candidatePowerPlants.items()]
+        except StopIteration:
+            return None
+
+    # def get_project_value(self):
+    #     try:
+    #         return [name for name, i in self.candidatePowerPlants.items()]
+    #     except StopIteration:
+    #         return None
+
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:
@@ -464,6 +476,7 @@ class Repository:
         except StopIteration:
             logging.warning('PowerGeneratingTechnology not found for ' + techtype + ' and ' + fuel)
             return None
+
 
     def get_unique_technologies_names(self):
         try:

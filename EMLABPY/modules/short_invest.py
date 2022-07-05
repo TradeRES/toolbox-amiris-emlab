@@ -34,7 +34,7 @@ class ShortInvestmentdecision(Investmentdecision):
         for quick_technology in self.quickInvestabletechnologies:
             operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,
                                                                                                        quick_technology)
-            # if the technology can be invested, then calculate the returns
+            # if the technology can be invested_quantity, then calculate the returns
             # TODO the profit should consider the past year profits?
             average_profit = self.reps.get_average_profits(operationalInvestablePlants)
             if pd.isna(average_profit):

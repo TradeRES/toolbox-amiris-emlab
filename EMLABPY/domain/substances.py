@@ -67,7 +67,7 @@ class Substance(ImportObject):
 
     def get_price_for_future_tick(self, reps, futureYear, substance):
         if substance.name == "CO2":
-            xp = [2020, 2040] # todo: hard coded
+            xp = [2020, 2040] # todo: dont hard coded
             fp = [substance.initialprice2020, substance.initialprice2040]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice

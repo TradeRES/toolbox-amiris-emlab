@@ -45,7 +45,8 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.setTimeHorizon()
-        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear, "Invested")
+        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear )
+        reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
         reps.dbrw.stage_init_future_prices_structure()
@@ -77,7 +78,7 @@ class Investmentdecision(DefaultModule):
 
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
                                                                       self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear, "0")
+                                                                      self.futureInvestmentyear )
                     if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                         highestValue = projectvalue / candidatepowerplant.capacity
                         bestCandidatePowerPlant = candidatepowerplant
@@ -91,9 +92,9 @@ class Investmentdecision(DefaultModule):
                     print("bestPlant is ", bestCandidatePowerPlant.name, " ", bestCandidatePowerPlant.technology.name)
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
-                    self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, self.now,
+                    self.reps.dbrw.stage_investment_decisions(candidatepowerplant.name, self.now,
                                                                       self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear, "Invested")
+                                                                      self.futureInvestmentyear )
                     self.continue_iteration()
                     return
                 else:
@@ -108,9 +109,8 @@ class Investmentdecision(DefaultModule):
             logging.info("agent is not longer willing to invest")  # This is not enabled for not
 
 
-    def invest(self, bestCandidatePowerPlant):  # todo assign age and commissioned year
+    def invest(self, bestCandidatePowerPlant):
         commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
-
         newid = (int(str(commissionedYear) +
                      str("{:02d}".format(
                          int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
