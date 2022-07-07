@@ -287,8 +287,6 @@ class SpineDBReaderWriter:
     def stage_power_plant_results(self, reps, pp_numbers,  pp_profits):
         # the simulation tick is the object name, the iteration is the parameter
         objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
-        print(pp_numbers)
-        print(pp_profits)
         self.stage_object(self.powerplantprofits_classname, objectname)
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("Profits", pp_profits) ], "0")
