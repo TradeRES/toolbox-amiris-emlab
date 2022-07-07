@@ -141,8 +141,8 @@ class PowerPlant(ImportObject):
 
     def get_Profit(self):
         if not self.Profit:
-            Profit = self.ReceivedMoneyinEUR - self.CostsinEUR
-        return Profit
+            self.Profit = self.ReceivedMoneyinEUR - self.CostsinEUR
+        return self.Profit
 
     def get_actual_nominal_capacity(self):
         return self.capacity
@@ -181,6 +181,12 @@ class PowerPlant(ImportObject):
             return production / self.capacity
         else:
             return 0
+
+    def add_values_from_df(self, results):
+        self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
+        self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO
+        self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
+        self.Profit = results.CONTRIBUTION_MARGIN_IN_EURO
 
     # createPowerPlant from target investment or from investment algorithm chosen power plant
     def specifyPowerPlant(self, tick, year, energyProducer, location, capacity, pgt):

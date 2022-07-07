@@ -82,7 +82,6 @@ def plot_candidate_pp_project_value(candidate_plants_project_value, years_to_gen
 def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration, years_to_generate,
                                    path_to_plots):
     print('project values')
-
     fig8, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     ax1.plot( candidate_plants_project_value )
@@ -91,11 +90,7 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
     ax1.set_ylabel('Project value', fontsize='medium')
     ax2.set_ylabel('Investments', fontsize='medium')
     ax1.set_title('Investments and project value per iterations')
-    print( candidate_plants_project_value.columns.values.tolist())
-    print(installed_capacity_per_iteration.columns.values.tolist())
     ax1.legend( candidate_plants_project_value.columns.values.tolist(), fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-  #  ax2.legend( installed_capacity_per_iteration.columns.values.tolist(), fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-
     fig8.savefig(path_to_plots + '/' + 'Investments per iterations.png', bbox_inches='tight', dpi=300)
 
 
@@ -157,6 +152,9 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
 #     residual_load_curves[year] = hourly_nl_balance_residual_load.sort_values(ascending=False).values
 #     return residual_load_curves
 
+def prepare_revenues(years_to_generate, reps, unique_technologies):
+    pass
+
 def prepare_decommissioned_investment_data(years_to_generate, reps, unique_technologies):
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
     annual_operational_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
@@ -166,7 +164,6 @@ def prepare_decommissioned_investment_data(years_to_generate, reps, unique_techn
                 annual_operational_capacity.at[year, pp.technology.name] += pp.capacity
             elif pp.status == globalNames.power_plant_status_decommissioned:
                 annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-
     return annual_decommissioned_capacity,  annual_operational_capacity
 
 
@@ -185,9 +182,9 @@ def prepare_pipeline_operational(years_to_generate, reps, unique_technologies):
                 annual_to_be_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
 
     return annual_operational_capacity, annual_in_pipeline_capacity, annual_to_be_decommissioned_capacity
-
+    # preparing  candidates NPV per iteration
 def prepare_capacity_per_iteration(years_to_generate, reps):
-        # preparing  candidates NPV per iteration
+
     unique_candidate_power_plants = reps.get_unique_candidate_technologies()
     for year in years_to_generate:
         max_iteration = 0
@@ -267,12 +264,11 @@ def generate_plots():
         installed_capacity_per_iteration, candidate_plants_project_value =  prepare_capacity_per_iteration(years_to_generate, reps)
     print('Plotting prepared data')
 
-    #
-    # plot_investments(annual_in_pipeline_capacity, years_to_generate, path_to_plots)
-    # plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots)
-    # plot_annual_operational_capacity(annual_operational_capacity, years_to_generate, path_to_plots)
-    # plot_annual_to_be_decommissioned_capacity(annual_to_be_decommissioned_capacity, years_to_generate, path_to_plots)
-    # plot_candidate_pp_project_value(candidate_plants_project_value, years_to_generate, path_to_plots)
+    plot_investments(annual_in_pipeline_capacity, years_to_generate, path_to_plots)
+    plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots)
+    plot_annual_operational_capacity(annual_operational_capacity, years_to_generate, path_to_plots)
+    plot_annual_to_be_decommissioned_capacity(annual_to_be_decommissioned_capacity, years_to_generate, path_to_plots)
+    plot_candidate_pp_project_value(candidate_plants_project_value, years_to_generate, path_to_plots)
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration, years_to_generate,
                                    path_to_plots)
     print('Showing plots...')

@@ -10,7 +10,7 @@ class CandidatePowerPlant(PowerPlant):
         self.CostsinEUR = 0
         self.OfferedPowerinMWH = 0
         self.ReceivedMoneyinEUR = 0
-        self.Profit = 0
+        self.Profit = 0 # operational profit
         # scenario from artificial emlab parameters
         self.Leadtime = 0
         self.Permittime = 0
@@ -38,16 +38,6 @@ class CandidatePowerPlant(PowerPlant):
             self.owner = parameter_value
         elif parameter_name == 'ViableInvestment':
             self.viableInvestment = bool(parameter_value)
-
-    def add_values_from_df(self, results):
-            self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
-            self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO
-            self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
-
-    def get_technology(self, time):
-        return self.technology
-
-
 
     def setInvestedCapital(self):
         pass

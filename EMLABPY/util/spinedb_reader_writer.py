@@ -24,6 +24,7 @@ class SpineDBReaderWriter:
         self.db = SpineDB(db_urls[0])  # the first is always emlab
         print("DB", db_urls[0])
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
+        self.powerplantprofits_classname =  'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.bids_classname = 'Bids'
@@ -279,8 +280,20 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.investment_decisions_classname, powerplant,
                                            [(year_iteration, now)], "0")
 
+    def stage_init_power_plant_profits(self ):
+        self.stage_object_class(self.powerplantprofits_classname)
+        self.stage_object_parameters(self.powerplantprofits_classname, ["Profits", "PowerPlants"])
 
-
+    def stage_power_plant_results(self, reps, pp_numbers,  pp_profits):
+        # the simulation tick is the object name, the iteration is the parameter
+        objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
+        print(pp_numbers)
+        print(pp_profits)
+        self.stage_object(self.powerplantprofits_classname, objectname)
+        self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
+                                           [("Profits", pp_profits) ], "0")
+        self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
+                                           [("PowerPlants", pp_numbers) ], "0")
 
     def get_last_iteration(self):
         return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(

@@ -97,7 +97,7 @@ class Repository:
     All functions to get/create/set/update elements and values, possibly under criteria. Sorted on elements.
     """
 
-    # loans
+    # ----------------------------------------------------------------------------section loans
     def createLoan(self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
         loan = Loan()
         loan.setFrom(from_agent)
@@ -123,7 +123,7 @@ class Repository:
     def findLoansToAgent(self, agent):
         return self.loansToAgent.get(agent)
 
-    # Cashflow
+    # ----------------------------------------------------------------------------section Cashflow
     def createCashFlow(self, from_agent, to, amount, type, time, plant):
         cashFlow = CashFlow()
         cashFlow.setFrom(from_agent)
@@ -143,7 +143,11 @@ class Repository:
         pass
         # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
         #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
-
+    #
+    # def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
+    #     q = 1 + interestRate
+    #     annuity = totalLoan * (q ** payBackTime * (q - 1)) / (q ** payBackTime - 1)
+    #     return annuity
     def create_or_update_power_plant_loan(self, plant: PowerPlant,
                                           bidder: EnergyProducer,
                                           bidding_market: Market,
@@ -155,13 +159,13 @@ class Repository:
                      ppdp.tick == time), None)
         pass
 
-    #
-    # def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
-    #     q = 1 + interestRate
-    #     annuity = totalLoan * (q ** payBackTime * (q - 1)) / (q ** payBackTime - 1)
-    #     return annuity
 
-    # PowerPlants
+
+    # ----------------------------------------------------------------------------section PowerPlants
+
+
+    # ----------------------------------------------------------------------------section Candidate
+
     def get_id_last_power_plant(self) -> int:
         # the last 5 numbers are the power plant list
         return sorted([str(i.id)[-4:] for i in self.power_plants.values()])[-1]
@@ -356,14 +360,22 @@ class Repository:
         self.dbrw.stage_bids(bid, time)
         return bid
 
+    def update_installed_pp_results(self, installed_pp_results):
+        try:
+            for index, result in installed_pp_results.iterrows():
+                installed_pp = next(i for i in self.power_plants.values() if i.id == result.identifier)
+                installed_pp.add_values_from_df(result)
+        except StopIteration:
+            logging.warning('power plant technology not found' + str(result.identifier) )
+        return None
+
     def update_candidate_plant_results(self, results):
         try:
             for index, result in results.iterrows():
-                print(result.REVENUES_IN_EURO)
                 candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
                 candidate.add_values_from_df(result)
         except StopIteration:
-            logging.warning('candidate technology not found' + result)
+            logging.warning('candidate technology not found' + str(result.identifier)  )
         return None
 
     def get_unique_candidate_technologies(self):

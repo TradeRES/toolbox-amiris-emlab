@@ -48,6 +48,7 @@ class Investmentdecision(DefaultModule):
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
+        reps.dbrw.stage_init_power_plant_profits()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
 
         # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
@@ -56,6 +57,13 @@ class Investmentdecision(DefaultModule):
 
     def act(self):
         self.read_csv_results_and_filter_candidate_plants()
+        # saving: operationalprofits from power plants todo: comment this function
+        pp_numbers = []
+        pp_profits = []
+        for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+            pp_numbers.append(pp.name)
+            pp_profits.append(pp.Profit)
+        self.reps.dbrw.stage_power_plant_results( self.reps ,pp_numbers,  pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         # save the iteration
         if self.agent.readytoInvest == True:  # this is also for now not active. Activate once the cash flow is not enough
@@ -65,14 +73,14 @@ class Investmentdecision(DefaultModule):
             investable_candidate_plants = self.reps.get_investable_candidate_power_plants_by_owner(self.agent.name)
             if investable_candidate_plants:  # check if the are investable power plants
                 for candidatepowerplant in investable_candidate_plants:
+
                     # calculate which is the power plant (technology) with the highest NPV
                     candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
                                                                    self.reps.node)
                     self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
                     cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
                     projectvalue = self.npv(self.agent, cashflow)
-                    # save the list of power plants values that have been candidates per investmentIteration.
-
+                    # saving the list of power plants values that have been candidates per investmentIteration.
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
                                                                       self.reps.investmentIteration,
                                                                       self.futureInvestmentyear )
@@ -82,6 +90,7 @@ class Investmentdecision(DefaultModule):
                     else:
                         candidatepowerplant.setViableInvestment(False)
                         logging.info("dont invest in this technology")
+                        # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
 
                 if bestCandidatePowerPlant is not None:
@@ -264,8 +273,10 @@ class Investmentdecision(DefaultModule):
         df['commissionyear'] = df['identifier'].astype(str).str[0:4]
         # the candidate power plants wer given an id of 9999.
         # Only these candidate power plants need to be analyzed
-        results = df[df['commissionyear'] == str(9999)]
-        self.reps.update_candidate_plant_results(results)
+        candidate_pp_results = df[df['commissionyear'] == str(9999)]
+        installed_pp_results = df[df['commissionyear'] != str(9999)]
+        self.reps.update_candidate_plant_results(candidate_pp_results)
+        self.reps.update_installed_pp_results(installed_pp_results)
         return
 
     def continue_iteration(self):
