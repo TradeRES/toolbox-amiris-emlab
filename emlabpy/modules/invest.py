@@ -16,6 +16,7 @@ import math
 import csv
 from datetime import datetime
 
+
 class Investmentdecision(DefaultModule):
     """
     The class that decides to invest according to future dispatch results
@@ -42,7 +43,7 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.setTimeHorizon()
-        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear )
+        reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
         reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
@@ -64,7 +65,7 @@ class Investmentdecision(DefaultModule):
         for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
             pp_numbers.append(pp.name)
             pp_profits.append(pp.Profit)
-        self.reps.dbrw.stage_power_plant_results( self.reps ,pp_numbers,  pp_profits)
+        self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         # save the iteration
         if self.agent.readytoInvest == True:  # this is also for now not active. Activate once the cash flow is not enough
@@ -84,7 +85,7 @@ class Investmentdecision(DefaultModule):
                     # saving the list of power plants values that have been candidates per investmentIteration.
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
                                                                       self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear )
+                                                                      self.futureInvestmentyear)
                     if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                         highestValue = projectvalue / candidatepowerplant.capacity
                         bestCandidatePowerPlant = candidatepowerplant
@@ -99,8 +100,8 @@ class Investmentdecision(DefaultModule):
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_investment_decisions(candidatepowerplant.name, self.now,
-                                                                      self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear )
+                                                              self.reps.investmentIteration,
+                                                              self.futureInvestmentyear)
                     self.continue_iteration()
                     return
                 else:
@@ -114,7 +115,6 @@ class Investmentdecision(DefaultModule):
         else:
             logging.info("agent is not longer willing to invest")  # This is not enabled for not
 
-
     def invest(self, bestCandidatePowerPlant):
         commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
         newid = (int(str(commissionedYear) +
@@ -122,7 +122,7 @@ class Investmentdecision(DefaultModule):
                          int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
                      str("{:05d}".format(int(self.new_id)))
                      ))
-        #print("newid", self.new_id)
+        # print("newid", self.new_id)
         newplant = PowerPlant(newid)
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,

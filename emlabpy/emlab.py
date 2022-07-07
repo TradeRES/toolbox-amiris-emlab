@@ -20,7 +20,7 @@ from domain.StrategicReserveOperator import *
 from modules.strategicreserve_new import *
 # from modules.strategicreserve import *
 from modules.co2market import *
-from modules.Invest import *
+from modules.invest import *
 from modules.prepareFutureMarketClearing import *
 from modules.dismantle import *
 
