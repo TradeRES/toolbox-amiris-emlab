@@ -1,0 +1,46 @@
+{
+    "items": {
+        "TraderesDB": {
+            "url": {
+                "username": "ingridSanchez",
+                "password": "mpLBrBaCHyuEt3rpiRnavBc_vPwYqS2I"
+            }
+        },
+        "EmlabParameters": {
+            "db_credentials": {}
+        },
+        "Traderes CommonDB": {
+            "db_credentials": {}
+        },
+        "Config": {
+            "db_credentials": {}
+        },
+        "EmlabDB": {
+            "url": {
+                "username": "",
+                "password": ""
+            }
+        },
+        "Traderes Excel": {
+            "db_credentials": {}
+        },
+        "EmlabDB2": {
+            "url": {
+                "username": "",
+                "password": ""
+            }
+        },
+        "AMIRIS DB": {
+            "url": {
+                "username": "",
+                "password": ""
+            }
+        },
+        "power plants": {
+            "db_credentials": {}
+        },
+        "years": {
+            "db_credentials": {}
+        }
+    }
+}

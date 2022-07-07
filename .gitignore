@@ -7,6 +7,8 @@
 .spinetoolbox/items/amiris_future
 .spinetoolbox/items/emlabdb/EmlabDB.sqlite
 .spinetoolbox/items/amiris_db/AMIRIS db.sqlite
+.spinetoolbox/items/next_year/output/*
+.spinetoolbox/items/invest/output/*
 # Packaging
 build
 dist
