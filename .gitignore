@@ -5,6 +5,8 @@
 *.pyc
 *ipynb_checkpoints
 .spinetoolbox/items/amiris_future
+.spinetoolbox/items/emlabdb/EmlabDB.sqlite
+.spinetoolbox/items/amiris_db/AMIRIS db.sqlite
 # Packaging
 build
 dist

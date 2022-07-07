@@ -366,9 +366,9 @@ class Repository:
             logging.warning('candidate technology not found' + result)
         return None
 
-    def get_unique_candidate_power_plants(self):
+    def get_unique_candidate_technologies(self):
         try:
-            return [name for name, i in self.candidatePowerPlants.items()]
+            return [i.technology.name for name, i in self.candidatePowerPlants.items()]
         except StopIteration:
             return None
 

@@ -16,8 +16,6 @@ import math
 import csv
 from datetime import datetime
 
-
-
 class Investmentdecision(DefaultModule):
     """
     The class that decides to invest according to future dispatch results
@@ -39,7 +37,6 @@ class Investmentdecision(DefaultModule):
         self.agent = None
         self.budget_year0 = 0
         self.continueInvestment = True
-
         # !!! leave the order. -> agent> time horizon> init candidate power plants
         now = datetime.now()
         self.now = now.strftime("%H:%M:%S")

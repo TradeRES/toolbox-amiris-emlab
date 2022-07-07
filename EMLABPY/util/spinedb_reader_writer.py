@@ -55,7 +55,7 @@ class SpineDBReaderWriter:
         reps.dbrw = self
         db_data = self.db.export_data()
         self.stage_init_alternative("0")
-        self.stage_init_alternative("Invested")
+
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
@@ -324,7 +324,7 @@ class SpineDBReaderWriter:
 
     def stage_cashflow_PowerPlant(self, current_tick: int):
         self.stage_init_alternative("0")
-        self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
+        #self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
 
     """
     Fuel prices
@@ -421,7 +421,7 @@ def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: 
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
-    parameter_alt = db_line[4]
+    parameter_alt = db_line[4] # @ TODO VTT : The alternative is never been read
     if object_name not in to_dict.keys():
         to_dict[object_name] = class_to_create(object_name)
     to_dict[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
@@ -496,7 +496,9 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     elif object_class_name == 'CandidatePlantsNPV' and reps.dbrw.read_investments == True:
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
     elif object_class_name == reps.dbrw.investment_decisions_classname and reps.dbrw.read_investments == True:
-        add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
+        new_db_line = list(db_line)
+        new_db_line[4] = reps.dbrw.investment_decisions_classname
+        add_parameter_value_to_repository(reps, new_db_line, reps.investments, Investments)
 
 
 

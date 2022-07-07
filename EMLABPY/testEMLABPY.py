@@ -1,25 +1,39 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# create a dataframe
-# with 3 rows amd 3  columns
+def plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+                                    ):
+    print('project values')
+    fig8, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.plot( candidate_plants_project_value )
+    ax2.plot(installed_capacity_per_iteration , 'o')
+    ax1.set_xlabel('Iterations', fontsize='medium')
+    ax1.set_ylabel('Project value', fontsize='medium')
+    ax2.set_ylabel('Investments', fontsize='medium')
+    ax1.set_title('Investments and project value per iterations')
+    ax1.legend( candidate_plants_project_value.columns.values.tolist())
+    print(candidate_plants_project_value.columns)
+
+
+
 record = {'Math': [10, 20, 30,
-                   40, 70],
-          'Science': [40, 50, 60,
-                      90, 50],
-          'English': [70, 80, 66,
-                      75, 88]}
+                   40, 0],
+          'Science': [0, 0, 0,
+                      90, 0],
+          'English': [88, 0, 0,
+                      0,  0]}
 
-df = pd.DataFrame(record)
-df['asd'] = pd.Series([4, 4, 4, 4])
-df['sdas'] = pd.Series([3, 3, 3])
+record2= {'Math': [0,0,0,0,0],
+          'Science': [0,0,0,0,0],
+          'English': [0,0,0,0,100000]}
 
-plt.figure()
-axs7 = df.plot.line()
-axs7.set_axisbelow(True)
-plt.xlabel('Years', fontsize='medium')
-plt.ylabel('Capacity (MW)', fontsize='medium')
+candidate_plants_project_value = pd.DataFrame(record)
+installed_capacity_per_iteration =  pd.DataFrame(record2)
+plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration )
+print('Showing plots...')
 plt.show()
+
 
 # from domain.import_object import *
 # from twine.repository import Repository
@@ -29,17 +43,17 @@ plt.show()
 # class I(ImportObject):
 #     def __init__(self, name):
 #         super().__init__(name)
-#         self.invested_quantity = {}
+#         self.invested_in_iteration = {}
 #         self.project_value_year =  {}
 #
 #     def add_parameter_value(self, parameter_name: str, parameter_value, alternative: str):
 #         print( parameter_name, parameter_value, alternative)
 #         year, iteration = parameter_name.split('-')
 #         if alternative == "Invested":
-#             # if year not in self.invested_quantity.keys():
-#             #     self.invested_quantity[year] = 1
+#             # if year not in self.invested_in_iteration.keys():
+#             #     self.invested_in_iteration[year] = 1
 #             # else:
-#             #     self.invested_quantity[year] += 1
+#             #     self.invested_in_iteration[year] += 1
 #             quit()
 #         else:
 #             if year not in self.project_value_year.keys():
