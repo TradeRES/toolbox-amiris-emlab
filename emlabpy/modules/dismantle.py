@@ -18,7 +18,7 @@ class Dismantle(DefaultModule):
     def act(self):
         self.add_one_year_to_age()
         self.set_powerplants_status()  # set status according to operational time
-        self.decommision_by_age_and_profit()
+       # self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
 
