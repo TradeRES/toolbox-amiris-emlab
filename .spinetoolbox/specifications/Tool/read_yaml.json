@@ -1,0 +1,23 @@
+{
+    "name": "Read Yaml",
+    "tooltype": "python",
+    "includes": [
+        "read_yaml.py"
+    ],
+    "description": "Read Scenario Yaml_test with gas. Will change to read normal scenatios",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "C:\\\\Users\\\\isanchezjimene\\\\Documents\\\\TraderesCode\\\\toolbox-amiris-emlab\\\\scripts\\\\scenario.xlsx"
+    ],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../scripts/others",
+    "execution_settings": {
+        "env": "conda",
+        "kernel_spec_name": "conda-env-spinetoolbox-py",
+        "use_jupyter_console": true,
+        "executable": "",
+        "fail_on_stderror": false
+    }
+}

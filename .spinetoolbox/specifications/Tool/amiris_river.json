@@ -1,0 +1,27 @@
+{
+    "name": "Amiris river",
+    "tooltype": "python",
+    "includes": [
+        "run-amiris-river.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "AMIRIS.FameResult_River.pb"
+    ],
+    "cmdline_args": [
+        "-cp",
+        "amiris-jar-with-dependencies.jar",
+        "de.dlr.gitlab.fame.setup.FameRunner"
+    ],
+    "execute_in_work": false,
+    "includes_main_path": "../../../scripts/NewPowerPlants/River",
+    "execution_settings": {
+        "env": "conda",
+        "kernel_spec_name": "conda-env-spinetoolbox-py",
+        "use_jupyter_console": true,
+        "executable": "",
+        "fail_on_stderror": false
+    }
+}

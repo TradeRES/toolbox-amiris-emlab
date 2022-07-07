@@ -1,0 +1,20 @@
+{
+    "name": "test2",
+    "tooltype": "python",
+    "includes": [
+        "test2.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": true,
+    "includes_main_path": "../../../emlabpy",
+    "execution_settings": {
+        "env": "",
+        "kernel_spec_name": "amiris",
+        "use_jupyter_console": true,
+        "executable": ""
+    }
+}
