@@ -57,7 +57,8 @@ class Investmentdecision(DefaultModule):
 
     def act(self):
         self.read_csv_results_and_filter_candidate_plants()
-        # saving: operationalprofits from power plants todo: comment this function
+        # saving: operationalprofits from power plants
+        # todo: comment this function
         pp_numbers = []
         pp_profits = []
         for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
