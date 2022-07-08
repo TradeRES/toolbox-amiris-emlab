@@ -80,11 +80,11 @@ class PowerPlant(ImportObject):
         elif parameter_name == 'Owner':
             self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
+            # for emlab data the commissioned year can be read from the age
             self.age = int(parameter_value)
+            self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'dismantleTime':
             self.dismantleTime = int(parameter_value)
-            # for emlab data the commissioned year can be read from the age
-            self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'ComissionedYear':
             # for amiris data the age can be read from the commisioned year
             print(self.name, "assigned age by commissioned year ")

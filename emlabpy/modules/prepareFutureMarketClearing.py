@@ -65,7 +65,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
                 # print("to be decommisioned", powerplant.name, "age", fictional_age,
                 #       "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
-                # todo add some exception for plants under startegic reserve
+                # todo better to make decisions according to age
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
