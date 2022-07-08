@@ -71,10 +71,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # set the power plant costs to the strategic reserve price
                 powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
                 powerplant.owner = 'StrategicReserveOperator'
-                self.power_plants_list[powerplant.name] = powerplant
+                #self.power_plants_list[powerplant.name] = powerplant
+                self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
-                self.power_plants_list[powerplant.name] = powerplant
+                #self.power_plants_list[powerplant.name] = powerplant
+                self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear > self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
                 print("--------------------- in pipeline", powerplant.name)
