@@ -1,4 +1,4 @@
-from modules.Invest import Investmentdecision
+from modules.invest import Investmentdecision
 import numpy_financial as npf
 from util.repository import Repository
 import logging

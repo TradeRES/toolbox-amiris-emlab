@@ -32,8 +32,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
 
     def act(self):
-        # for energy_producer in self.reps.energy_producers.values():
-        #     self.power_plants_list.append(self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
+        for energy_producer in self.reps.energy_producers.values():
+            self.power_plants_list.append(self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
         self.setTimeHorizon()
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
@@ -61,12 +61,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
             # Power plants are set to be decommissioned passed their expected lifetime
+            # TODO: this power plants should be given an extension. Otherwise they could be decommissioned very quickly
             if fictional_age > powerplant.technology.expected_lifetime:
                 powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
                 # print("to be decommisioned", powerplant.name, "age", fictional_age,
                 #       "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
                 # todo add some exception for plants under strategic reserve
-
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)

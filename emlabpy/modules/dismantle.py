@@ -30,7 +30,7 @@ class Dismantle(DefaultModule):
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
                 # todo: for the first 3 years dont dismantle
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
-                if profit <= requiredProfit:
+                if profit <= requiredProfit: # TODO equal to
                     logging.info(
                         "Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
                             .format(horizon, plant, profit, requiredProfit))

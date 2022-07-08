@@ -10,19 +10,23 @@ import numpy as np
 
 logging.basicConfig(level=logging.ERROR)
 
-def plot_annual_to_be_decommissioned_capacity(plot_annual_to_be_decommissioned_capacity, years_to_generate, path_to_plots):
+
+def plot_annual_to_be_decommissioned_capacity(plot_annual_to_be_decommissioned_capacity, years_to_generate,
+                                              path_to_plots):
     print('Create decommissioning plot')
     fig4, axs5 = plt.subplots()
-    axs4 = plot_annual_to_be_decommissioned_capacity.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
+    axs4 = plot_annual_to_be_decommissioned_capacity.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True,
+                                                              legend=False)
     axs4.set_axisbelow(True)
     axs4.set_xlabel('Years', fontsize='medium')
     axs4.set_ylabel('Capacity (MW)', fontsize='medium')
     # plt.ylim([-4.3e5, 5.5e5])
     axs4.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs4.set_title('Dismantled Capacity per Technology')
-    #fig4 = a.get_figure()
+    axs4.set_title('Capacity per Technology to be decommissioned')
+    # fig4 = a.get_figure()
     fig4.savefig(path_to_plots + '/' + 'To be decommissioned.png', bbox_inches='tight', dpi=300)
     plt.show()
+
 
 def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots):
     print('Create decommissioning plot')
@@ -37,19 +41,6 @@ def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_t
     fig5 = axs5.get_figure()
     fig5.savefig(path_to_plots + '/' + 'Dismantled.png', bbox_inches='tight', dpi=300)
     plt.show()
-
-def plot_annual_operational_capacity(annual_operational_capacity, years_to_generate, path_to_plots):
-    print('Annual operational capacity')
-    plt.figure()
-    axs10 = annual_operational_capacity.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
-    axs10.set_axisbelow(True)
-    plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Capacity (MW)', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs10.set_title('Operational Capacity per Technology')
-    fig10 = axs10.get_figure()
-    fig10.savefig(path_to_plots + '/' + 'Operational Capacity per Technology.png', bbox_inches='tight', dpi=300)
-
 
 
 def plot_investments(annual_installed_capacity, years_to_generate, path_to_plots):
@@ -67,7 +58,7 @@ def plot_investments(annual_installed_capacity, years_to_generate, path_to_plots
 
 
 def plot_candidate_pp_project_value(candidate_plants_project_value, years_to_generate, path_to_plots):
-    print('project values')
+    print('candidate project value')
     # plt.figure()
     axs7 = candidate_plants_project_value.plot.line()
     axs7.set_axisbelow(True)
@@ -79,19 +70,47 @@ def plot_candidate_pp_project_value(candidate_plants_project_value, years_to_gen
     fig7.savefig(path_to_plots + '/' + 'NPV Candidate power plants.png', bbox_inches='tight', dpi=300)
 
 
-def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration, years_to_generate,
-                                   path_to_plots):
-    print('project values')
+def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+                                           years_to_generate,
+                                           path_to_plots):
+    print('investments and project values')
     fig8, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    ax1.plot( candidate_plants_project_value )
-    ax2.plot(installed_capacity_per_iteration , 'o')
+    ax1.plot(candidate_plants_project_value)
+    ax2.plot(installed_capacity_per_iteration, 'o')
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('Project value', fontsize='medium')
     ax2.set_ylabel('Investments', fontsize='medium')
-    ax1.set_title('Investments and project value per iterations')
-    ax1.legend( candidate_plants_project_value.columns.values.tolist(), fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    fig8.savefig(path_to_plots + '/' + 'Investments per iterations.png', bbox_inches='tight', dpi=300)
+    ax1.set_title('Investments and NPV per iterations')
+    ax1.legend(candidate_plants_project_value.columns.values.tolist(), fontsize='medium', loc='upper left',
+               bbox_to_anchor=(1, 1.1))
+    fig8.savefig(path_to_plots + '/' + 'Investments and NPV per iterations.png', bbox_inches='tight', dpi=300)
+
+
+def power_plants_status(number_per_status , path_to_plots):
+    print("power plants status")
+    plt.figure()
+    axs9 = number_per_status.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
+    axs9.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Capacity per status (MW)', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs9.set_title('Power plants status')
+    fig9 = axs9.get_figure()
+    fig9.savefig(path_to_plots + '/' + 'Power plants status.png', bbox_inches='tight', dpi=300)
+
+
+def plot_annual_operational_capacity(annual_operational_capacity, years_to_generate, path_to_plots):
+    print('Annual operational capacity')
+    plt.figure()
+    axs10 = annual_operational_capacity.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
+    axs10.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Capacity (MW)', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs10.set_title('Operational Capacity per Technology')
+    fig10 = axs10.get_figure()
+    fig10.savefig(path_to_plots + '/' + 'Operational Capacity per Technology.png', bbox_inches='tight', dpi=300)
 
 
 # def plot_and_prepare_hourly_nodal_price_duration_curve(hourly_nodal_prices_df, year, path_to_plots,
@@ -155,36 +174,45 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
 def prepare_revenues(years_to_generate, reps, unique_technologies):
     pass
 
-def prepare_decommissioned_investment_data(years_to_generate, reps, unique_technologies):
+
+def prepare_pp_status(years_to_generate, reps, unique_technologies):
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
-    annual_operational_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
-    for year in years_to_generate:
-        for pp_name, pp in reps.power_plants.items():
-            if pp.status == globalNames.power_plant_status_operational:
-                annual_operational_capacity.at[year, pp.technology.name] += pp.capacity
-            elif pp.status == globalNames.power_plant_status_decommissioned:
-                annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-    return annual_decommissioned_capacity,  annual_operational_capacity
-
-
-def prepare_pipeline_operational(years_to_generate, reps, unique_technologies):
     annual_operational_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
     annual_to_be_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
     annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
+    annual_strategic_reserve_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
+    annual_not_set_status_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
 
     for year in years_to_generate:
         for pp_name, pp in reps.power_plants.items():
-            if pp.status == globalNames.power_plant_status_operational:
+            if pp.status == globalNames.power_plant_status_operational:  # this will be changed
                 annual_operational_capacity.at[year, pp.technology.name] += pp.capacity
+            elif pp.status == globalNames.power_plant_status_decommissioned:
+                annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
             elif pp.status == globalNames.power_plant_status_inPipeline:
                 annual_in_pipeline_capacity.at[year, pp.technology.name] += pp.capacity
             elif pp.status == globalNames.power_plant_status_to_be_decommissioned:
                 annual_to_be_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
+            elif pp.status == globalNames.power_plant_status_strategic_reserve:
+                annual_strategic_reserve_capacity.at[year, pp.technology.name] += pp.capacity
+            elif pp.status == globalNames.power_plant_status_not_set:
+                annual_not_set_status_capacity.at[year, pp.technology.name] += pp.capacity
+                print(pp_name, "has not status set")
 
-    return annual_operational_capacity, annual_in_pipeline_capacity, annual_to_be_decommissioned_capacity
-    # preparing  candidates NPV per iteration
+    data = {
+        globalNames.power_plant_status_operational: (annual_operational_capacity).sum(axis = 1),
+        globalNames.power_plant_status_decommissioned: (annual_decommissioned_capacity).sum(axis = 1),
+        globalNames.power_plant_status_inPipeline: (annual_in_pipeline_capacity).sum(axis = 1),
+        globalNames.power_plant_status_to_be_decommissioned: (annual_to_be_decommissioned_capacity).sum(axis = 1),
+        globalNames.power_plant_status_strategic_reserve: (annual_strategic_reserve_capacity).sum(axis = 1),
+        globalNames.power_plant_status_not_set: (annual_not_set_status_capacity).sum(axis = 1)
+    }
+    number_per_status = pd.DataFrame(data)
+
+    return annual_operational_capacity, annual_in_pipeline_capacity, annual_to_be_decommissioned_capacity, \
+           annual_strategic_reserve_capacity,   annual_decommissioned_capacity, annual_operational_capacity, number_per_status
+
 def prepare_capacity_per_iteration(years_to_generate, reps):
-
     unique_candidate_power_plants = reps.get_unique_candidate_technologies()
     for year in years_to_generate:
         max_iteration = 0
@@ -209,8 +237,7 @@ def prepare_capacity_per_iteration(years_to_generate, reps):
                     index_invested_iteration, reps.candidatePowerPlants[invest_name].technology.name] = \
                     reps.candidatePowerPlants[invest_name].capacityTobeInstalled
 
-    return  installed_capacity_per_iteration, candidate_plants_project_value
-
+    return installed_capacity_per_iteration, candidate_plants_project_value
 
 
 # def prepare_decom_data(decommissioning, emlab_spine_powerplants_tech_dict, investment_sums, years_to_generate, year,
@@ -259,9 +286,13 @@ def generate_plots():
     for year in years_to_generate:
         print('Preparing and plotting for year ' + str(year))
         # Preparing Data
-        annual_decommissioned_capacity , annual_operational_capacity = prepare_decommissioned_investment_data(years_to_generate, reps, unique_technologies)
-        annual_operational_capacity, annual_in_pipeline_capacity, annual_to_be_decommissioned_capacity = prepare_pipeline_operational( years_to_generate, reps, unique_technologies)
-        installed_capacity_per_iteration, candidate_plants_project_value =  prepare_capacity_per_iteration(years_to_generate, reps)
+        annual_operational_capacity, annual_in_pipeline_capacity, annual_to_be_decommissioned_capacity, \
+        annual_strategic_reserve_capacity,   annual_decommissioned_capacity, annual_operational_capacity, number_per_status = \
+            prepare_pp_status(years_to_generate, reps, unique_technologies)
+
+        installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
+            years_to_generate, reps)
+
     print('Plotting prepared data')
 
     plot_investments(annual_in_pipeline_capacity, years_to_generate, path_to_plots)
@@ -269,8 +300,11 @@ def generate_plots():
     plot_annual_operational_capacity(annual_operational_capacity, years_to_generate, path_to_plots)
     plot_annual_to_be_decommissioned_capacity(annual_to_be_decommissioned_capacity, years_to_generate, path_to_plots)
     plot_candidate_pp_project_value(candidate_plants_project_value, years_to_generate, path_to_plots)
-    plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration, years_to_generate,
-                                   path_to_plots)
+    plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+                                           years_to_generate,
+                                           path_to_plots)
+    power_plants_status(number_per_status , path_to_plots)
+
     print('Showing plots...')
     plt.show()
     plt.close('all')
