@@ -32,6 +32,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
 
     def act(self):
+
         self.setTimeHorizon()
         self.setExpectations()
       #  self.specifyIdsandCapacityCandidatePowerPlants()
@@ -42,10 +43,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.write_conventionals()
         self.write_renewables()
         self.write_storage()
+        self.write_biogas()
         self.write_times()
         self.writer.save()
+        self.writer.close()
 
-    def filter_power_plants_to_be_operational(self):  # TODO should ooperational costs be raised?
+    def filter_power_plants_to_be_operational(self):  # TODO should operational costs be raised?
 
         """
         This function assign a fictional future status to power plants
@@ -100,61 +103,3 @@ class PrepareFutureMarketClearing(PrepareMarket):
             futureprice = substance.get_price_for_future_tick(self.reps, self.simulation_year, substance)
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     futureprice)  # todo: save this as a map in DB
-    #
-    # def createCandidatePowerPlants(self):
-    #     self.getlastIds()  # from installed power plants
-    #     self.iteration = self.reps.dbrw.get_last_iteration(self.simulation_year)
-    #     if self.iteration > 0:  # if there was no iteration before leave it as zero
-    #         self.iteration += 1
-    #         # TODO for higher iterations dont consider the power plants that are not investable
-    #     self.reps.dbrw.stage_init_power_plants_list(self.iteration)
-    #
-    #     for key, candidateTechnology in self.reps.newTechnology.items():
-    #         if candidateTechnology.type == self.RESLabel:
-    #             self.lastrenewableId += 1
-    #             object_name = self.lastrenewableId
-    #         elif candidateTechnology.type == self.conventionalLabel:
-    #             self.lastconventionalId += 1
-    #             object_name = self.lastconventionalId
-    #         elif candidateTechnology.type == self.storageLabel:
-    #             self.laststorageId += 1
-    #             object_name = self.laststorageId
-    #         self.reps.candidatePowerPlants[object_name] = CandidatePowerPlant(object_name)
-    #         self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "type", candidateTechnology.type,
-    #                                                                         0)
-    #         self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "technology",
-    #                                                                         candidateTechnology.name, 0)
-    #         self.reps.candidatePowerPlants[object_name].add_parameter_value(self.reps, "Capacity",
-    #                                                                         candidateTechnology.Capacity, 0)
-    #         print("New technology ", object_name, candidateTechnology.type, candidateTechnology.name,
-    #               candidateTechnology.Capacity)
-    #
-    #         self.power_plants_ids_list.append(object_name)
-    #     # df = pd.DataFrame.from_dict(candidateTechnology.__dict__, orient='index')
-    #     # df.to_excel('forYaml.xlsx')
-    #     print(self.power_plants_ids_list, self.iteration, self.simulation_year)
-    #
-    #     # save the list of power plants that have been candidates per iteration.
-    #     self.reps.dbrw.stage_new_power_plants_ids(self.power_plants_ids_list, self.iteration, self.simulation_year)
-    #
-    #     # parameternames = [Technology, Status, CommissionedYear, Capacity, FuelType, Label]
-    #
-    # def getlastIds(self):
-    #     # get maximum number of power plan
-    #     lastbuiltrenewable = []
-    #     lastbuiltconventional = []
-    #     lastbuiltstorage = []
-    #     for id, pp in self.reps.power_plants.items():
-    #         if pp.label == self.RESLabel:
-    #             lastbuiltrenewable.append(int(id))
-    #         elif pp.label == self.conventionalLabel:
-    #             lastbuiltconventional.append(int(id))
-    #         elif pp.label == self.storageLabel:
-    #             lastbuiltstorage.append(int(id))
-    #     lastbuiltrenewable.sort()
-    #     lastbuiltconventional.sort()
-    #     lastbuiltstorage.sort()
-    #     self.lastrenewableId = lastbuiltrenewable[-1]
-    #     self.lastconventionalId = lastbuiltconventional[-1]
-    #     if len(lastbuiltstorage) > 0:  # TODO: give numeration to storage so that it doesnt overlap with renewables
-    #         self.laststorageId = lastbuiltstorage[-1]

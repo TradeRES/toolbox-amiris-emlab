@@ -35,7 +35,7 @@ class Investmentdecision(DefaultModule):
         self.futureInvestmentyear = 0
         self.market = None
         self.marketInformation = None
-        self.agent = None
+        #self.agent = None
         self.budget_year0 = 0
         self.continueInvestment = True
         # !!! leave the order. -> agent> time horizon> init candidate power plants

@@ -41,7 +41,7 @@ class StrategicReserveOperator(ImportObject):
         return self.cash
 
     def setCash(self, cash):
-        self.cash += cash
+        self.cash = cash
 
     def getPlants(self):
         return self.list_of_plants
