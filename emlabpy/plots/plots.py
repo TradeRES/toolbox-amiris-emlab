@@ -259,7 +259,7 @@ def prepare_revenues_per_iteration( reps):
             temporal = pd.DataFrame( profit_per_iteration, index = profits.profits_per_iteration_pp[iteration], columns= [int(iteration)])
             power_plants_revenues_per_iteration = power_plants_revenues_per_iteration.join(temporal)
         power_plants_revenues_per_iteration.drop("zero", axis=1, inplace=True)
-        break # # attention each object is a year - > remove if more years are desired
+        break #attention each object is a year - > remove if more years are desired
     tech = []
     for pp in power_plants_revenues_per_iteration.index.values:
         tech.append(reps.power_plants[pp].technology.name)
@@ -312,14 +312,14 @@ def generate_plots():
     print('Start generating plots per year')
     for year in years_to_generate:
         print('Preparing and plotting for year ' + str(year))
-
+        # Preparing power plants revenues
         power_plants_revenues_per_iteration = prepare_revenues_per_iteration(reps)
-
 
         # Preparing power plants status
         annual_operational_capacity, annual_in_pipeline_capacity, annual_to_be_decommissioned_capacity, \
         annual_strategic_reserve_capacity,   annual_decommissioned_capacity, annual_operational_capacity, number_per_status = \
             prepare_pp_status(years_to_generate, reps, unique_technologies)
+
         # Preparing power plants project value
         installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
             years_to_generate, reps)
