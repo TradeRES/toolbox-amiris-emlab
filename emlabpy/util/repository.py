@@ -86,7 +86,7 @@ class Repository:
         self.loansToAgent = {}
         self.powerPlantsForAgent = {}
         self.loanList = []
-        self.financialPowerPlantReports = None
+        self.financialPowerPlantReports = dict()
 
         # Create list of plants in SR
         self.plants_in_SR = []

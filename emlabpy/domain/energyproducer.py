@@ -92,7 +92,7 @@ class EnergyProducer(EMLabAgent):
         for i in range(-horizon, 1):
             #JAVA TO PYTHON CONVERTER TODO TASK: Java to Python Converter cannot determine whether both operands of this division are integer types - if they are then you should change 'lhs / rhs' to 'math.trunc(lhs / float(rhs))':
             averagePastOperatingProfit += calculatePastOperatingProfitInclFixedOMCost(pp, getCurrentTick() + i) / horizon
-        logging.INFO(" %s has had an average operating profit of %s", pp  , averagePastOperatingProfit)
+        logging.INFO(" %s has had an average operating profits of %s", pp  , averagePastOperatingProfit)
         return averagePastOperatingProfit
 
     def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):

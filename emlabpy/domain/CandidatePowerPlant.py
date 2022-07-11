@@ -10,7 +10,7 @@ class CandidatePowerPlant(PowerPlant):
         self.CostsinEUR = 0
         self.OfferedPowerinMWH = 0
         self.ReceivedMoneyinEUR = 0
-        self.Profit = 0 # operational profit
+        self.Profit = 0 # operational profits
         # scenario from artificial emlab parameters
         self.Leadtime = 0
         self.Permittime = 0

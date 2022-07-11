@@ -26,7 +26,7 @@ class CreatingFinancialReports(DefaultModule):
     def createFinancialReportsForPowerPlantsAndTick(self, plants, tick): # todo -> probably this is needed only for operational power plants
         financialPowerPlantReports = []
         for plant in plants.values():
-            financialPowerPlantReport = FinancialPowerPlantReport(plant.name, self.reps)
+            financialPowerPlantReport = FinancialPowerPlantReport(plant.name)
             financialPowerPlantReport.setTime(tick)
             financialPowerPlantReport.setPowerPlant(plant.name)
             totalSupply = plant.getAwardedPowerinMWh()

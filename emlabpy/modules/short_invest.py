@@ -35,7 +35,7 @@ class ShortInvestmentdecision(Investmentdecision):
             operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,
                                                                                                        quick_technology)
             # if the technology can be invested_in_iteration, then calculate the returns
-            # TODO the profit should consider the past year profits?
+            # TODO the profits should consider the past year profits?
             average_profit = self.reps.get_average_profits(operationalInvestablePlants)
             if pd.isna(average_profit):
                 pass
@@ -89,13 +89,13 @@ class ShortInvestmentdecision(Investmentdecision):
              return round(IRR, 4)
 
 
-    # Todo change this to the last 3 years profit ????
+    # Todo change this to the last 3 years profits ????
     def getProjectCashFlow(self, technology ,average_profit, agent):
         totalInvestment = self.getActualInvestedCapitalperMW( technology)
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
-        # get average profit per technology
+        # get average profits per technology
         operatingProfit = average_profit
         equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
         restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / technical_lifetime

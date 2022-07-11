@@ -6,19 +6,20 @@ from domain.technologies import *
 import logging
 class FinancialPowerPlantReport(ImportObject):
 
-    def __init__(self, name, reps):
-
+    def __init__(self, name):
         super().__init__(name)
         self.powerPlant = None
         self.spotMarketRevenue = 0
         self.overallRevenue = 0
         self.production = 0
         self.powerPlantStatus = 0
-        self.profit = 0#[0 for i in range(reps.simulation_length)]
+        self.profits = 0#[0 for i in range(reps.simulation_length)]
+        self.profits_per_iteration_pp  = dict()
+        self.profits_per_iteration = dict()
         self.time = 0
         self.iteration = 0
         self.schedule = None
-        self.fullLoadHours = [0 for i in range(reps.simulation_length)]
+        self.fullLoadHours = [] # [0 for i in range(reps.simulation_length)]
         self.longTermMarketRevenue = 0
         self.capacityMarketRevenue = 0
         self.strategicReserveRevenue = 0
@@ -29,6 +30,12 @@ class FinancialPowerPlantReport(ImportObject):
         self.fixedCosts = 0
         self.fixedOMCosts = 0
 
+    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+        if parameter_name == 'PowerPlants':
+            # object name is year and alternative is the iteration.
+            self.profits_per_iteration_pp[alternative] = parameter_value
+        elif parameter_name == 'Profits':
+            self.profits_per_iteration[alternative] = parameter_value
 
     # UNDERCONSTRUCTION = 0
     # OPERATIONAL = 1
@@ -77,10 +84,10 @@ class FinancialPowerPlantReport(ImportObject):
         self.powerPlantStatus= powerPlantStatus
 
     def getProfit(self, tick):
-        return self.profit
+        return self.profits
 
     def setProfit(self, profit):
-        self.profit= profit
+        self.profits= profit
 
     def getCommodityCosts(self):
         return self.commodityCosts

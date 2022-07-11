@@ -7,6 +7,8 @@ Jim Hommes - 25-3-2021
 import logging
 from spinedb_api import Map
 from twine.repository import Repository
+
+from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import Investments
 from util import globalNames
 from domain.newTechnology import NewTechnology
@@ -310,7 +312,7 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['PowerPlant', 'latestTick', 'spotMarketRevenue', 'overallRevenue', 'production',
-                                      'powerPlantStatus', 'profit'])
+                                      'powerPlantStatus', 'profits'])
 
     def stage_financial_results(self, financialreports):
         for fr in financialreports:
@@ -323,12 +325,12 @@ class SpineDBReaderWriter:
                                                 ('overallRevenue', Map([str(fr.tick)], [str(fr.overallRevenue)])),
                                                 ('production', Map([str(fr.tick)], [str(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
-                                                ('profit', Map([str(fr.tick)], [str(fr.profit)]))],
+                                                ('profits', Map([str(fr.tick)], [str(fr.profits)]))],
                                                '0')
 
     def findFinancialPowerPlantProfitsForPlant(self, powerplant):
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
-            self.financial_reports_object_classname, powerplant.name, "profit", 0)
+            self.financial_reports_object_classname, powerplant.name, "profits", 0)
         if not financialresults:
             return
         return financialresults[0]['parameter_value'].to_dict()
@@ -486,7 +488,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     elif object_class_name == 'Targets':
         add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
-
     elif object_class_name == 'TechnologiesEmlab':
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
         # data from Traderes
@@ -510,9 +511,13 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line = list(db_line)
         new_db_line[4] = reps.dbrw.investment_decisions_classname
         add_parameter_value_to_repository(reps, new_db_line, reps.investments, Investments)
-
-
-
+    elif object_class_name == "Profits" and reps.dbrw.read_investments == True:
+        object_name = db_line[1]
+        year, iteration = object_name.split('-')
+        new_db_line = list(db_line)
+        new_db_line[1] = year # object name
+        new_db_line[4] = iteration  # alternative
+        add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'Decommissioned':
         add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
     else:
