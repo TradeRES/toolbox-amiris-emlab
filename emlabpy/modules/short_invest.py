@@ -29,7 +29,7 @@ class ShortInvestmentdecision(Investmentdecision):
         for quick_technology in self.quickInvestabletechnologies:
             self.calculateandCheckFutureCapacityExpectation(self.reps.power_generating_technologies[quick_technology])
 
-            # note that the list is updated in the step before!!!!!!!!!!!
+            # the list is updated in the step before!!!!!!!!!!!
         technologies_highreturns =[]
         for quick_technology in self.quickInvestabletechnologies:
             operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,
@@ -61,7 +61,7 @@ class ShortInvestmentdecision(Investmentdecision):
             technology,
             self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)
         self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
-            technology.name)
+            technology)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
 
         # the check is not done for candidate power plant, but for installed power plants
@@ -71,7 +71,7 @@ class ShortInvestmentdecision(Investmentdecision):
                          self.technology)
             self.quickInvestabletechnologies.remove(technology.name)
             return False
-        elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit  :
+        elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
             logging.info(" will not invest in '%s  technology because the capacity limits are achieved", technology)
             self.quickInvestabletechnologies.remove(technology.name)
             return False
