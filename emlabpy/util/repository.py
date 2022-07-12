@@ -192,12 +192,12 @@ class Repository:
         return expectedOperationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
-        plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology == technology
+        plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology.name == technology.name
                               and i.status == globalNames.power_plant_status_operational]
         return sum(plantsoftechnology)
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
-        return sum([pp.capacity for pp in self.power_plants.values() if pp.technology == technology
+        return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
                     and pp.status == globalNames.power_plant_status_inPipeline])  # pp.isInPipeline(tick)
 
     def calculateCapacityOfPowerPlantsInPipeline(self):

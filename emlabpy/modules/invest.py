@@ -35,10 +35,9 @@ class Investmentdecision(DefaultModule):
         self.futureInvestmentyear = 0
         self.market = None
         self.marketInformation = None
-        #self.agent = None
         self.budget_year0 = 0
         self.continueInvestment = True
-        # !!! leave the order. -> agent> time horizon> init candidate power plants
+        # Attention!!! leave the order. -> agent> time horizon> init candidate power plants
         now = datetime.now()
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
@@ -51,7 +50,6 @@ class Investmentdecision(DefaultModule):
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_init_power_plant_profits()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
-
         # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
         # self.node = None
         # self.pgtNodeLimit = Double.MAX_VALUE
@@ -68,7 +66,7 @@ class Investmentdecision(DefaultModule):
         self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         # save the iteration
-        if self.agent.readytoInvest == True:  # this is also for now not active. Activate once the cash flow is not enough
+        if self.agent.readytoInvest == True:  # todo this is also for now not active. Activate once the cash flow is not enough
             #  for now there is only one energyproducer
             bestCandidatePowerPlant = None
             highestValue = 0
@@ -79,7 +77,11 @@ class Investmentdecision(DefaultModule):
                     # calculate which is the power plant (technology) with the highest NPV
                     candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
                                                                    self.reps.node)
-                    self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
+                    investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
+                    if investable == False:
+                        print("not investable")
+                        break
+
                     cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
                     projectvalue = self.npv(self.agent, cashflow)
                     # saving the list of power plants values that have been candidates per investmentIteration.
@@ -210,7 +212,6 @@ class Investmentdecision(DefaultModule):
         pass
 
     def calculateandCheckFutureCapacityExpectation(self, candidatepowerplant):
-        # TODO the specification should have happened before
         # checking if the technology can be installed or not
         technology = candidatepowerplant.technology
         self.expectedInstalledCapacityOfTechnology = \
@@ -227,7 +228,8 @@ class Investmentdecision(DefaultModule):
             technology)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
         self.capacityInPipeline = self.reps.calculateCapacityOfPowerPlantsInPipeline()
-        self.check(technology, candidatepowerplant)
+        investable = self.check(technology, candidatepowerplant)
+        return investable
 
     def check(self, technology, candidatepowerplant):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
@@ -238,13 +240,12 @@ class Investmentdecision(DefaultModule):
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
             candidatepowerplant.setViableInvestment(False)
-            return
-        elif technologyCapacityLimit > self.expectedInstalledCapacityOfTechnology:
+            return False
+        elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
             logging.info(" will not invest in {} technology because the capacity limits are achieved %s",
                          technology.name)
             candidatepowerplant.setViableInvestment(False)
-            return
-
+            return False
             # TODO: add if the agent dont have enough cash then change the agent.readytoInvest = False
 
         # elif (self.expectedInstalledCapacityOfTechnology + self.candidatepowerplant.getActualNominalCapacity()) / (marketInformation.maxExpectedLoad + self.plant.getActualNominalCapacity()) >\
@@ -258,7 +259,7 @@ class Investmentdecision(DefaultModule):
         else:
             logging.info("%s passes capacity limit.  will now calculate financial viability.", technology)
             candidatepowerplant.setViableInvestment(True)
-            return
+            return True
 
     def findLimitsByTechnology(self, technology):
         LimitinCountry = technology.getMaximumCapacityinCountry()
