@@ -30,6 +30,8 @@ in toolbox-amiris-emlab folder
 conda env create -f environment.yml
 ``` 
 
+
+
 ### EMLABpy
 in toolbox-amiris-emlab folder
 ```
@@ -62,6 +64,7 @@ name: emlabpy
 make kernel specification > ok
 
 Also change the path on the (Amiris future tool > basic console) to the iovrmr conda enviroment
+And change the results path to
 
 ###  kernel
 after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool

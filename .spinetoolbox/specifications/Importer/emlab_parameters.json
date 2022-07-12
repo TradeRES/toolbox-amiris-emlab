@@ -936,7 +936,11 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "table_name",
-                                "value": "CandidatePowerPlants"
+                                "value": "CandidatePowerPlants",
+                                "skip_columns": [
+                                    5,
+                                    6
+                                ]
                             },
                             {
                                 "map_type": "Object",
@@ -1299,7 +1303,10 @@
                 "0": "string",
                 "1": "float",
                 "2": "float",
-                "3": "float"
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "string"
             },
             "Decommissioned": {
                 "0": "string"
