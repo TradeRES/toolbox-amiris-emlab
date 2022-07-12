@@ -125,67 +125,6 @@ def plot_revenues_per_iteration(revenues_iteration,  path_to_plots):
     fig11 = axs11.get_figure()
     fig11.savefig(path_to_plots + '/' + 'Technology Revenues per iteration.png', bbox_inches='tight', dpi=300)
 
-# def plot_and_prepare_hourly_nodal_price_duration_curve(hourly_nodal_prices_df, year, path_to_plots,
-#                                                        price_duration_curves):
-#     # Plot 2.5 Hourly Market Price Duration Curve
-#     print('Create Hourly Nodal Price duration curve')
-#     plt.figure()
-#     axs25 = hourly_nodal_prices_df['NED'].sort_values(ascending=False).plot(use_index=False, grid=True, legend=False)
-#     plt.xlabel('Hours')
-#     plt.ylabel('Price (Euro / MWh)')
-#     axs25.set_title('NL Hourly Electricity Spot Market Price Duration Curve ' + str(year))
-#     axs25.set_axisbelow(True)
-#     plt.ylim([0, min(hourly_nodal_prices_df['NED'].max() + 50, 250)])
-#     fig25 = axs25.get_figure()
-#     fig25.savefig(path_to_plots + '/' + 'NL Nodal Prices Duration Curve ' + str(year) + '.png', bbox_inches='tight', dpi=300)
-#
-#     price_duration_curves[year] = hourly_nodal_prices_df['NED'].sort_values(ascending=False).values
-#     return price_duration_curves
-
-# def plot_hourly_nodal_prices(path_and_filename_dispatch, year, path_to_plots):
-#     # Plot 2 Hourly Nodal Prices
-#     print('Read and create hourly nodal prices plot')
-#     hourly_nodal_prices_df = pandas.read_excel(path_and_filename_dispatch, 'Hourly Nodal Prices', skiprows=1,
-#                                                index_col=0)
-#     # hourly_nodal_prices_df[hourly_nodal_prices_df > 250] = 250
-#
-#     plt.figure()
-#     axs2 = hourly_nodal_prices_df['NED'].plot(grid=True)
-#     axs2.set_axisbelow(True)
-#     plt.xlabel('Hours')
-#     plt.ylabel('Price (Euro / MWh)')
-#     plt.xlim([0, 8760])
-#     plt.ylim([0, min(hourly_nodal_prices_df['NED'].max() + 50, 250)])
-#     axs2.set_title('NL Hourly Electricity Spot Market Prices ' + str(year))
-#     fig2 = axs2.get_figure()
-#     fig2.savefig(path_to_plots + '/' + 'NL Nodal Prices ' + str(year) + '.png', bbox_inches='tight', dpi=300)
-#
-#     return hourly_nodal_prices_df
-
-# def plot_and_prepare_residual_load_duration_curve(hourly_nl_balance_demand, hourly_nl_balance_df, year, path_to_plots,
-#                                                   residual_load_curves):
-#     # Plot 1.75: Residual Load Curve
-#     print('Create Res Load duration curve')
-#     plt.figure()
-#     hourly_nl_balance_residual_load = hourly_nl_balance_demand.subtract(hourly_nl_balance_df['Wind Onshore']) \
-#         .subtract(hourly_nl_balance_df['Wind Offshore']) \
-#         .subtract(hourly_nl_balance_df['Sun']) \
-#         .subtract(hourly_nl_balance_df['Hydro Conv.'])
-#     axs175 = hourly_nl_balance_residual_load.sort_values(ascending=False).plot(use_index=False, grid=True, legend=False)
-#     axs175.set_title('NL Residual Load Duration Curve ' + str(year))
-#     axs175.set_axisbelow(True)
-#     plt.xlabel('Hours')
-#     plt.ylabel('Residual Load (MWh)')
-#     plt.xlim([0, 8760])
-#     fig175 = axs175.get_figure()
-#     fig175.savefig(path_to_plots + '/' + 'NL Residual Load Duration Curve ' + str(year) + '.png', bbox_inches='tight', dpi=300)
-#
-#     residual_load_curves[year] = hourly_nl_balance_residual_load.sort_values(ascending=False).values
-#     return residual_load_curves
-
-def prepare_revenues(years_to_generate, reps, unique_technologies):
-    pass
-
 
 def prepare_pp_status(years_to_generate, reps, unique_technologies):
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)

@@ -237,7 +237,6 @@ class Investmentdecision(DefaultModule):
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
-            # TODO: if the candidate power plants would be parallellized, setting this technology as not investable could that technology simulation
             candidatepowerplant.setViableInvestment(False)
             return
         elif technologyCapacityLimit > self.expectedInstalledCapacityOfTechnology:

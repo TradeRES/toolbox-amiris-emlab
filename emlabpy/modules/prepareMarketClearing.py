@@ -37,7 +37,7 @@ class PrepareMarket(DefaultModule):
         self.write_renewables()
         self.write_storage()
         self.write_biogas()
-        self.write_scenario_data_emlab("simulatedPrice")
+        self.write_scenario_data_emlab("next_year_price")
         self.write_times()
         self.writer.save()
         self.writer.close()
@@ -72,7 +72,11 @@ class PrepareMarket(DefaultModule):
         demand = ["./timeseries/demand/load.csv"] * len(self.Years)
 
         for k, substance in self.reps.substances.items():
-            fuel_price = substance.simulatedPrice_inYear
+            if calculatedprices == "next_year_price":
+                fuel_price = substance.simulatedPrice_inYear
+            else:
+                fuel_price = substance.futurePrice_inYear
+            print(substance.name, fuel_price)
             if substance.name == "nuclear":
                 FuelPrice_NUCLEAR.append(fuel_price)
             elif substance.name == "lignite":

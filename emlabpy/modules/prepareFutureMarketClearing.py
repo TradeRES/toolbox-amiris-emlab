@@ -35,7 +35,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
         self.setTimeHorizon()
         self.setExpectations()
-      #  self.specifyIdsandCapacityCandidatePowerPlants()
+
         self.filter_power_plants_to_be_operational()
         # functions to save the power plants
         self.openwriter()
@@ -102,6 +102,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         :return:
         """
         for k, substance in self.reps.substances.items():
-            futureprice = substance.get_price_for_future_tick(self.reps, self.simulation_year, substance)
+            future_price = substance.get_price_for_future_tick(self.reps, self.simulation_year, substance)
+            substance.futurePrice_inYear = future_price
+            print("in set expetations future",  substance.name, future_price )
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
-                                                    futureprice)  # todo: save this as a map in DB
+                                                    future_price)  # todo: save this as a map in DB
