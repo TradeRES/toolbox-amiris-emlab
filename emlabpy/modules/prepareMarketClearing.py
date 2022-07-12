@@ -76,7 +76,7 @@ class PrepareMarket(DefaultModule):
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
-            print(substance.name, fuel_price)
+
             if substance.name == "nuclear":
                 FuelPrice_NUCLEAR.append(fuel_price)
             elif substance.name == "lignite":
