@@ -104,7 +104,7 @@ class Investmentdecision(DefaultModule):
                     # investing in best candidate power plant as it passed the checks.
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
-                    self.reps.dbrw.stage_investment_decisions(candidatepowerplant.name, self.now,
+                    self.reps.dbrw.stage_investment_decisions(bestCandidatePowerPlant.name, self.now,
                                                               self.reps.investmentIteration,
                                                               self.futureInvestmentyear)
                     self.continue_iteration()
