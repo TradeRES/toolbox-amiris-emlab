@@ -79,7 +79,10 @@ class Investmentdecision(DefaultModule):
                                                                    self.reps.node)
                     investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
                     if investable == False:
-                        print("not investable")
+                        candidatepowerplant.setViableInvestment(False)
+                        logging.info("dont invest in this technology%s",candidatepowerplant.technology)
+                        # saving if the candidate power plant remains or not as investable
+                        self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         break
 
                     cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
@@ -93,7 +96,7 @@ class Investmentdecision(DefaultModule):
                         bestCandidatePowerPlant = candidatepowerplant
                     else:
                         candidatepowerplant.setViableInvestment(False)
-                        logging.info("dont invest in this technology")
+                        logging.info("dont invest in this technology%s",candidatepowerplant.technology)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
 
@@ -124,7 +127,7 @@ class Investmentdecision(DefaultModule):
                          int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
                      str("{:05d}".format(int(self.new_id)))
                      ))
-        # print("newid", self.new_id)
+
         newplant = PowerPlant(newid)
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year, self.agent, self.reps.country,
