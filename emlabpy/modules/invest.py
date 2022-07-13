@@ -222,9 +222,10 @@ class Investmentdecision(DefaultModule):
             self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(technology,
                                                                                 self.futureInvestmentyear)
         technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology)
-        # TODO:This part considers that if technology is not covered by the subsidies, the government would add subsidies?....
+        # TODO:This part considers that if technology is not covered by comapnoes, the government would add subsidies but this is not active yet
+
         if technologyTarget is not None:
-            technologyTargetCapacity = self.reps.trends[str(technologyTarget)].getValue(self.futureTick)
+            technologyTargetCapacity = self.reps.trends[technologyTarget.name].get_value(self.futureTick)
             if (technologyTargetCapacity > self.expectedInstalledCapacityOfTechnology):
                 self.expectedInstalledCapacityOfTechnology = technologyTargetCapacity
 
@@ -238,7 +239,7 @@ class Investmentdecision(DefaultModule):
     def check(self, technology, candidatepowerplant):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
             # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
-        if  self.capacityOfTechnologyInPipeline > 10000:
+        if  self.capacityOfTechnologyInPipeline > 1000:
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)

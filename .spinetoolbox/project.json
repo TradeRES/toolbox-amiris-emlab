@@ -822,8 +822,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -734.6892294737194,
-            "y": -435.22997229774097,
+            "x": -737.2288791053483,
+            "y": -450.46787008751465,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -896,8 +896,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -331.09634403223237,
-            "y": -121.7545593183505,
+            "x": -333.6359936638613,
+            "y": -136.99245710812414,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -918,8 +918,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -90.04036259033094,
-            "y": -122.31951316485709,
+            "x": -92.58001222195992,
+            "y": -137.5574109546307,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -940,8 +940,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 58.49799450844661,
-            "y": 34.84457956329402,
+            "x": 55.95834487681768,
+            "y": 19.60668177352038,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -965,8 +965,8 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -580.7072626103021,
-            "y": -116.07734955514215,
+            "x": -583.246912241931,
+            "y": -131.31524734491578,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -987,8 +987,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -442.7073788081818,
-            "y": -433.45990337204216,
+            "x": -445.2470284398107,
+            "y": -448.69780116181585,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1081,8 +1081,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -787.8061257064221,
-            "y": -113.52125507123331,
+            "x": -790.3457753380511,
+            "y": -128.75915286100695,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1099,8 +1099,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -212.6440638572134,
-            "y": 121.42394287526675,
+            "x": -215.1837134888424,
+            "y": 121.42394287526673,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1121,8 +1121,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -580.1280439220367,
-            "y": -435.4551458972778,
+            "x": -582.6676935536656,
+            "y": -450.6930436870515,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
