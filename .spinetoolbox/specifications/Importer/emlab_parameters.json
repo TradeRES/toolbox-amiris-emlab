@@ -549,7 +549,8 @@
                                 "position": "hidden",
                                 "value": "Fuels",
                                 "skip_columns": [
-                                    0
+                                    3,
+                                    4
                                 ]
                             },
                             {
@@ -1022,6 +1023,7 @@
             "TargetInvestorTargets",
             "FuelPriceTrends",
             "TechnologiesEmlab",
+            "Fuels",
             "NewTechnologies",
             "dictTech",
             "dictFuel",
@@ -1211,8 +1213,7 @@
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float",
-                "5": "float"
+                "4": "float"
             },
             "explanation": {
                 "0": "string",

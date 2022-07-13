@@ -46,6 +46,7 @@ class Repository:
         self.lookAhead = 0
         self.current_year = 0
         self.simulation_length = 0
+        self.start_year_fuel_trends = 0
         self.investmentIteration = 0
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

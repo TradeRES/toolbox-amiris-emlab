@@ -76,11 +76,12 @@ class SpineDBReaderWriter:
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'InvestmentIteration':
                 reps.investmentIteration = int(row['parameter_value'])
-            elif row['parameter_name'] == 'Country':  # changed from node(emlab) to
-                # country because in traderes Node is used for fuels
+            elif row['parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = row['parameter_value']
-            elif row['parameter_name'] == 'short_term_investment_minimal_irr':  # changed from node(emlab) to country
+            elif row['parameter_name'] == 'short_term_investment_minimal_irr':
                 reps.short_term_investment_minimal_irr = row['parameter_value']
+            elif row['parameter_name'] == 'start_year_fuel_trends':
+                reps.start_year_fuel_trends = row['parameter_value']
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
