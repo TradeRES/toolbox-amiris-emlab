@@ -48,7 +48,7 @@ class Substance(ImportObject):
             self.simulatedPrice = parameter_value
 
     def get_price_for_next_tick(self, reps, tick, year, substance):
-        if tick <= 3 or substance.name == "CO2":
+        if tick <= 6 or substance.name == "CO2":
             if substance.name == "electricity":
                 self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year. TODO
             else:
@@ -71,7 +71,7 @@ class Substance(ImportObject):
             fp = [substance.initialprice2020, substance.initialprice2040]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice
-        elif reps.current_tick >= 2:
+        elif reps.current_tick >= 5:
             self.initializeGeometricTrendRegression(reps, substance) # TODO should this
             self.newFuturePrice = self.geometricRegression.predict(futureYear)
             return self.newFuturePrice
