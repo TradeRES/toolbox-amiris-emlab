@@ -115,9 +115,7 @@ def plot_annual_operational_capacity(annual_operational_capacity, years_to_gener
 def plot_revenues_per_iteration(revenues_iteration,  path_to_plots):
     print('Annual operational capacity')
     plt.figure()
-
     axs11 = revenues_iteration.plot()
-
     axs11.set_axisbelow(True)
     plt.xlabel('Iterationos', fontsize='medium')
     plt.ylabel('Revenues', fontsize='medium')
