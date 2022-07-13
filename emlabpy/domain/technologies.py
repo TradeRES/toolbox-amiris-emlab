@@ -11,6 +11,7 @@ import logging
 import random
 import sys
 
+
 class PowerGeneratingTechnology(ImportObject):
     def __init__(self, name):
         super().__init__(name)
@@ -29,7 +30,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.maximum_installed_capacity_in_country = sys.float_info.max
         self.intermittent = False
         self.fuel = ''
-        self.type= ''
+        self.type = ''
 
         # here are missing info
         self.energyToPowerRatio = 0
@@ -46,8 +47,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.applicable_for_long_term_contract = False
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        # according to the scenario.yaml, if is has energy carrier then it is intermittent
-        #From here are the inputs from TechnologyEmlab
+
         if parameter_name == 'Intermittent':
             self.intermittent = bool(parameter_value)
         elif parameter_name == 'expectedPermittime':
@@ -62,15 +62,15 @@ class PowerGeneratingTechnology(ImportObject):
             self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':
             self.type = parameter_value
-        #From here are the inputs from emlab electricity = traderes
+        # From here are the inputs from emlab electricity = traderes
         elif parameter_name == 'annuity':
             self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':
             self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'lifetime_economic':
             self.depreciation_time = int(parameter_value)
-        elif parameter_name == reps.country: # TODO: Implement Investment limit per node
-             self.maximum_installed_capacity_in_country = parameter_value*1000 # capacities from GW to MW (emlab)
+        elif parameter_name == reps.country:  # TODO: Implement Investment limit per node
+            self.maximum_installed_capacity_in_country = parameter_value * 1000  # capacities from GW to MW (emlab)
 
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
@@ -79,7 +79,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.initializeFixedCostsTrend()
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
-        elif parameter_name == 'investment_cost': # these are already transmofred eur/kw Traderes-> *1000 eur /MW emlab
+        elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes-> *1000 eur /MW emlab
             self.investment_cost_eur_MW = float(parameter_value)
             self.initializeInvestmenttrend()
         elif parameter_name == 'EnergyToPowerRatio':
@@ -108,7 +108,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         self.fixed_operating_cost_time_series.growth_rate = 0.05
 
-    #--------------------------------------------------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------------------------------------------------------------------
     # def getFixedOperatingCostTimeSeries(self, time):
     #     return self.fixedOperatingCostTimeSeries.getvalue(time, value)
     #
@@ -123,8 +123,7 @@ class PowerGeneratingTechnology(ImportObject):
     def get_fixed_operating_cost(self, time):
         return self.fixed_operating_cost_time_series.get_value(time)
 
-    #--------------------------------------------------------------------------------------------------------------------------------------------------------
-
+    # --------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def getMaximumInstalledCapacityFractionInCountry(self):
         return self.maximumInstalledCapacityFractionInCountry
@@ -144,18 +143,19 @@ class PowerGeneratingTechnology(ImportObject):
     def setDepreciationTime(self, depreciation_time):
         self.depreciation_time = depreciation_time
 
-
     def getName(self):
         return self.name
 
     def setName(self, label):
         self.name = label
+
     #     * assumption: the first is the main fuel
     def getMainFuel(self):
         if self.getFuels().size() > 0:
             return self.getFuels().iterator().next()
         else:
             return None
+
     #
     # def getCoCombustionFuels(self):
     #     coFuels = HashSet(self.getFuels())
@@ -169,7 +169,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.capacity = capacity
 
     def getEfficiency(self, time):
-      #  print(help(self.efficiency_time_series))
+        #  print(help(self.efficiency_time_series))
         return self.efficiency_time_series.get_value(time)
 
     def getInvestmentCostTimeSeries(self):
@@ -236,7 +236,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.applicable_for_long_term_contract = applicableForLongTermContract
 
     def getInvestmentCost(self, time):
-     #   print(help(self.investment_cost_time_series))
+        #   print(help(self.investment_cost_time_series))
         return self.investment_cost_time_series.get_value(time)
 
     def isIntermittent(self):
@@ -247,9 +247,6 @@ class PowerGeneratingTechnology(ImportObject):
 
     def getMaximumCapacityinCountry(self):
         return self.maximum_installed_capacity_in_country
-
-
-
 
     # def getMinimumRunningHours(self):
     #     return self.minimumRunningHours

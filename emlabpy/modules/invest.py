@@ -61,7 +61,7 @@ class Investmentdecision(DefaultModule):
         pp_numbers = []
         pp_profits = []
         for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
-            pp_numbers.append(pp.id)
+            pp_numbers.append(pp.name)
             pp_profits.append(pp.Profit)
         self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)

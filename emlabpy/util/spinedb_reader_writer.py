@@ -42,6 +42,7 @@ class SpineDBReaderWriter:
         self.Storages_classname = "Storages"
         self.amirisdb = None
         self.read_investments = False
+
         if open_db == "Amiris":
             print("opening amiris")
             self.amirisdb = SpineDB(db_urls[1])
@@ -489,12 +490,23 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     elif object_class_name == 'Targets':
         add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
     elif object_class_name == 'TechnologiesEmlab':
-        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        if db_line[1] in reps.used_technologies:
+            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        else:
+            pass
         # data from Traderes
     elif object_class_name == 'technologyPotentials':  # From traderes these potentials are the maximum that can be installed per country. The units are in GW
-        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        if db_line[1] in reps.used_technologies:
+            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        else:
+            pass
+            # From here are the inputs from TechnologyEmlab
     elif object_class_name == 'unit':
-        add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        # according to the scenario.yaml, if is has energy carrier then it is intermittent
+        if db_line[1] in reps.used_technologies:
+            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+        else:
+            pass
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # node contain the # TODO complete this to the scenario

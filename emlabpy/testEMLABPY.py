@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import pandas as pd
+import os
+import sys
+
 
 record1= {'Math': list(range(100))}
 
@@ -7,9 +11,6 @@ record2= {'Math': [0,0,0,0,0],
           'Science': [0,0,0,0,0],
           'English': [0,0,0,0,100000]}
 
-for k, v in record2.items():
-    print(k,v)
-    break
 
 def plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                     ):
