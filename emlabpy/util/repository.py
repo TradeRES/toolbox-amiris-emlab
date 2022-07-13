@@ -34,7 +34,7 @@ class Repository:
         """
         Initialize all Repository variables
         """
-        self.node = ""
+        #self.node = ""
         self.country = ""
         self.dbrw = None
         self.agent = "Producer1"      # TODO if there would be more agents, the future capacity should be analyzed per agent

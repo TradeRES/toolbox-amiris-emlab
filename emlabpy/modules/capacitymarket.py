@@ -18,7 +18,6 @@ class CapacityMarketSubmitBids(MarketModule):
     """
     The class that submits all bids to the Capacity Market
     """
-
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()

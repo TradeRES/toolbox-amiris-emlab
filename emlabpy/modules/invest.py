@@ -76,7 +76,7 @@ class Investmentdecision(DefaultModule):
 
                     # calculate which is the power plant (technology) with the highest NPV
                     candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
-                                                                   self.reps.node)
+                                                                   self.reps.country)
                     investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
@@ -91,6 +91,7 @@ class Investmentdecision(DefaultModule):
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
                                                                       self.reps.investmentIteration,
                                                                       self.futureInvestmentyear)
+
                     if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                         highestValue = projectvalue / candidatepowerplant.capacity
                         bestCandidatePowerPlant = candidatepowerplant
@@ -237,7 +238,7 @@ class Investmentdecision(DefaultModule):
     def check(self, technology, candidatepowerplant):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
             # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
-        if  self.capacityOfTechnologyInPipeline > 9000:
+        if  self.capacityOfTechnologyInPipeline > 10000:
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
