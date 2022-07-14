@@ -509,7 +509,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
             pass
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
-    elif object_class_name == 'node':  # node contain the # TODO complete this to the scenario
+    elif object_class_name == 'node':  # TODO complete this to the scenario
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)

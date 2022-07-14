@@ -500,6 +500,11 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_unique_substances_names(self):
+        try:
+            return [i.name for i in self.substances.values()]
+        except StopIteration:
+            return None
     # PowerGridNode
     def get_power_grid_node_by_zone(self, zone: str):
         try:

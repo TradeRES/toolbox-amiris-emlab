@@ -3,6 +3,24 @@ import pandas as pd
 import pandas as pd
 import os
 import sys
+from functools import reduce
+
+
+years_to_generate = list(range(1,7))
+df = pd.DataFrame(index = years_to_generate)
+df.index.name = "key"
+
+other = pd.DataFrame({'key': [1, 2, 5],
+                      'B': ['B0', 'B1', 'B2']})
+ssd = pd.DataFrame({'key': [1, 2, 3],
+                      'C': ['B0', 'B1', 'B2']})
+other.set_index('key')
+ssd.set_index('key')
+df = pd.merge(df, other,   on='key', how='inner')
+df = pd.merge(df, ssd,   on='key', how='inner')
+df.join(ssd, how='left')
+print(df)
+merged_df = reduce(lambda df, other: pd.merge(df, other, on='date', how='inner'), dfs)
 
 
 record1= {'Math': list(range(100))}
