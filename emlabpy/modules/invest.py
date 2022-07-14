@@ -239,7 +239,7 @@ class Investmentdecision(DefaultModule):
     def check(self, technology, candidatepowerplant):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
             # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
-        if  self.capacityOfTechnologyInPipeline > 1000:
+        if  self.capacityOfTechnologyInPipeline > 10000:
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
