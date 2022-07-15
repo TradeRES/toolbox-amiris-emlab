@@ -1,13 +1,30 @@
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 import pandas as pd
 import os
 import sys
 from functools import reduce
 
-
 years_to_generate = list(range(1,7))
-df = pd.DataFrame(index = years_to_generate)
+hours = np.array(list(range(1,10)))
+
+df = pd.DataFrame(index = hours)
+
+np.array(list(range(1,10)))
+dos = np.array(list(range(1,10)))
+for i in range(1, 4):
+    df["dos"+ str(i)] = dos * 3
+df.plot()
+plt.show()
+
+# if parameter_name == reps.current_tick:
+#     all = []
+#     for v in self.values():
+#         all.append(v)
+#     self.decommissioned["Decommissioned"] = all
+
+
+
 df.index.name = "key"
 
 other = pd.DataFrame({'key': [1, 2, 5],

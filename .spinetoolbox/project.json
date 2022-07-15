@@ -327,7 +327,14 @@
                 "to": [
                     "Prepare Data Amiris",
                     "left"
-                ]
+                ],
+                "resource_filters": {
+                    "db_url@EmlabDB": {
+                        "scenario_filter": [
+                            1
+                        ]
+                    }
+                }
             },
             {
                 "name": "from decommission to Prepare Data Amiris",
@@ -547,7 +554,14 @@
                 "to": [
                     "decommission",
                     "right"
-                ]
+                ],
+                "resource_filters": {
+                    "db_url@EmlabDB": {
+                        "scenario_filter": [
+                            1
+                        ]
+                    }
+                }
             },
             {
                 "name": "from EmlabDB to Initialize Clock",
@@ -676,8 +690,8 @@
         "TraderesDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1132.1256491125066,
-            "y": -971.1176687929432,
+            "x": -1187.6810845520904,
+            "y": -1003.2163648247025,
             "url": {
                 "dialect": "mysql",
                 "host": "localhost",
@@ -694,7 +708,7 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/EMLAB parameters.xlsx"
+                    "path": "data/EMLABparameters.xlsx"
                 }
             ],
             "db_references": []
@@ -710,7 +724,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/data/EMLAB parameters.xlsx",
+                    "<project>/data/EMLABparameters.xlsx",
                     true
                 ]
             ]
@@ -874,8 +888,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -919.4841903543221,
-            "y": -431.5700912804405,
+            "x": -965.2933345498928,
+            "y": -360.3114225317748,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1045,7 +1059,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/data/DE_datapower_plants.xlsx",
+                    "<project>/data/Power_plants.xlsx",
                     true
                 ]
             ]
@@ -1059,7 +1073,7 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/DE_datapower_plants.xlsx"
+                    "path": "data/Power_plants.xlsx"
                 }
             ],
             "db_references": []

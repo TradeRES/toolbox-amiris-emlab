@@ -26,8 +26,7 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
+                                "position": 5
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -102,8 +101,7 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
+                                "position": 6
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -1073,7 +1071,7 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float"
+                "5": "string"
             },
             "CO2Auction": {
                 "0": "string",
@@ -1090,8 +1088,8 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float",
-                "7": "string"
+                "6": "string",
+                "7": "float"
             },
             "EnergyConsumers": {
                 "0": "string",

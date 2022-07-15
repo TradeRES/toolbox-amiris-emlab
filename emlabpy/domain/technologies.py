@@ -19,7 +19,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.annuity = 0
         self.investment_cost_eur_MW = None
         self.fixed_operating_costs = None
-        self.variable_operating_costs = None
+        self.variable_operating_costs = 0.0
         self.efficiency = 0
         self.depreciation_time = 0
         self.minimum_running_hours = 0
@@ -71,7 +71,6 @@ class PowerGeneratingTechnology(ImportObject):
             self.depreciation_time = int(parameter_value)
         elif parameter_name == reps.country:  # TODO: Implement Investment limit per node
             self.maximum_installed_capacity_in_country = parameter_value * 1000  # capacities from GW to MW (emlab)
-
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
@@ -79,7 +78,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.initializeFixedCostsTrend()
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
-        elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes-> *1000 eur /MW emlab
+        elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
             self.investment_cost_eur_MW = float(parameter_value)
             self.initializeInvestmenttrend()
         elif parameter_name == 'EnergyToPowerRatio':

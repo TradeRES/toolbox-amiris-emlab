@@ -435,7 +435,7 @@ def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: 
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
-    parameter_alt = db_line[4] # @ TODO VTT : The alternative is never been read
+    parameter_alt = db_line[4] #
     if object_name not in to_dict.keys():
         to_dict[object_name] = class_to_create(object_name)
     to_dict[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
@@ -477,6 +477,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
+    elif object_class_name == 'Decommissioned': # this decommissioned is to avoid reading the decommissioned plants
+        add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
     elif object_class_name == 'PowerPlantsInstalled':
         add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
     elif object_class_name in "CandidatePowerPlants":
@@ -530,8 +532,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line[1] = year # object name
         new_db_line[4] = iteration  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
-    elif object_class_name == 'Decommissioned':
-        add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
+
     else:
         logging.info('Object Class not defined: ' + object_class_name)
 

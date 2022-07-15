@@ -140,6 +140,14 @@ The log4j.properties, fame setup YAML and the amiris jar should be stored here
 The file traderes.pb contain the encrypted results. 
 
 
+### Input Data
+
+All parameters are to be added in the excel file : EMLAbparameters.xls WIP
+The data specific per country shoud be added in the tabs: 
+Capacity Market, Electricity Spot Market
+
+The initial power plants are added in the excel file: 
+
 
 ## :page_with_curl: License and Terms of Use
 

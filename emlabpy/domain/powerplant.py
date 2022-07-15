@@ -17,9 +17,9 @@ class PowerPlant(ImportObject):
         self.name = name
         self.id = 0
         self.technology = None
-        self.location = "DE"
+        self.location = ""
         self.age = None
-        self.owner = "EnergyProducer1"  # change if there are more energyproducers
+        self.owner = None # change if there are more energyproducers
         self.capacity = 0
         self.efficiency = 0
         # TODO: Implement GetActualEfficiency

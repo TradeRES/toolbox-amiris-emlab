@@ -185,7 +185,7 @@
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
                                 "value": "unit",
-                                "read_start_row": 94
+                                "read_start_row": 93
                             },
                             {
                                 "map_type": "Object",
