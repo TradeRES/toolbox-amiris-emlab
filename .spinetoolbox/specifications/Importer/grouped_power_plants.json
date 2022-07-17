@@ -26,7 +26,8 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": 5
+                                "position": "hidden",
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -54,7 +55,7 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "string",
+                "5": "float",
                 "6": "float",
                 "7": "float",
                 "8": "float"
