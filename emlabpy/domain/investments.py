@@ -9,12 +9,12 @@ class Investments(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         year, iteration = parameter_name.split('-')
-        if alternative == "InvestmentDecisions":  #if type(parameter_value) == time
+        if alternative == "InvestmentDecisions":
             if year not in self.invested_in_iteration.keys():
                 self.invested_in_iteration[year] = [iteration]
             else:
                 self.invested_in_iteration[year].append(iteration)
-        else:
+        else: # here is the information from the  CandidatePlantsNPV class read
             if year not in self.project_value_year.keys():
                 self.project_value_year[year] = [parameter_value]
             else:

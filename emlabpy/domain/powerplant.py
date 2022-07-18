@@ -84,11 +84,11 @@ class PowerPlant(ImportObject):
             self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'dismantleTime':
             self.dismantleTime = int(parameter_value)
-        elif parameter_name == 'ComissionedYear':
-            # for amiris data the age can be read from the commisioned year
-            print(self.name, "assigned age by commissioned year ")
-            self.commissionedYear = int(parameter_value)
-            self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
+        # elif parameter_name == 'ComissionedYear':
+        #     # for amiris data the age can be read from the commisioned year
+        #     print(self.name, "assigned age by commissioned year ")
+        #     self.commissionedYear = int(parameter_value)
+        #     self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
         elif parameter_name == 'Maximal':
             self.efficiency = float(parameter_value)
         elif parameter_name == 'AwardedPowerInMWH':
@@ -352,7 +352,6 @@ class PowerPlant(ImportObject):
             substance = sub.getSubstance()
             fuelAmount = sub.getShare()
             co2density = substance.getCo2Density() * (1 - self.getTechnology().getCo2CaptureEffciency())
-
             # determine the total cost per MWh production of this plant
             emissionForThisFuel = fuelAmount * co2density
             emission += emissionForThisFuel
@@ -515,12 +514,12 @@ class PowerPlant(ImportObject):
     def createOrUpdateDownPayment(self, downpayment):
         self.setDownpayment(downpayment)
 
-    def isHistoricalCvarDummyPlant(self):
-        return self.historicalCvarDummyPlant
+    # def isHistoricalCvarDummyPlant(self):
+    #     return self.historicalCvarDummyPlant
 
-    # getter and setters
-    def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
-        self.historicalCvarDummyPlant = historicalCvarDummyPlant
+    # # getter and setters
+    # def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
+    #     self.historicalCvarDummyPlant = historicalCvarDummyPlant
 
 
 class Decommissioned(ImportObject):

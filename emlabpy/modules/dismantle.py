@@ -80,7 +80,6 @@ class Dismantle(DefaultModule):
                 print("status not set", powerplant.name)
 
     def save_powerplants_status_and_age(self):
-        print("     saving power plants status ...   ")
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
 
     def save_decommissioned_list(self):

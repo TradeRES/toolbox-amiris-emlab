@@ -165,20 +165,59 @@ class Repository:
                      ppdp.tick == time), None)
         pass
 
+    # Governments
+    def get_national_government_by_zone(self, zone: Zone) -> NationalGovernment:
+        return next(i for i in self.national_governments.values() if i.governed_zone == zone)
+
+    def get_government(self) -> Government:
+        return next(i for i in self.governments.values())
 
 
-    # ----------------------------------------------------------------------------section PowerPlants
+    # PowerGridNode
+    def get_power_grid_node_by_zone(self, zone: str):
+        try:
+            return next(i for i in self.power_grid_nodes.values() if i.parameters['Country'] == zone)
+        except StopIteration:
+            return None
 
+    # Hourly Demand
+    def get_hourly_demand_by_power_grid_node_and_year(self, zone):
+        try:
+            return next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.zone == zone)
+        except StopIteration:
+            return None
+
+        return
+
+    # ----------------------------------------------------------------------------section technologies
+    # PowerGeneratingTechnologies
+    def get_power_generating_technology_by_techtype_and_fuel(self, techtype: str, fuel: str):
+        try:
+            return next(i for i in self.power_generating_technologies.values()
+                        if i.techtype == techtype and i.fuel == fuel)
+        except StopIteration:
+            logging.warning('PowerGeneratingTechnology not found for ' + techtype + ' and ' + fuel)
+            return None
+
+    def get_unique_technologies_names(self):
+        try:
+            return [i.name for i in self.power_generating_technologies.values()]
+        except StopIteration:
+            return None
+
+    def get_unique_substances_names(self):
+        try:
+            return [i.name for i in self.substances.values()]
+        except StopIteration:
+            return None
+    # SubstanceInFuelMix
+    def get_substances_in_fuel_mix_by_plant(self, plant: PowerPlant) -> Optional[SubstanceInFuelMix]:
+        if plant.technology.name in self.power_plants_fuel_mix.keys():
+            return self.power_plants_fuel_mix[plant.technology.name]
+        else:
+            return None
 
     # ----------------------------------------------------------------------------section Candidate
-
-    def get_id_last_power_plant(self) -> int:
-        # the last 5 numbers are the power plant list
-        return sorted([str(i.id)[-4:] for i in self.power_plants.values()])[-1]
-
-    def get_average_profits(self, powerplants):
-        return mean([pp.get_Profit()for pp in powerplants])
-
     def get_candidate_power_plants_of_technologies(self, technologies) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.technology in technologies]
 
@@ -188,6 +227,30 @@ class Repository:
 
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
+
+    def update_candidate_plant_results(self, results):
+        try:
+            for index, result in results.iterrows():
+                candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
+                candidate.add_values_from_df(result)
+        except StopIteration:
+            logging.warning('candidate technology not found' + str(result.identifier)  )
+        return None
+
+    def get_unique_candidate_technologies(self):
+        try:
+            return [i.technology.name for name, i in self.candidatePowerPlants.items()]
+        except StopIteration:
+            return None
+
+    # ----------------------------------------------------------------------------section PowerPlants
+
+    def get_id_last_power_plant(self) -> int:
+        # the last 5 numbers are the power plant list
+        return sorted([str(i.id)[-4:] for i in self.power_plants.values()])[-1]
+
+    def get_average_profits(self, powerplants):
+        return mean([pp.get_Profit()for pp in powerplants])
 
     def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, tick):
         expectedOperationalcapacity = 0
@@ -314,15 +377,6 @@ class Repository:
         return sum([i.accepted_amount for i in self.power_plant_dispatch_plans.values() if i.tick == time and
                     i.plant == power_plant and i.bidding_market == market])
 
-    # PowerPlantDispatchPlans
-    # def get_power_plant_dispatch_plan_price_by_plant_and_time_and_market(self, plant: PowerPlant, time: int,
-    #                                                                      market: Market) -> float:
-    #     try:
-    #         return next(i.price for i in self.power_plant_dispatch_plans.values() if i.plant == plant and i.tick == time
-    #                     and i.bidding_market == market)
-    #     except StopIteration:
-    #         logging.warning('No PPDP Price found for plant ' + plant.name + ' and at time ' + str(time))
-    #         return 0
 
     def get_sorted_bids_by_market_and_time(self, market: Market, time: int) -> \
             List[PowerPlantDispatchPlan]:
@@ -336,6 +390,20 @@ class Repository:
             List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.name == plant and i.tick == time]
 
+    def update_power_plant_status(self, plant: PowerPlant, price):
+        new_status = globalNames.power_plant_status_strategic_reserve
+        new_owner = 'StrategicReserveOperator'
+        new_price = price
+        for i in self.power_plants.values():
+            if i.name == plant.name:
+                i.status = new_status
+                i.owner = new_owner
+                i.technology.variable_operating_costs = new_price
+                self.power_plants[i.name] = i
+                self.dbrw.stage_power_plant_status(i)
+
+
+    # ----------------------------------------------------------------------------section Capacity Mechanisms
     def get_accepted_CM_bids(self):
         return [i for i in self.bids.values() if
                 i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
@@ -375,20 +443,6 @@ class Repository:
             logging.warning('power plant technology not found' + str(result.identifier) )
         return None
 
-    def update_candidate_plant_results(self, results):
-        try:
-            for index, result in results.iterrows():
-                candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
-                candidate.add_values_from_df(result)
-        except StopIteration:
-            logging.warning('candidate technology not found' + str(result.identifier)  )
-        return None
-
-    def get_unique_candidate_technologies(self):
-        try:
-            return [i.technology.name for name, i in self.candidatePowerPlants.items()]
-        except StopIteration:
-            return None
 
     # def get_project_value(self):
     #     try:
@@ -466,62 +520,6 @@ class Repository:
         except StopIteration:
             return None
 
-    # SubstanceInFuelMix
-    def get_substances_in_fuel_mix_by_plant(self, plant: PowerPlant) -> Optional[SubstanceInFuelMix]:
-        if plant.technology.name in self.power_plants_fuel_mix.keys():
-            return self.power_plants_fuel_mix[plant.technology.name]
-        else:
-            return None
-
-    def findAllClearingPointsForSubstanceAndTimeRange(self, substance, timeFrom, timeTo, forecast):
-
-        # return clearingPoints.stream().filter(lambda p : p.getTime() >= timeFrom).filter(lambda p : p.getTime() <= timeTo).
-        # filter(lambda p : p.getAbstractMarket().getSubstance() is substance).filter(p -(> p.isForecast()) == forecast).collect(Collectors.toList())
-        return
-
-    # Governments
-    def get_national_government_by_zone(self, zone: Zone) -> NationalGovernment:
-        return next(i for i in self.national_governments.values() if i.governed_zone == zone)
-
-    def get_government(self) -> Government:
-        return next(i for i in self.governments.values())
-
-    # PowerGeneratingTechnologies
-    def get_power_generating_technology_by_techtype_and_fuel(self, techtype: str, fuel: str):
-        try:
-            return next(i for i in self.power_generating_technologies.values()
-                        if i.techtype == techtype and i.fuel == fuel)
-        except StopIteration:
-            logging.warning('PowerGeneratingTechnology not found for ' + techtype + ' and ' + fuel)
-            return None
-
-
-    def get_unique_technologies_names(self):
-        try:
-            return [i.name for i in self.power_generating_technologies.values()]
-        except StopIteration:
-            return None
-
-    def get_unique_substances_names(self):
-        try:
-            return [i.name for i in self.substances.values()]
-        except StopIteration:
-            return None
-    # PowerGridNode
-    def get_power_grid_node_by_zone(self, zone: str):
-        try:
-            return next(i for i in self.power_grid_nodes.values() if i.parameters['Country'] == zone)
-        except StopIteration:
-            return None
-
-    # Hourly Demand
-    def get_hourly_demand_by_power_grid_node_and_year(self, zone):
-        try:
-            return next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.zone == zone)
-        except StopIteration:
-            return None
-
-        return
 
     # Extra functions for strategic reserve
     def calculateCapacityOfPowerPlantsInMarket(self, market):
@@ -541,18 +539,6 @@ class Repository:
     def get_accepted_SR_bids(self):
         return [i for i in self.bids_sr.values() if
                 i.status == globalNames.power_plant_status_strategic_reserve]
-
-    def update_power_plant_status(self, plant: PowerPlant, price):
-        new_status = globalNames.power_plant_status_strategic_reserve
-        new_owner = 'StrategicReserveOperator'
-        new_price = price
-        for i in self.power_plants.values():
-            if i.name == plant.name:
-                i.status = new_status
-                i.owner = new_owner
-                i.technology.variable_operating_costs = new_price
-                self.power_plants[i.name] = i
-                self.dbrw.stage_power_plant_status(i)
 
     # def get_power_plants_in_SR(self) -> List[StrategicReserveOperator]:
     #     return [i for i in self.power_plants.values() if
