@@ -82,6 +82,10 @@ class SpineDBReaderWriter:
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] == 'start_year_fuel_trends':
                 reps.start_year_fuel_trends = row['parameter_value']
+            elif row['parameter_name'] == 'maximum_investment_capacity_per_year':
+                reps.maximum_investment_capacity_per_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'Max_permit_build_time':
+                reps.max_permit_build_time =  int(row['parameter_value'])
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
