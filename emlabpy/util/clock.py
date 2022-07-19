@@ -15,8 +15,6 @@ import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 
-
-
 def reset_candidate_investable_status():
     class_name = "CandidatePowerPlants"
     candidate_powerplants = [i for i in db_emlab.query_object_parameter_values_by_object_class(class_name)]
@@ -33,7 +31,6 @@ def update_years_file(current_year , lookAhead, final_year):
         csvwriter = csv.writer(csvfile, delimiter ='/')
         csvwriter.writerow([current_year, (current_year + lookAhead), final_year])
 
-
 try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
@@ -46,8 +43,12 @@ try:
         final_year = next(int(i['parameter_value']) for i
                           in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
                           if i['parameter_name'] == "End Year")
+        StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                         if i['parameter_name'] == 'Start Year')
+
         reset_candidate_investable_status()
         print("reset power plants status")
+
         if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')
             db_emlab.import_object_classes([class_name])
@@ -55,8 +56,7 @@ try:
             db_emlab.import_data({'object_parameters': [[class_name, object_parameter_value_name]]})
             db_emlab.import_alternatives([str(0)])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
-            StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
-                             if i['parameter_name'] == 'Start Year')
+
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
 
@@ -80,12 +80,14 @@ try:
             Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
-            db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
-            db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
-            update_years_file(updated_year , lookAhead, final_year)
-            db_emlab.commit('Clock increment')
-            print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
-
+            if updated_year >= final_year:
+                print("final year achieved" + str(final_year))
+            else:
+                db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
+                db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
+                update_years_file(updated_year , lookAhead, final_year)
+                db_emlab.commit('Clock increment')
+                print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
     else:
         print('No mode specified.')
 except Exception:

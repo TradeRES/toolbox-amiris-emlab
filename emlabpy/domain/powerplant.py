@@ -198,6 +198,7 @@ class PowerPlant(ImportObject):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.commissionedYear = year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
+        print(self.commissionedYear)
         self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
         self.constructionStartTime = tick
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
