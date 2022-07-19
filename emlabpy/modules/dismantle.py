@@ -26,7 +26,7 @@ class Dismantle(DefaultModule):
         for producer, producer_specs in self.reps.energy_producers.items():
             for plant in self.reps.get_power_plants_to_be_decommissioned(producer):
                 # TODO is the power plant subsidized ? then dismantle
-                horizon = producer_specs.getPastTimeHorizon()
+                horizon = self.reps.pastTimeHorizon #producer_specs.getPastTimeHorizon()
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
                 # todo: for the first 3 years dont dismantle
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)

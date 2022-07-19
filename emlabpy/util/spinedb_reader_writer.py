@@ -72,6 +72,8 @@ class SpineDBReaderWriter:
                 reps.simulation_length = reps.end_simulation_year - reps.start_simulation_year
             elif row['parameter_name'] == 'Look Ahead':
                 reps.lookAhead = int(row['parameter_value'])
+            elif row['parameter_name'] == 'pastTimeHorizon':
+                reps.pastTimeHorizon = int(row['parameter_value'])
             elif row['parameter_name'] == 'CurrentYear':
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'InvestmentIteration':

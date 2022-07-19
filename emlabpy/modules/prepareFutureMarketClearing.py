@@ -59,7 +59,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.agent)
         powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
         for powerplant in powerPlantsfromAgent:
-            fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
+            fictional_age = powerplant.age + self.reps.lookAhead
             if fictional_age > powerplant.technology.expected_lifetime:
                 powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
                 # print("to be decommisioned", powerplant.name, "age", fictional_age,
@@ -88,10 +88,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
         The years are defined to export all the CO2 prices
         :return:
         """
-        startfutureyear = self.reps.start_simulation_year + self.reps.energy_producers[
-            self.agent].getInvestmentFutureTimeHorizon()
-        self.simulation_year = self.reps.current_year + self.reps.energy_producers[
-            self.agent].getInvestmentFutureTimeHorizon()
+        startfutureyear = self.reps.start_simulation_year +   self.reps.lookAhead
+                        #  self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
+        self.simulation_year = self.reps.current_year + self.reps.lookAhead
         self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
 
 

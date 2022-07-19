@@ -154,7 +154,7 @@ class Investmentdecision(DefaultModule):
         return newplant
 
     def setTimeHorizon(self):
-        self.futureTick = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
+        self.futureTick = self.reps.current_tick + self.reps.lookAhead #  self.agent.getInvestmentFutureTimeHorizon()
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTick
 
     def getProjectCashFlow(self, candidatepowerplant, agent):

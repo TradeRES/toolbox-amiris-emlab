@@ -44,6 +44,7 @@ class Repository:
         self.end_simulation_year = 0
         self.short_term_investment_minimal_irr = 0
         self.lookAhead = 0
+        self.pastTimeHorizon = 0
         self.current_year = 0
         self.simulation_length = 0
         self.start_year_fuel_trends = 0

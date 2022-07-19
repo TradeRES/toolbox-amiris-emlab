@@ -12,13 +12,11 @@ class EnergyProducer(EMLabAgent):
         self.priceMarkUp = None
         self.longTermContractMargin = None
         self.longTermContractPastTimeHorizon = None
-        self.investmentFutureTimeHorizon = None
         self.equityInterestRate = None
         self.downpaymentFractionOfCash = None
         self.debtRatioOfInvestments = None
         self.willingToInvest = None
         self.loanInterestRate = None
-        self.numberOfYearsBacklookingForForecasting = None
         self.dismantlingProlongingYearsAfterTechnicalLifetime = None
         self.dismantlingRequiredOperatingProfit = None
         self.pastTimeHorizon = None
@@ -39,8 +37,6 @@ class EnergyProducer(EMLabAgent):
             self.downpaymentFractionOfCash = float(parameter_value)
         elif parameter_name == 'equityInterestRate':
             self.equityInterestRate = float(parameter_value)
-        elif parameter_name == 'investmentFutureTimeHorizon':
-            self.investmentFutureTimeHorizon = int(parameter_value)
         elif parameter_name == 'investmentRole':
             self.investmentRole = parameter_value
         elif parameter_name == 'investorMarket':
@@ -51,10 +47,6 @@ class EnergyProducer(EMLabAgent):
             self.longTermContractMargin = float(parameter_value)
         elif parameter_name == 'longTermContractPastTimeHorizon':
             self.longTermContractPastTimeHorizon = int(parameter_value)
-        elif parameter_name == 'numberOfYearsBackLookingForForecasting':
-            self.numberOfYearsBackLookingForForecasting = int(parameter_value)
-        elif parameter_name == 'pastTimeHorizon':
-            self.pastTimeHorizon = int(parameter_value)
         elif parameter_name == 'priceMarkUp':
             self.priceMarkUp = float(parameter_value)
         elif parameter_name == 'willingToInvest':
@@ -121,12 +113,6 @@ class EnergyProducer(EMLabAgent):
     def setLoanInterestRate(self, loanInterestRate):
         self.loanInterestRate = loanInterestRate
 
-    def getPastTimeHorizon(self):
-        return self.pastTimeHorizon
-
-    def setPastTimeHorizon(self, pastTimeHorizon):
-        self.pastTimeHorizon = pastTimeHorizon
-
     def getNumberOfYearsBacklookingForForecasting(self):
         return self.numberOfYearsBacklookingForForecasting
 
@@ -145,11 +131,6 @@ class EnergyProducer(EMLabAgent):
     def setDismantlingRequiredOperatingProfit(self, dismantlingRequiredOperatingProfit):
         self.dismantlingRequiredOperatingProfit = dismantlingRequiredOperatingProfit
 
-    def getInvestmentFutureTimeHorizon(self):
-        return self.investmentFutureTimeHorizon
-
-    def setInvestmentFutureTimeHorizon(self, investmentFutureTimeHorizon):
-        self.investmentFutureTimeHorizon = investmentFutureTimeHorizon
 
     def getEquityInterestRate(self):
         return self.equityInterestRate
