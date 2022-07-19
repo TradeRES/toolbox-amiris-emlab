@@ -65,7 +65,6 @@ try:
             print('Done initializing clock (tick 0)')
 
         if sys.argv[2] == 'increment_clock':
-
             step = next(int(i['parameter_value']) for i
                         in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                         if i['parameter_name'] == 'Time Step')
@@ -82,6 +81,7 @@ try:
             updated_year = step + Current_year
             if updated_year >= final_year:
                 print("final year achieved" + str(final_year))
+                update_years_file(updated_year , lookAhead, final_year) # need to update the file to make the loop stop
             else:
                 db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
                 db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
