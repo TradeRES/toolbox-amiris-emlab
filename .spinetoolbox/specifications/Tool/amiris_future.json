@@ -7,16 +7,14 @@
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [
-        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
-    ],
+    "outputfiles": [],
     "cmdline_args": [],
     "execute_in_work": false,
     "includes_main_path": "../../../amiris_workflow",
     "execution_settings": {
+        "kernel_spec_name": "",
         "env": "",
-        "kernel_spec_name": "amiris",
         "use_jupyter_console": false,
-        "executable": "C:/Programs/Anaconda3/envs/iovrmr/python.exe"
+        "executable": ""
     }
 }

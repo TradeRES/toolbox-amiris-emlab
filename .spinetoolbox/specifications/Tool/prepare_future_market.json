@@ -12,9 +12,9 @@
     "execute_in_work": true,
     "includes_main_path": "../../../emlabpy",
     "execution_settings": {
+        "kernel_spec_name": "",
         "env": "",
-        "kernel_spec_name": "emlabpy",
-        "use_jupyter_console": true,
-        "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+        "use_jupyter_console": false,
+        "executable": ""
     }
 }

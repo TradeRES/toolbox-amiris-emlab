@@ -370,28 +370,6 @@
                 ]
             },
             {
-                "name": "from Capacity Mechanism to short investments",
-                "from": [
-                    "Capacity Mechanism",
-                    "right"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
-                "name": "from EmlabDB2 to Capacity Mechanism",
-                "from": [
-                    "EmlabDB2",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "bottom"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to short investments",
                 "from": [
                     "EmlabDB2",
@@ -443,17 +421,6 @@
                 ],
                 "to": [
                     "AMIRIS DB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to Capacity Mechanism",
-                "from": [
-                    "AMIRIS DB",
-                    "bottom"
-                ],
-                "to": [
-                    "Capacity Mechanism",
                     "left"
                 ]
             },
@@ -524,17 +491,6 @@
                 ]
             },
             {
-                "name": "from specify year to Capacity Mechanism",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
                 "name": "from import AMIRIS to specify year",
                 "from": [
                     "import AMIRIS",
@@ -562,17 +518,6 @@
                         ]
                     }
                 }
-            },
-            {
-                "name": "from EmlabDB to Initialize Clock",
-                "from": [
-                    "EmlabDB",
-                    "right"
-                ],
-                "to": [
-                    "Initialize Clock",
-                    "left"
-                ]
             },
             {
                 "name": "from Prepare Data Amiris to AMIRIS",
@@ -637,6 +582,61 @@
                 ],
                 "to": [
                     "Initialize power plants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to Initialize Clock",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "Initialize Clock",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to Capacity Mechanism",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to Capacity Mechanism",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from specify year to Capacity Mechanism",
+                "from": [
+                    "specify year",
+                    "right"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from Capacity Mechanism to short investments",
+                "from": [
+                    "Capacity Mechanism",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
                     "left"
                 ]
             }
@@ -792,8 +792,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1264.182383263412,
-            "y": -835.3650906373838,
+            "x": -1265.956791683504,
+            "y": -835.3650906373839,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -810,8 +810,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1131.1221740903202,
-            "y": -574.0244574654012,
+            "x": -1128.5795482241072,
+            "y": -591.8228385288927,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -830,7 +830,12 @@
             "y": -998.3439627648642,
             "output_time_stamps": false,
             "cancel_on_error": true,
-            "output_labels": [],
+            "output_labels": [
+                {
+                    "in_label": "db_url@TraderesDB",
+                    "out_label": ""
+                }
+            ],
             "specification": "Exporter Traderes"
         },
         "Prepare Data Amiris": {
@@ -910,8 +915,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -333.6359936638613,
-            "y": -136.99245710812414,
+            "x": -333.63599366386126,
+            "y": -139.11652319611483,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -932,8 +937,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -92.58001222195992,
-            "y": -137.5574109546307,
+            "x": -94.7732528760346,
+            "y": -139.75065160870537,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -976,28 +981,6 @@
                 }
             }
         },
-        "Capacity Mechanism": {
-            "type": "Tool",
-            "description": "",
-            "x": -583.246912241931,
-            "y": -131.31524734491578,
-            "specification": "Capacity Mechanism",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB2"
-                },
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "literal",
-                    "arg": "run_capacity_market"
-                }
-            ]
-        },
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
@@ -1007,12 +990,7 @@
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    true
-                ]
-            ]
+            "file_selection": []
         },
         "Next year": {
             "type": "Tool",
@@ -1113,7 +1091,7 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -215.1837134888424,
+            "x": -217.37695414291707,
             "y": 121.42394287526673,
             "specification": "Invest",
             "execute_in_work": false,
@@ -1160,6 +1138,28 @@
                 {
                     "type": "literal",
                     "arg": "run_initialize_power_plants"
+                }
+            ]
+        },
+        "Capacity Mechanism": {
+            "type": "Tool",
+            "description": "",
+            "x": -519.2605745914791,
+            "y": -148.54020498846495,
+            "specification": "Capacity Mechanism",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_capacity_market"
                 }
             ]
         }

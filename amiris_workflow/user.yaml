@@ -135,6 +135,9 @@ workflow:
   - action:
       project: general
       call: run_AMIRIS
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: null      
       args:
         input: "amiris-config/config.pb"
         model:
