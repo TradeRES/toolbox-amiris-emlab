@@ -30,8 +30,6 @@ in toolbox-amiris-emlab folder
 conda env create -f environment.yml
 ``` 
 
-
-
 ### EMLABpy
 in toolbox-amiris-emlab folder
 ```
