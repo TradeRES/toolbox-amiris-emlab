@@ -1,10 +1,10 @@
 {
-    "name": "test",
+    "name": "Save results",
     "tooltype": "python",
     "includes": [
-        "test.py"
+        "emlab.py"
     ],
-    "description": "",
+    "description": "Saving yearly results to excel",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [],
@@ -13,8 +13,8 @@
     "includes_main_path": "../../../emlabpy",
     "execution_settings": {
         "env": "",
-        "kernel_spec_name": "amiris",
+        "kernel_spec_name": "emlabpy",
         "use_jupyter_console": true,
-        "executable": ""
+        "executable": "C:/Users/bcvannobelen/Miniconda3/envs/emlabpy/python.exe"
     }
 }
