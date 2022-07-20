@@ -99,6 +99,8 @@ class Repository:
         # Create list of plants in SR
         self.plants_in_SR = []
         self.bids_sr = dict()
+        # Create Strategic Reserve Operator
+        self.sr_operator = dict()
 
     """
     Repository functions:

@@ -48,14 +48,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.writer.close()
 
     def filter_power_plants_to_be_operational(self):  # TODO should operational costs be raised?
-
         """
         This function assign a fictional future status to power plants
         If the plants have passed their expected lifetime then these are in theory decommissioned and not added to the list of power plants.
 
         :return:
         """
-
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.reps.agent)
         #powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
         powerPlantsinSR = []
@@ -68,10 +66,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.lookAhead
             if fictional_age > powerplant.technology.expected_lifetime:
                 powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
-                # print("to be decommisioned", powerplant.name, "age", fictional_age,
-                #       "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
-                # todo better to make decisions according to age
 
+                # todo better to make decisions according to expected profit and expected participation in capacity market
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
@@ -79,6 +75,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerplant.owner = 'StrategicReserveOperator'
                 powerplant.technology.variable_operating_costs = SR_price
                 #self.power_plants_list[powerplant.name] = powerplant
+                print("added in SR", powerplant.name)
                 self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
