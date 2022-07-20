@@ -219,7 +219,6 @@ class SpineDBReaderWriter:
                                            [("Id", object_name),
                                             ('Age', powerplant.age),
                                             ('Efficiency', powerplant.actualEfficiency),
-                                            ('DischargingEfficiency', powerplant.dischargingEfficiency),
                                             ('Capacity', powerplant.capacity),
                                             ('Location', powerplant.location),
                                             ('Owner', powerplant.owner.name),

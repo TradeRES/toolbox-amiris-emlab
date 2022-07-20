@@ -34,7 +34,10 @@ class PowerGeneratingTechnology(ImportObject):
 
         # here are missing info
         self.energyToPowerRatio = 0
+        self.chargingEfficiency = 0
+        self.dischargingEfficiency = 0
 
+        self.selfDischargeRatePerHour = 0
         self.co2_capture_efficiency = 0
         self.techtype = ''
         self.efficiency_time_series = None
@@ -81,6 +84,7 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
             self.investment_cost_eur_MW = float(parameter_value)
             self.initializeInvestmenttrend()
+
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
         elif parameter_name == 'co2CaptureEfficiency':
@@ -92,10 +96,12 @@ class PowerGeneratingTechnology(ImportObject):
             self.initializeEfficiencytrend()
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
-        elif parameter_name == 'InitialEnergyLevelInMWH':
-            self.initialEnergyLevelInMWH = float(parameter_value)
         elif parameter_name == 'SelfDischargeRatePerHour':
             self.selfDischargeRatePerHour = float(parameter_value)
+        elif parameter_name == 'ChargingEfficiency':
+            self.chargingEfficiency = float(parameter_value)
+        elif parameter_name == 'DischargingEfficiency':
+            self.dischargingEfficiency = float(parameter_value)
 
     def initializeEfficiencytrend(self):
         self.efficiency_time_series = GeometricTrend("geometrictrend" + self.name)

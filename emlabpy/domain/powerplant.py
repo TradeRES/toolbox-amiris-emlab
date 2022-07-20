@@ -51,12 +51,7 @@ class PowerPlant(ImportObject):
         self.OfferedPowerinMWH = 0
         self.ReceivedMoneyinEUR = 0
         self.Profit = 0
-        self.chargingEfficiency = 0
-        self.dischargingEfficiency = 0
-        self.energyToPowerRatio = 0
         self.initialEnergyLevelInMWH = 0
-        self.selfDischargeRatePerHour = 0
-        self.actualDischargingEfficiency = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         # do not import decommissioned power plants to the repository if it is not the plotting step
@@ -67,8 +62,6 @@ class PowerPlant(ImportObject):
             self.status = parameter_value
         elif parameter_name == 'Efficiency':  # the efficiency stored in the DB is the actual one
             self.actualEfficiency = float(parameter_value)
-        elif parameter_name == 'DischargingEfficiency':  # the efficiency stored in the DB is the actual one
-            self.actualDischargingEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
             self.location = parameter_value
         elif parameter_name == 'Id':
@@ -99,11 +92,8 @@ class PowerPlant(ImportObject):
             self.ReceivedMoneyinEUR = float(parameter_value)
         elif parameter_name == 'label':
             self.label = parameter_value
-        elif parameter_name == 'ChargingEfficiency':
-            self.chargingEfficiency = float(parameter_value)
-        elif parameter_name == 'DischargingEfficiency':
-            self.dischargingEfficiency = float(parameter_value)
-
+        elif parameter_name == 'InitialEnergyLevelInMWH':
+            self.initialEnergyLevelInMWH = float(parameter_value)
 
     def calculate_emission_intensity(self, reps):
         # emission = 0
@@ -190,7 +180,6 @@ class PowerPlant(ImportObject):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.commissionedYear = year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
-        print(self.commissionedYear)
         self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
         self.constructionStartTime = tick
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())

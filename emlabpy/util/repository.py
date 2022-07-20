@@ -70,7 +70,7 @@ class Repository:
         self.bids = dict()
         self.power_generating_technologies = dict()
         self.used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", "Nuclear", "WTG_onshore",
-                                  "WTG_offshore", "PV_utility_systems", "Lignite PSC", "Fuel oil PGT",
+                                  "WTG_offshore", "PV_utility_systems", "Lignite PSC", "Fuel oil PGT", "Pumped_hydro",
                                   "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH"]
         self.market_clearing_points = dict()
         self.power_grid_nodes = dict()

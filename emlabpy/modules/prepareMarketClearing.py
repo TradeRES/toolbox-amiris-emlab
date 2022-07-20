@@ -193,9 +193,9 @@ class PrepareMarket(DefaultModule):
         for pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
-                ChargingEfficiency.append(pp.actualEfficiency)  # todo this should be charging efficiency specifically
-                DischargingEfficiency.append(pp.actualDischargingEfficiency)
-                InitialEnergyLevelInMWH.append(0)  # todo this should be charging efficiency specifically
+                ChargingEfficiency.append(pp.technology.chargingEfficiency)
+                DischargingEfficiency.append(pp.technology.dischargingEfficiency)
+                InitialEnergyLevelInMWH.append(pp.initialEnergyLevelInMWH)
                 EnergyToPowerRatio.append(pp.technology.energyToPowerRatio)
                 InstalledPowerInMW.append(pp.capacity)
                 StorageType.append("STORAGE")
