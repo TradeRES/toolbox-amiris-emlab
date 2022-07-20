@@ -20,10 +20,10 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('Project value', fontsize='medium')
     ax2.set_ylabel('Investments', fontsize='medium')
-    ax1.set_title('Investments and NPV per iterations')
+    ax1.set_title('Investments and NPV per iterations '+ str(test_year))
     ax1.legend(candidate_plants_project_value.columns.values.tolist(), fontsize='medium', loc='upper left',
-               bbox_to_anchor=(1, 1.1))
-    fig1.savefig(path_to_plots + '/' + 'Investments and NPV per iterations' + str(test_year)+ '.png', bbox_inches='tight', dpi=300)
+               bbox_to_anchor=(1.2, 1.1))
+    fig1.savefig(path_to_plots + '/' + 'Investments and NPV per iterations_ ' + str(test_year)+ '.png', bbox_inches='tight', dpi=300)
 
 
 def plot_annual_to_be_decommissioned_capacity(plot_annual_to_be_decommissioned_capacity, years_to_generate,
@@ -47,7 +47,9 @@ def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_t
     fig5, axs5 = plt.subplots()
     axs5 = annual_decommissioned_capacity.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
     axs5.set_axisbelow(True)
-    axs5.set_xlabel('Years', fontsize='medium')
+    axs5.set_xlabel('Years', fontsize='medium' )
+    for label in axs5.get_xticklabels(which='major'):
+        label.set(rotation=50, horizontalalignment='right')
     axs5.set_ylabel('Capacity (MW)', fontsize='medium')
     # plt.ylim([-4.3e5, 5.5e5])
     axs5.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -63,10 +65,14 @@ def plot_investments(annual_installed_capacity, annual_commissioned, years_to_ge
     annual_installed_capacity.plot.bar(ax=axs6[0],stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
     annual_commissioned.plot.bar(ax=axs6[1],stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
     axs6[0].set_axisbelow(True)
-    axs6[1].set_xlabel('Years', fontsize='medium',rotation = 60)
+    axs6[1].set_xlabel('Years', fontsize='medium')
+    for label in axs6[0].get_xticklabels(which='major'):
+        label.set(rotation=50, horizontalalignment='right')
+    for label in axs6[1].get_xticklabels(which='major'):
+        label.set(rotation=50, horizontalalignment='right')
     axs6[0].set_ylabel('Invested capacity (MW)', fontsize='small')
     axs6[1].set_ylabel('Investments installed (MW)', fontsize='small')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     axs6[0].set_title('Capacity Investments per Technology')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
@@ -87,6 +93,7 @@ def power_plants_status(number_per_status , path_to_plots):
     axs8 = number_per_status.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
     axs8.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
+    plt.xticks(rotation = 60)
     plt.ylabel('Capacity per status (MW)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs8.set_title('Power plants status')
@@ -100,7 +107,7 @@ def power_plants_last_year_status(power_plants_last_year_status , path_to_plots,
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Capacity per status (MW)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs9.set_title('Power plants status' +str(last_year))
+    axs9.set_title('Power plants status ' +str(last_year))
     fig9 = axs9.get_figure()
     fig9.savefig(path_to_plots + '/' + 'Power plants status ' +str(last_year) +'.png', bbox_inches='tight', dpi=300)
 
@@ -354,9 +361,9 @@ def generate_plots():
 
     unique_technologies = reps.get_unique_technologies_names()
 
-    years_to_generate = list(range(reps.start_simulation_year, reps.current_year)) # control the current year
+    years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1)) # control the current year
 
-    years_to_generate_and_build =  list(range(reps.start_simulation_year, reps.current_year + reps.max_permit_build_time))
+    years_to_generate_and_build =  list(range(reps.start_simulation_year, reps.current_year + 1 + reps.max_permit_build_time))
     years_ahead_to_generate = [x + reps.lookAhead for x in years_to_generate]
     df_zeros = np.zeros(shape=(len(years_to_generate), len(unique_technologies)))
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
