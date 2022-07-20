@@ -152,8 +152,7 @@ class PowerPlant(ImportObject):
         #     fc += substance_in_fuel_mix_object.share * substance_in_fuel_mix.get_price_for_tick(time) / self.efficiency
         # return fc
         if self.technology.fuel != '':
-            fc = ((self.technology.fuel.futurePrice.values[0] + self.technology.fuel.futurePrice.values[1]) / 2) / \
-                 self.technology.efficiency
+            fc = self.technology.fuel.futurePrice.values[0] / self.technology.efficiency
         else:
             fc = 0
         return fc

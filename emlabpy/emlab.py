@@ -23,7 +23,7 @@ from modules.co2market import *
 from modules.invest import *
 from modules.prepareFutureMarketClearing import *
 from modules.dismantle import *
-
+from modules.createresults import *
 # Initialize Logging
 if not os.path.isdir('logs'):
     os.makedirs('logs')
@@ -43,7 +43,7 @@ run_next_year_market = False
 run_financial_results = False
 run_prepare_next_year_market_clearing = False
 run_initialize_power_plants = False
-
+run_create_results = False
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -69,7 +69,8 @@ for arg in sys.argv[3:]:
         run_financial_results = True
     if arg == 'run_initialize_power_plants':
         run_initialize_power_plants = True
-
+    if arg == 'run_create_results':
+        run_create_results = True
 # following modules need the results from AMIRIS that are being stored in a DB
 if run_short_investment_module or run_capacity_market or run_strategic_reserve:
     emlab_url = sys.argv[1]
@@ -193,7 +194,12 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run short term Investments')
         short_investing.act_and_commit()
         logging.info('End Run short term Investment')
-
+    if run_create_results:
+        logging.info('Start logging results')
+        strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
+        create_results = CreatingResultsExcel(reps, strategic_reserve_operator)
+        create_results.act_and_commit()
+        logging.info('End logging results')
     logging.info('End Run Modules')
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('Commit Initialization Modules')

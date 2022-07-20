@@ -57,7 +57,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
         """
 
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.reps.agent)
-        powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
+        #powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
+        powerPlantsinSR = []
+        SR_price = 0
+        for i in self.reps.sr_operator.values():
+            if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
+                powerPlantsinSR = i.list_of_plants
+                SR_price = i.strategic_reserve_price
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.lookAhead
             if fictional_age > powerplant.technology.expected_lifetime:
@@ -65,11 +71,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # print("to be decommisioned", powerplant.name, "age", fictional_age,
                 #       "technology", powerplant.technology.name, "lifetime", powerplant.technology.expected_lifetime)
                 # todo better to make decisions according to age
+
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
-                powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                #powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
                 powerplant.owner = 'StrategicReserveOperator'
+                powerplant.technology.variable_operating_costs = SR_price
                 #self.power_plants_list[powerplant.name] = powerplant
                 self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear <= self.simulation_year:

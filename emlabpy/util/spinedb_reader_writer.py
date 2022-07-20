@@ -34,6 +34,7 @@ class SpineDBReaderWriter:
         self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
         self.investment_decisions_classname = "InvestmentDecisions"
+        self.sro_classname = 'StrategicReserveOperators'
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
@@ -259,15 +260,29 @@ class SpineDBReaderWriter:
     def stage_bids(self, bid: Bid, current_tick: int):
         self.stage_object(self.bids_classname, bid.name)
         self.stage_object_parameter_values(self.bids_classname, bid.name,
-                                           [('plant', bid.plant.name),
-                                            ('market', bid.market.name),
+                                           [('plant', bid.plant),
+                                            ('market', bid.market),
                                             ('price', bid.price),
                                             ('amount', bid.amount),
                                             ('tick', bid.tick),
-                                            ('bidder', bid.bidder.name),
+                                            ('bidder', bid.bidder),
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], current_tick)
+    def stage_init_sr_operator_structure(self):
+        self.stage_object_class(self.sro_classname)
+        self.stage_object_parameters(self.sro_classname,
+                                     ['zone', 'strategic_reserve_price', 'strategic_reserve_volume_percent',
+                                      'strategic_reserve_volume', 'cash', 'list_of_plants', "tick"])
 
+    def stage_sr_operator(self, SRO: StrategicReserveOperator):
+        self.stage_object(self.sro_classname, SRO.name)
+        self.stage_object_parameter_values(self.sro_classname, SRO.name,
+                                           [('zone', SRO.zone),
+                                            ('strategic_reserve_price', SRO.reservePriceSR),
+                                            ('strategic_reserve_volume_percent', SRO.reserveVolumePercentSR),
+                                            ('strategic_reserve_volume', SRO.reserveVolume),
+                                            ('cash', SRO.cash),
+                                            ('list_of_plants', SRO.list_of_plants)], "0")
     def stage_init_candidate_plants_value(self, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
@@ -541,7 +556,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line[1] = year # object name
         new_db_line[4] = iteration  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
-
+    elif object_class_name == 'StrategicReserveOperators':
+        add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
 
