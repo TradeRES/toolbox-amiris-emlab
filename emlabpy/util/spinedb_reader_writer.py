@@ -30,6 +30,7 @@ class SpineDBReaderWriter:
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.bids_classname = 'Bids'
+        self.sro_classname = 'StrategicReserveOperators'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
         self.financial_reports_object_classname = 'financialPowerPlantReports'
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
@@ -72,24 +73,16 @@ class SpineDBReaderWriter:
                 reps.simulation_length = reps.end_simulation_year - reps.start_simulation_year
             elif row['parameter_name'] == 'Look Ahead':
                 reps.lookAhead = int(row['parameter_value'])
-            elif row['parameter_name'] == 'pastTimeHorizon':
-                reps.pastTimeHorizon = int(row['parameter_value'])
             elif row['parameter_name'] == 'CurrentYear':
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'InvestmentIteration':
                 reps.investmentIteration = int(row['parameter_value'])
             elif row['parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
-                reps.country = str(row['parameter_value'])
+                reps.country = row['parameter_value']
             elif row['parameter_name'] == 'short_term_investment_minimal_irr':
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] == 'start_year_fuel_trends':
-                reps.start_year_fuel_trends = int(row['parameter_value'])
-            elif row['parameter_name'] == 'start_year_dismantling':
-                reps.start_year_dismantling = int(row['parameter_value'])
-            elif row['parameter_name'] == 'maximum_investment_capacity_per_year':
-                reps.maximum_investment_capacity_per_year = int(row['parameter_value'])
-            elif row['parameter_name'] == 'max_permit_build_time':
-                reps.max_permit_build_time =  int(row['parameter_value'])
+                reps.start_year_fuel_trends = row['parameter_value']
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
@@ -258,12 +251,12 @@ class SpineDBReaderWriter:
     def stage_bids(self, bid: Bid, current_tick: int):
         self.stage_object(self.bids_classname, bid.name)
         self.stage_object_parameter_values(self.bids_classname, bid.name,
-                                           [('plant', bid.plant.name),
-                                            ('market', bid.market.name),
+                                           [('plant', bid.plant),
+                                            ('market', bid.market),
                                             ('price', bid.price),
                                             ('amount', bid.amount),
                                             ('tick', bid.tick),
-                                            ('bidder', bid.bidder.name),
+                                            ('bidder', bid.bidder),
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], current_tick)
 
@@ -312,6 +305,23 @@ class SpineDBReaderWriter:
     def stage_iteration(self, nextinvestmentIteration):
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [("InvestmentIteration", nextinvestmentIteration)], "0")
+
+    def stage_init_sr_operator_structure(self):
+        self.stage_object_class(self.sro_classname)
+        self.stage_object_parameters(self.sro_classname,
+                                     ['zone', 'strategic_reserve_price', 'strategic_reserve_volume_percent',
+                                      'strategic_reserve_volume', 'cash', 'list_of_plants', "tick"])
+
+    def stage_sr_operator(self, SRO: StrategicReserveOperator):
+        self.stage_object(self.sro_classname, SRO.name)
+        self.stage_object_parameter_values(self.sro_classname, SRO.name,
+                                           [('zone', SRO.zone),
+                                            ('strategic_reserve_price', SRO.reservePriceSR),
+                                            ('strategic_reserve_volume_percent', SRO.reserveVolumePercentSR),
+                                            ('strategic_reserve_volume', SRO.reserveVolume),
+                                            ('cash', SRO.cash),
+                                            ('list_of_plants', SRO.list_of_plants)], "0")
+
 
     """
     Financial results
@@ -525,6 +535,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
     elif object_class_name == 'Bids':
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
+    elif object_class_name == 'StrategicReserveOperators':
+        add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     elif object_class_name == 'CandidatePlantsNPV' and reps.dbrw.read_investments == True:

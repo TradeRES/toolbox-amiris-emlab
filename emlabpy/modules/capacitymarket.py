@@ -102,7 +102,7 @@ class CapacityMarketClearing(MarketModule):
                                                                  self.reps.current_tick)
                 self.createCashFlowforCM(market, clearing_price)
             else:
-                print("Market is not cleared", market.name)
+                print("Market is not cleared")
             # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
 
             # VERIFICATION #

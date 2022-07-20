@@ -8,7 +8,6 @@ from util.spinedb_reader_writer import *
 # # df = deepcopy(annual_operational_capacity)
 import numpy as np
 logging.basicConfig(level=logging.ERROR)
-
 def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                            test_year,
                                            path_to_plots):
@@ -57,17 +56,17 @@ def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_t
     plt.show()
 
 
-def plot_investments(annual_installed_capacity, annual_commissioned, years_to_generate, path_to_plots):
+def plot_investments(annual_installed_capacity, years_to_generate, path_to_plots):
     print('Create Investments plot')
-    fig6, axs6 = plt.subplots(2, 1)
-    annual_installed_capacity.plot.bar(ax=axs6[0],stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
-    annual_commissioned.plot.bar(ax=axs6[1],stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
-    axs6[0].set_axisbelow(True)
-    axs6[1].set_xlabel('Years', fontsize='medium')
-    axs6[0].set_ylabel('Invested capacity (MW)', fontsize='small')
-    axs6[1].set_ylabel('Investments installed (MW)', fontsize='small')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs6[0].set_title('Capacity Investments per Technology')
+    plt.figure()
+    axs6 = annual_installed_capacity.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
+    axs6.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Capacity (MW)', fontsize='medium')
+    # plt.ylim([-4.3e5, 5.5e5])
+    leg = plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs6.set_title('Capacity Investments per Technology')
+    fig6 = axs6.get_figure()
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
 
@@ -161,10 +160,9 @@ def plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, fut
     fig14 = axs14.get_figure()
     fig14.savefig(path_to_plots + '/' + 'Screening curve candidate technologies (no CO2) ' +str(future_year) +'.png', bbox_inches='tight', dpi=300)
 
-def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, unique_technologies):
-    annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
-    annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
-    annual_commissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
+def prepare_pp_status(years_to_generate, reps, unique_technologies):
+    annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
+    annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate).fillna(0)
     last_year =  years_to_generate[-1]
 
     last_year_operational_capacity = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
@@ -173,23 +171,13 @@ def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, uniqu
     last_year_not_set_status_capacity = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
     last_year_in_pipeline = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
     last_year_decommissioned = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
-
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_decommissioned:
             year = pp.dismantleTime + reps.start_simulation_year
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-        elif pp.age <= reps.current_tick:
-            print(pp.name, pp.technology.name, pp.commissionedYear) # graphed according to commissioned year which is determined by age.
-            year_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
-            # the year when the investment decision was made
-            annual_in_pipeline_capacity.at[year_decision, pp.technology.name] += pp.capacity
-            #  the year when the investment entered in operation
-            annual_commissioned_capacity.at[pp.commissionedYear, pp.technology.name] += pp.capacity
-            if reps.current_year != (pp.commissionedYear + pp.technology.expected_leadtime + pp.technology.expected_permittime + pp.age ):
-                print("commissioned", pp.commissionedYear)
-                print("lead and permit ",  pp.technology.expected_leadtime + pp.technology.expected_permittime)
-                print("age", + pp.age)
-
+        elif pp.status == globalNames.power_plant_status_inPipeline:
+            year = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
+            annual_in_pipeline_capacity.at[year, pp.technology.name] += pp.capacity
 
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_operational:  # this will be changed
@@ -223,7 +211,7 @@ def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, uniqu
     number_per_status = pd.DataFrame(data_per_year)
     number_per_status_last_year =  pd.DataFrame(data_last_year)
 
-    return  annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned_capacity, last_year_in_pipeline, last_year_decommissioned, \
+    return  annual_decommissioned_capacity, annual_in_pipeline_capacity,last_year_in_pipeline, last_year_decommissioned, \
             last_year_operational_capacity,last_year_to_be_decommissioned_capacity, \
            last_year_strategic_reserve_capacity,    number_per_status, number_per_status_last_year
 
@@ -341,20 +329,15 @@ def generate_plots():
     spinedb_reader_writer = SpineDBReaderWriter("Investments", db_url)
     reps = spinedb_reader_writer.read_db_and_create_repository()
     spinedb_reader_writer.commit('Initialize all module import structures')
-
-    # scenario = reps.current_tick + reps.start_simulation_year +  reps.end_simulation_year + "LA" +reps.lookAhead +\
-    #            "SD"+reps.start_year_dismantling + "PH" + reps.pastTimeHorizon
-
-    path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", "scenario" )
+    scenario = sys.argv[2]
+    path_to_plots = os.path.join(os.getcwd(), "plots", scenario)
 
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
 
     unique_technologies = reps.get_unique_technologies_names()
 
-    years_to_generate = list(range(reps.start_simulation_year, reps.current_year)) # control the current year
-
-    years_to_generate_and_build =  list(range(reps.start_simulation_year, reps.current_year + reps.max_permit_build_time))
+    years_to_generate = list(range(reps.start_simulation_year, reps.current_year))
     years_ahead_to_generate = [x + reps.lookAhead for x in years_to_generate]
     df_zeros = np.zeros(shape=(len(years_to_generate), len(unique_technologies)))
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
@@ -381,19 +364,17 @@ def generate_plots():
     power_plants_revenues_per_iteration = prepare_revenues_per_iteration(reps)
     sorted_revenues_per_iteration = power_plants_revenues_per_iteration.T.sort_index()
     #Preparing power plants status
-    # decommissioning is plotted according to the year when it is decided to get decommissioned
-
-    annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned,\
+    annual_decommissioned_capacity, annual_in_pipeline_capacity,\
     last_year_in_pipeline, last_year_decommissioned, \
     last_year_operational_capacity,last_year_to_be_decommissioned_capacity, \
     last_year_strategic_reserve_capacity,    number_per_status, number_per_status_last_year = \
-        prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
+        prepare_pp_status(years_to_generate, reps, unique_technologies)
 
     # preparing fuel prices
     future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
 
     print('Plotting prepared data')
-    plot_investments(annual_in_pipeline_capacity, annual_commissioned ,years_to_generate, path_to_plots)
+
     plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, test_year + + reps.lookAhead)
     plot_screening_curve(yearly_costs,  path_to_plots, test_year)
     plot_future_fuel_prices(future_fuel_prices,  path_to_plots)
@@ -402,7 +383,7 @@ def generate_plots():
                                            test_year,
                                            path_to_plots)
 
-
+    plot_investments(annual_in_pipeline_capacity, years_to_generate, path_to_plots)
     plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots)
     # last_year_strategic_reserve_capacity
     plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots)

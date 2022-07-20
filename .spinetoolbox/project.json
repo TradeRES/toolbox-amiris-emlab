@@ -134,6 +134,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/initialize_power_plants.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/save_results.json"
                 }
             ],
             "Importer": [
@@ -370,17 +375,6 @@
                 ]
             },
             {
-                "name": "from Capacity Mechanism to short investments",
-                "from": [
-                    "Capacity Mechanism",
-                    "right"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to Capacity Mechanism",
                 "from": [
                     "EmlabDB2",
@@ -491,28 +485,6 @@
                 ]
             },
             {
-                "name": "from years to specify year",
-                "from": [
-                    "years",
-                    "right"
-                ],
-                "to": [
-                    "specify year",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to specify year",
-                "from": [
-                    "AMIRIS DB",
-                    "bottom"
-                ],
-                "to": [
-                    "specify year",
-                    "right"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to Next year",
                 "from": [
                     "EmlabDB2",
@@ -521,28 +493,6 @@
                 "to": [
                     "Next year",
                     "bottom"
-                ]
-            },
-            {
-                "name": "from specify year to Capacity Mechanism",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
-                "name": "from import AMIRIS to specify year",
-                "from": [
-                    "import AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "specify year",
-                    "left"
                 ]
             },
             {
@@ -639,6 +589,61 @@
                     "Initialize power plants",
                     "left"
                 ]
+            },
+            {
+                "name": "from import AMIRIS to Capacity Mechanism",
+                "from": [
+                    "import AMIRIS",
+                    "bottom"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Capacity Mechanism to Save results",
+                "from": [
+                    "Capacity Mechanism",
+                    "right"
+                ],
+                "to": [
+                    "Save results",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Save results to short investments",
+                "from": [
+                    "Save results",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to Save results",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "Save results",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to Save results",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Save results",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -702,8 +707,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1645.282910324663,
-            "y": -500.8764669050523,
+            "x": -1642.1962541492373,
+            "y": -500.8764669050522,
             "file_references": [
                 {
                     "type": "path",
@@ -716,8 +721,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1371.2277628544584,
-            "y": -467.46147937725306,
+            "x": -1368.141106679033,
+            "y": -467.461479377253,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -732,7 +737,7 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1618.648766258308,
+            "x": -1615.5621100828828,
             "y": -993.12567554783,
             "file_references": [
                 {
@@ -746,7 +751,7 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1339.27276207857,
+            "x": -1336.1861059031446,
             "y": -642.4247797037858,
             "specification": "import traderes db",
             "cancel_on_error": false,
@@ -762,7 +767,7 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1654.8623463143228,
+            "x": -1651.7756901388973,
             "y": -383.58144993291023,
             "file_references": [
                 {
@@ -776,7 +781,7 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -1354.7928365067814,
+            "x": -1351.706180331356,
             "y": -368.4221982455447,
             "specification": "Config Import",
             "cancel_on_error": false,
@@ -810,7 +815,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1131.1221740903202,
+            "x": -1128.0355179148949,
             "y": -574.0244574654012,
             "url": {
                 "dialect": "sqlite",
@@ -858,8 +863,8 @@
         "Traderes Excel": {
             "type": "Data Connection",
             "description": "",
-            "x": -1676.2170235165304,
-            "y": -668.0163479571446,
+            "x": -1673.130367341105,
+            "y": -668.0163479571445,
             "file_references": [
                 {
                     "type": "path",
@@ -872,8 +877,8 @@
         "traderesExcel to DB": {
             "type": "Importer",
             "description": "",
-            "x": -1359.5353680752419,
-            "y": -557.0549107468293,
+            "x": -1356.4487118998165,
+            "y": -557.0549107468294,
             "specification": "technology potential and capacities",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -963,7 +968,7 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -640.6259649387617,
+            "x": -643.1709173940712,
             "y": 1.3419214052863353,
             "url": {
                 "dialect": "sqlite",
@@ -979,8 +984,8 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -583.246912241931,
-            "y": -131.31524734491578,
+            "x": -751.2642068309068,
+            "y": -155.00999401772003,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -994,7 +999,7 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "run_capacity_market"
+                    "arg": ""
                 }
             ]
         },
@@ -1009,7 +1014,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    "C:\\Users\\bcvannobelen\\Thesis\\toolbox-amiris-emlab-NL\\amiris_workflow\\output\\amiris_results.csv",
                     true
                 ]
             ]
@@ -1051,7 +1056,7 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1364.6261371104738,
+            "x": -1361.5394809350485,
             "y": -273.7018238424556,
             "specification": "grouped power plants",
             "cancel_on_error": false,
@@ -1059,7 +1064,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/data/Power_plants.xlsx",
+                    "<project>/data/NL_datapower_plants_new_reduced.xlsx",
                     true
                 ]
             ]
@@ -1067,13 +1072,13 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1633.7073818765768,
+            "x": -1630.6207257011517,
             "y": -270.8528200115521,
             "file_references": [
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/Power_plants.xlsx"
+                    "path": "data/NL_datapower_plants_new_reduced.xlsx"
                 }
             ],
             "db_references": []
@@ -1091,24 +1096,6 @@
                 }
             ],
             "db_references": []
-        },
-        "specify year": {
-            "type": "Tool",
-            "description": "",
-            "x": -790.3457753380511,
-            "y": -128.75915286100695,
-            "specification": "define AMIRIS results year",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/emlabpy/years.csv"
-                }
-            ]
         },
         "Invest": {
             "type": "Tool",
@@ -1160,6 +1147,28 @@
                 {
                     "type": "literal",
                     "arg": "run_initialize_power_plants"
+                }
+            ]
+        },
+        "Save results": {
+            "type": "Tool",
+            "description": "",
+            "x": -531.6999604767178,
+            "y": -200.22737858272004,
+            "specification": "Save results",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_create_results"
                 }
             ]
         }

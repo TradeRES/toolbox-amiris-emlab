@@ -46,8 +46,6 @@ class Investmentdecision(DefaultModule):
         reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
-        logging.info("new id",self.new_id)
-
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_init_power_plant_profits()
@@ -154,7 +152,7 @@ class Investmentdecision(DefaultModule):
         return newplant
 
     def setTimeHorizon(self):
-        self.futureTick = self.reps.current_tick + self.reps.lookAhead #  self.agent.getInvestmentFutureTimeHorizon()
+        self.futureTick = self.reps.current_tick + self.agent.getInvestmentFutureTimeHorizon()
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTick
 
     def getProjectCashFlow(self, candidatepowerplant, agent):
@@ -241,7 +239,7 @@ class Investmentdecision(DefaultModule):
     def check(self, technology, candidatepowerplant):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
             # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
-        if  self.capacityOfTechnologyInPipeline > self.reps.maximum_investment_capacity_per_year:
+        if  self.capacityOfTechnologyInPipeline > 1000:
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)

@@ -48,3 +48,6 @@ class StrategicReserveOperator(ImportObject):
 
     def setPlants(self, plant):
         self.list_of_plants.append(plant)
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)

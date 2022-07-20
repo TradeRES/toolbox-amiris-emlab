@@ -1034,10 +1034,7 @@
             "CO2Auction": {},
             "ElectricitySpotMarkets": {},
             "EnergyConsumers": {},
-            "EnergyProducers": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
+            "EnergyProducers": {},
             "GeometricTrends": {},
             "Governments": {},
             "IntermittentResourceProfiles": {},
@@ -1116,7 +1113,10 @@
                 "10": "string",
                 "11": "string",
                 "12": "string",
-                "13": "string"
+                "13": "string",
+                "14": "string",
+                "15": "string",
+                "16": "string"
             },
             "GeometricTrends": {
                 "0": "string",

@@ -57,9 +57,16 @@ class PrepareFutureMarketClearing(PrepareMarket):
         """
 
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.agent)
-        powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
+
+        powerPlantsinSR = []
+        SR_price = 0
+        for i in self.reps.sr_operator.values():
+            if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
+                powerPlantsinSR = i.list_of_plants
+                SR_price = i.strategic_reserve_price
+
         for powerplant in powerPlantsfromAgent:
-            fictional_age = powerplant.age + self.reps.lookAhead
+            fictional_age = powerplant.age + self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
             if fictional_age > powerplant.technology.expected_lifetime:
                 powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
                 # print("to be decommisioned", powerplant.name, "age", fictional_age,
@@ -68,7 +75,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
-                powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                powerplant.technology.variable_operating_costs = SR_price
                 powerplant.owner = 'StrategicReserveOperator'
                 #self.power_plants_list[powerplant.name] = powerplant
                 self.power_plants_list.append(powerplant)
@@ -88,9 +95,10 @@ class PrepareFutureMarketClearing(PrepareMarket):
         The years are defined to export all the CO2 prices
         :return:
         """
-        startfutureyear = self.reps.start_simulation_year +   self.reps.lookAhead
-                        #  self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
-        self.simulation_year = self.reps.current_year + self.reps.lookAhead
+        startfutureyear = self.reps.start_simulation_year + self.reps.energy_producers[
+            self.agent].getInvestmentFutureTimeHorizon()
+        self.simulation_year = self.reps.current_year + self.reps.energy_producers[
+            self.agent].getInvestmentFutureTimeHorizon()
         self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
 
 

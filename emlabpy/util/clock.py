@@ -15,6 +15,8 @@ import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 
+
+
 def reset_candidate_investable_status():
     class_name = "CandidatePowerPlants"
     candidate_powerplants = [i for i in db_emlab.query_object_parameter_values_by_object_class(class_name)]
@@ -27,9 +29,17 @@ def update_years_file(current_year , lookAhead, final_year):
     #TODO dont hard code the path, once the spine bug is fixed. then it can be exported to the output folder.
     # the clock is executed in the util folder. So save the results in the parent folder: emlabpy
     complete_path =  os.path.join(os.path.dirname(os.getcwd()),  globalNames.years_path)
+    print(complete_path)
     with open(complete_path, 'w') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter ='/')
+        # csv.DictWriter(csvfile, fieldnames=fieldnames)
         csvwriter.writerow([current_year, (current_year + lookAhead), final_year])
+
+# def reset_invest_iteration(): # this is no longer necessary as files are saved in the output folder
+#     print("reset continue file")
+#     f = open(globalNames.continue_path, "w")
+#     f.write(str(True))
+#     f.close()
 
 try:
     class_name = "Configuration"
@@ -43,12 +53,8 @@ try:
         final_year = next(int(i['parameter_value']) for i
                           in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
                           if i['parameter_name'] == "End Year")
-        StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
-                         if i['parameter_name'] == 'Start Year')
-
         reset_candidate_investable_status()
         print("reset power plants status")
-
         if sys.argv[2] == 'initialize_clock':
             print('Initializing clock (tick 0)')
             db_emlab.import_object_classes([class_name])
@@ -56,7 +62,8 @@ try:
             db_emlab.import_data({'object_parameters': [[class_name, object_parameter_value_name]]})
             db_emlab.import_alternatives([str(0)])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
-
+            StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                             if i['parameter_name'] == 'Start Year')
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
 
@@ -65,6 +72,7 @@ try:
             print('Done initializing clock (tick 0)')
 
         if sys.argv[2] == 'increment_clock':
+
             step = next(int(i['parameter_value']) for i
                         in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                         if i['parameter_name'] == 'Time Step')
@@ -79,15 +87,12 @@ try:
             Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
-            # if updated_year >= final_year:
-            #     print("final year achieved" + str(final_year))
-            #     update_years_file(updated_year , lookAhead, final_year) # need to update the file to make the loop stop
-            # else:
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
             update_years_file(updated_year , lookAhead, final_year)
             db_emlab.commit('Clock increment')
             print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
+
     else:
         print('No mode specified.')
 except Exception:

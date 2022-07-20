@@ -26,26 +26,20 @@ class Dismantle(DefaultModule):
         for producer, producer_specs in self.reps.energy_producers.items():
             for plant in self.reps.get_power_plants_to_be_decommissioned(producer):
                 # TODO is the power plant subsidized ? then dismantle
-                horizon = self.reps.pastTimeHorizon
+                horizon = producer_specs.getPastTimeHorizon()
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
-                if self.reps.current_tick >= self.reps.start_year_dismantling:
-                    profit = self.calculateAveragePastOperatingProfit(plant, horizon)
-                    if profit <= requiredProfit:
-                        logging.info("Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
-                                .format(horizon, plant.name, profit, requiredProfit))
-                        plant.dismantlePowerPlant(self.reps.current_tick)
-                        self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
-                        plant.status = globalNames.power_plant_status_decommissioned
-                        self.decommissioned_list.append(plant.name)
-                    else:
-                        logging.info("dont dismantle but increase OPEX of %s ".format(plant.name))
-                        ModifiedOM = plant.getActualFixedOperatingCost() * (
-                                1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
-                                             float(plant.getActualLifetime()) - (
-                                         (float(plant.getTechnology().getExpectedLifetime()))))
-                        plant.setActualFixedOperatingCost(ModifiedOM)
+                # todo: for the first 3 years dont dismantle
+                profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+                if profit <= requiredProfit: # TODO equal to
+                    logging.info(
+                        "Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
+                            .format(horizon, plant, profit, requiredProfit))
+                    plant.dismantlePowerPlant(self.reps.current_tick)
+                    self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
+                    plant.status = globalNames.power_plant_status_decommissioned
+                    self.decommissioned_list.append(plant.name)
                 else:
-                    logging.info("dont dismantle but increase OPEX of %s ".format(plant.name))
+                    print("dont dismantle but increase OPEX, because lifetime is over")
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
                             1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
                                          float(plant.getActualLifetime()) - (
@@ -59,6 +53,7 @@ class Dismantle(DefaultModule):
     def calculateAveragePastOperatingProfit(self, plant, horizon):
         averagePastOperatingProfit = 0
         rep = self.reps.dbrw.findFinancialPowerPlantProfitsForPlant(plant)
+
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
@@ -77,12 +72,15 @@ class Dismantle(DefaultModule):
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
             elif powerplant.commissionedYear <= self.reps.current_year:
                 powerplant.status = globalNames.power_plant_status_operational
+                if powerplant.commissionedYear == self.reps.current_year:
+                    powerplant.age = 0
             elif powerplant.commissionedYear > self.reps.current_year:
                 powerplant.status = globalNames.power_plant_status_inPipeline
             else:
                 print("status not set", powerplant.name)
 
     def save_powerplants_status_and_age(self):
+        print("     saving power plants status ...   ")
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
 
     def save_decommissioned_list(self):

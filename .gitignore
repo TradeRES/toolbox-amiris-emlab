@@ -29,10 +29,8 @@ amiris_workflow/amiris-config/scenario.yaml
 amiris_workflow/output/amiris_results.csv
 data/competes/
 data/sources/other/
-
+emlabpy/logs
 test.py
 test2.py
 scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
-emlabpy/plots/Investments/archiv/
-emlabpy/logs
