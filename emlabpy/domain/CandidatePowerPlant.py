@@ -96,7 +96,7 @@ class FutureStorageTrader(ImportObject):
             self.AwardedPower = float(parameter_value)
         elif parameter_name == 'StoredMWh':
             self.StoredMWh = float(parameter_value)
-        elif parameter_name == 'Profit':
+        elif parameter_name == 'operationalProfit':
             self.Profit = float(parameter_value)
 
 

@@ -50,7 +50,7 @@ class PowerPlant(ImportObject):
         self.CostsinEUR = 0
         self.OfferedPowerinMWH = 0
         self.ReceivedMoneyinEUR = 0
-        self.Profit = 0
+        self.operationalProfit = 0
         self.initialEnergyLevelInMWH = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -123,9 +123,9 @@ class PowerPlant(ImportObject):
         return per_mw * capacity
 
     def get_Profit(self):
-        if not self.Profit:
-            self.Profit = self.ReceivedMoneyinEUR - self.CostsinEUR
-        return self.Profit
+        if not self.operationalProfit:
+            self.operationalProfit = self.ReceivedMoneyinEUR - self.CostsinEUR
+        return self.operationalProfit
 
     def get_actual_nominal_capacity(self):
         return self.capacity
@@ -168,7 +168,7 @@ class PowerPlant(ImportObject):
         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
         self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO
         self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
-        self.Profit = results.CONTRIBUTION_MARGIN_IN_EURO
+        self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
     # createPowerPlant from target investment or from investment algorithm chosen power plant
     def specifyPowerPlant(self, tick, year, energyProducer, location, capacity, pgt):
@@ -457,7 +457,7 @@ class PowerPlant(ImportObject):
         return self.ReceivedMoneyinEUR
 
     def getProfit(self):
-        return self.Profit
+        return self.operationalProfit
 
     def getFuelMix(self):
         return self.fuelMix

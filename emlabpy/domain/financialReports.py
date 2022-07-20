@@ -31,6 +31,12 @@ class FinancialPowerPlantReport(ImportObject):
         self.fixedOMCosts = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+        """"
+        This function is being read for the plotting. The profits are being saved in the module Investmentdecision
+        # object name =  year
+        # alternative = iteration
+        In db simulation tick  - iteration
+        """
         if parameter_name == 'PowerPlants':
             # object name is year and alternative is the iteration.
             self.profits_per_iteration_pp[alternative] = parameter_value

@@ -281,8 +281,8 @@ def prepare_revenues_per_iteration(reps):
     for pp in power_plants_revenues_per_iteration.index.values:
         tech.append(reps.power_plants[pp].technology.name)
     power_plants_revenues_per_iteration["tech"] = tech
-    grouped = power_plants_revenues_per_iteration.groupby('tech').mean()
-    return grouped
+    grouped_revenues = power_plants_revenues_per_iteration.groupby('tech').mean()
+    return grouped_revenues
 
 def prepare_future_fuel_prices(reps, years_to_generate):
     substances_calculated_prices = pd.DataFrame(index = years_to_generate, columns= ["zero"]).fillna(0)
@@ -397,7 +397,7 @@ def generate_plots():
         prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
     #Preparing power plants revenues
     power_plants_revenues_per_iteration = prepare_revenues_per_iteration(reps)
-    sorted_revenues_per_iteration = power_plants_revenues_per_iteration.T.sort_index()
+    sorted_revenues_per_iteration_first_year = power_plants_revenues_per_iteration.T.sort_index()
     # preparing fuel prices
     future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
 
@@ -406,7 +406,7 @@ def generate_plots():
     plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, test_year + reps.lookAhead)
     plot_screening_curve(yearly_costs,  path_to_plots, test_year)
     plot_future_fuel_prices(future_fuel_prices,  path_to_plots)
-    plot_revenues_per_iteration(sorted_revenues_per_iteration,  path_to_plots, last_year)
+    plot_revenues_per_iteration(sorted_revenues_per_iteration_first_year,  path_to_plots, last_year)
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                            test_year,
                                            path_to_plots)

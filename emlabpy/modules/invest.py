@@ -46,7 +46,6 @@ class Investmentdecision(DefaultModule):
         reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
-        logging.info("new id",self.new_id)
 
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
@@ -64,7 +63,7 @@ class Investmentdecision(DefaultModule):
         pp_profits = []
         for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
             pp_numbers.append(pp.name)
-            pp_profits.append(pp.Profit)
+            pp_profits.append(pp.operationalProfit)
         self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         # save the iteration
@@ -113,15 +112,15 @@ class Investmentdecision(DefaultModule):
                     self.continue_iteration()
                     return
                 else:
-                    logging.info("all power plants are unprofitable")
+                    print("no best power plant")
                     self.stop_iteration()
                     self.reps.dbrw.stage_iteration(0)
                 # self.agent.readytoInvest = False # TOdo
             else:
-                logging.info("all technologies are unprofitable")
+                print("all technologies are unprofitable")
 
         else:
-            logging.info("agent is not longer willing to invest")  # This is not enabled for not
+            print("agent is not longer willing to invest")  # This is not enabled for not
 
     def invest(self, bestCandidatePowerPlant):
         commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime

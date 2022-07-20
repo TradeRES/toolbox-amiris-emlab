@@ -109,7 +109,7 @@ class CreatingResultsExcel(DefaultModule):
             self.pp_capacity = powerplant.actualNominalCapacity
             # self.pp_acceptedcapacity = powerplant.AwardedPowerinMWh
             self.pp_status = powerplant.status
-            # self.pp_profit = powerplant.Profit
+            # self.pp_profit = powerplant.operationalProfit
             self.pp_fixedoperatingcosts = powerplant.actualFixedOperatingCost
             self.pp_variablecosts_perMWh = powerplant.technology.variable_operating_costs
             # self.pp_revenues = self.reps.dbrw.findFinancialPowerPlantProfitsForPlant(powerplant)
@@ -164,7 +164,7 @@ class CreatingResultsExcel(DefaultModule):
                                               'Total variable costs (€)':self.pp_total_variable_costs,
                                               'Production (MWh)':self.pp_production_in_MWh,
                                               'Revenues (€)':self.pp_revenues,
-                                              'Profit (€)':self.pp_profit,
+                                              'operationalProfit (€)':self.pp_profit,
                                               'Market price (€)':self.market_price}, index=[0])
 
             # Appending all powerplants into the dataframe for the year

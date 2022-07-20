@@ -32,7 +32,7 @@ class CreatingFinancialReports(DefaultModule):
             totalSupply = plant.getAwardedPowerinMWh()
             financialPowerPlantReport.setProduction(totalSupply)
             financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR)
-            financialPowerPlantReport.setProfit(plant.Profit)
+            financialPowerPlantReport.setProfit(plant.operationalProfit)
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
