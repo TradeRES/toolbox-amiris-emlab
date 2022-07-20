@@ -1017,8 +1017,8 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1132.6281444544024,
-            "y": -17.06397558328417,
+            "x": -1146.652569274636,
+            "y": 29.684107150828396,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [

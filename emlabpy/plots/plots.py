@@ -63,7 +63,7 @@ def plot_investments(annual_installed_capacity, annual_commissioned, years_to_ge
     annual_installed_capacity.plot.bar(ax=axs6[0],stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
     annual_commissioned.plot.bar(ax=axs6[1],stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
     axs6[0].set_axisbelow(True)
-    axs6[1].set_xlabel('Years', fontsize='medium')
+    axs6[1].set_xlabel('Years', fontsize='medium',rotation = 60)
     axs6[0].set_ylabel('Invested capacity (MW)', fontsize='small')
     axs6[1].set_ylabel('Investments installed (MW)', fontsize='small')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -162,6 +162,11 @@ def plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, fut
     fig14.savefig(path_to_plots + '/' + 'Screening curve candidate technologies (no CO2) ' +str(future_year) +'.png', bbox_inches='tight', dpi=300)
 
 def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, unique_technologies):
+    number_investments_per_technology = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
+    for pp, investments in reps.investments.items():
+        for year , year_investments in investments.invested_in_iteration.items():
+            number_investments_per_technology[ int(year), reps.candidatePowerPlants[pp].technology.name] = len(year_investments)
+
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
     annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
     annual_commissioned_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
@@ -179,17 +184,14 @@ def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, uniqu
             year = pp.dismantleTime + reps.start_simulation_year
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
         elif pp.age <= reps.current_tick:
-            print(pp.name, pp.technology.name, pp.commissionedYear) # graphed according to commissioned year which is determined by age.
+            # graphed according to commissioned year which is determined by age.
             year_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
             # the year when the investment decision was made
             annual_in_pipeline_capacity.at[year_decision, pp.technology.name] += pp.capacity
             #  the year when the investment entered in operation
             annual_commissioned_capacity.at[pp.commissionedYear, pp.technology.name] += pp.capacity
-            if reps.current_year != (pp.commissionedYear + pp.technology.expected_leadtime + pp.technology.expected_permittime + pp.age ):
-                print("commissioned", pp.commissionedYear)
-                print("lead and permit ",  pp.technology.expected_leadtime + pp.technology.expected_permittime)
-                print("age", + pp.age)
-
+            if last_year != pp.commissionedYear + pp.age:
+                print("the age and the commissioned year dont add up")
 
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_operational:  # this will be changed
@@ -342,10 +344,10 @@ def generate_plots():
     reps = spinedb_reader_writer.read_db_and_create_repository()
     spinedb_reader_writer.commit('Initialize all module import structures')
 
-    # scenario = reps.current_tick + reps.start_simulation_year +  reps.end_simulation_year + "LA" +reps.lookAhead +\
-    #            "SD"+reps.start_year_dismantling + "PH" + reps.pastTimeHorizon
+    scenario_name = str(reps.start_simulation_year) +  str(reps.end_simulation_year)\
+                    + "_LA" + str(reps.lookAhead) + "_SD"+ str(reps.start_year_dismantling) + "_PH" + str(reps.pastTimeHorizon)
 
-    path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", "scenario" )
+    path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", scenario_name)
 
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
@@ -377,24 +379,23 @@ def generate_plots():
     installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
         future_year, reps)
     print('Start generating plots for all years')
-    #Preparing power plants revenues
-    power_plants_revenues_per_iteration = prepare_revenues_per_iteration(reps)
-    sorted_revenues_per_iteration = power_plants_revenues_per_iteration.T.sort_index()
+
     #Preparing power plants status
     # decommissioning is plotted according to the year when it is decided to get decommissioned
-
     annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned,\
     last_year_in_pipeline, last_year_decommissioned, \
     last_year_operational_capacity,last_year_to_be_decommissioned_capacity, \
     last_year_strategic_reserve_capacity,    number_per_status, number_per_status_last_year = \
         prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
-
+    #Preparing power plants revenues
+    power_plants_revenues_per_iteration = prepare_revenues_per_iteration(reps)
+    sorted_revenues_per_iteration = power_plants_revenues_per_iteration.T.sort_index()
     # preparing fuel prices
     future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
 
     print('Plotting prepared data')
     plot_investments(annual_in_pipeline_capacity, annual_commissioned ,years_to_generate, path_to_plots)
-    plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, test_year + + reps.lookAhead)
+    plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, test_year + reps.lookAhead)
     plot_screening_curve(yearly_costs,  path_to_plots, test_year)
     plot_future_fuel_prices(future_fuel_prices,  path_to_plots)
     plot_revenues_per_iteration(sorted_revenues_per_iteration,  path_to_plots, last_year)
