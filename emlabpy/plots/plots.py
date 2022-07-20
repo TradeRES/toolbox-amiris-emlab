@@ -19,7 +19,7 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
     ax2.plot(installed_capacity_per_iteration, 'o')
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('Project value', fontsize='medium')
-    ax2.set_ylabel('Investments', fontsize='medium')
+    ax2.set_ylabel('Investments (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per iterations '+ str(test_year))
     ax1.legend(candidate_plants_project_value.columns.values.tolist(), fontsize='medium', loc='upper left',
                bbox_to_anchor=(1.2, 1.1))
@@ -351,8 +351,9 @@ def generate_plots():
     reps = spinedb_reader_writer.read_db_and_create_repository()
     spinedb_reader_writer.commit('Initialize all module import structures')
 
-    scenario_name = str(reps.start_simulation_year) +  str(reps.end_simulation_year)\
-                    + "_LA" + str(reps.lookAhead) + "_SD"+ str(reps.start_year_dismantling) + "_PH" + str(reps.pastTimeHorizon)
+    scenario_name = reps.country + str(reps.start_simulation_year) +  str(reps.end_simulation_year)\
+                    + "_LookAhead" + str(reps.lookAhead) + "_StartDismant"+ str(reps.start_year_dismantling) \
+                    + "_Past" + str(reps.pastTimeHorizon) + "_MaxInv" + str(reps.maximum_investment_capacity_per_year)
 
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", scenario_name)
 

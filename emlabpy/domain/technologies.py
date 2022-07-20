@@ -83,7 +83,6 @@ class PowerGeneratingTechnology(ImportObject):
             self.initializeInvestmenttrend()
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
-
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':
@@ -91,6 +90,12 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'efficiency_full_load':
             self.efficiency = float(parameter_value)
             self.initializeEfficiencytrend()
+        elif parameter_name == 'EnergyToPowerRatio':
+            self.energyToPowerRatio = float(parameter_value)
+        elif parameter_name == 'InitialEnergyLevelInMWH':
+            self.initialEnergyLevelInMWH = float(parameter_value)
+        elif parameter_name == 'SelfDischargeRatePerHour':
+            self.selfDischargeRatePerHour = float(parameter_value)
 
     def initializeEfficiencytrend(self):
         self.efficiency_time_series = GeometricTrend("geometrictrend" + self.name)

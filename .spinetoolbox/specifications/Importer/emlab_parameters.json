@@ -1061,7 +1061,9 @@
             "dutchGermanPlants2015_from_emla": {},
             "dictTech": {},
             "dictFuel": {},
-            "TechnologiesEmlabTemporal": {},
+            "TechnologiesEmlabTemporal": {
+                "read_until_col": true
+            },
             "dictvariables": {},
             "CO2": {},
             "CandidatePowerPlants": {},
@@ -1205,7 +1207,8 @@
                 "7": "float",
                 "8": "float",
                 "9": "float",
-                "10": "string"
+                "10": "string",
+                "11": "string"
             },
             "Fuels": {
                 "0": "string",
@@ -1271,7 +1274,10 @@
                 "5": "string",
                 "6": "string",
                 "7": "string",
-                "8": "string"
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string"
             },
             "dictFuel": {
                 "0": "string",

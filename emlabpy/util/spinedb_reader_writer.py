@@ -80,6 +80,7 @@ class SpineDBReaderWriter:
                 reps.investmentIteration = int(row['parameter_value'])
             elif row['parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = str(row['parameter_value'])
+                reps.agent = "Producer" + reps.country
             elif row['parameter_name'] == 'short_term_investment_minimal_irr':
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] == 'start_year_fuel_trends':

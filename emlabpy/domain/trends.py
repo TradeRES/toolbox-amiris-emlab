@@ -28,6 +28,7 @@ class Trend(ImportObject):
 class GeometricTrend(Trend):
     """
     The GeometricTrend is an exponential growth trend. It requires a start value and the growth percentage (0 - 1)
+    This is for the technology efficiency
     """
 
     def __init__(self, name):

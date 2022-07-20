@@ -89,8 +89,6 @@ class PowerPlant(ImportObject):
         #     print(self.name, "assigned age by commissioned year ")
         #     self.commissionedYear = int(parameter_value)
         #     self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
-        elif parameter_name == 'Maximal':
-            self.efficiency = float(parameter_value)
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':
@@ -105,12 +103,7 @@ class PowerPlant(ImportObject):
             self.chargingEfficiency = float(parameter_value)
         elif parameter_name == 'DischargingEfficiency':
             self.dischargingEfficiency = float(parameter_value)
-        elif parameter_name == 'EnergyToPowerRatio':
-            self.energyToPowerRatio = float(parameter_value)
-        elif parameter_name == 'InitialEnergyLevelInMWH':
-            self.initialEnergyLevelInMWH = float(parameter_value)
-        elif parameter_name == 'SelfDischargeRatePerHour':
-            self.selfDischargeRatePerHour = float(parameter_value)
+
 
     def calculate_emission_intensity(self, reps):
         # emission = 0
@@ -210,13 +203,14 @@ class PowerPlant(ImportObject):
         self.status = globalNames.power_plant_status_inPipeline
 
     # createPowerPlant from initial database
-    def specifyPowerPlantsInstalled(self, tick):  # TODO add this information to the database
+    def specifyPowerPlantsInstalled(self, tick):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTime()  # minus years, considering the age, permit and lead time
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
-        self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
+        if self.actualEfficiency == 0: # if there is not initial efficiency, then assign the efficiency by the technology
+           self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
         self.setDismantleTime(1000)  # TODO set this first to 1000 and then it changes in later stage?
         # as a default the expected end of life is assigned by the technology expected lifetime
@@ -401,15 +395,6 @@ class PowerPlant(ImportObject):
     def setCapacity(self, capacity):
         self.capacity = capacity
 
-    def setName(self, label):
-        self.name = label
-        self.label = label
-
-    def getLabel(self):
-        return self.label
-
-    def setLabel(self, label):
-        self.label = label
 
     # times
     def setConstructionStartTime(self):  # in terms of tick

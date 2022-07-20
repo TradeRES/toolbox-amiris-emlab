@@ -37,7 +37,7 @@ class Repository:
         #self.node = ""
         self.country = ""
         self.dbrw = None
-        self.agent = "Producer1"      # TODO if there would be more agents, the future capacity should be analyzed per agent
+        self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
         self.current_tick = 0
         self.time_step = 0
         self.start_simulation_year = 0

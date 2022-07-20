@@ -100,16 +100,59 @@
                         ]
                     }
                 }
+            ],
+            "germany2019": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "powerplants"
+            "germany2019"
         ],
         "table_options": {
             "Sheet4": {},
             "backup": {},
             "powerplants": {},
-            "dummy": {}
+            "dummy": {},
+            "germany2019": {
+                "read_until_col": true,
+                "read_until_row": false,
+                "row": 0
+            }
         },
         "table_types": {
             "Sheet4": {
@@ -138,6 +181,19 @@
                 "5": "float",
                 "6": "float",
                 "7": "float"
+            },
+            "germany2019": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string"
             }
         },
         "table_row_types": {},

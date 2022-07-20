@@ -25,7 +25,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
-        self.agent = "Producer1"
+
         self.power_plants_list =self.reps.get_investable_candidate_power_plants()
         # self.power_plants_ids_list = list(range(1, len(reps.candidatePowerPlants) + 1, 1))
         self.iteration = 0  # the number of times that the future clearing has been done per year.
@@ -56,7 +56,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         :return:
         """
 
-        powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.agent)
+        powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.reps.agent)
         powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.lookAhead

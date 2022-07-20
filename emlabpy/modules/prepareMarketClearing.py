@@ -203,7 +203,8 @@ class PrepareMarket(DefaultModule):
         d = {'identifier': identifier, 'StorageType': StorageType, 'EnergyToPowerRatio': EnergyToPowerRatio,
              'ChargingEfficiency': ChargingEfficiency,
              'DischargingEfficiency': DischargingEfficiency, 'InitialEnergyLevelInMWH': InitialEnergyLevelInMWH,
-             'InstalledPowerInMW': InstalledPowerInMW}
+             'InstalledPowerInMW': InstalledPowerInMW, }
+        # @DLR: missing SelfDischargeRatePerHour in excel
 
         df = pd.DataFrame(data=d)
         print(self.path)
