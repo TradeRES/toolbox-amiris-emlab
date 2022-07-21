@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import numpy_financial as npf
 from util.spinedb_reader_writer import *
-
+from util.spinedb import SpineDB
 # # from copy import deepcopy
 # # df = deepcopy(annual_operational_capacity)
 import numpy as np
@@ -342,12 +342,11 @@ def prepare_screening_curves_candidates(reps, year, unique_candidate_power_plant
     return yearly_costs_candidates
 
 def generate_plots():
+    print('Establishing and querying EmlabDB')
     db_url = sys.argv[1]
-    print('Establishing and querying SpineDB...')
     spinedb_reader_writer = SpineDBReaderWriter("Investments", db_url)
     reps = spinedb_reader_writer.read_db_and_create_repository()
     spinedb_reader_writer.commit('Initialize all module import structures')
-
     scenario_name = reps.country + str(reps.start_simulation_year) +  str(reps.end_simulation_year)\
                     + "_LookAhead" + str(reps.lookAhead) + "_StartDismant"+ str(reps.start_year_dismantling) \
                     + "_Past" + str(reps.pastTimeHorizon) + "_MaxInv" + str(reps.maximum_investment_capacity_per_year)
@@ -365,8 +364,18 @@ def generate_plots():
     years_ahead_to_generate = [x + reps.lookAhead for x in years_to_generate]
     df_zeros = np.zeros(shape=(len(years_to_generate), len(unique_technologies)))
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
-    annual_balance = dict()
+    #section -----------------------------------------------------------------------------------------------AMIRIS
+    # db_amiris_url = sys.argv[2]
+    # print(db_amiris_url)
+    # db_amiris = SpineDB(db_amiris_url)
+    # all_dispatch_results = dict()
+    # for i in years_to_generate:
+    #     year = str(i)
+    #     all_dispatch_results[year] = db_amiris.query_object_parameter_values_by_object_class(year)
+    # db_amiris.close_connection()
 
+    #section -----------------------------------------------------------------------------------------------data preparation
+    annual_balance = dict()
     residual_load_curves = pd.DataFrame()
     load_duration_curves = pd.DataFrame()
     price_duration_curves = pd.DataFrame()
@@ -377,7 +386,7 @@ def generate_plots():
     print('Start generating plots for first year')
     # graphs for the first year
     test_year = years_to_generate[0]
-    future_year = test_year  + reps.lookAhead
+    future_year = test_year + reps.lookAhead
     last_year = years_to_generate[-1]
     yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year, unique_candidate_power_plants)
     yearly_costs = prepare_screening_curves(reps, test_year)
@@ -404,7 +413,6 @@ def generate_plots():
         colors_unique_techs.append(technology_colors[tech])
     for tech in unique_candidate_power_plants:
         colors_unique_candidates.append(technology_colors[tech])
-
 
     print('Plotting prepared data')
     plot_investments(annual_in_pipeline_capacity, annual_commissioned ,years_to_generate, path_to_plots, colors_unique_techs)

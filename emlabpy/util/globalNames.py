@@ -23,6 +23,8 @@ modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "r
 
 
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
+# grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+# yearspath = os.path.join(grandparentpath, globalNames.years_path)
 
 years_file = "years.txt"
 continue_path = 'continue.txt'

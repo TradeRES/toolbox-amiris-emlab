@@ -4,9 +4,6 @@ import pandas as pd
 from util import globalNames
 import os
 
-# grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
-# yearspath = os.path.join(grandparentpath, globalNames.years_path)
-
 db_url = sys.argv[1]
 db_amiris = SpineDB(db_url)
 years_file = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_file)
@@ -23,14 +20,11 @@ try:
     db_amiris.import_data({'object_parameters': [[current_year, "REVENUES_IN_EURO"]]})
     db_amiris.import_data({'object_parameters': [[current_year, "VARIABLE_COSTS_IN_EURO"]]})
     db_amiris.import_data({'object_parameters': [[current_year, "PRODUCTION_IN_MWH"]]})
-    latest_plants = db_amiris.query_object_name_by_class_name_and_alternative(class_name, "latest")
+    latest_plants = db_amiris.query_object_parameter_values_by_object_class(class_name)
 
     for plant in latest_plants:
         db_amiris.import_objects([(current_year, plant["object_name"])])
-        db_amiris.import_object_parameter_values([(current_year, plant["object_name"] , "REVENUES_IN_EURO",  plant["parameter_value"] , str(0) ),
-                                                  (current_year, plant["object_name"] , "VARIABLE_COSTS_IN_EURO",   plant["parameter_value"], str(0) ),
-                                                  (current_year, plant["object_name"], "PRODUCTION_IN_MWH",   plant["parameter_value"] , str(0))
-                                                  ])
+        db_amiris.import_object_parameter_values([(current_year, plant["object_name"] , plant["parameter_name"],  int(plant["parameter_value"] ),'0' )])
     db_amiris.commit('year changed')
     print('Done Changing year')
 except Exception:
