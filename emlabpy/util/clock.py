@@ -21,21 +21,21 @@ def reset_candidate_investable_status():
     for candidate in candidate_powerplants:
         db_emlab.import_object_parameter_values([(class_name, candidate["object_name"] , "ViableInvestment",  bool(1) , '0')])
 
-def update_years_file(current_year , lookAhead, final_year):
-    fieldnames = ['current', 'future', "final"]
+def update_years_file(current_year, initial, final_year, lookAhead):
+
     print("updated years file")
-    #TODO dont hard code the path, once the spine bug is fixed. then it can be exported to the output folder.
+    #once the spine bug is fixed. then it can be exported to the output folder.
     # the clock is executed in the util folder. So save the results in the parent folder: emlabpy
-    complete_path =  os.path.join(os.path.dirname(os.getcwd()),  globalNames.years_path)
-    with open(complete_path, 'w') as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter ='/')
-        csvwriter.writerow([current_year, (current_year + lookAhead), final_year])
+    complete_path = os.path.join(os.path.dirname(os.getcwd()),  globalNames.years_file)
+    f = open(complete_path, "w")
+    years_str = str(current_year)+"/" + str(initial)+"/"+ str(final_year) + "/"+ str(current_year + lookAhead)
+    f.write(years_str)
+    f.close()
 
 try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
     object_parameter_value_name = 'SimulationTick'
-
     if len(sys.argv) >= 2:
         lookAhead = next(int(i['parameter_value']) for i
                          in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
@@ -56,11 +56,10 @@ try:
             db_emlab.import_data({'object_parameters': [[class_name, object_parameter_value_name]]})
             db_emlab.import_alternatives([str(0)])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
-
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
 
-            update_years_file(StartYear , lookAhead, final_year)
+            update_years_file(StartYear,StartYear , final_year, lookAhead)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
@@ -81,11 +80,11 @@ try:
             updated_year = step + Current_year
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
-                update_years_file(updated_year , lookAhead, final_year) # need to update the file to make the loop stop
+                update_years_file(updated_year , StartYear, final_year, lookAhead) # need to update the file to make the loop stop
             else:
                 db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
                 db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
-                update_years_file(updated_year , lookAhead, final_year)
+                update_years_file(updated_year , StartYear, final_year, lookAhead)
                 db_emlab.commit('Clock increment')
                 print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
     else:

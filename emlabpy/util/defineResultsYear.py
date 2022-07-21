@@ -9,11 +9,12 @@ import os
 
 db_url = sys.argv[1]
 db_amiris = SpineDB(db_url)
-yearspath = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_path)
-print(yearspath)
-years = pd.read_csv(yearspath, delimiter ='/')
-current_year = years.columns[0]
-future_year = years.columns[1]
+years_file = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_file)
+f = open(years_file, "r")
+years_str = f.read()
+f.close()
+years = years_str.split("/")
+current_year = years[0]
 
 try:
     class_name = "PowerPlantDispatchPlans"
@@ -26,7 +27,6 @@ try:
 
     for plant in latest_plants:
         db_amiris.import_objects([(current_year, plant["object_name"])])
-
         db_amiris.import_object_parameter_values([(current_year, plant["object_name"] , "REVENUES_IN_EURO",  plant["parameter_value"] , str(0) ),
                                                   (current_year, plant["object_name"] , "VARIABLE_COSTS_IN_EURO",   plant["parameter_value"], str(0) ),
                                                   (current_year, plant["object_name"], "PRODUCTION_IN_MWH",   plant["parameter_value"] , str(0))
@@ -36,5 +36,5 @@ try:
 except Exception:
     raise
 finally:
-    print('Closing DB Connections...')
+    print('Closing DB Connections')
     db_amiris.close_connection()
