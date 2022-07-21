@@ -46,11 +46,14 @@ class Dismantle(DefaultModule):
                         plant.setActualFixedOperatingCost(ModifiedOM)
                 else:
                     logging.info("dont dismantle but increase OPEX of %s ".format(plant.name))
-                    ModifiedOM = plant.getActualFixedOperatingCost() * (
-                            1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
-                                         float(plant.getActualLifetime()) - (
-                                     (float(plant.getTechnology().getExpectedLifetime()))))
-                    plant.setActualFixedOperatingCost(ModifiedOM)
+                    if plant.age < plant.technology.getExpectedLifetime():
+                        print("Age is less than expected life time")
+                    else:
+                        ModifiedOM = plant.getActualFixedOperatingCost() * (
+                                1 + (plant.technology.getFixedOperatingCostModifierAfterLifetime())) ** (
+                                plant.age - plant.technology.getExpectedLifetime() )
+                        plant.setActualFixedOperatingCost(ModifiedOM)
+                        # TODO save the new fixed operating costs in DB!!!!!!!!!!!!!!!
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():

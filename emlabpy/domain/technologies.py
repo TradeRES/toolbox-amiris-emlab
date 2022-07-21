@@ -50,14 +50,13 @@ class PowerGeneratingTechnology(ImportObject):
         self.applicable_for_long_term_contract = False
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-
         if parameter_name == 'Intermittent':
             self.intermittent = bool(parameter_value)
         elif parameter_name == 'expectedPermittime':
             self.expected_permittime = int(parameter_value)
         elif parameter_name == 'expectedLeadtime':
             self.expected_leadtime = int(parameter_value)
-        elif parameter_name == 'fixedOperatingCostModifierAfterLifetime':
+        elif parameter_name == 'FixedOperatingCostModifierAfterLifetime':
             self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
         elif parameter_name == 'PeakSegmentDependentAvailability':
             self.peak_segment_dependent_availability = float(parameter_value)
@@ -84,7 +83,6 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
             self.investment_cost_eur_MW = float(parameter_value)
             self.initializeInvestmenttrend()
-
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
         elif parameter_name == 'co2CaptureEfficiency':
@@ -201,10 +199,10 @@ class PowerGeneratingTechnology(ImportObject):
         self.co2CaptureEffciency = co2CaptureEffciency
 
     def getFixedOperatingCostModifierAfterLifetime(self):
-        return self.fixedOperatingCostModifierAfterLifetime
+        return self.fixed_operating_cost_modifier_after_lifetime
 
     def setFixedOperatingCostModifierAfterLifetime(self, fixedOperatingCostModifierAfterLifetime):
-        self.fixedOperatingCostModifierAfterLifetime = fixedOperatingCostModifierAfterLifetime
+        self.fixed_operating_cost_modifier_after_lifetime = fixedOperatingCostModifierAfterLifetime
 
     def getExpectedLifetime(self):
         return self.expected_lifetime

@@ -18,7 +18,6 @@ class PowerPlant(ImportObject):
         self.id = 0
         self.technology = None
         self.location = ""
-        self.age = None
         self.owner = None # change if there are more energyproducers
         self.capacity = 0
         self.efficiency = 0
@@ -34,7 +33,7 @@ class PowerPlant(ImportObject):
         self.constructionStartTime = 0
         self.actualLeadtime = 0
         self.actualPermittime = 0 # todo clear this functionalities
-        self.actualLifetime = 0
+        self.age = 0
         self.commissionedYear = 0
         self.label = ""
         self.actualInvestedCapital = 0
@@ -301,7 +300,7 @@ class PowerPlant(ImportObject):
 
     def calculateActualLifetime(self):
         actual = None
-        actual = self.actualLifetime
+        actual = self.age
         if actual <= 0:
             actual = self.technology.expected_lifetime
         return actual
@@ -310,7 +309,7 @@ class PowerPlant(ImportObject):
         endOfTechnicalLifetime = self.constructionStartTime + \
                                  self.actualPermittime + \
                                  self.actualLeadtime + \
-                                 self.actualLifetime
+                                 self.age
         if endOfTechnicalLifetime <= currentTick:
             return False
         return True
