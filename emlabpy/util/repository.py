@@ -238,10 +238,10 @@ class Repository:
                 candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
                 candidate.add_values_from_df(result)
         except StopIteration:
-            logging.warning('candidate technology not found' + str(result.identifier)  )
+            logging.warning('candidate technology not found' + str(result.identifier))
         return None
 
-    def get_unique_candidate_technologies(self):
+    def get_unique_candidate_technologies_names(self):
         try:
             return [i.technology.name for name, i in self.candidatePowerPlants.items()]
         except StopIteration:

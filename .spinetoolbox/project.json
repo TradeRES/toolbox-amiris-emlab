@@ -675,7 +675,7 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.csv\")\nprint(\"sys argument\", sys.argv[1])  # Loop counter is supplied as first \nyears = pd.read_csv(years_file, delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(final_year - current_year )\nprint(\"logic\", 1 if current_year == final_year else 0)\nexit(1 if current_year >= final_year else 0) # Exit code 0 = continue"
+                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.csv\")\nprint(\"sys argument\", sys.argv[1])  # Loop counter is supplied as first \nyears = pd.read_csv(years_file, delimiter ='/')\ncurrent_year = years.columns[0]\nfuture_year = years.columns[1]\nfinal_year = years.columns[2]\nprint(current_year, future_year,final_year  )\nprint(current_year >= final_year )\nprint(\"new logic\", 1 if sys.argv[1] == 10 else 0)\nprint(\"logic\", 1 if current_year == final_year else 0)\nexit(1 if sys.argv[1] == 10 else 0) # Exit code 0 = continue"
                 },
                 "cmd_line_args": [
                     {

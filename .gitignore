@@ -27,6 +27,7 @@ amiris_workflow/amiris-config/data
 amiris_workflow/amiris
 amiris_workflow/amiris-config/scenario.yaml
 amiris_workflow/output/amiris_results.csv
+amiris_workflow/amiris_data_structure.xlsx
 data/competes/
 data/sources/other/
 
@@ -36,3 +37,5 @@ scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
 emlabpy/plots/Scenarios/
 emlabpy/logs
+
+
