@@ -9,14 +9,13 @@ from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.StrategicReserveOperator import StrategicReserveOperator
 
-class StrategicReserveSubmitBids(MarketModule):
+class StrategicReserveSubmitBids_swe(MarketModule):
     """
     The class that submits all bids to the Strategic Reserve Market
     """
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
-        reps.dbrw.stage_init_bids_structure()
 
     def act(self):
         # For every EnergyProducer
@@ -29,24 +28,17 @@ class StrategicReserveSubmitBids(MarketModule):
                 market = self.reps.get_capacity_market_for_plant(powerplant)
                 power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
-                # Get Variable and Fixed Operating Costs
-                fixed_operating_costs = powerplant.get_actual_fixed_operating_cost()
+                # Get Variable Operating Costs
                 variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
 
-                # Calculate normalised costs
-                normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
-
                 # Place bids on market (full capacity at cost price per MW)
-                # Remove this if statement when everything works
-                if market != None:
-                    # self.reps.create_or_update_power_plant_StrategicReserve_plan(powerplant, energy_producer,
-                    #                                                              market, power_plant_capacity,
-                    #                                                              normalised_costs, self.reps.current_tick)
+                # Only renewable plants may participate in the Swedish strategic reserve
+                if market != None and powerplant.technology.type == 'VariableRenewableOperator':
                     self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
                                                                                  market, power_plant_capacity,
-                                                                                 normalised_costs, self.reps.current_tick)
+                                                                                 variable_costs, self.reps.current_tick)
 
-class StrategicReserveAssignment(MarketModule):
+class StrategicReserveAssignment_swe(MarketModule):
     """
     The class clearing the Strategic Reserve Market and assigning them to the Strategic Reserve Operator
     """
@@ -74,9 +66,9 @@ class StrategicReserveAssignment(MarketModule):
             SR_price = self.operator.getReservePriceSR()
 
             # Sort the bids in descending order
-            sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
+            sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
-            # Contract plants to Strategic Reserve Operator
+            # Contract plants to Strategic Reserve
             contracted_strategic_reserve_capacity = 0
             SRO_name = "SRO_" + market.parameters['zone']
 
