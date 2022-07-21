@@ -810,8 +810,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1128.7842686144259,
-            "y": -574.0244574654013,
+            "x": -1130.7619089363577,
+            "y": -572.0468171434694,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1113,8 +1113,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -215.1837134888424,
-            "y": 121.42394287526673,
+            "x": -215.18371348884241,
+            "y": 119.44630255333487,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1144,8 +1144,8 @@
         "Initialize power plants": {
             "type": "Tool",
             "description": "run_initialize_power_plants",
-            "x": -1021.228932719026,
-            "y": -830.6438731143243,
+            "x": -1023.2065730409579,
+            "y": -830.6438731143244,
             "specification": "Initialize Power plants",
             "execute_in_work": false,
             "cmd_line_args": [
