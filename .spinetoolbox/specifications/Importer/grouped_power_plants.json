@@ -23,84 +23,6 @@
                     }
                 }
             ],
-            "backup": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "powerplants": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "dummy": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "germany2019": [
                 {
                     "Mapping 1": {
@@ -138,21 +60,78 @@
                         ]
                     }
                 }
+            ],
+            "extended": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "powerplants_grouped": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "germany2019"
+            "extended"
         ],
         "table_options": {
             "Sheet4": {},
-            "backup": {},
-            "powerplants": {},
-            "dummy": {},
             "germany2019": {
                 "read_until_col": true,
                 "read_until_row": false,
                 "row": 0
-            }
+            },
+            "extended": {},
+            "powerplants_grouped": {}
         },
         "table_types": {
             "Sheet4": {
@@ -161,27 +140,6 @@
                 "2": "string",
                 "3": "string"
             },
-            "backup": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string"
-            },
-            "powerplants": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float"
-            },
             "germany2019": {
                 "0": "string",
                 "1": "float",
@@ -190,10 +148,28 @@
                 "4": "string",
                 "5": "string",
                 "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string"
+                "7": "string"
+            },
+            "extended": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float"
+            },
+            "powerplants_grouped": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
             }
         },
         "table_row_types": {},
