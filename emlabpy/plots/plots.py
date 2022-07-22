@@ -364,6 +364,8 @@ def generate_plots():
     years_ahead_to_generate = [x + reps.lookAhead for x in years_to_generate]
     df_zeros = np.zeros(shape=(len(years_to_generate), len(unique_technologies)))
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
+
+
     #section -----------------------------------------------------------------------------------------------AMIRIS
     # db_amiris_url = sys.argv[2]
     # print(db_amiris_url)

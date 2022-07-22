@@ -14,7 +14,7 @@ years = years_str.split("/")
 current_year = years[0]
 
 try:
-    class_name = "PowerPlantDispatchPlans"
+    class_name = "0"
     db_amiris.import_object_classes([current_year])
     db_amiris.import_alternatives([str(0)])
     db_amiris.import_data({'object_parameters': [[current_year, "REVENUES_IN_EURO"]]})
@@ -25,6 +25,7 @@ try:
     for plant in latest_plants:
         db_amiris.import_objects([(current_year, plant["object_name"])])
         db_amiris.import_object_parameter_values([(current_year, plant["object_name"] , plant["parameter_name"],  int(plant["parameter_value"] ),'0' )])
+
     db_amiris.commit('year changed')
     print('Done Changing year')
 except Exception:
