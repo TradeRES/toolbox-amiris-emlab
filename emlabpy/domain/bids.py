@@ -6,12 +6,12 @@ class Bid(ImportObject):
         super().__init__(name)
         self.accepted_amount = 0
         self.tick = -1
-        self.amount = None
-        self.price = None
+        self.amount = 0
+        self.price = 0
         self.status = 'Awaiting confirmation'
-        self.bidder = None
-        self.market = None
-        self.plant = None
+        self.bidder = ""
+        self.market = ""
+        self.plant = ""
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         setattr(self, parameter_name, parameter_value)
