@@ -148,7 +148,7 @@ def plot_future_fuel_prices(future_fuel_prices,  path_to_plots):
 def plot_screening_curve(yearly_costs,  path_to_plots, test_year, colors_unique_techs):
     axs13 = yearly_costs.plot(color=colors_unique_techs)
     axs13.set_axisbelow(True)
-    plt.xlabel('years', fontsize='medium')
+    plt.xlabel('hours', fontsize='medium')
     plt.ylabel('Prices', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
@@ -159,7 +159,7 @@ def plot_screening_curve(yearly_costs,  path_to_plots, test_year, colors_unique_
 def plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, future_year, colors_unique_candidates):
     axs14 = yearly_costs_candidates.plot(color = colors_unique_candidates)
     axs14.set_axisbelow(True)
-    plt.xlabel('years', fontsize='medium')
+    plt.xlabel('hours', fontsize='medium')
     plt.ylabel('Prices', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()

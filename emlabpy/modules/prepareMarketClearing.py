@@ -76,7 +76,6 @@ class PrepareMarket(DefaultModule):
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
-
             if substance.name == "nuclear":
                 FuelPrice_NUCLEAR.append(fuel_price)
             elif substance.name == "lignite":
@@ -111,7 +110,7 @@ class PrepareMarket(DefaultModule):
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
-                Efficiency.append(pp.actualEfficiency)
+                Efficiency.append(pp.technology.efficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
 

@@ -35,7 +35,7 @@ class FinancialPowerPlantReport(ImportObject):
         This function is being read for the plotting. The profits are being saved in the module Investmentdecision
         # object name =  year
         # alternative = iteration
-        In db simulation tick  - iteration
+        The data is stored in db investment with the object name "tick  - iteration"
         """
         if parameter_name == 'PowerPlants':
             # object name is year and alternative is the iteration.

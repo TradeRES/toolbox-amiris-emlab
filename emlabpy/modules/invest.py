@@ -20,6 +20,7 @@ from datetime import datetime
 class Investmentdecision(DefaultModule):
     """
     The class that decides to invest according to future dispatch results
+
     """
 
     def __init__(self, reps: Repository):
@@ -29,8 +30,7 @@ class Investmentdecision(DefaultModule):
         self.operationalCapacityOfTechnology = 0
         self.capacityInPipeline = 0
         self.investmentCashFlow = []
-        # from AbstractInvestInPowerGenerationTechnologiesRole
-        self.useFundamentalCO2Forecast = False
+        self.useFundamentalCO2Forecast = False #from AbstractInvestInPowerGenerationTechnologiesRole
         self.futureTick = 0  # future tick
         self.futureInvestmentyear = 0
         self.market = None
@@ -71,10 +71,9 @@ class Investmentdecision(DefaultModule):
             #  for now there is only one energyproducer
             bestCandidatePowerPlant = None
             highestValue = 0
-            investable_candidate_plants = self.reps.get_investable_candidate_power_plants_by_owner(self.agent.name)
+            investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if investable_candidate_plants:  # check if the are investable power plants
                 for candidatepowerplant in investable_candidate_plants:
-
                     # calculate which is the power plant (technology) with the highest NPV
                     candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
                                                                    self.reps.country)
