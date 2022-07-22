@@ -385,7 +385,7 @@ class Repository:
     def get_sorted_bids_by_market_and_time(self, market: Market, time: int) -> \
             List[PowerPlantDispatchPlan]:
         return sorted([i for i in self.bids.values()
-                       if i.market == market.name and i.tick == time], key=lambda i: i.price)
+                       if i.market.name == market.name and i.tick == time], key=lambda i: i.price)
 
     def get_power_plant_dispatch_plans_by_plant(self, plant: PowerPlant) -> List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans.values() if i.plant == plant]
@@ -408,6 +408,14 @@ class Repository:
 
 
     # ----------------------------------------------------------------------------section Capacity Mechanisms
+    def get_capacity_market_for_plant(self, plant: PowerPlant) -> Optional[CapacityMarket]:
+        try:
+            return next(i for i in self.capacity_markets.values() if
+                        i.country == plant.location)
+        except StopIteration:
+            return None
+
+
     def get_accepted_CM_bids(self):
         return [i for i in self.bids.values() if
                 i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
@@ -435,7 +443,7 @@ class Repository:
         bid.accepted_amount = 0
         bid.tick = time
         self.bids[bid.name] = bid
-        self.dbrw.stage_bids(bid, time)
+        self.dbrw.stage_bids(bid)
         return bid
 
     def update_installed_pp_results(self, installed_pp_results):
@@ -448,11 +456,11 @@ class Repository:
         return None
 
 
-    # def get_project_value(self):
-    #     try:
-    #         return [name for name, i in self.candidatePowerPlants.items()]
-    #     except StopIteration:
-    #         return None
+    def get_capacity_market_in_country(self, country):
+        try:
+            return next(i for i in self.capacity_markets.values() if i.country == country)
+        except StopIteration:
+            return None
 
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
@@ -496,12 +504,7 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_capacity_market_for_plant(self, plant: PowerPlant) -> Optional[CapacityMarket]:
-        try:
-            return next(i for i in self.capacity_markets.values() if
-                        i.parameters['zone'] == plant.location)
-        except StopIteration:
-            return None
+
 
     def get_allowances_in_circulation(self, zone: Zone, time: int) -> int:
         return sum([i.banked_allowances[time] for i in self.power_plants.values()

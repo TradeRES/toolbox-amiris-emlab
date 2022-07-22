@@ -24,7 +24,6 @@ class SpineDBReaderWriter:
     def __init__(self, open_db, *db_urls: str):
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first is always emlab
-        print("DB", db_urls[0])
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.powerplantprofits_classname =  'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
@@ -256,17 +255,18 @@ class SpineDBReaderWriter:
             [(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')])
 
 
-    def stage_bids(self, bid: Bid, current_tick: int):
+    def stage_bids(self, bid: Bid ):
         self.stage_object(self.bids_classname, bid.name)
         self.stage_object_parameter_values(self.bids_classname, bid.name,
-                                           [('plant', bid.plant),
-                                            ('market', bid.market),
+                                           [('plant', bid.plant.name),
+                                            ('market', bid.market.name),
                                             ('price', bid.price),
                                             ('amount', bid.amount),
                                             ('tick', bid.tick),
-                                            ('bidder', bid.bidder),
+                                            ('bidder', bid.bidder.name),
                                             ('accepted_amount', bid.accepted_amount),
-                                            ('status', bid.status)], current_tick)
+                                            ('status', bid.status)], "0")
+
     def stage_init_sr_operator_structure(self):
         self.stage_object_class(self.sro_classname)
         self.stage_object_parameters(self.sro_classname,
@@ -434,7 +434,6 @@ class SpineDBReaderWriter:
 
     def stage_object_parameter_values(self,
                                       object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
-
         import_arr = [(object_class_name, object_name, i[0], i[1], str(alternative)) for i in arr_of_tuples]
         self.db.import_object_parameter_values(import_arr)
 
@@ -581,6 +580,6 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-        if object_class_name == reps.current_year:
+        if int(object_class_name) == reps.current_year: # importing only the current power dispatch plans
             add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans,
                                               PowerPlantDispatchPlan)

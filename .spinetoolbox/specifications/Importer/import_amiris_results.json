@@ -10,7 +10,7 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "PowerPlantDispatchPlans",
+                                "value": "0",
                                 "skip_columns": [
                                     4
                                 ]

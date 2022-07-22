@@ -74,11 +74,19 @@ class CapacityMarket(Market):
         """"""
         super().__init__(name)
         self.sloping_demand_curve = None
+        self.country = ""
+        self.InstalledReserveMargin = 0.0
+        self.LowerMargin = 0.0
+        self.UpperMargin = 0.0
+        self.PriceCap = 0
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)
 
     def get_sloping_demand_curve(self, d_peak):
-        return SlopingDemandCurve(float(self.parameters['InstalledReserveMargin']),
-                                  float(self.parameters['LowerMargin']),
-                                  float(self.parameters['UpperMargin']), d_peak, float(self.parameters['PriceCap']))
+        return SlopingDemandCurve(self.InstalledReserveMargin,
+                                  self.LowerMargin,
+                                  self.UpperMargin, d_peak, self.PriceCap)
 
 class CO2Market(Market):
     pass
