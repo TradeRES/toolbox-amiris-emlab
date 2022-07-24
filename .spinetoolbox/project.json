@@ -655,6 +655,28 @@
                     "short investments",
                     "left"
                 ]
+            },
+            {
+                "name": "from EmlabDB2 to Financial Results",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "Financial Results",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to Financial Results",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Financial Results",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -826,7 +848,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1130.7619089363577,
+            "x": -1133.203694136078,
             "y": -574.4886023431898,
             "url": {
                 "dialect": "sqlite",
@@ -979,8 +1001,8 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -640.6259649387617,
-            "y": 1.3419214052863353,
+            "x": -474.58457135777974,
+            "y": 64.8283365980148,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1186,7 +1208,20 @@
             "y": -158.71603798182122,
             "specification": "Financial Results",
             "execute_in_work": false,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_financial_results"
+                }
+            ]
         }
     }
 }
