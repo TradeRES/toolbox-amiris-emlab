@@ -35,6 +35,7 @@ class Repository:
         Initialize all Repository variables
         """
         #self.node = ""
+        # section --------------------------------------------------------------------------------------configuration
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -52,6 +53,9 @@ class Repository:
         self.investmentIteration = 0
         self.maximum_investment_capacity_per_year = 0
         self.max_permit_build_time = 0
+        self.runningModule = ""
+        # --------------------------------------------------------------------------------------------------
+
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()
@@ -247,6 +251,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_unique_candidate_technologies(self):
+        try:
+            return [i.technology for name, i in self.candidatePowerPlants.items()]
+        except StopIteration:
+            return None
+
     # ----------------------------------------------------------------------------section PowerPlants
 
     def get_id_last_power_plant(self) -> int:
@@ -434,9 +444,9 @@ class Repository:
             name = str(datetime.now())
             bid = Bid(name)
 
-        bid.plant = plant
-        bid.bidder = bidder
-        bid.market = market
+        bid.plant = plant.name
+        bid.bidder = bidder.name
+        bid.market = market.name
         bid.amount = amount
         bid.price = price
         bid.status = globalNames.power_plant_dispatch_plan_status_awaiting

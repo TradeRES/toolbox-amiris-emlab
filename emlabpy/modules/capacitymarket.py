@@ -58,6 +58,7 @@ class CapacityMarketClearing(MarketModule):
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
         self.isTheMarketCleared = False
+        reps.dbrw.stage_init_capacitymechanisms_structure()
 
     def act(self):
         print("capacity market clearing")
@@ -78,12 +79,14 @@ class CapacityMarketClearing(MarketModule):
         for ppdp in sorted_ppdp:
             if self.isTheMarketCleared == False:
                 if ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
+                    #print(ppdp.name , " ACCEPTED ", ppdp.price, "", sdc.get_price_at_volume(total_supply + ppdp.amount))
                     total_supply += ppdp.amount
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
 
                 elif ppdp.price < sdc.get_price_at_volume(total_supply):
+                    #print(ppdp.name , " partly ACCEPTED ")
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                     ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
@@ -99,7 +102,7 @@ class CapacityMarketClearing(MarketModule):
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
-            self.createCashFlowforCM(market, clearing_price)
+            self.stageCapacityMechanismRevenues(clearing_price)
         else:
             print("Market is not cleared", market.name)
             # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
@@ -117,11 +120,19 @@ class CapacityMarketClearing(MarketModule):
             # else:
             #     logging.WARN("does not match")
 
-    def createCashFlowforCM(self, market, clearing_price):
+    # def createCashFlowforCM(self, market, clearing_price):
+    #     accepted_ppdp = self.reps.get_accepted_CM_bids()
+    #     for accepted in accepted_ppdp:
+    #         # from_agent, to, amount, type, time, plant
+    #         self.reps.createCashFlow(market , accepted.bidder, accepted.accepted_amount * clearing_price,
+    #                                  "CAPMARKETPAYMENT", self.reps.current_tick,
+    #                                   accepted.plant)
+
+    def stageCapacityMechanismRevenues(self, clearing_price):
+        print("staging capacity market")
         accepted_ppdp = self.reps.get_accepted_CM_bids()
         for accepted in accepted_ppdp:
-            # from_agent, to, amount, type, time, plant
-            self.reps.createCashFlow(market , accepted.bidder, accepted.accepted_amount * clearing_price,
-                                     "CAPMARKETPAYMENT", self.reps.current_tick,
-                                      accepted.plant)
+            amount = accepted.accepted_amount * clearing_price
+            self.reps.dbrw.stage_CM_revenues( accepted.plant , amount, self.reps.current_tick)
+
 

@@ -72,7 +72,7 @@ for arg in sys.argv[3:]:
     if arg == 'run_create_results':
         run_create_results = True
 # following modules need the results from AMIRIS that are being stored in a DB
-if run_short_investment_module or run_capacity_market or run_strategic_reserve:
+if run_short_investment_module or run_capacity_market or run_strategic_reserve or run_financial_results :
     emlab_url = sys.argv[1]
     logging.info('emlab database: %s' , str(emlab_url))
     amiris_url = sys.argv[2]
@@ -84,7 +84,7 @@ else:
     spinedb_reader_writer = SpineDBReaderWriter("none", emlab_url)
 
 try:  # Try statement to always close DB properly
-    reps = spinedb_reader_writer.read_db_and_create_repository()  # Load repository
+    reps = spinedb_reader_writer.read_db_and_create_repository(sys.argv[3])  # Load repository
     # Ignore decommissioned power plants
     reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in (
         reps.decommissioned["Decommissioned"]).Decommissioned}
@@ -194,12 +194,14 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run short term Investments')
         short_investing.act_and_commit()
         logging.info('End Run short term Investment')
+
     if run_create_results:
         logging.info('Start logging results')
         strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
         create_results = CreatingResultsExcel(reps, strategic_reserve_operator)
         create_results.act_and_commit()
         logging.info('End logging results')
+
     logging.info('End Run Modules')
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('Commit Initialization Modules')
@@ -211,5 +213,5 @@ finally:
     logging.info('Closing database connections...')
     print("finished emlab")
     spinedb_reader_writer.db.close_connection()
-    if run_short_investment_module or run_capacity_market or run_strategic_reserve:
+    if run_short_investment_module or run_capacity_market or run_strategic_reserve or run_financial_results:
         spinedb_reader_writer.amirisdb.close_connection()

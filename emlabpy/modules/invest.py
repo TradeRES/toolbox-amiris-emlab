@@ -20,6 +20,8 @@ from datetime import datetime
 class Investmentdecision(DefaultModule):
     """
     The class that decides to invest according to future dispatch results
+    The results are not read from the DB, but from the csv to make faster simulations.
+
 
     """
 
@@ -56,6 +58,7 @@ class Investmentdecision(DefaultModule):
         # self.pgtNodeLimit = Double.MAX_VALUE
 
     def act(self):
+
         self.read_csv_results_and_filter_candidate_plants()
         # saving: operationalprofits from power plants
         # todo: comment this function

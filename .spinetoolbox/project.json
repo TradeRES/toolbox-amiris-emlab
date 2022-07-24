@@ -134,6 +134,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/initialize_power_plants.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/financial_results.json"
                 }
             ],
             "Importer": [
@@ -811,7 +816,7 @@
             "type": "Data Store",
             "description": "",
             "x": -1130.7619089363577,
-            "y": -572.0468171434694,
+            "y": -574.4886023431898,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -910,8 +915,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -333.6359936638613,
-            "y": -136.99245710812414,
+            "x": -162.71102968343857,
+            "y": -156.52673870588677,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -932,8 +937,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -92.58001222195992,
-            "y": -137.5574109546307,
+            "x": 22.183892164895383,
+            "y": -164.41704815155433,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -954,8 +959,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 55.95834487681768,
-            "y": 19.60668177352038,
+            "x": 146.3043972664697,
+            "y": 90.41845256540982,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1035,8 +1040,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -250.4434169296907,
-            "y": -480.01629771841243,
+            "x": -211.3748537341655,
+            "y": -482.45808291813273,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1162,6 +1167,15 @@
                     "arg": "run_initialize_power_plants"
                 }
             ]
+        },
+        "Financial Results": {
+            "type": "Tool",
+            "description": "",
+            "x": -617.7716555292424,
+            "y": -800.9055455082668,
+            "specification": "Financial Results",
+            "execute_in_work": false,
+            "cmd_line_args": []
         }
     }
 }

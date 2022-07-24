@@ -66,11 +66,11 @@ class Dismantle(DefaultModule):
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
                 pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
-                # TODO add revenues from capacity mechanisms
                 averagePastOperatingProfit = pastOperatingProfit / horizon
-            else:  # TODO for now, for the first years the availble past data is taken
-                averagePastOperatingProfit = sum(
-                    int(x[1]) for x in rep['data'] if int(x[0]) < self.reps.current_tick) / horizon
+            else:  # Attention for now, for the first years the availble past data is taken
+                pass
+                # averagePastOperatingProfit = sum(
+                #     int(x[1]) for x in rep['data'] if int(x[0]) < self.reps.current_tick) / horizon
         return averagePastOperatingProfit
 
     def set_powerplants_status(self):

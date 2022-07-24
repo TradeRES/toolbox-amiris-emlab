@@ -13,27 +13,33 @@ class CreatingFinancialReports(DefaultModule):
         reps.dbrw.stage_init_financial_results_structure()
 
     def act(self):
-        # fuelPriceMap = {}
-        # for substance in self.reps.substances:
-        #     fuelPriceMap.update({substance: findLastKnownPriceForSubstance(substance)})
         #TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
-        self.createFinancialReportsForPowerPlantsAndTick(self.reps.power_plants, self.reps.current_tick)
+        self.createFinancialReportsForPowerPlantsAndTick()
         print("finished financial report")
 
     def createFinancialReportsForNewInvestments(self):
         self.createFinancialReportsForPowerPlantsAndTick(self.reps.findAllPowerPlantsWithConstructionStartTimeInTick(self.reps.current_tick), self.reps.current_tick)
 
-    def createFinancialReportsForPowerPlantsAndTick(self, plants, tick): # todo -> probably this is needed only for operational power plants
+    def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
-        for plant in plants.values():
-            financialPowerPlantReport = FinancialPowerPlantReport(plant.name)
-            financialPowerPlantReport.setTime(tick)
-            financialPowerPlantReport.setPowerPlant(plant.name)
-            totalSupply = plant.getAwardedPowerinMWh()
-            financialPowerPlantReport.setProduction(totalSupply)
-            financialPowerPlantReport.setSpotMarketRevenue(plant.ReceivedMoneyinEUR)
-            financialPowerPlantReport.setProfit(plant.operationalProfit)
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+            dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
+            fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
+            financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
+            financialPowerPlantReport.setTime(self.reps.current_tick)
+            financialPowerPlantReport.setPowerPlant(powerplant.name)
+            financialPowerPlantReport.setProduction(dispatch.accepted_amount)
+            financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+
+            financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
+            financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
+            yearly_costs = dispatch.variable_costs - fixed_on_m_cost
+            financialPowerPlantReport.setTotalCosts(yearly_costs)
+
+            CapacityMechanismRevenues = self.reps.financialPowerPlantReports.capacityMarketRevenues[self.name]
+            financialPowerPlantReport.setTotalYearlyProfit(CapacityMechanismRevenues + dispatch.revenues - yearly_costs)
             financialPowerPlantReports.append(financialPowerPlantReport)
+
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
             # if plant.getFuelMix() is None:
