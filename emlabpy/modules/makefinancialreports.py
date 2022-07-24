@@ -23,21 +23,25 @@ class CreatingFinancialReports(DefaultModule):
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
         for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+            financialPowerPlantReport = next(financialPowerPlantReport for financialPowerPlantReport in self.reps.financialPowerPlantReports.values()
+                                    if financialPowerPlantReport.name == powerplant.name)
+            if financialPowerPlantReport is None:
+                # PowerPlantDispatchPlan not found, so create a new one
+                financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
+
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
             fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
-            financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
             financialPowerPlantReport.setTime(self.reps.current_tick)
-            financialPowerPlantReport.setPowerPlant(powerplant.name)
+            financialPowerPlantReport.setPowerPlant(powerplant.name) # this can be ignored, its already in the name
+            financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
-
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
             financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
-            yearly_costs = dispatch.variable_costs - fixed_on_m_cost
+            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
             financialPowerPlantReport.setTotalCosts(yearly_costs)
-
-            CapacityMechanismRevenues = self.reps.financialPowerPlantReports.capacityMarketRevenues[self.name]
-            financialPowerPlantReport.setTotalYearlyProfit(CapacityMechanismRevenues + dispatch.revenues - yearly_costs)
+            financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.capacityMarketRevenues + dispatch.revenues)
+            financialPowerPlantReport.setTotalYearlyProfit(financialPowerPlantReport.capacityMarketRevenues + dispatch.revenues + yearly_costs)
             financialPowerPlantReports.append(financialPowerPlantReport)
 
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)

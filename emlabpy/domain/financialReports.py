@@ -37,8 +37,6 @@ class FinancialPowerPlantReport(ImportObject):
         # object name =  year
         # alternative = iteration
         The data is stored in db investment with the object name "tick  - iteration"
-
-
         """
         # -----------------------------Profits and PowerPlants are read from the Profits
         if parameter_name == 'PowerPlants':
@@ -48,9 +46,7 @@ class FinancialPowerPlantReport(ImportObject):
             self.profits_per_iteration[alternative] = parameter_value
         # -----------------------------CM revenues from financial Reports
         elif parameter_name == 'capacityMechanismRevenues':
-            print(self.name)
-            print(parameter_value.values[reps.current_tick])
-            self.capacityMarketRevenues[self.name] = parameter_value.values[reps.current_tick]
+            self.capacityMarketRevenues = parameter_value.values[reps.current_tick]
 
     # UNDERCONSTRUCTION = 0
     # OPERATIONAL = 1

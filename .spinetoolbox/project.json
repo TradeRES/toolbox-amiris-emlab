@@ -375,17 +375,6 @@
                 ]
             },
             {
-                "name": "from Capacity Mechanism to short investments",
-                "from": [
-                    "Capacity Mechanism",
-                    "right"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to Capacity Mechanism",
                 "from": [
                     "EmlabDB2",
@@ -642,6 +631,28 @@
                 ],
                 "to": [
                     "Initialize power plants",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Capacity Mechanism to Financial Results",
+                "from": [
+                    "Capacity Mechanism",
+                    "right"
+                ],
+                "to": [
+                    "Financial Results",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Financial Results to short investments",
+                "from": [
+                    "Financial Results",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
                     "left"
                 ]
             }
@@ -937,8 +948,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 22.183892164895383,
-            "y": -164.41704815155433,
+            "x": 80.7867369581832,
+            "y": -159.5334777521137,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1171,8 +1182,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -617.7716555292424,
-            "y": -800.9055455082668,
+            "x": -366.26777995804883,
+            "y": -158.71603798182122,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": []

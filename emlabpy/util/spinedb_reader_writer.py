@@ -338,7 +338,8 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['PowerPlant', 'latestTick', 'spotMarketRevenue', 'overallRevenue', 'production',
-                                      'powerPlantStatus', 'totalProfits'])
+                                      'powerPlantStatus', 'totalProfits', 'variableCosts', 'fixedCosts', 'totalCosts'])
+
 
     def stage_financial_results(self, financialreports):
         for fr in financialreports:
@@ -347,11 +348,17 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
                                                [('PowerPlant', fr.powerPlant),
                                                 ('latestTick', (fr.tick)),
-                                                ('spotMarketRevenue', (fr.spotMarketRevenue)),
+                                                ('spotMarketRevenue', Map([str(fr.tick)], [str(fr.spotMarketRevenue)])),
                                                 ('overallRevenue', Map([str(fr.tick)], [str(fr.overallRevenue)])),
                                                 ('production', Map([str(fr.tick)], [str(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
+
+                                                ('variableCosts', Map([str(fr.tick)], [str(fr.variableCosts)])),
+                                                ('fixedCosts', Map([str(fr.tick)], [str(fr.fixedCosts)])),
+                                                ('totalCosts', Map([str(fr.tick)], [str(fr.totalCosts)])),
+
                                                 ('totalProfits', Map([str(fr.tick)], [str(fr.totalProfits)]))],
+
                                                '0')
 
     def findFinancialPowerPlantProfitsForPlant(self, powerplant):
