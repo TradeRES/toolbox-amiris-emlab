@@ -2,7 +2,7 @@ from domain.import_object import *
 from modules.defaultmodule import DefaultModule
 from util.repository import Repository
 from domain.technologies import *
-
+import pandas as pd
 import logging
 class FinancialPowerPlantReport(ImportObject):
 
@@ -46,7 +46,10 @@ class FinancialPowerPlantReport(ImportObject):
             self.profits_per_iteration[alternative] = parameter_value
         # -----------------------------CM revenues from financial Reports
         elif parameter_name == 'capacityMechanismRevenues':
-            self.capacityMarketRevenues = parameter_value.values[reps.current_tick]
+            array = parameter_value.to_dict()
+            df = pd.DataFrame(array['data'])
+            df.set_index(0, inplace=True)
+            self.capacityMarketRevenues = df.loc[str(reps.current_tick)][1]
 
     # UNDERCONSTRUCTION = 0
     # OPERATIONAL = 1
