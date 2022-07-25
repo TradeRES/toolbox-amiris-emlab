@@ -9,14 +9,13 @@ from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.StrategicReserveOperator import StrategicReserveOperator
 
-class StrategicReserveSubmitBids(MarketModule):
+class StrategicReserveSubmitBids_ger(MarketModule):
     """
     The class that submits all bids to the Strategic Reserve Market
     """
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
-        reps.dbrw.stage_init_bids_structure()
 
     def act(self):
         # For every EnergyProducer
@@ -36,17 +35,13 @@ class StrategicReserveSubmitBids(MarketModule):
                 # Calculate normalised costs
                 normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
 
-                # Place bids on market (full capacity at cost price per MW)
-                # Remove this if statement when everything works
-                if market != None:
-                    # self.reps.create_or_update_power_plant_StrategicReserve_plan(powerplant, energy_producer,
-                    #                                                              market, power_plant_capacity,
-                    #                                                              normalised_costs, self.reps.current_tick)
+                # Place bids on market only if plant is conventional (full capacity at cost price per MW)
+                if market != None and powerplant.technology.type == 'ConventionalPlantOperator':
                     self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
                                                                                  market, power_plant_capacity,
                                                                                  normalised_costs, self.reps.current_tick)
 
-class StrategicReserveAssignment(MarketModule):
+class StrategicReserveAssignment_ger(MarketModule):
     """
     The class clearing the Strategic Reserve Market and assigning them to the Strategic Reserve Operator
     """
@@ -79,17 +74,29 @@ class StrategicReserveAssignment(MarketModule):
             # Contract plants to Strategic Reserve Operator
             contracted_strategic_reserve_capacity = 0
             SRO_name = "SRO_" + market.zone
+            try:
+                SR_operator = self.reps.sr_operator[SRO_name]
+            except:
+                SR_operator = self.operator
 
             for ppdp in sorted_ppdp:
-                # If plant capacity fits in strategic reserve than contract it
-                if (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
+                # If plants are already in strategic reserve they have to be until end of life
+                if ppdp.name in SR_operator.list_of_plants:
+                    contracted_strategic_reserve_capacity += ppdp.amount
+                    ppdp.status = globalNames.power_plant_status_strategic_reserve
+                    ppdp.accepted_amount = ppdp.amount
+                    self.operator.setPlants(ppdp.plant)
+                    # Change plant status
+                    self.reps.update_power_plant_status(ppdp.plant, SR_price)
+                # If strategic reserve is not filled yet contract additional new plants
+                elif (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
                     contracted_strategic_reserve_capacity += ppdp.amount
                     ppdp.status = globalNames.power_plant_status_strategic_reserve
                     ppdp.accepted_amount = ppdp.amount
                     # Add plant to the list of the StrategicReserveOperator
                     self.operator.setPlants(ppdp.plant)
-                    # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
-                    self.reps.update_power_plant_status(ppdp.plant, SR_price)
+                    # Change plant status and increase age
+                    self.reps.update_power_plant_status_ger_first_year(ppdp.plant, SR_price)
                 else:
                     # When strategic reserve is full nothing actually changes for the power plant
                     ppdp.accepted_amount = 0
@@ -107,7 +114,6 @@ class StrategicReserveAssignment(MarketModule):
                                                                 self.operator.getReserveVolume(),
                                                                 self.operator.getCash(),
                                                                 self.operator.getPlants())
-
 
     # Cashflow function for the operation of the strategic reserve
     def createCashFlowforSR(self, operator, market):
