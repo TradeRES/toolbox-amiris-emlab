@@ -81,7 +81,6 @@ class ShortInvestmentdecision(Investmentdecision):
             # TODO: add the maxExpected Load amd agent cash
 
     def irr(self, investmentCashFlow):
-        print(investmentCashFlow)
         IRR = npf.irr(investmentCashFlow)
         if pd.isna(IRR):
             return -100

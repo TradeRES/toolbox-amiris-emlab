@@ -1,5 +1,5 @@
-
 from domain.import_object import *
+
 
 class Bid(ImportObject):
     def __init__(self, name):

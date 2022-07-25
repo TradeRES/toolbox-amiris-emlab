@@ -2,7 +2,7 @@ from domain.import_object import *
 from modules.defaultmodule import DefaultModule
 from util.repository import Repository
 from domain.technologies import *
-
+import pandas as pd
 import logging
 class FinancialPowerPlantReport(ImportObject):
 
@@ -13,7 +13,7 @@ class FinancialPowerPlantReport(ImportObject):
         self.overallRevenue = 0
         self.production = 0
         self.powerPlantStatus = 0
-        self.profits = 0#[0 for i in range(reps.simulation_length)]
+        self.totalProfits = 0
         self.profits_per_iteration_pp  = dict()
         self.profits_per_iteration = dict()
         self.time = 0
@@ -21,27 +21,39 @@ class FinancialPowerPlantReport(ImportObject):
         self.schedule = None
         self.fullLoadHours = [] # [0 for i in range(reps.simulation_length)]
         self.longTermMarketRevenue = 0
-        self.capacityMarketRevenue = 0
+        #self.capacityMarketRevenues = dict()
+        self.capacityMarketRevenues_in_year = 0
         self.strategicReserveRevenue = 0
         self.co2HedgingRevenue = 0
         self.commodityCosts = 0
         self.co2Costs = 0
         self.variableCosts = 0
+        self.totalCosts = 0
         self.fixedCosts = 0
         self.fixedOMCosts = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         """"
-        This function is being read for the plotting. The profits are being saved in the module Investmentdecision
+        This function is being read for the plotting. The totalProfits are being saved in the module Investmentdecision
         # object name =  year
         # alternative = iteration
         The data is stored in db investment with the object name "tick  - iteration"
         """
+        # -----------------------------Profits and PowerPlants are read from the Profits
         if parameter_name == 'PowerPlants':
             # object name is year and alternative is the iteration.
             self.profits_per_iteration_pp[alternative] = parameter_value
         elif parameter_name == 'Profits':
             self.profits_per_iteration[alternative] = parameter_value
+        # -----------------------------CM revenues from financial Reports
+        elif parameter_name == 'capacityMechanismRevenues':
+            array = parameter_value.to_dict()
+            df = pd.DataFrame(array['data'])
+            df.set_index(0, inplace=True)
+            if str(reps.current_tick) in df.index:
+                self.capacityMarketRevenues_in_year = df.loc[str(reps.current_tick)][1]
+            else:
+                self.capacityMarketRevenues_in_year = 0
 
     # UNDERCONSTRUCTION = 0
     # OPERATIONAL = 1
@@ -89,11 +101,11 @@ class FinancialPowerPlantReport(ImportObject):
     def setPowerPlantStatus(self, powerPlantStatus):
         self.powerPlantStatus= powerPlantStatus
 
-    def getProfit(self, tick):
-        return self.profits
+    def getTotalYearlyProfit(self, tick):
+        return self.totalProfits
 
-    def setProfit(self, profit):
-        self.profits= profit
+    def setTotalYearlyProfit(self, profit):
+        self.totalProfits= profit
 
     def getCommodityCosts(self):
         return self.commodityCosts
@@ -106,6 +118,10 @@ class FinancialPowerPlantReport(ImportObject):
 
     def setCo2Costs(self, co2Costs):
         self.co2Costs = co2Costs
+
+    def setTotalCosts(self, totalCosts):
+        self.totalCosts = totalCosts
+
 
     def getFullLoadHours(self):
         return self.fullLoadHours
@@ -137,11 +153,11 @@ class FinancialPowerPlantReport(ImportObject):
     def setLongTermMarketRevenue(self, longTermMarketRevenue):
         self.longTermMarketRevenue = longTermMarketRevenue
 
-    def getCapacityMarketRevenue(self):
-        return self.capacityMarketRevenue
+    # def getCapacityMarketRevenue(self):
+    #     return self.capacityMarketRevenues
 
-    def setCapacityMarketRevenue(self, capacityMarketRevenue):
-        self.capacityMarketRevenue = capacityMarketRevenue
+    # def setCapacityMarketRevenue(self, capacityMarketRevenue):
+    #     self.capacityMarketRevenues = capacityMarketRevenue
 
     def getStrategicReserveRevenue(self):
         return self.strategicReserveRevenue

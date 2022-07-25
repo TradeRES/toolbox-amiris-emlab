@@ -1,7 +1,6 @@
 """
 The Repository: home of all objects that play a part in the model.
 All objects are read through the SpineDBReader and stored in the Repository.
-
 Jim Hommes - 25-3-2021
 Ingrid Sanchez 16-2-2022
 """
@@ -35,6 +34,7 @@ class Repository:
         Initialize all Repository variables
         """
         #self.node = ""
+        # section --------------------------------------------------------------------------------------configuration
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -52,6 +52,9 @@ class Repository:
         self.investmentIteration = 0
         self.maximum_investment_capacity_per_year = 0
         self.max_permit_build_time = 0
+        self.runningModule = ""
+        # --------------------------------------------------------------------------------------------------
+
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()
@@ -191,8 +194,11 @@ class Repository:
         except StopIteration:
             return None
 
-        return
-
+    def get_financial_report_for_plant(self, plant_name):
+        try:
+            return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
     # ----------------------------------------------------------------------------section technologies
     # PowerGeneratingTechnologies
     def get_power_generating_technology_by_techtype_and_fuel(self, techtype: str, fuel: str):
@@ -244,6 +250,12 @@ class Repository:
     def get_unique_candidate_technologies_names(self):
         try:
             return [i.technology.name for name, i in self.candidatePowerPlants.items()]
+        except StopIteration:
+            return None
+
+    def get_unique_candidate_technologies(self):
+        try:
+            return [i.technology for name, i in self.candidatePowerPlants.items()]
         except StopIteration:
             return None
 
@@ -434,9 +446,9 @@ class Repository:
             name = str(datetime.now())
             bid = Bid(name)
 
-        bid.plant = plant
-        bid.bidder = bidder
-        bid.market = market
+        bid.plant = plant.name
+        bid.bidder = bidder.name
+        bid.market = market.name
         bid.amount = amount
         bid.price = price
         bid.status = globalNames.power_plant_dispatch_plan_status_awaiting
@@ -538,75 +550,71 @@ class Repository:
             temp_location = 'None'
         return sum([i.capacity for i in self.power_plants.values() if i.location == temp_location])
 
-    def get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(self, market: Market) -> \
+    def get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(self, market: Market, time: int) -> \
             List[PowerPlantDispatchPlan]:
-        return sorted([i for i in self.bids_sr.values()
-                       if i.market.name == market.name], key=lambda i: i.price, reverse=True)
+        return sorted([i for i in self.bids.values()
+                       if i.market == market.name and i.tick == time], key=lambda i: i.price, reverse=True)
 
     def get_accepted_SR_bids(self):
-        return [i for i in self.bids_sr.values() if
+        return [i for i in self.bids.values() if
                 i.status == globalNames.power_plant_status_strategic_reserve]
 
-    # def get_power_plants_in_SR(self) -> List[StrategicReserveOperator]:
-    #     return [i for i in self.power_plants.values() if
-    #             i.status == globalNames.power_plant_status_strategic_reserve]
-    # i.name in self.StrategicReserveOperator.getPlants()]
-
-    def createStrategicReserveOperator(self, volume, zone, cash, plant):
-        name = ("SRO_" + zone)
-        operator = StrategicReserveOperator(name)
-        operator.setReserveVolume(volume)
-        operator.setZone(zone)
-        operator.setCash(cash)
-        operator.setPlants(plant)
-        return operator
-
-    def set_power_plants_in_SR(self, plant):
-        self.plants_in_SR.append(plant)
-
-    def get_power_plants_in_SR(self):
-        return self.plants_in_SR
-
-    def get_power_plants_in_SR_by_name(self):
-        return [i.name for i in self.plants_in_SR]
-
-    def get_fixed_costs_of_SR_plant(self, plant):
+    def update_power_plant_status(self, plant: PowerPlant, price):
+        new_status = globalNames.power_plant_status_strategic_reserve
+        new_owner = 'StrategicReserveOperator'
+        new_price = price
         for i in self.power_plants.values():
-            if i.name == plant.name:
-                cost = i.actualFixedOperatingCost
-                return cost
-
-        # return [i.actualFixedOperatingCost for i in self.power_plants.values() if i.name == plant.name]
-
-    def get_strategic_reserve_price(self, operator: StrategicReserveOperator):
-        return operator.getReservePriceSR()
+            if i.name == plant:
+                i.status = new_status
+                i.owner = new_owner
+                i.technology.variable_operating_costs = new_price
+                self.power_plants[i.name] = i
+                self.dbrw.stage_power_plant_status(i)
 
 
-    def create_or_update_power_plant_StrategicReserve_plan(self, plant: PowerPlant,
-                                                         bidder: EnergyProducer,
-                                                         market: Market,
-                                                         amount: float,
-                                                         price: float,
-                                                         time: int) -> Bid:
-        bid = next((bid for bid in self.bids_sr.values() if bid.plant == plant.name and \
-                    bid.market == market.name and
-                    bid.tick == time), None)
-        if bid is None:
-            # PowerPlantDispatchPlan not found, so create a new one
-            name = str(datetime.now())
-            bid = Bid(name)
 
-        bid.plant = plant
-        bid.bidder = bidder
-        bid.market = market
-        bid.amount = amount
-        bid.price = price
-        bid.status = globalNames.power_plant_dispatch_plan_status_awaiting
-        bid.accepted_amount = 0
-        bid.tick = time
-        self.bids_sr[bid.name] = bid
-        self.dbrw.stage_bids(bid, time)
-        return bid
+    def create_or_update_StrategicReserveOperator(self, name: str,
+                                                  zone: str,
+                                                  priceSR: float,
+                                                  percentSR: float,
+                                                  volumeSR: float,
+                                                  cash: float,
+                                                  list_of_plants: list) -> StrategicReserveOperator:
+        SRO = next((SRO for SRO in self.sr_operator.values() if SRO.name == name), None)
+        if SRO is None:
+            name = ("SRO_" + zone)
+            SRO = StrategicReserveOperator(name)
+
+        SRO.zone = zone
+        SRO.reservePriceSR = priceSR
+        SRO.reserveVolumePercentSR = percentSR
+        SRO.reserveVolume = volumeSR
+        SRO.cash = cash
+        SRO.list_of_plants = list_of_plants
+        self.sr_operator[SRO.name] = SRO
+        self.dbrw.stage_sr_operator(SRO)
+        return SRO
+
+    def update_power_plant_status_ger_first_year(self, plant: PowerPlant, price):
+        new_status = globalNames.power_plant_status_strategic_reserve
+        new_owner = 'StrategicReserveOperator'
+        new_price = price
+        for i in self.power_plants.values():
+            if i.name == plant:
+                new_age = i.technology.expected_lifetime - 4
+                i.age = new_age
+                i.status = new_status
+                i.owner = new_owner
+                i.technology.variable_operating_costs = new_price
+                self.power_plants[i.name] = i
+                self.dbrw.stage_power_plant_status(i)
+
+    def get_operational_and_in_pipeline_conventional_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.owner.name == owner and \
+                (i.age+4) <= i.technology.expected_lifetime and \
+                i.technology.type == 'ConventionalPlantOperator' and \
+                (i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_inPipeline)]
 
 
 

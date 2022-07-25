@@ -58,7 +58,7 @@ class PowerPlant(ImportObject):
                 reps.decommissioned["Decommissioned"]).Decommissioned:
             return
         elif parameter_name == 'Status':
-            self.status = parameter_value
+            self.status = str(parameter_value)
         elif parameter_name == 'Efficiency':  # the efficiency stored in the DB is the actual one
             self.actualEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
@@ -81,6 +81,7 @@ class PowerPlant(ImportObject):
         #     print(self.name, "assigned age by commissioned year ")
         #     self.commissionedYear = int(parameter_value)
         #     self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
+
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':

@@ -30,7 +30,8 @@ class SpineDBReaderWriter:
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.bids_classname = 'Bids'
         self.market_clearing_point_object_classname = 'MarketClearingPoints'
-        self.financial_reports_object_classname = 'financialPowerPlantReports'
+        self.financial_reports_object_classname = 'FinancialReports'
+        self.cash_flows_classname = 'CashFlows'
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
         self.investment_decisions_classname = "InvestmentDecisions"
         self.sro_classname = 'StrategicReserveOperators'
@@ -50,12 +51,13 @@ class SpineDBReaderWriter:
             print("reading investments")
             self.read_investments = True
 
-    def read_db_and_create_repository(self) -> Repository:
+    def read_db_and_create_repository(self, module) -> Repository:
         """
         This function add all info from EMLAB DB to REPOSITORY
         """
         logging.info('SpineDBRW: Start Read Repository')
         reps = Repository()
+        reps.runningModule = module
         reps.dbrw = self
         db_data = self.db.export_data()
         self.stage_init_alternative("0")
@@ -258,12 +260,12 @@ class SpineDBReaderWriter:
     def stage_bids(self, bid: Bid ):
         self.stage_object(self.bids_classname, bid.name)
         self.stage_object_parameter_values(self.bids_classname, bid.name,
-                                           [('plant', bid.plant.name),
-                                            ('market', bid.market.name),
+                                           [('plant', bid.plant),
+                                            ('market', bid.market),
                                             ('price', bid.price),
                                             ('amount', bid.amount),
                                             ('tick', bid.tick),
-                                            ('bidder', bid.bidder.name),
+                                            ('bidder', bid.bidder),
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], "0")
 
@@ -336,7 +338,8 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['PowerPlant', 'latestTick', 'spotMarketRevenue', 'overallRevenue', 'production',
-                                      'powerPlantStatus', 'profits'])
+                                      'powerPlantStatus', 'totalProfits', 'variableCosts', 'fixedCosts', 'totalCosts'])
+
 
     def stage_financial_results(self, financialreports):
         for fr in financialreports:
@@ -345,28 +348,40 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
                                                [('PowerPlant', fr.powerPlant),
                                                 ('latestTick', (fr.tick)),
-                                                ('spotMarketRevenue', (fr.spotMarketRevenue)),
+                                                ('spotMarketRevenue', Map([str(fr.tick)], [str(fr.spotMarketRevenue)])),
                                                 ('overallRevenue', Map([str(fr.tick)], [str(fr.overallRevenue)])),
                                                 ('production', Map([str(fr.tick)], [str(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
-                                                ('profits', Map([str(fr.tick)], [str(fr.profits)]))],
+
+                                                ('variableCosts', Map([str(fr.tick)], [str(fr.variableCosts)])),
+                                                ('fixedCosts', Map([str(fr.tick)], [str(fr.fixedCosts)])),
+                                                ('totalCosts', Map([str(fr.tick)], [str(fr.totalCosts)])),
+
+                                                ('totalProfits', Map([str(fr.tick)], [str(fr.totalProfits)]))],
+
                                                '0')
 
     def findFinancialPowerPlantProfitsForPlant(self, powerplant):
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
-            self.financial_reports_object_classname, powerplant.name, "profits", 0)
+            self.financial_reports_object_classname, powerplant.name, "totalProfits", 0)
         if not financialresults:
             return
         return financialresults[0]['parameter_value'].to_dict()
 
-    def stage_cashflow_PowerPlant(self, current_tick: int):
-        self.stage_init_alternative("0")
-        #self.stage_object(self.powerplant_dispatch_plan_classname, ppdp.name)
+    def stage_init_capacitymechanisms_structure(self):
+        self.stage_object_class(self.financial_reports_object_classname)
+        self.stage_object_parameters(self.financial_reports_object_classname,
+                                     ['capacityMechanismRevenues'])
 
+
+    def stage_CM_revenues(self, power_plant, amount, current_tick: int):
+        self.stage_object(self.financial_reports_object_classname, power_plant)
+        self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
+                                           [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
+                                           '0')
     """
     Fuel prices
     """
-
     def stage_init_next_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
         self.stage_object_parameters(self.fuel_classname, [globalNames.simulated_prices])
@@ -537,7 +552,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-    elif object_class_name == 'Bids':
+    elif object_class_name == 'Bids' and reps.runningModule == "run_capacity_market": # only read this when capacity mechanism
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
@@ -557,6 +572,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
 
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
+    elif object_class_name == 'FinancialReports' and reps.runningModule == "run_financial_results":
+        add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
 
