@@ -21,7 +21,8 @@ class FinancialPowerPlantReport(ImportObject):
         self.schedule = None
         self.fullLoadHours = [] # [0 for i in range(reps.simulation_length)]
         self.longTermMarketRevenue = 0
-        self.capacityMarketRevenues = dict()
+        #self.capacityMarketRevenues = dict()
+        self.capacityMarketRevenues_in_year = 0
         self.strategicReserveRevenue = 0
         self.co2HedgingRevenue = 0
         self.commodityCosts = 0
@@ -49,7 +50,10 @@ class FinancialPowerPlantReport(ImportObject):
             array = parameter_value.to_dict()
             df = pd.DataFrame(array['data'])
             df.set_index(0, inplace=True)
-            self.capacityMarketRevenues = df.loc[str(reps.current_tick)][1]
+            if str(reps.current_tick) in df.index:
+                self.capacityMarketRevenues_in_year = df.loc[str(reps.current_tick)][1]
+            else:
+                self.capacityMarketRevenues_in_year = 0
 
     # UNDERCONSTRUCTION = 0
     # OPERATIONAL = 1
@@ -149,11 +153,11 @@ class FinancialPowerPlantReport(ImportObject):
     def setLongTermMarketRevenue(self, longTermMarketRevenue):
         self.longTermMarketRevenue = longTermMarketRevenue
 
-    def getCapacityMarketRevenue(self):
-        return self.capacityMarketRevenues
+    # def getCapacityMarketRevenue(self):
+    #     return self.capacityMarketRevenues
 
-    def setCapacityMarketRevenue(self, capacityMarketRevenue):
-        self.capacityMarketRevenues = capacityMarketRevenue
+    # def setCapacityMarketRevenue(self, capacityMarketRevenue):
+    #     self.capacityMarketRevenues = capacityMarketRevenue
 
     def getStrategicReserveRevenue(self):
         return self.strategicReserveRevenue
