@@ -152,13 +152,17 @@ class Repository:
         return cashFlow
 
 
-    def get_profits_per_tick(self, tick):
+    def get_financial_report_per_tick(self, tick):
         try:
             return next(i for i in self.financialPowerPlantReports.values() if i.name == str(tick))
-
         except StopIteration:
             return None
 
+    def get_financial_report_for_plant(self, plant_name):
+        try:
+            return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
 
     def getCashFlowsForPowerPlant(self, plant, tick):
 
@@ -203,11 +207,7 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_financial_report_for_plant(self, plant_name):
-        try:
-            return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)
-        except StopIteration:
-            return None
+
     # ----------------------------------------------------------------------------section technologies
     # PowerGeneratingTechnologies
     def get_power_generating_technology_by_techtype_and_fuel(self, techtype: str, fuel: str):

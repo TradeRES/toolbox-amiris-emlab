@@ -183,6 +183,17 @@ def plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, fut
     fig14 = axs14.get_figure()
     fig14.savefig(path_to_plots + '/' + 'Screening curve candidate technologies (no CO2) ' +str(future_year) +'.png', bbox_inches='tight', dpi=300)
 
+def plot_CM_revenues(CM_revenues,  path_to_plots):
+    axs15 = CM_revenues.plot()
+    axs15.set_axisbelow(True)
+    plt.xlabel('hours', fontsize='medium')
+    plt.ylabel('Prices', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.grid()
+    axs15.set_title('Capacity Mechanisms')
+    fig15 = axs15.get_figure()
+    fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms.png', bbox_inches='tight', dpi=300)
+
 def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, unique_technologies):
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investments.items():
@@ -282,7 +293,8 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     return installed_capacity_per_iteration, candidate_plants_project_value
 
 def prepare_profits_candidates_per_iteration(reps, tick):
-    profits = reps.get_profits_per_tick(tick)
+    # todo financial report are per tick????????????????????????????????
+    profits = reps.get_financial_report_per_tick(tick)
     profits_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_names_candidates[str(0)], columns= ["zero"]).fillna(0)
     for iteration , profit_per_iteration in list(profits.profits_per_iteration_candidates.items()):
         temporal = pd.DataFrame(profit_per_iteration, index = profits.profits_per_iteration_names_candidates[iteration], columns= [int(iteration)])
@@ -300,14 +312,14 @@ def prepare_profits_candidates_per_iteration(reps, tick):
     return profits_per_iteration
 
 def prepare_revenues_per_iteration(reps, tick):
-    profits = reps.get_profits_per_tick(tick)
+    profits = reps.get_financial_report_per_tick(tick)
+    # index of installed power plants
     power_plants_revenues_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_names[str(tick)], columns= ["zero"]).fillna(0)
     # take only 10 iterations, otherwise there are memory problems add [2:11]
     for iteration , profit_per_iteration in list(profits.profits_per_iteration.items()):
         temporal = pd.DataFrame(profit_per_iteration, index = profits.profits_per_iteration_names[iteration], columns= [int(iteration)])
         power_plants_revenues_per_iteration = power_plants_revenues_per_iteration.join(temporal)
     power_plants_revenues_per_iteration.drop("zero", axis=1, inplace=True)
-
     tech = []
     for pp in power_plants_revenues_per_iteration.index.values:
         tech.append(reps.power_plants[pp].technology.name)
@@ -375,6 +387,18 @@ def prepare_screening_curves_candidates(reps, year):
         yearly_costs_candidates[tech.name] = total
     return yearly_costs_candidates
 
+def prepare_accepted_CapacityMechanism(reps):
+    tech_names = []
+    CM = []
+    for i in reps.financialPowerPlantReports.values():
+        tech_names.append(reps.power_plants[i.name].technology.name)
+        CM.append(i.capacityMarketRevenues_in_year)
+    grouped_CM_revenues = pd.DataFrame(CM, index = tech_names,
+                      columns =['Capacity Mechanism Revenues'])
+    #grouped_CM_revenues = CM_revenues.groupby('index').mean()
+    return grouped_CM_revenues.T
+
+
 def generate_plots():
     print('Establishing and querying EmlabDB')
     db_url = sys.argv[1]
@@ -430,6 +454,15 @@ def generate_plots():
     last_year = years_to_generate[-1]
     test_tick = 0
     test_tech = "CCGT"
+
+    #section -----------------------------------------------------------------------------------------------Capacity Markets
+
+
+
+
+    CM_revenues = prepare_accepted_CapacityMechanism(reps)
+    plot_CM_revenues(CM_revenues, path_to_plots)
+
     #section -----------------------------------------------------------------------------------------------revenues per iteration
 
     candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(

@@ -18,7 +18,7 @@ class FinancialPowerPlantReport(ImportObject):
         self.profits_per_iteration = dict()
         self.profits_per_iteration_names_candidates  = dict()
         self.profits_per_iteration_candidates = dict()
-        self.time = 0
+        self.tick = 0
         self.iteration = 0
         self.schedule = None
         self.fullLoadHours = [] # [0 for i in range(reps.simulation_length)]
@@ -53,7 +53,7 @@ class FinancialPowerPlantReport(ImportObject):
             self.profits_per_iteration_names_candidates[iteration] = parameter_value
         elif parameter_name == 'ProfitsC':
             self.profits_per_iteration_candidates[iteration] = parameter_value
-        # -----------------------------CM revenues from financial Reports
+        # -----------------------------CM revenues from financial Reports classname
         elif parameter_name == 'capacityMechanismRevenues':
             array = parameter_value.to_dict()
             df = pd.DataFrame(array['data'])
@@ -63,12 +63,8 @@ class FinancialPowerPlantReport(ImportObject):
             else:
                 self.capacityMarketRevenues_in_year = 0
 
-    # UNDERCONSTRUCTION = 0
-    # OPERATIONAL = 1
-    # DISMANTLED = 2
-
     def getTime(self):
-        return self.time
+        return self.tick
 
     def getIteration(self):
         return self.iteration

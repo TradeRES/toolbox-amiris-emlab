@@ -591,7 +591,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
-    elif object_class_name == 'FinancialReports' and reps.runningModule == "run_financial_results":
+    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
