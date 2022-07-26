@@ -80,16 +80,16 @@ def plot_investments(annual_installed_capacity, annual_commissioned, years_to_ge
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
 
-# def plot_candidate_pp_project_value(candidate_plants_project_value, years_to_generate, path_to_plots):
-#     print('candidate project value')
-#     axs7 = candidate_plants_project_value.plot.line()
-#     axs7.set_axisbelow(True)
-#     plt.xlabel('Iterations', fontsize='medium')
-#     plt.ylabel('Project value', fontsize='medium')
-#     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-#     axs7.set_title('NPV Candidate power plants')
-#     fig7 = axs7.get_figure()
-#     fig7.savefig(path_to_plots + '/' + 'NPV Candidate power plants.png', bbox_inches='tight', dpi=300)
+def plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots):
+    print('candidate profits')
+    axs7 = candidate_plants_profits_per_iteration.plot.line()
+    axs7.set_axisbelow(True)
+    plt.xlabel('Iterations', fontsize='medium')
+    plt.ylabel('Project value', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs7.set_title('NPV Candidate power plants')
+    fig7 = axs7.get_figure()
+    fig7.savefig(path_to_plots + '/' + 'Candidate plants profits per iteration ' +str(test_tick) +'.png', bbox_inches='tight', dpi=300)
 
 def power_plants_status(number_per_status , path_to_plots ):
     print("power plants status")
@@ -253,7 +253,6 @@ def prepare_pp_status(years_to_generate,years_to_generate_and_build, reps, uniqu
            last_year_strategic_reserve_capacity,    number_per_status, number_per_status_last_year
 
 def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_plants):
-
     # attention this graph is now only for the first year
     max_iteration = 0
     # preparing empty df
@@ -283,15 +282,33 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
 
     return installed_capacity_per_iteration, candidate_plants_project_value
 
+def prepare_profits_candidates_per_iteration(reps, tick):
+    profits = reps.get_profits_per_tick(tick)
+    profits_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_names_candidates[str(0)], columns= ["zero"]).fillna(0)
+    for iteration , profit_per_iteration in list(profits.profits_per_iteration_candidates.items()):
+        temporal = pd.DataFrame(profit_per_iteration, index = profits.profits_per_iteration_names_candidates[iteration], columns= [int(iteration)])
+        profits_per_iteration = profits_per_iteration.join(temporal)
+    profits_per_iteration.drop("zero", axis=1, inplace=True)
+    tech = []
+    for pp in profits_per_iteration.index.values:
+        tech.append(reps.power_plants[pp].technology.name)
+    profits_per_iteration["tech"] = tech
+    profits_per_iteration = np.transpose(profits_per_iteration)
+    profits_per_iteration.columns = profits_per_iteration.iloc[-1]
+    profits_per_iteration.drop("tech", inplace=True)
+    profits_per_iteration.index.map(int)
+    #df.drop(df.tail(n).index,inplace=True)
+    profits_per_iteration.sort_index( ascending=True, inplace=True)
+    return profits_per_iteration
+
 def prepare_revenues_per_iteration(reps, tick):
     profits = reps.get_profits_per_tick(tick)
-    power_plants_revenues_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_pp[str(0)], columns= ["zero"]).fillna(0)
-    # take only 10 iterations, otherwise there are momory problems
+    power_plants_revenues_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_names[str(0)], columns= ["zero"]).fillna(0)
+    # take only 10 iterations, otherwise there are memory problems
     for iteration , profit_per_iteration in list(profits.profits_per_iteration.items())[2:11]:
-        temporal = pd.DataFrame( profit_per_iteration, index = profits.profits_per_iteration_pp[iteration], columns= [int(iteration)])
+        temporal = pd.DataFrame(profit_per_iteration, index = profits.profits_per_iteration_names[iteration], columns= [int(iteration)])
         power_plants_revenues_per_iteration = power_plants_revenues_per_iteration.join(temporal)
     power_plants_revenues_per_iteration.drop("zero", axis=1, inplace=True)
-    #    break #attention break after a year. each object is a year - > remove if more years are desired
 
     tech = []
     for pp in power_plants_revenues_per_iteration.index.values:
@@ -300,12 +317,6 @@ def prepare_revenues_per_iteration(reps, tick):
     grouped_revenues = power_plants_revenues_per_iteration.groupby('tech').mean()
     sorted_revenues_per_iteration_first_year = grouped_revenues.T.sort_index()
     revenues_per_iteration = power_plants_revenues_per_iteration.set_index('tech', append=True).sort_index(level=0)
-
-    # revenues_per_iteration = np.transpose(power_plants_revenues_per_iteration)
-    # revenues_per_iteration.columns = revenues_per_iteration.iloc[-1]
-    # revenues_per_iteration.drop(revenues_per_iteration.tail(1).index,inplace=True)
-    # revenues_per_iteration.index = revenues_per_iteration.index.map(int)
-    # revenues_per_iteration.sort_index( ascending=True, inplace=True)
     return sorted_revenues_per_iteration_first_year, revenues_per_iteration
 
 def prepare_future_fuel_prices(reps, years_to_generate):
@@ -420,52 +431,52 @@ def generate_plots():
     last_year = years_to_generate[-1]
     test_tick = 0
     #section -----------------------------------------------------------------------------------------------revenues per iteration
-    sorted_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps, test_tick)
-    plot_revenues_per_iteration(revenues_per_iteration, sorted_revenues_per_iteration_first_year.columns, path_to_plots, test_tick)
-    plot_average_revenues_per_iteration(sorted_revenues_per_iteration_first_year, path_to_plots, first_year, colors_unique_techs)
+
+    candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
+         reps, test_tick)
+    installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
+        future_year, reps, unique_candidate_power_plants)
+    plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots )
+    plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+                                             first_year, path_to_plots, colors_unique_candidates)
 
     # todo 1
     #plot_yearly_operation_profits(first_year)
 
-
-    installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
-        future_year, reps, unique_candidate_power_plants)
-
+    sorted_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps, test_tick)
+    plot_revenues_per_iteration(revenues_per_iteration, sorted_revenues_per_iteration_first_year.columns, path_to_plots, test_tick)
+    plot_average_revenues_per_iteration(sorted_revenues_per_iteration_first_year, path_to_plots, first_year, colors_unique_techs)
 
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
     '''
-    # future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
-    #
-    # annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
-    # last_year_in_pipeline, last_year_decommissioned, \
-    # last_year_operational_capacity,last_year_to_be_decommissioned_capacity, \
-    # last_year_strategic_reserve_capacity,    number_per_status, number_per_status_last_year = \
-    #     prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
+    future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
 
-    # plot_investments(annual_in_pipeline_capacity, annual_commissioned ,years_to_generate, path_to_plots, colors_unique_techs)
-    #
-    #
-    # plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
-    #                                         first_year, path_to_plots, colors_unique_candidates)
-    #
-    # plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
-    # #last_year_strategic_reserve_capacity
-    # plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots, colors_unique_techs)
-    # plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
+    annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
+    last_year_in_pipeline, last_year_decommissioned, \
+    last_year_operational_capacity,last_year_to_be_decommissioned_capacity, \
+    last_year_strategic_reserve_capacity,    number_per_status, number_per_status_last_year = \
+        prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
 
-    #
-    # power_plants_status(number_per_status , path_to_plots)
-    # power_plants_last_year_status(number_per_status_last_year , path_to_plots, last_year)
+    plot_investments(annual_in_pipeline_capacity, annual_commissioned ,years_to_generate, path_to_plots, colors_unique_techs)
 
-    # yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
-    # yearly_costs = prepare_screening_curves(reps, first_year)
-    # plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, first_year + reps.lookAhead, colors_unique_candidates)
-    # plot_screening_curve(yearly_costs,  path_to_plots, first_year, colors_unique_techs)
-    # plot_future_fuel_prices(future_fuel_prices,  path_to_plots)
 
-    # already in other plot
-    #plot_candidate_pp_project_value(candidate_plants_project_value, years_to_generate, path_to_plots)
+
+    plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
+    #last_year_strategic_reserve_capacity
+    plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots, colors_unique_techs)
+    plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
+
+
+    power_plants_status(number_per_status , path_to_plots)
+    power_plants_last_year_status(number_per_status_last_year , path_to_plots, last_year)
+
+    yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
+    yearly_costs = prepare_screening_curves(reps, first_year)
+    plot_screening_curve_candidates(yearly_costs_candidates,  path_to_plots, first_year + reps.lookAhead, colors_unique_candidates)
+    plot_screening_curve(yearly_costs,  path_to_plots, first_year, colors_unique_techs)
+    plot_future_fuel_prices(future_fuel_prices,  path_to_plots)
+
     print('Showing plots...')
     plt.show()
     plt.close('all')

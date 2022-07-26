@@ -14,8 +14,10 @@ class FinancialPowerPlantReport(ImportObject):
         self.production = 0
         self.powerPlantStatus = 0
         self.totalProfits = 0
-        self.profits_per_iteration_pp  = dict()
+        self.profits_per_iteration_names  = dict()
         self.profits_per_iteration = dict()
+        self.profits_per_iteration_names_candidates  = dict()
+        self.profits_per_iteration_candidates = dict()
         self.time = 0
         self.iteration = 0
         self.schedule = None
@@ -42,9 +44,15 @@ class FinancialPowerPlantReport(ImportObject):
         # -----------------------------Profits and PowerPlants are read from the Profits classname
         if parameter_name == 'PowerPlants':
             # object name is year and alternative is the iteration.
-            self.profits_per_iteration_pp[iteration] = parameter_value
+            self.profits_per_iteration_names[iteration] = parameter_value
         elif parameter_name == 'Profits':
             self.profits_per_iteration[iteration] = parameter_value
+        # -----------------------------CM revenues from financial Reports
+        elif parameter_name == 'PowerPlantsC':
+            # object name is year and alternative is the iteration.
+            self.profits_per_iteration_names_candidates[iteration] = parameter_value
+        elif parameter_name == 'ProfitsC':
+            self.profits_per_iteration_candidates[iteration] = parameter_value
         # -----------------------------CM revenues from financial Reports
         elif parameter_name == 'capacityMechanismRevenues':
             array = parameter_value.to_dict()

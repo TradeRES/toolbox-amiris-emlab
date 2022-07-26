@@ -20,7 +20,7 @@ class ShortInvestmentdecision(Investmentdecision):
         reps.dbrw.stage_candidate_pp_investment_status_structure()
 
     def act(self):
-        print(F"{self.agent} invests in technology at tick {self.reps.current_tick}")
+        print(F"{self.agent.name} invests in technology at tick {self.reps.current_tick}")
         # TODO if there would be more agents, the future capacity should be analyzed per agent
         # checks if the technology technical limits are passed
         # if not it removes the technology from the list quick Investabletechnologies

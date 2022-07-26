@@ -293,8 +293,8 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.candidate_plants_NPV_classname,
                                      [year_iteration])
         # ------------------------------------------------ this is only to debug
-        self.stage_init_alternative("costs")
-        self.stage_init_alternative("revenues")
+        # self.stage_init_alternative("costs")
+        # self.stage_init_alternative("revenues")
 
 
     def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear ):
@@ -327,6 +327,7 @@ class SpineDBReaderWriter:
         # object name =  simulation tick  - iteration
         objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
         self.stage_object(self.powerplantprofits_classname, objectname)
+        print(pp_numbers)
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("Profits", pp_profits) ], "0")
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
@@ -588,7 +589,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line[1] = year # object name
         new_db_line[4] = iteration  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
-
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'FinancialReports' and reps.runningModule == "run_financial_results":
