@@ -73,6 +73,7 @@ class Investmentdecision(DefaultModule):
             pp_profits.append(pp.operationalProfit)
         self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+        print("------------------------------------------------------------",self.reps.investmentIteration + 1)
         # save the iteration
         if self.agent.readytoInvest == True:  # todo this is also for now not active. Activate once the cash flow is not enough
             #  for now there is only one energyproducer
@@ -97,8 +98,7 @@ class Investmentdecision(DefaultModule):
 
                     cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
                     projectvalue = self.npv(cashflow)
-                    if candidatepowerplant.technology.name == "PV_utility_systems":
-                        print("profit", candidatepowerplant.operationalProfit)
+                    if candidatepowerplant.technology.name == "CCGT":
                         print(cashflow)
                         print(projectvalue/1000000)
                     # saving the list of power plants values that have been candidates per investmentIteration.
@@ -191,6 +191,8 @@ class Investmentdecision(DefaultModule):
             investmentCashFlow[i] = - equalTotalDownPaymentInstallment
         for i in range(buildingTime, depreciationTime + buildingTime):
             investmentCashFlow[i] = operatingProfit - restPayment - fixed_costs
+        if candidatepowerplant.technology.name == "CCGT":
+            print("yearly", operatingProfit - restPayment - fixed_costs)
         return investmentCashFlow
 
     def npv(self, investmentCashFlow):

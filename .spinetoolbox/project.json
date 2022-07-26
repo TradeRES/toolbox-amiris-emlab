@@ -992,8 +992,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 146.3043972664697,
-            "y": 118.19888132908847,
+            "x": 288.7699337467038,
+            "y": 58.8382411289909,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1001,7 +1001,7 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -474.58457135777974,
+            "x": -477.5526033677846,
             "y": 64.8283365980148,
             "url": {
                 "dialect": "sqlite",
@@ -1151,8 +1151,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -215.18371348884241,
-            "y": 119.44630255333487,
+            "x": -215.1837134888424,
+            "y": 116.47827054332998,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [

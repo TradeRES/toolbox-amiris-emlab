@@ -74,7 +74,6 @@ def plot_investments(annual_installed_capacity, annual_commissioned, years_to_ge
         label.set(rotation=50, horizontalalignment='right')
     axs6[0].set_ylabel('Capacity MW', fontsize='small')
     axs6[1].set_ylabel('Capacity MW', fontsize='small')
-
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     axs6[0].set_title('Investments by decision year (up) and by commissioning year (year)')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
@@ -126,10 +125,10 @@ def plot_annual_operational_capacity(annual_operational_capacity, path_to_plots,
     fig10 = axs10.get_figure()
     fig10.savefig(path_to_plots + '/' + 'Operational Capacity per Technology.png', bbox_inches='tight', dpi=300)
 
-def plot_revenues_per_iteration(revenues_iteration, tech_names, path_to_plots, first_year):
-    print('Revenues per iteration')
+def plot_revenues_per_iteration(revenues_iteration, tech_name, path_to_plots, first_year):
+    print('Revenues per iteration for year ')
     plt.figure()
-    axs11 = revenues_iteration.plot()
+    axs11 = revenues_iteration[tech_name].plot()
     axs11.set_axisbelow(True)
     plt.xlabel('Iterations', fontsize='medium')
     plt.ylabel('Revenues', fontsize='medium')
@@ -146,7 +145,7 @@ def plot_average_revenues_per_iteration(revenues_iteration, path_to_plots, first
     plt.xlabel('Iterations', fontsize='medium')
     plt.ylabel('Revenues', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs15.set_title('Average revenues per technologies for year '+str(first_year))
+    axs15.set_title('Average revenues per technologies for year '+ str(first_year))
     fig15 = axs15.get_figure()
     fig15.savefig(path_to_plots + '/' + 'AverageTechnology Revenues per iteration ' +str(first_year) +'.png', bbox_inches='tight', dpi=300)
 
@@ -297,15 +296,14 @@ def prepare_profits_candidates_per_iteration(reps, tick):
     profits_per_iteration.columns = profits_per_iteration.iloc[-1]
     profits_per_iteration.drop("tech", inplace=True)
     profits_per_iteration.index.map(int)
-    #df.drop(df.tail(n).index,inplace=True)
     profits_per_iteration.sort_index( ascending=True, inplace=True)
     return profits_per_iteration
 
 def prepare_revenues_per_iteration(reps, tick):
     profits = reps.get_profits_per_tick(tick)
-    power_plants_revenues_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_names[str(0)], columns= ["zero"]).fillna(0)
-    # take only 10 iterations, otherwise there are memory problems
-    for iteration , profit_per_iteration in list(profits.profits_per_iteration.items())[2:11]:
+    power_plants_revenues_per_iteration = pd.DataFrame(index = profits.profits_per_iteration_names[str(tick)], columns= ["zero"]).fillna(0)
+    # take only 10 iterations, otherwise there are memory problems add [2:11]
+    for iteration , profit_per_iteration in list(profits.profits_per_iteration.items()):
         temporal = pd.DataFrame(profit_per_iteration, index = profits.profits_per_iteration_names[iteration], columns= [int(iteration)])
         power_plants_revenues_per_iteration = power_plants_revenues_per_iteration.join(temporal)
     power_plants_revenues_per_iteration.drop("zero", axis=1, inplace=True)
@@ -315,9 +313,10 @@ def prepare_revenues_per_iteration(reps, tick):
         tech.append(reps.power_plants[pp].technology.name)
     power_plants_revenues_per_iteration["tech"] = tech
     grouped_revenues = power_plants_revenues_per_iteration.groupby('tech').mean()
-    sorted_revenues_per_iteration_first_year = grouped_revenues.T.sort_index()
-    revenues_per_iteration = power_plants_revenues_per_iteration.set_index('tech', append=True).sort_index(level=0)
-    return sorted_revenues_per_iteration_first_year, revenues_per_iteration
+    sorted_average_revenues_per_iteration_first_year = grouped_revenues.T.sort_index()
+
+    revenues_per_iteration = power_plants_revenues_per_iteration.set_index('tech').sort_index(level=0)
+    return sorted_average_revenues_per_iteration_first_year, revenues_per_iteration.T
 
 def prepare_future_fuel_prices(reps, years_to_generate):
     substances_calculated_prices = pd.DataFrame(index = years_to_generate, columns= ["zero"]).fillna(0)
@@ -430,6 +429,7 @@ def generate_plots():
     future_year = first_year + reps.lookAhead
     last_year = years_to_generate[-1]
     test_tick = 0
+    test_tech = "CCGT"
     #section -----------------------------------------------------------------------------------------------revenues per iteration
 
     candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
@@ -443,9 +443,10 @@ def generate_plots():
     # todo 1
     #plot_yearly_operation_profits(first_year)
 
-    sorted_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps, test_tick)
-    plot_revenues_per_iteration(revenues_per_iteration, sorted_revenues_per_iteration_first_year.columns, path_to_plots, test_tick)
-    plot_average_revenues_per_iteration(sorted_revenues_per_iteration_first_year, path_to_plots, first_year, colors_unique_techs)
+    sorted_average_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps, test_tick)
+    # ('1', 'CCGT')
+    plot_revenues_per_iteration(revenues_per_iteration,test_tech , path_to_plots, test_tick)
+    plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year, colors_unique_techs)
 
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
