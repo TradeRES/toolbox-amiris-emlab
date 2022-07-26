@@ -85,7 +85,7 @@ for arg in sys.argv[3:]:
     if arg == 'run_create_results':
         run_create_results = True
 # following modules need the results from AMIRIS that are being stored in a DB
-if run_short_investment_module or run_capacity_market or run_strategic_reserve or run_financial_results or run_strategic_reserve_swe or run_strategic_reserve_ger or run_forward_market:
+if sys.argv[3] in globalNames.modules_need_AMIRIS:
     emlab_url = sys.argv[1]
     logging.info('emlab database: %s' , str(emlab_url))
     amiris_url = sys.argv[2]
@@ -255,5 +255,6 @@ finally:
     logging.info('Closing database connections...')
     print("finished emlab")
     spinedb_reader_writer.db.close_connection()
-    if run_short_investment_module or run_capacity_market or run_strategic_reserve or run_financial_results or run_strategic_reserve_swe or run_strategic_reserve_ger or run_forward_market:
+    if sys.argv[3] in globalNames.modules_need_AMIRIS:
+   # if run_short_investment_module or run_capacity_market or run_strategic_reserve or run_financial_results or run_strategic_reserve_swe or run_strategic_reserve_ger or run_forward_market:
         spinedb_reader_writer.amirisdb.close_connection()

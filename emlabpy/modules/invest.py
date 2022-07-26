@@ -44,6 +44,8 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.setTimeHorizon()
+        self.wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate \
+                                   + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
         reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
@@ -58,17 +60,23 @@ class Investmentdecision(DefaultModule):
         # self.pgtNodeLimit = Double.MAX_VALUE
 
     def act(self):
-
+        # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
+        # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
         self.read_csv_results_and_filter_candidate_plants()
-        # saving: operationalprofits from power plants
-        # todo: comment this function
+
         pp_numbers = []
         pp_profits = []
+        # saving: operationalprofits from power plants in classname Profits
         for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
             pp_numbers.append(pp.name)
             pp_profits.append(pp.operationalProfit)
         self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+
+        for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+            pp_numbers.append(pp.name)
+            pp_profits.append(pp.operationalProfit)
+        self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
         # save the iteration
         if self.agent.readytoInvest == True:  # todo this is also for now not active. Activate once the cash flow is not enough
             #  for now there is only one energyproducer
@@ -76,8 +84,14 @@ class Investmentdecision(DefaultModule):
             highestValue = 0
             investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if investable_candidate_plants:  # check if the are investable power plants
+
+                cp_numbers =[]
+                cp_profits = []
                 for candidatepowerplant in investable_candidate_plants:
-                    # calculate which is the power plant (technology) with the highest NPV
+                    cp_numbers.append(pp.name)
+                    cp_profits.append(pp.operationalProfit)
+
+        # calculate which is the power plant (technology) with the highest NPV
                     candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
                                                                    self.reps.country)
                     investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
@@ -89,11 +103,12 @@ class Investmentdecision(DefaultModule):
                         break
 
                     cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
-                    projectvalue = self.npv(self.agent, cashflow)
+                    projectvalue = self.npv(cashflow)
                     # saving the list of power plants values that have been candidates per investmentIteration.
                     self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
                                                                       self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear)
+                                                                      self.futureInvestmentyear,
+                                                                      )
 
                     if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                         highestValue = projectvalue / candidatepowerplant.capacity
@@ -103,6 +118,9 @@ class Investmentdecision(DefaultModule):
                         logging.info("dont invest in this technology%s",candidatepowerplant.technology)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+
+                # saving: operational profits from candidate plants
+                self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
 
                 if bestCandidatePowerPlant is not None:
                     # investing in best candidate power plant as it passed the checks.
@@ -178,11 +196,11 @@ class Investmentdecision(DefaultModule):
             investmentCashFlow[i] = operatingProfit - restPayment
         return investmentCashFlow
 
-    def npv(self, agent, investmentCashFlow):
-        wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate \
-               + agent.debtRatioOfInvestments * agent.loanInterestRate
+    def npv(self, investmentCashFlow):
+
         # print("WACC  ", wacc, " ", [round(x) for x in investmentCashFlow])
-        discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
+
+        discountedprojectvalue = npf.npv(self.wacc, investmentCashFlow)
         return discountedprojectvalue
 
     def getActualInvestedCapitalperMW(self, technology):
@@ -205,11 +223,11 @@ class Investmentdecision(DefaultModule):
         # the rest of downpayments are scheduled
         plant.createOrUpdateDownPayment(downpayment)
 
-    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
-        annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
-        annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
+    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate): # TODO check which one is correct
+        # annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
+        # annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
         annuity = totalLoan * ((1 + interestRate) ** payBackTime * (interestRate)) / (
-                (1 + interestRate) ** payBackTime - 1)  # TODO check which one is correct
+                (1 + interestRate) ** payBackTime - 1)
         return annuity
 
     def setPowerPlantExpectations(self, powerplant, time):

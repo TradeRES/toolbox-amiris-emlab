@@ -948,8 +948,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -162.71102968343857,
-            "y": -156.52673870588677,
+            "x": -116.31711088875238,
+            "y": -144.3178127072851,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -993,7 +993,7 @@
             "type": "Tool",
             "description": "",
             "x": 146.3043972664697,
-            "y": 90.41845256540982,
+            "y": 118.19888132908847,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1204,8 +1204,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -366.26777995804883,
-            "y": -158.71603798182122,
+            "x": -346.7334983602864,
+            "y": -126.97283038545697,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [

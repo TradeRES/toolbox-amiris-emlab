@@ -18,6 +18,7 @@ class CapacityMarketSubmitBids(MarketModule):
     """
     The class that submits all bids to the Capacity Market
     """
+
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
@@ -35,18 +36,15 @@ class CapacityMarketSubmitBids(MarketModule):
                 capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
                 powerplant_load_factor = 1  # TODO: Power Plant Load Factor
                 dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
-
+                price_to_bid = 0
                 if dispatch is None:
-                    print("no dispatch found for "+powerplant.name)
+                    print("no dispatch found for " + powerplant.name)
                 else:
                     net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
-                price_to_bid = 0
-                if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                    price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() *
-                                                        powerplant.technology.peak_segment_dependent_availability)
-
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market,
-                                                                           capacity * powerplant.technology.peak_segment_dependent_availability,
+                    if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
+                        price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market, \
+                                                                           capacity * powerplant.technology.peak_segment_dependent_availability,\
                                                                            price_to_bid, self.reps.current_tick)
 
 
@@ -79,14 +77,14 @@ class CapacityMarketClearing(MarketModule):
         for ppdp in sorted_ppdp:
             if self.isTheMarketCleared == False:
                 if ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
-                    #print(ppdp.name , " ACCEPTED ", ppdp.price, "", sdc.get_price_at_volume(total_supply + ppdp.amount))
+                    # print(ppdp.name , " ACCEPTED ", ppdp.price, "", sdc.get_price_at_volume(total_supply + ppdp.amount))
                     total_supply += ppdp.amount
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
 
                 elif ppdp.price < sdc.get_price_at_volume(total_supply):
-                    #print(ppdp.name , " partly ACCEPTED ")
+                    # print(ppdp.name , " partly ACCEPTED ")
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                     ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
@@ -133,6 +131,4 @@ class CapacityMarketClearing(MarketModule):
         accepted_ppdp = self.reps.get_accepted_CM_bids()
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
-            self.reps.dbrw.stage_CM_revenues( accepted.plant , amount, self.reps.current_tick)
-
-
+            self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)

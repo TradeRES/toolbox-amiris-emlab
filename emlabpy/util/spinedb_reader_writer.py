@@ -284,18 +284,29 @@ class SpineDBReaderWriter:
                                             ('strategic_reserve_volume', SRO.reserveVolume),
                                             ('cash', SRO.cash),
                                             ('list_of_plants', SRO.list_of_plants)], "0")
+
+
+
     def stage_init_candidate_plants_value(self, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
-        #self.stage_init_alternative(alternative)
         self.stage_object_parameters(self.candidate_plants_NPV_classname,
                                      [year_iteration])
+        # ------------------------------------------------ this is only to debug
+        self.stage_init_alternative("costs")
+        self.stage_init_alternative("revenues")
+
 
     def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear ):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object(self.candidate_plants_NPV_classname, powerplant)
         self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
                                            [(year_iteration, powerPlantvalue)], "0")
+        # ------------------------------------------------ this is only to debug
+        # self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
+        #                                    [(year_iteration, costs)], "costs")
+        # self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
+        #                                    [(year_iteration, revenues)], "revenues")
 
     def stage_init_investment_decisions(self, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
@@ -310,7 +321,7 @@ class SpineDBReaderWriter:
 
     def stage_init_power_plant_profits(self ):
         self.stage_object_class(self.powerplantprofits_classname)
-        self.stage_object_parameters(self.powerplantprofits_classname, ["Profits", "PowerPlants"])
+        self.stage_object_parameters(self.powerplantprofits_classname, ["Profits", "PowerPlants","ProfitsC", "PowerPlantsC"])
 
     def stage_power_plant_results(self, reps, pp_numbers,  pp_profits):
         # object name =  simulation tick  - iteration
@@ -320,6 +331,14 @@ class SpineDBReaderWriter:
                                            [("Profits", pp_profits) ], "0")
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("PowerPlants", pp_numbers) ], "0")
+
+    def stage_candidate_plant_results(self, reps, pp_numbers,  pp_profits):
+        objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
+        self.stage_object(self.powerplantprofits_classname, objectname)
+        self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
+                                           [("ProfitsC", pp_profits) ], "0")
+        self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
+                                           [("PowerPlantsC", pp_numbers) ], "0")
 
     def get_last_iteration(self):
         return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(

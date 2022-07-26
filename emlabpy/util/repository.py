@@ -151,6 +151,15 @@ class Repository:
         # cashFlows.add(cashFlow)
         return cashFlow
 
+
+    def get_profits_per_tick(self, tick):
+        try:
+            return next(i for i in self.financialPowerPlantReports.values() if i.name == str(tick))
+
+        except StopIteration:
+            return None
+
+
     def getCashFlowsForPowerPlant(self, plant, tick):
 
         pass

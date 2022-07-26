@@ -32,19 +32,19 @@ class FinancialPowerPlantReport(ImportObject):
         self.fixedCosts = 0
         self.fixedOMCosts = 0
 
-    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+    def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         """"
         This function is being read for the plotting. The totalProfits are being saved in the module Investmentdecision
         # object name =  year
         # alternative = iteration
         The data is stored in db investment with the object name "tick  - iteration"
         """
-        # -----------------------------Profits and PowerPlants are read from the Profits
+        # -----------------------------Profits and PowerPlants are read from the Profits classname
         if parameter_name == 'PowerPlants':
             # object name is year and alternative is the iteration.
-            self.profits_per_iteration_pp[alternative] = parameter_value
+            self.profits_per_iteration_pp[iteration] = parameter_value
         elif parameter_name == 'Profits':
-            self.profits_per_iteration[alternative] = parameter_value
+            self.profits_per_iteration[iteration] = parameter_value
         # -----------------------------CM revenues from financial Reports
         elif parameter_name == 'capacityMechanismRevenues':
             array = parameter_value.to_dict()
