@@ -65,12 +65,12 @@ class Dismantle(DefaultModule):
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
+
                 pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
                 averagePastOperatingProfit = pastOperatingProfit / horizon
             else:  # Attention for now, for the first years the availble past data is taken
+                print("no past profits for plant", plant.name)
                 pass
-                # averagePastOperatingProfit = sum(
-                #     int(x[1]) for x in rep['data'] if int(x[0]) < self.reps.current_tick) / horizon
         return averagePastOperatingProfit
 
     def set_powerplants_status(self):

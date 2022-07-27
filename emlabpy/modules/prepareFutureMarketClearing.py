@@ -1,6 +1,7 @@
 
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
+from modules.dismantle import Dismantle
 from domain.StrategicReserveOperator import StrategicReserveOperator
 
 
@@ -32,7 +33,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
 
     def act(self):
-
         self.setTimeHorizon()
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
@@ -58,6 +58,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         #powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
         powerPlantsinSR = []
         SR_price = 0
+        requiredProfit = self.reps.energy_producers[self.reps.agent].getDismantlingRequiredOperatingProfit()
+        horizon = self.reps.pastTimeHorizon
         for i in self.reps.sr_operator.values():
             if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
                 powerPlantsinSR = i.list_of_plants
@@ -65,8 +67,18 @@ class PrepareFutureMarketClearing(PrepareMarket):
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.lookAhead
             if fictional_age > powerplant.technology.expected_lifetime:
-                powerplant.fictional_status = globalNames.power_plant_status_to_be_decommissioned
-
+                if self.reps.current_tick >= 0:
+                    profit = Dismantle.calculateAveragePastOperatingProfit(powerplant, horizon)
+                    if profit <= requiredProfit:
+                        # dont add this plant to future scenario
+                        powerplant.status = globalNames.power_plant_status_decommissioned
+                    else:
+                        powerplant.fictional_status = globalNames.power_plant_status_operational
+                        self.power_plants_list.append(powerplant)
+                        print(profit)
+                else:
+                    powerplant.fictional_status = globalNames.power_plant_status_operational
+                    self.power_plants_list.append(powerplant)
                 # todo better to make decisions according to expected profit and expected participation in capacity market
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
