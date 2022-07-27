@@ -276,8 +276,10 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     for name, investment in reps.investments.items():
         if len(investment.project_value_year) > 0:
             if str(future_year) in investment.project_value_year.keys():
-                candidate_plants_project_value[reps.candidatePowerPlants[name].technology.name] = pd.Series(
-                    investment.project_value_year[str(future_year)])
+                candidate_plants_project_value[reps.candidatePowerPlants[name].technology.name] = \
+                    pd.Series(dict(investment.project_value_year[str(future_year)]))
+                    #pd.Series(investment.project_value_year[str(future_year)])
+
 
     # preparing investments per iteration
     df_zeros = np.zeros(shape=(max_iteration, len(unique_candidate_power_plants)))
@@ -456,15 +458,10 @@ def generate_plots():
     test_tech = "CCGT"
 
     #section -----------------------------------------------------------------------------------------------Capacity Markets
-
-
-
-
     CM_revenues = prepare_accepted_CapacityMechanism(reps)
     plot_CM_revenues(CM_revenues, path_to_plots)
 
     #section -----------------------------------------------------------------------------------------------revenues per iteration
-
     candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
          reps, test_tick)
     installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
@@ -472,6 +469,7 @@ def generate_plots():
     plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots )
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                              first_year, path_to_plots, colors_unique_candidates)
+    plt.show()
 
     # todo 1
     #plot_yearly_operation_profits(first_year)
@@ -493,15 +491,10 @@ def generate_plots():
         prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
 
     plot_investments(annual_in_pipeline_capacity, annual_commissioned ,years_to_generate, path_to_plots, colors_unique_techs)
-
-
-
     plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
     #last_year_strategic_reserve_capacity
     plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots, colors_unique_techs)
     plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
-
-
     power_plants_status(number_per_status , path_to_plots)
     power_plants_last_year_status(number_per_status_last_year , path_to_plots, last_year)
 
