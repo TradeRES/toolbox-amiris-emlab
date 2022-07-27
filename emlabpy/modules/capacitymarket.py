@@ -96,11 +96,11 @@ class CapacityMarketClearing(MarketModule):
 
         # saving capacity market accepted amount and status
         self.reps.dbrw.set_power_plant_CapacityMarket_production(sorted_ppdp, self.reps.current_tick)
+        self.stageCapacityMechanismRevenues(clearing_price)
         # save clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
-            self.stageCapacityMechanismRevenues(clearing_price)
         else:
             print("Market is not cleared", market.name)
             # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))

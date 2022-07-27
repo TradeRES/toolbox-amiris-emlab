@@ -572,7 +572,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-    elif object_class_name == 'Bids' and reps.runningModule == "run_capacity_market": # only read this when capacity mechanism
+    elif object_class_name == 'Bids' and reps.runningModule in globalNames.modules_need_bids: # only read this when capacity mechanism
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
