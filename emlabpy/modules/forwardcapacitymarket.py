@@ -131,15 +131,15 @@ class ForwardCapacityMarketClearing(MarketModule):
                 ppdp.accepted_amount = 0
 
         self.reps.dbrw.set_power_plant_CapacityMarket_production(sorted_ppdp, self.reps.current_tick)
+        self.stageCapacityMechanismRevenues(clearing_price)
+        self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
+                                                            0, 0, 0, 0,
+                                                            self.operator.getPlants())
         # save clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
             # self.createCashFlowforCM(market, clearing_price)
-            self.stageCapacityMechanismRevenues(clearing_price)
-            self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
-                                                                0, 0, 0, 0,
-                                                                self.operator.getPlants())
         else:
             print("Market is not cleared")
 
