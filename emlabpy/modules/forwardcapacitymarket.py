@@ -71,19 +71,8 @@ class ForwardCapacityMarketClearing(MarketModule):
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         # Calculate the peak load for 4 years in the future
         future_year = self.reps.current_year + 4
-        peak_load = max(
-            self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[
-                1])  # todo later it should be also per year
-        try:
-            expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.simulated_prices,
-                                                                                           future_year)
-        except:
-            expectedDemandFactor = self.get_extrapolated_demand_factor(self.reps.current_year, future_year)
-
-        peakExpectedDemand = peak_load * (expectedDemandFactor)
-
-        sdc = market.get_sloping_demand_curve(peakExpectedDemand)
+        peak_load = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[1])  # todo later it should be also per year
+        sdc = market.get_sloping_demand_curve(peak_load)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
         self.operator.setZone(market.country)

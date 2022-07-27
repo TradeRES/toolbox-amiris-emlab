@@ -14,7 +14,7 @@ class Substance(ImportObject):
         self.co2_price = 1
         self.trend = None
         self.initialprice2020 = 0
-        self.initialprice2040 = 0
+        self.initialprice2050 = 0
         self.futurePrice = []
         self.futurePrice_inYear = 0
         self.simulatedPrice = []
@@ -34,8 +34,8 @@ class Substance(ImportObject):
             self.quality = float(parameter_value)
         elif parameter_name == 'price2020': # TODO take out the hardcoded price
             self.initialprice2020 = float(parameter_value)
-        elif parameter_name == 'price2040':
-            self.initialprice2040 = float(parameter_value)
+        elif parameter_name == 'price2050':
+            self.initialprice2050 = float(parameter_value)
         # elif parameter_name == 'co2_price':
         #     self.co2_price = float(parameter_value)
         elif parameter_name == 'annual_resource_limit' and alternative == "biopotential_2020":# TODO take out the hardcoded scenario
@@ -52,8 +52,8 @@ class Substance(ImportObject):
             if substance.name == "electricity":
                 self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year. TODO
             else:
-                xp = [2020, 2040] # TODO avoid this to be hardcoded
-                fp = [substance.initialprice2020, substance.initialprice2040]
+                xp = [2020, 2050] # TODO avoid this to be hardcoded
+                fp = [substance.initialprice2020, substance.initialprice2050]
                 self.newSimulatedPrice = np.interp(year, xp, fp)
             return self.newSimulatedPrice
         else:
@@ -67,8 +67,8 @@ class Substance(ImportObject):
 
     def get_price_for_future_tick(self, reps, futureYear, substance):
         if substance.name == "CO2":
-            xp = [2020, 2040] # todo: dont hard coded
-            fp = [substance.initialprice2020, substance.initialprice2040]
+            xp = [2020, 2050] # todo: dont hard coded
+            fp = [substance.initialprice2020, substance.initialprice2050]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice
         elif reps.current_tick >= reps.start_year_fuel_trends:
@@ -76,8 +76,8 @@ class Substance(ImportObject):
             self.newFuturePrice = self.geometricRegression.predict(futureYear)
             return self.newFuturePrice
         else:
-            xp = [2020, 2040] # todo: hard coded
-            fp = [substance.initialprice2020, substance.initialprice2040]
+            xp = [2020, 2050] # todo: hard coded
+            fp = [substance.initialprice2020, substance.initialprice2050]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice
 

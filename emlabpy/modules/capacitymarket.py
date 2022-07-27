@@ -33,18 +33,17 @@ class CapacityMarketSubmitBids(MarketModule):
                 # Retrieve vars
                 market = self.reps.get_capacity_market_for_plant(powerplant)
                 fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
-                capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
-                powerplant_load_factor = 1  # TODO: Power Plant Load Factor
+                nominal_capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
                 dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
                 price_to_bid = 0
                 if dispatch is None:
                     print("no dispatch found for " + powerplant.name)
                 else:
                     net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
-                    if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                        price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
+                    if nominal_capacity > 0 and net_revenues <= 0:
+                        price_to_bid = -1 * net_revenues / (nominal_capacity * powerplant.technology.peak_segment_dependent_availability)
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market, \
-                                                                           capacity * powerplant.technology.peak_segment_dependent_availability,\
+                                                                           nominal_capacity * powerplant.technology.peak_segment_dependent_availability,\
                                                                            price_to_bid, self.reps.current_tick)
 
 
@@ -61,14 +60,8 @@ class CapacityMarketClearing(MarketModule):
     def act(self):
         print("capacity market clearing")
         market = self.reps.get_capacity_market_in_country(self.reps.country)
-        peak_load = max(
-            self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[
-                1])  # todo later it should be also per year
-        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.simulated_prices,
-                                                                                           self.reps.current_year)
-        peakExpectedDemand = peak_load * (expectedDemandFactor)
-        sdc = market.get_sloping_demand_curve(peakExpectedDemand)
+        peak_load = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[1])  # todo later it should be also per year
+        sdc = market.get_sloping_demand_curve(peak_load)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
         clearing_price = 0
