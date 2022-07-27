@@ -3,7 +3,7 @@ from modules.defaultmodule import DefaultModule
 from util.repository import Repository
 import logging
 import csv
-
+import pandas as pd
 
 class Dismantle(DefaultModule):
     """
@@ -29,7 +29,7 @@ class Dismantle(DefaultModule):
                 horizon = self.reps.pastTimeHorizon
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
                 if self.reps.current_tick >= self.reps.start_year_dismantling:
-                    profit = self.calculateAveragePastIRR(plant, horizon)
+                    profit = self.calculateAveragePastOperatingProfit(plant, horizon) #attention change this to IRR
                     if profit <= requiredProfit:
                         logging.info("Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
                                 .format(horizon, plant.name, profit, requiredProfit))
@@ -41,7 +41,7 @@ class Dismantle(DefaultModule):
                         logging.info("dont dismantle but increase OPEX of %s ".format(plant.name))
                         ModifiedOM = plant.getActualFixedOperatingCost() * (
                                 1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
-                                             float(plant.getActualLifetime()) - (
+                                             float(plant.age) - (
                                          (float(plant.getTechnology().getExpectedLifetime()))))
                         plant.setActualFixedOperatingCost(ModifiedOM)
                 else:
@@ -59,32 +59,22 @@ class Dismantle(DefaultModule):
         for powerplantname, powerplant in self.reps.power_plants.items():
             powerplant.age += 1
 
-    # def calculateAveragePastOperatingProfit(self, plant, horizon):
-    #     averagePastOperatingProfit = 0
-    #     rep = self.reps.dbrw.findFinancialValueForPlant(plant, "totalProfits")
-    #     if rep is not None:
-    #         # if there is data than the one needed for the horizon then an average of those years are taken
-    #         if self.reps.current_tick >= horizon:
-    #             pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
-    #             averagePastOperatingProfit = pastOperatingProfit / horizon
-    #         else:  # Attention for now, for the first years the availble past data is taken
-    #             print("no past profits for plant", plant.name)
-    #             pass
-    #     return averagePastOperatingProfit
+    def calculateAveragePastOperatingProfit(self, plant, horizon):
+        # "totalProfits" or "irr"
+        averagePastOperatingProfit = 0
 
-    def calculateAveragePastIRR(self, plant, horizon):
-        averagePastIRR = 0
-        rep = self.reps.dbrw.findFinancialValueForPlant(plant, "irr")
+        rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
-                pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
-                averagePastIRR = pastOperatingProfit / horizon
+                past_operating_profit_all_years = pd.Series(dict(rep["data"]))
+                indices = list(range(self.reps.current_tick-horizon, self.reps.current_tick))
+                past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
+                averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
             else:  # Attention for now, for the first years the availble past data is taken
                 print("no past profits for plant", plant.name)
                 pass
-        return averagePastIRR
-
+        return averagePastOperatingProfit
 
     def set_powerplants_status(self):
         for powerplantname, powerplant in self.reps.power_plants.items():

@@ -68,7 +68,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.lookAhead
             if fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick >= 0:
-                    profit = self.calculateAveragePastIRR(powerplant, horizon)
+                    profit = self.calculateAveragePastOperatingProfit(powerplant, horizon) #attention change this to IRR
+                    #profit = self.calculateAveragePastIRR(powerplant, horizon)
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.status = globalNames.power_plant_status_decommissioned
@@ -122,15 +123,19 @@ class PrepareFutureMarketClearing(PrepareMarket):
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)  # todo: save this as a map in DB
 
-    def calculateAveragePastIRR(self, plant, horizon):
-        averagePastIRR = 0
-        rep = self.reps.dbrw.findFinancialValueForPlant(plant, "irr")
+
+    def calculateAveragePastOperatingProfit(self, plant, horizon ):
+        # "totalProfits" or "irr"
+        averagePastOperatingProfit = 0
+        rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
-                pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
-                averagePastIRR = pastOperatingProfit / horizon
+                past_operating_profit_all_years = pd.Series(dict(rep["data"]))
+                indices = list(range(self.reps.current_tick-horizon, self.reps.current_tick))
+                past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
+                averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
             else:  # Attention for now, for the first years the availble past data is taken
                 print("no past profits for plant", plant.name)
                 pass
-        return averagePastIRR
+        return averagePastOperatingProfit

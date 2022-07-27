@@ -43,7 +43,7 @@ class SpineDBReaderWriter:
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
         self.amirisdb = None
-        self.read_investments = False
+        self.read_investments = False # todo : delete, it wont be necessary becuase of running module vairable
 
         if open_db == "Amiris":
             print("opening amiris")
@@ -92,6 +92,8 @@ class SpineDBReaderWriter:
                 reps.start_year_dismantling = int(row['parameter_value'])
             elif row['parameter_name'] == 'maximum_investment_capacity_per_year':
                 reps.maximum_investment_capacity_per_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'typeofProfitforPastHorizon':
+                reps.typeofProfitforPastHorizon = str(row['parameter_value'])
             elif row['parameter_name'] == 'max_permit_build_time':
                 reps.max_permit_build_time =  int(row['parameter_value'])
 
@@ -381,6 +383,7 @@ class SpineDBReaderWriter:
                                                 ],
                                                '0')
 
+
     def findFinancialValueForPlant(self, powerplant, value):
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
             self.financial_reports_object_classname, powerplant.name, value, 0)
@@ -582,19 +585,19 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line = list(db_line)
         new_db_line[4] = reps.dbrw.investment_decisions_classname
         add_parameter_value_to_repository(reps, new_db_line, reps.investments, Investments)
-    elif object_class_name == "Profits" and reps.dbrw.read_investments == True:
+    elif object_class_name == "Profits" and reps.runningModule == "plotting" :
         object_name = db_line[1]
         year, iteration = object_name.split('-')
         new_db_line = list(db_line)
         new_db_line[1] = year # object name
         new_db_line[4] = iteration  # alternative
-        add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
+        add_parameter_value_to_repository(reps, new_db_line, reps.profits, Profits)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
-    elif object_class_name == 'Profits' and reps.runningModule == "plotting" :
-        add_parameter_value_to_repository(reps, db_line, reps.profits, Profits)
+    # elif object_class_name == 'Profits' and reps.runningModule == "plotting" :
+    #     add_parameter_value_to_repository(reps, db_line, reps.profits, Profits)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
 

@@ -438,8 +438,9 @@ def generate_plots():
     reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
     spinedb_reader_writer.commit('Initialize all module import structures')
     scenario_name = reps.country + str(reps.start_simulation_year) + str(reps.end_simulation_year) \
-                    + "_LookAhead" + str(reps.lookAhead) + "_StartDismant" + str(reps.start_year_dismantling) \
-                    + "_Past" + str(reps.pastTimeHorizon) + "_MaxInv" + str(reps.maximum_investment_capacity_per_year)
+                    + "_LookAhead" + str(reps.lookAhead) + "_DisStart" + str(reps.start_year_dismantling) \
+                    + "_Past" + str(reps.pastTimeHorizon) + "_MaxInv" + str(reps.maximum_investment_capacity_per_year) \
+                    + reps.simulation_name
 
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", scenario_name)
 
@@ -474,20 +475,20 @@ def generate_plots():
     test_tech = "CCGT"
 
     # section -----------------------------------------------------------------------------------------------Capacity Markets
-    CM_revenues = prepare_accepted_CapacityMechanism(reps)
-    plot_CM_revenues(CM_revenues, path_to_plots)
+    # CM_revenues = prepare_accepted_CapacityMechanism(reps)
+    # plot_CM_revenues(CM_revenues, path_to_plots)
 
-    # section -----------------------------------------------------------------------------------------------revenues per iteration
-    # candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
-    #     reps, test_tick)
-    # plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)
+    # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+    candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
+        reps, test_tick)
+    plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)
 
     installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
         future_year, reps, unique_candidate_power_plants)
 
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                            first_year, path_to_plots, colors_unique_candidates)
-
+    # section -----------------------------------------------------------------------------------------------revenues per iteration
     sorted_average_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps,
                                                                                                               test_tick)
     plot_revenues_per_iteration(revenues_per_iteration, test_tech, path_to_plots, test_tick)

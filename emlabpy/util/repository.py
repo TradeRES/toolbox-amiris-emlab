@@ -33,8 +33,9 @@ class Repository:
         """
         Initialize all Repository variables
         """
-        #self.node = ""
+
         # section --------------------------------------------------------------------------------------configuration
+        self.simulation_name = "futureMarketWithHistoricProfit"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -51,6 +52,7 @@ class Repository:
         self.start_year_dismantling = 0
         self.investmentIteration = 0
         self.maximum_investment_capacity_per_year = 0
+        self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
         self.runningModule = ""
         # --------------------------------------------------------------------------------------------------
