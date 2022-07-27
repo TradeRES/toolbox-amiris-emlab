@@ -98,7 +98,7 @@ class Repository:
         self.powerPlantsForAgent = {}
         self.loanList = []
         self.financialPowerPlantReports = dict()
-
+        self.profits = dict()
         # Create list of plants in SR
         self.plants_in_SR = []
         self.bids_sr = dict()
@@ -152,11 +152,16 @@ class Repository:
         return cashFlow
 
 
-    def get_financial_report_per_tick(self, tick):
+    def get_profits_per_tick(self, tick):
         try:
-            return next(i for i in self.financialPowerPlantReports.values() if i.name == str(tick))
+            return next(i for i in self.profits.values() if i.name == str(tick))
         except StopIteration:
             return None
+    # def get_financial_report_per_tick(self, tick):
+    #     try:
+    #         return next(i for i in self.financialPowerPlantReports.values() if i.name == str(tick))
+    #     except StopIteration:
+    #         return None
 
     def get_financial_report_for_plant(self, plant_name):
         try:

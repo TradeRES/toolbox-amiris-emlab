@@ -68,7 +68,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.lookAhead
             if fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick >= 0:
-                    profit = Dismantle.calculateAveragePastOperatingProfit(powerplant, horizon)
+                    profit = self.calculateAveragePastIRR(powerplant, horizon)
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.status = globalNames.power_plant_status_decommissioned
@@ -121,3 +121,16 @@ class PrepareFutureMarketClearing(PrepareMarket):
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)  # todo: save this as a map in DB
+
+    def calculateAveragePastIRR(self, plant, horizon):
+        averagePastIRR = 0
+        rep = self.reps.dbrw.findFinancialValueForPlant(plant, "irr")
+        if rep is not None:
+            # if there is data than the one needed for the horizon then an average of those years are taken
+            if self.reps.current_tick >= horizon:
+                pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
+                averagePastIRR = pastOperatingProfit / horizon
+            else:  # Attention for now, for the first years the availble past data is taken
+                print("no past profits for plant", plant.name)
+                pass
+        return averagePastIRR

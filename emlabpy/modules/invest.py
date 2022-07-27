@@ -201,6 +201,7 @@ class Investmentdecision(DefaultModule):
         return discountedprojectvalue
 
     def getActualInvestedCapitalperMW(self, technology):
+        print("here")
         investmentCostperTechnology = technology.investment_cost_eur_MW
         investmentCostperMW = self.getinvestmentcosts(investmentCostperTechnology,
                                                       (technology.expected_permittime + technology.expected_leadtime))

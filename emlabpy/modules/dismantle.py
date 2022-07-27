@@ -29,7 +29,7 @@ class Dismantle(DefaultModule):
                 horizon = self.reps.pastTimeHorizon
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
                 if self.reps.current_tick >= self.reps.start_year_dismantling:
-                    profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+                    profit = self.calculateAveragePastIRR(plant, horizon)
                     if profit <= requiredProfit:
                         logging.info("Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
                                 .format(horizon, plant.name, profit, requiredProfit))
@@ -59,19 +59,32 @@ class Dismantle(DefaultModule):
         for powerplantname, powerplant in self.reps.power_plants.items():
             powerplant.age += 1
 
-    def calculateAveragePastOperatingProfit(self, plant, horizon):
-        averagePastOperatingProfit = 0
-        rep = self.reps.dbrw.findFinancialPowerPlantProfitsForPlant(plant)
+    # def calculateAveragePastOperatingProfit(self, plant, horizon):
+    #     averagePastOperatingProfit = 0
+    #     rep = self.reps.dbrw.findFinancialValueForPlant(plant, "totalProfits")
+    #     if rep is not None:
+    #         # if there is data than the one needed for the horizon then an average of those years are taken
+    #         if self.reps.current_tick >= horizon:
+    #             pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
+    #             averagePastOperatingProfit = pastOperatingProfit / horizon
+    #         else:  # Attention for now, for the first years the availble past data is taken
+    #             print("no past profits for plant", plant.name)
+    #             pass
+    #     return averagePastOperatingProfit
+
+    def calculateAveragePastIRR(self, plant, horizon):
+        averagePastIRR = 0
+        rep = self.reps.dbrw.findFinancialValueForPlant(plant, "irr")
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
-
                 pastOperatingProfit = sum(int(x[1]) for x in rep['data'] if x[0] in range(-horizon, 1))
-                averagePastOperatingProfit = pastOperatingProfit / horizon
+                averagePastIRR = pastOperatingProfit / horizon
             else:  # Attention for now, for the first years the availble past data is taken
                 print("no past profits for plant", plant.name)
                 pass
-        return averagePastOperatingProfit
+        return averagePastIRR
+
 
     def set_powerplants_status(self):
         for powerplantname, powerplant in self.reps.power_plants.items():

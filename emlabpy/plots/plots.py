@@ -317,7 +317,7 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
 
 def prepare_profits_candidates_per_iteration(reps, tick):
     # todo financial report are per tick????????????????????????????????
-    profits = reps.get_financial_report_per_tick(tick)
+    profits = reps.get_profits_per_tick(tick)
     profits_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names_candidates[str(0)],
                                          columns=["zero"]).fillna(0)
     for iteration, profit_per_iteration in list(profits.profits_per_iteration_candidates.items()):
@@ -338,7 +338,7 @@ def prepare_profits_candidates_per_iteration(reps, tick):
 
 
 def prepare_revenues_per_iteration(reps, tick):
-    profits = reps.get_financial_report_per_tick(tick)
+    profits = reps.get_profits_per_tick(tick)
     # index of installed power plants
     power_plants_revenues_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names[str(tick)],
                                                        columns=["zero"]).fillna(0)
@@ -462,29 +462,15 @@ def generate_plots():
     for tech in unique_candidate_power_plants:
         colors_unique_candidates.append(technology_colors[tech])
 
-    # section -----------------------------------------------------------------------------------------------AMIRIS
-    # db_amiris_url = sys.argv[2]
-    # print(db_amiris_url)
-    # db_amiris = SpineDB(db_amiris_url)
-    # all_dispatch_results = dict()
-    # for i in years_to_generate:
-    #     year = str(i)
-    #     all_dispatch_results[year] = db_amiris.query_object_parameter_values_by_object_class(year)
-    # db_amiris.close_connection()
 
     # section -----------------------------------------------------------------------------------------------data preparation
     annual_balance = dict()
-    residual_load_curves = pd.DataFrame()
-    load_duration_curves = pd.DataFrame()
-    price_duration_curves = pd.DataFrame()
-
     spinedb_reader_writer.db.close_connection()
-    print('Done')
-
+    print('Done reading dn')
     first_year = years_to_generate[0]
     future_year = first_year + reps.lookAhead
     last_year = years_to_generate[-1]
-    test_tick = 0
+    test_tick = 1
     test_tech = "CCGT"
 
     # section -----------------------------------------------------------------------------------------------Capacity Markets
@@ -492,21 +478,18 @@ def generate_plots():
     plot_CM_revenues(CM_revenues, path_to_plots)
 
     # section -----------------------------------------------------------------------------------------------revenues per iteration
-    candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
-        reps, test_tick)
+    # candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
+    #     reps, test_tick)
+    # plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)
+
     installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
         future_year, reps, unique_candidate_power_plants)
-    plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)
+
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                            first_year, path_to_plots, colors_unique_candidates)
-    plt.show()
-
-    # todo 1
-    # plot_yearly_operation_profits(first_year)
 
     sorted_average_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps,
                                                                                                               test_tick)
-    # ('1', 'CCGT')
     plot_revenues_per_iteration(revenues_per_iteration, test_tech, path_to_plots, test_tick)
     plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
                                         colors_unique_techs)
@@ -531,13 +514,28 @@ def generate_plots():
                                               colors_unique_techs)
     power_plants_status(number_per_status, path_to_plots)
     power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
-
+    # section -----------------------------------------------------------------------------------------------revenues per iteration
     yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
     yearly_costs = prepare_screening_curves(reps, first_year)
     plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, first_year + reps.lookAhead,
                                     colors_unique_candidates)
     plot_screening_curve(yearly_costs, path_to_plots, first_year, colors_unique_techs)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
+
+    # section -----------------------------------------------------------------------------------------------todos
+    residual_load_curves = pd.DataFrame()
+    load_duration_curves = pd.DataFrame()
+    price_duration_curves = pd.DataFrame()
+
+    # section -----------------------------------------------------------------------------------------------AMIRIS
+    # db_amiris_url = sys.argv[2]
+    # print(db_amiris_url)
+    # db_amiris = SpineDB(db_amiris_url)
+    # all_dispatch_results = dict()
+    # for i in years_to_generate:
+    #     year = str(i)
+    #     all_dispatch_results[year] = db_amiris.query_object_parameter_values_by_object_class(year)
+    # db_amiris.close_connection()
 
     print('Showing plots...')
     plt.show()

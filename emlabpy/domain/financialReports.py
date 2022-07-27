@@ -4,6 +4,7 @@ from util.repository import Repository
 from domain.technologies import *
 import pandas as pd
 import logging
+
 class FinancialPowerPlantReport(ImportObject):
 
     def __init__(self, name):
@@ -14,16 +15,11 @@ class FinancialPowerPlantReport(ImportObject):
         self.production = 0
         self.powerPlantStatus = 0
         self.totalProfits = 0
-        self.profits_per_iteration_names  = dict()
-        self.profits_per_iteration = dict()
-        self.profits_per_iteration_names_candidates  = dict()
-        self.profits_per_iteration_candidates = dict()
         self.tick = 0
         self.iteration = 0
         self.schedule = None
         self.fullLoadHours = [] # [0 for i in range(reps.simulation_length)]
         self.longTermMarketRevenue = 0
-        #self.capacityMarketRevenues = dict()
         self.capacityMarketRevenues_in_year = 0
         self.strategicReserveRevenue = 0
         self.co2HedgingRevenue = 0
@@ -33,28 +29,12 @@ class FinancialPowerPlantReport(ImportObject):
         self.totalCosts = 0
         self.fixedCosts = 0
         self.fixedOMCosts = 0
+        self.irr = 0.0
+        self.irr_in_year = 0.0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
-        """"
-        This function is being read for the plotting. The totalProfits are being saved in the module Investmentdecision
-        # object name =  year
-        # alternative = iteration
-        The data is stored in db investment with the object name "tick  - iteration"
-        """
-        # -----------------------------Profits and PowerPlants are read from the Profits classname
-        if parameter_name == 'PowerPlants':
-            # object name is year and alternative is the iteration.
-            self.profits_per_iteration_names[iteration] = parameter_value
-        elif parameter_name == 'Profits':
-            self.profits_per_iteration[iteration] = parameter_value
-        # -----------------------------CM revenues from financial Reports
-        elif parameter_name == 'PowerPlantsC':
-            # object name is year and alternative is the iteration.
-            self.profits_per_iteration_names_candidates[iteration] = parameter_value
-        elif parameter_name == 'ProfitsC':
-            self.profits_per_iteration_candidates[iteration] = parameter_value
         # -----------------------------CM revenues from financial Reports classname
-        elif parameter_name == 'capacityMechanismRevenues':
+        if parameter_name == 'capacityMechanismRevenues':
             array = parameter_value.to_dict()
             df = pd.DataFrame(array['data'])
             df.set_index(0, inplace=True)
@@ -62,6 +42,17 @@ class FinancialPowerPlantReport(ImportObject):
                 self.capacityMarketRevenues_in_year = df.loc[str(reps.current_tick)][1]
             else:
                 self.capacityMarketRevenues_in_year = 0
+
+        # elif parameter_name == 'irr':
+        #     array = parameter_value.to_dict()
+        #     df = pd.DataFrame(array['data'])
+        #     df.set_index(0, inplace=True)
+        #     if str(reps.current_tick) in df.index:
+        #         self.irr_in_year = df.loc[str(reps.current_tick)][1]
+        #     else:
+        #         self.irr_in_year = 0
+        #     pass
+
 
     def getTime(self):
         return self.tick

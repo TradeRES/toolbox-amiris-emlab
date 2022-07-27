@@ -15,7 +15,6 @@ class ShortInvestmentdecision(Investmentdecision):
         super().__init__(reps)
         self.quickInvestabletechnologies = ["PV_utility_systems",
                                             "Lithium_ion_battery"]  # later add  "PV_residential", "PV_commercial_systems",
-
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
 
@@ -40,8 +39,10 @@ class ShortInvestmentdecision(Investmentdecision):
             if pd.isna(average_profit):
                 pass
             else:
-                cashflow = self.getProjectCashFlow(self.reps.power_generating_technologies[quick_technology], average_profit,  self.agent)
-                pp_return_per_tech = self.irr(cashflow)
+
+                # Todo change this to the last 3 years profits ????
+                pp_return_per_tech = self.getProjectIRR(self.reps.power_generating_technologies[quick_technology], average_profit,  self.agent)
+
                 if pp_return_per_tech > self.reps.short_term_investment_minimal_irr:
                     technologies_highreturns.append(pp_return_per_tech)
 
@@ -80,32 +81,27 @@ class ShortInvestmentdecision(Investmentdecision):
             return True
             # TODO: add the maxExpected Load amd agent cash
 
-    def irr(self, investmentCashFlow):
-        IRR = npf.irr(investmentCashFlow)
-        if pd.isna(IRR):
-            return -100
-        else:
-             return round(IRR, 4)
 
-
-    # Todo change this to the last 3 years profits ????
-    def getProjectCashFlow(self, technology ,average_profit, agent):
+    def getProjectIRR(self, technology ,average_profit, agent):
         totalInvestment = self.getActualInvestedCapitalperMW( technology)
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
         # get average profits per technology
+        fixed_costs = technology.fixed_operating_costs
         operatingProfit = average_profit
         equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
-        restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / technical_lifetime
-        investmentCashFlow = [0 for i in range(technical_lifetime + buildingTime)]
-
+        restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
             investmentCashFlow[i] = - equalTotalDownPaymentInstallment
-        for i in range(buildingTime, technical_lifetime + buildingTime):
-            investmentCashFlow[i] = operatingProfit - restPayment
-        return  investmentCashFlow
-
+        for i in range(buildingTime, depreciationTime + buildingTime):
+            investmentCashFlow[i] = operatingProfit - restPayment - fixed_costs
+        IRR = npf.irr(investmentCashFlow)
+        if pd.isna(IRR):
+            return -100
+        else:
+            return round(IRR, 4)
 
         # returns.append(pp_returns)
         # technologies.append(powerplant.technology.name)

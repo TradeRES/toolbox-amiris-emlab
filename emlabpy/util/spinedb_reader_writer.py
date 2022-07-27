@@ -10,6 +10,7 @@ from twine.repository import Repository
 
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import Investments
+from modules.profits import Profits
 from util import globalNames
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
@@ -358,7 +359,7 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['PowerPlant', 'latestTick', 'spotMarketRevenue', 'overallRevenue', 'production',
-                                      'powerPlantStatus', 'totalProfits', 'variableCosts', 'fixedCosts', 'totalCosts'])
+                                      'powerPlantStatus', 'totalProfits', 'variableCosts', 'fixedCosts', 'totalCosts', 'irr'])
 
 
     def stage_financial_results(self, financialreports):
@@ -372,18 +373,17 @@ class SpineDBReaderWriter:
                                                 ('overallRevenue', Map([str(fr.tick)], [str(fr.overallRevenue)])),
                                                 ('production', Map([str(fr.tick)], [str(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
-
                                                 ('variableCosts', Map([str(fr.tick)], [str(fr.variableCosts)])),
                                                 ('fixedCosts', Map([str(fr.tick)], [str(fr.fixedCosts)])),
                                                 ('totalCosts', Map([str(fr.tick)], [str(fr.totalCosts)])),
-
-                                                ('totalProfits', Map([str(fr.tick)], [str(fr.totalProfits)]))],
-
+                                                ('totalProfits', Map([str(fr.tick)], [str(fr.totalProfits)])),
+                                                ('irr', Map([str(fr.tick)], [str(fr.irr)])),
+                                                ],
                                                '0')
 
-    def findFinancialPowerPlantProfitsForPlant(self, powerplant):
+    def findFinancialValueForPlant(self, powerplant, value):
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
-            self.financial_reports_object_classname, powerplant.name, "totalProfits", 0)
+            self.financial_reports_object_classname, powerplant.name, value, 0)
         if not financialresults:
             return
         return financialresults[0]['parameter_value'].to_dict()
@@ -591,8 +591,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, new_db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
-    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
+    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
+    elif object_class_name == 'Profits' and reps.runningModule == "plotting" :
+        add_parameter_value_to_repository(reps, db_line, reps.profits, Profits)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
 
