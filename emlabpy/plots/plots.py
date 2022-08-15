@@ -434,7 +434,7 @@ def prepare_accepted_CapacityMechanism(reps):
 def generate_plots():
     print('Establishing and querying EmlabDB')
     db_url = sys.argv[1]
-    spinedb_reader_writer = SpineDBReaderWriter("Amiris", db_url)
+    spinedb_reader_writer = SpineDBReaderWriter("plotting", db_url)
     reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
     spinedb_reader_writer.commit('Initialize all module import structures')
     scenario_name = reps.country + str(reps.start_simulation_year) + str(reps.end_simulation_year) \
