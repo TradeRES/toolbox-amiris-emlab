@@ -8,10 +8,13 @@ class StrategicReserveOperator(ImportObject):
 
         self.reserveVolume = 0
         self.zone = None
-        self.reservePriceSR = 800
-        self.reserveVolumePercentSR = 0.06 # todo add this to
+        self.reservePriceSR = 0
+        self.reserveVolumePercentSR = 0
         self.cash = 0
         self.list_of_plants = []
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)
 
     def getReserveVolume(self):
         return self.reserveVolume

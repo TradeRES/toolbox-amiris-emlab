@@ -55,12 +55,11 @@ class Repository:
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
         self.runningModule = ""
-        # --------------------------------------------------------------------------------------------------
-
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()
         self.dictionaryTechSet = dict()
+        # --------------------------------------------------------------------------------------------------
         self.newTechnology = dict()
         self.energy_producers = dict()
         self.target_investors = dict()
