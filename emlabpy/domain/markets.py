@@ -62,9 +62,9 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            loads = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None)
-            self.hourlyDemand = loads[reps.country]
-            
+            # todo: add dynamic load according to country for amiris,
+            self.hourlyDemand = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None)
+
     def peakLoadbyZoneMarket(self):
         return max(self.hourlyDemand)
 
