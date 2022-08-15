@@ -54,7 +54,7 @@ class PowerPlant(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         # do not import decommissioned power plants to the repository if it is not the plotting step
-        if reps.runningModule == "plotting" and self.name in (
+        if reps.runningModule != "plotting" and self.name in (
                 reps.decommissioned["Decommissioned"]).Decommissioned:
             return
         elif parameter_name == 'Status':
