@@ -62,8 +62,9 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            self.hourlyDemand = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None )
-
+            loads = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None)
+            self.hourlyDemand = loads[reps.country]
+            
     def peakLoadbyZoneMarket(self):
         return max(self.hourlyDemand)
 

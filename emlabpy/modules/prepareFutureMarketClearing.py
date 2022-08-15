@@ -3,6 +3,7 @@ from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
 from modules.dismantle import Dismantle
 from domain.StrategicReserveOperator import StrategicReserveOperator
+import pandas as pd
 
 
 class PrepareFutureMarketClearing(PrepareMarket):

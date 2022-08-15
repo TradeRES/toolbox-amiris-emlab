@@ -78,7 +78,7 @@ def plot_investments(annual_installed_capacity, annual_commissioned, years_to_ge
     axs6[0].set_ylabel('Capacity MW', fontsize='small')
     axs6[1].set_ylabel('Capacity MW', fontsize='small')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
-    axs6[0].set_title('Investments by decision year (up) and by commissioning year (year)')
+    axs6[0].set_title('Investments by decision year (up) and by commissioning year (down)')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
 

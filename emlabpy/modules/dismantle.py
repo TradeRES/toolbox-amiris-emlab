@@ -16,7 +16,7 @@ class Dismantle(DefaultModule):
         reps.dbrw.stage_init_power_plants_status()
 
     def act(self):
-        self.add_one_year_to_age()
+        self.add_one_year_to_age() # add one year to the age of power plants
         self.set_powerplants_status()  # set status according to operational time
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
@@ -29,7 +29,7 @@ class Dismantle(DefaultModule):
                 horizon = self.reps.pastTimeHorizon
                 requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
                 if self.reps.current_tick >= self.reps.start_year_dismantling:
-                    profit = self.calculateAveragePastOperatingProfit(plant, horizon) #attention change this to IRR
+                    profit = self.calculateAveragePastOperatingProfit(plant, horizon)
                     if profit <= requiredProfit:
                         logging.info("Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
                                 .format(horizon, plant.name, profit, requiredProfit))
@@ -60,10 +60,9 @@ class Dismantle(DefaultModule):
             powerplant.age += 1
 
     def calculateAveragePastOperatingProfit(self, plant, horizon):
-        # "totalProfits" or "irr"
         averagePastOperatingProfit = 0
-
         rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
+        # self.reps.typeofProfitforPastHorizon is defined in the config exce and can be "totalProfits" or "irr"
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
@@ -71,7 +70,7 @@ class Dismantle(DefaultModule):
                 indices = list(range(self.reps.current_tick-horizon, self.reps.current_tick))
                 past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
                 averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
-            else:  # Attention for now, for the first years the availble past data is taken
+            else:  # Attention for now, for the first years the available past data is taken
                 print("no past profits for plant", plant.name)
                 pass
         return averagePastOperatingProfit
