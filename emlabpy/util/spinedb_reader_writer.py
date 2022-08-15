@@ -286,7 +286,6 @@ class SpineDBReaderWriter:
                                             ('list_of_plants', SRO.list_of_plants)], "0")
 
 
-
     def stage_init_candidate_plants_value(self, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
@@ -327,7 +326,6 @@ class SpineDBReaderWriter:
         # object name =  simulation tick  - iteration
         objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
         self.stage_object(self.powerplantprofits_classname, objectname)
-        print(pp_numbers)
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("Profits", pp_profits) ], "0")
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
