@@ -5,7 +5,6 @@ class StrategicReserveOperator(ImportObject):
 
     def __init__(self, name):
         super().__init__(name)
-
         self.reserveVolume = 0
         self.zone = None
         self.reservePriceSR = 0

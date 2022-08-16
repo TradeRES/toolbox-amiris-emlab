@@ -164,9 +164,9 @@ class Repository:
     #     except StopIteration:
     #         return None
 
-    def get_financial_report_for_plant(self, plant_name):
+    def get_irrs_for_plant(self, plant_name):
         try:
-            return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+            return next(i.irr for i in self.financialPowerPlantReports.values() if i.name == plant_name)
         except StopIteration:
             return None
 
@@ -333,6 +333,10 @@ class Repository:
     def get_power_plants_by_status(self, status) -> List[ PowerPlant]:
         return [i for i in self.power_plants.values()
                 if  i.status == status]
+
+    def get_power_plants_by_technology(self, technology_name):
+        return [i.name for i in self.power_plants.values()
+                if  i.technology.name == technology_name]
 
     def get_investments(self) -> List[ PowerPlant]:
         return [i for i in self.power_plants.values()

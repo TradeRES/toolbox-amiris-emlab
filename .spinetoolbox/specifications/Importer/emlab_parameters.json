@@ -1010,6 +1010,44 @@
                         ]
                     }
                 }
+            ],
+            "StrategicReserveOperator": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "StrategicReserveOperators"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1027,7 +1065,8 @@
             "TechnologiesEmlabTemporal",
             "CO2",
             "CandidatePowerPlants",
-            "Decommissioned"
+            "Decommissioned",
+            "StrategicReserveOperator"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1067,7 +1106,8 @@
             "dictvariables": {},
             "CO2": {},
             "CandidatePowerPlants": {},
-            "Decommissioned": {}
+            "Decommissioned": {},
+            "StrategicReserveOperator": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1316,6 +1356,12 @@
             },
             "Decommissioned": {
                 "0": "string"
+            },
+            "StrategicReserveOperator": {
+                "0": "float",
+                "1": "float",
+                "2": "string",
+                "3": "string"
             }
         },
         "table_row_types": {

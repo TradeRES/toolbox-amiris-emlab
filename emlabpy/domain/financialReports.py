@@ -43,6 +43,14 @@ class FinancialPowerPlantReport(ImportObject):
             else:
                 self.capacityMarketRevenues_in_year = 0
 
+        elif reps.runningModule == "plotting" and  parameter_name == 'irr':
+            array = parameter_value.to_dict()
+            df = pd.DataFrame(array['data'])
+            df.set_index(0, inplace=True)
+            df.index.astype('int64')
+
+            self.irr = df
+
         # elif parameter_name == 'irr':
         #     array = parameter_value.to_dict()
         #     df = pd.DataFrame(array['data'])

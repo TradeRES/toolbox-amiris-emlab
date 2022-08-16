@@ -210,6 +210,17 @@ def plot_CM_revenues(CM_revenues, path_to_plots):
     fig15 = axs15.get_figure()
     fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms.png', bbox_inches='tight', dpi=300)
 
+def plot_irrs_per_tech_per_year(irrs_per_tech_per_year,  path_to_plots,colors):
+    axs16 = irrs_per_tech_per_year.plot(color=colors)
+    axs16.set_axisbelow(True)
+    plt.xlabel('Simulation years', fontsize='medium')
+    plt.ylabel('IRR', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.grid()
+    axs16.set_title('IRRs')
+    fig16 = axs16.get_figure()
+    fig16.savefig(path_to_plots + '/' + 'IRRs per year per technology.png', bbox_inches='tight', dpi=300)
+
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
@@ -359,6 +370,30 @@ def prepare_revenues_per_iteration(reps, tick):
     return sorted_average_revenues_per_iteration_first_year, revenues_per_iteration.T
 
 
+def prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_generate, first_year):
+    simulation_years = [int(x - first_year) for x in years_to_generate]
+
+    irrs_per_tech_per_year =  pd.DataFrame(index=simulation_years, columns=["zero"]).fillna(0)
+    for technology_name in unique_technologies:
+        powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
+        irrs_per_year = pd.DataFrame(index=simulation_years, columns=["zero"]).fillna(0)
+        irrs_per_year.index.name = "year"
+        for plant_name in powerplants_per_tech:
+            temporal = reps.get_irrs_for_plant(plant_name)
+            temporal.index.name = "year"
+            temporal.columns = [plant_name]
+            temporal.index = temporal.index.astype(int)
+            irrs_per_year = pd.merge(irrs_per_year,
+                                     temporal,
+                                     on='year',
+                                     how='left')
+        irrs_per_year.drop("zero", axis=1, inplace=True)
+        numeric =irrs_per_year.values.astype('float64')
+        irrs_per_tech_per_year[technology_name] = np.nanmean(numeric, axis=1)
+    irrs_per_tech_per_year.drop("zero", axis=1, inplace=True)
+    return irrs_per_tech_per_year
+
+
 def prepare_future_fuel_prices(reps, years_to_generate):
     substances_calculated_prices = pd.DataFrame(index=years_to_generate, columns=["zero"]).fillna(0)
     substances_calculated_prices.index.name = "year"
@@ -463,7 +498,6 @@ def generate_plots():
     for tech in unique_candidate_power_plants:
         colors_unique_candidates.append(technology_colors[tech])
 
-
     # section -----------------------------------------------------------------------------------------------data preparation
     annual_balance = dict()
     spinedb_reader_writer.db.close_connection()
@@ -473,7 +507,8 @@ def generate_plots():
     last_year = years_to_generate[-1]
     test_tick = 1
     test_tech = "CCGT"
-
+    irrs_per_tech_per_year = prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_generate, first_year)
+    plot_irrs_per_tech_per_year(irrs_per_tech_per_year,  path_to_plots, colors_unique_techs)
     # section -----------------------------------------------------------------------------------------------Capacity Markets
     # CM_revenues = prepare_accepted_CapacityMechanism(reps)
     # plot_CM_revenues(CM_revenues, path_to_plots)

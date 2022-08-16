@@ -79,6 +79,42 @@
                         ]
                     }
                 }
+            ],
+            "StrategicReserveOperators": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -87,16 +123,23 @@
         ],
         "table_options": {
             "Coupling Parameters": {},
-            "Import Priorities": {}
+            "Import Priorities": {},
+            "StrategicReserveOperators": {}
         },
         "table_types": {
             "Coupling Parameters": {
                 "0": "string",
-                "1": "float"
+                "1": "float",
+                "2": "string",
+                "3": "string"
             },
             "Import Priorities": {
                 "0": "string",
                 "1": "float"
+            },
+            "StrategicReserveOperators": {
+                "0": "string",
+                "1": "string"
             }
         },
         "table_row_types": {},

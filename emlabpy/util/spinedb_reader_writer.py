@@ -574,11 +574,11 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
-    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results"]:
-        add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
+
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
-
+    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
+        add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
     elif object_class_name == reps.dbrw.investment_decisions_classname and reps.runningModule == "plotting":
