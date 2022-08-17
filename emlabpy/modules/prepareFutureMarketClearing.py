@@ -70,8 +70,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick >= 0:
-                    profit = self.calculateAveragePastOperatingProfit(powerplant, horizon) #attention change this to IRR
-                    #profit = self.calculateAveragePastIRR(powerplant, horizon)
+                    # calculate the IRR
+                    profit = self.calculateAveragePastOperatingProfit(powerplant, horizon)
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.status = globalNames.power_plant_status_decommissioned
@@ -82,7 +82,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     powerplant.fictional_status = globalNames.power_plant_status_operational
                     self.power_plants_list.append(powerplant)
                 # todo better to make decisions according to expected profit and expected participation in capacity market/strategic reserve
-                # for planats that are in the strategic reserve
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
@@ -91,10 +90,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerplant.technology.variable_operating_costs = SR_price
                 #self.power_plants_list[powerplant.name] = powerplant
                 print("added in SR", powerplant.name)
+                # todo :  Bart check  for german SR the power plants should not be added.
+                # decide for normal  and swedish
                 self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
-                #self.power_plants_list[powerplant.name] = powerplant
                 self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear > self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
