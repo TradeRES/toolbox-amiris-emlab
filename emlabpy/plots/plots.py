@@ -210,6 +210,7 @@ def plot_CM_revenues(CM_revenues, path_to_plots):
     fig15 = axs15.get_figure()
     fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms.png', bbox_inches='tight', dpi=300)
 
+
 def plot_irrs_per_tech_per_year(irrs_per_tech_per_year,  path_to_plots,colors):
     irrs_per_tech_per_year.drop("PV_utility_systems",  axis=1,inplace=True)
     irrs_per_tech_per_year.drop("WTG_onshore", axis=1, inplace=True)
@@ -371,6 +372,20 @@ def prepare_revenues_per_iteration(reps, tick):
     revenues_per_iteration = power_plants_revenues_per_iteration.set_index('tech').sort_index(level=0)
     return sorted_average_revenues_per_iteration_first_year, revenues_per_iteration.T
 
+def prepare_extension_lifetime_per_tech(reps, unique_technologies):
+    # calculate for all power plants the extended lifetime in average
+    # todo finish
+    life_extension = pd.DataFrame(columns = unique_technologies)
+    for technology_name in unique_technologies:
+        tech_power_plants = reps.get_power_plants_by_technology(technology_name)
+        extension = []
+        for pp in tech_power_plants:
+            if pp.age >= pp.technology.expected_lifetime:
+                years = pp.age - pp.technology.expected_lifetime
+                extension.append(years / len(tech_power_plants))
+        life_extension.loc[:, technology_name] = np.mean(extension)
+        #life_extension = pd.DataFrame(data=data,columns=unique_technologies)
+    return life_extension
 
 def prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_generate, first_year):
     simulation_years = [int(x - first_year) for x in years_to_generate]
@@ -380,10 +395,10 @@ def prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_gene
         powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
         irrs_per_year = pd.DataFrame(index=simulation_years, columns=["zero"]).fillna(0)
         irrs_per_year.index.name = "year"
-        for plant_name in powerplants_per_tech:
-            temporal = reps.get_irrs_for_plant(plant_name)
+        for plant in powerplants_per_tech:
+            temporal = reps.get_irrs_for_plant(plant.name)
             temporal.index.name = "year"
-            temporal.columns = [plant_name]
+            temporal.columns = [plant.name]
             temporal.index = temporal.index.astype(int)
             irrs_per_year = pd.merge(irrs_per_year,
                                      temporal,
@@ -510,13 +525,17 @@ def generate_plots():
     last_year = years_to_generate[-1]
     test_tick = 1
     test_tech = "CCGT"
-    irrs_per_tech_per_year = prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_generate, first_year)
-    plot_irrs_per_tech_per_year(irrs_per_tech_per_year,  path_to_plots, colors_unique_techs)
+
+    # check extension of power plants.
+    #extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
     # section -----------------------------------------------------------------------------------------------Capacity Markets
     # CM_revenues = prepare_accepted_CapacityMechanism(reps)
     # plot_CM_revenues(CM_revenues, path_to_plots)
 
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+
+    irrs_per_tech_per_year = prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_generate, first_year)
+    plot_irrs_per_tech_per_year(irrs_per_tech_per_year,  path_to_plots, colors_unique_techs)
     candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
         reps, test_tick)
     plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)

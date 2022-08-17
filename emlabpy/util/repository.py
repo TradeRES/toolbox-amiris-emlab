@@ -35,7 +35,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit"
+        self.simulation_name = "futureMarketWithHistoricProfit_groupedDE"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -330,12 +330,9 @@ class Repository:
                 if
                 i.owner.name == owner and i.status == globalNames.power_plant_status_operational and i.technology.name in listofTechnologies]
 
-    def get_power_plants_by_status(self, status) -> List[ PowerPlant]:
-        return [i for i in self.power_plants.values()
-                if  i.status == status]
 
     def get_power_plants_by_technology(self, technology_name):
-        return [i.name for i in self.power_plants.values()
+        return [i for i in self.power_plants.values()
                 if  i.technology.name == technology_name]
 
     def get_investments(self) -> List[ PowerPlant]:
