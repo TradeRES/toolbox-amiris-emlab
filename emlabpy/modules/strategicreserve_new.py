@@ -60,10 +60,10 @@ class StrategicReserveAssignment(MarketModule):
         # Assign plants to Strategic Reserve per region
         for market in self.reps.capacity_markets.values():
             # Set the strategic reserve zone to the same as the market
-            self.operator.setZone(market.zone)
+            self.operator.setZone(market.country)
 
             # Retrieve peak load volume of market
-            peak_load_volume = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.zone)[1])
+            peak_load_volume = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[1])
 
             # Calculate needed strategic reserve capacity
             strategic_reserve_capacity = peak_load_volume * self.operator.getReserveVolumePercentSR()
@@ -76,7 +76,7 @@ class StrategicReserveAssignment(MarketModule):
 
             # Contract plants to Strategic Reserve Operator
             contracted_strategic_reserve_capacity = 0
-            SRO_name = "SRO_" + market.zone
+            SRO_name = "SRO_" + market.country
 
             for ppdp in sorted_ppdp:
                 # If plant capacity fits in strategic reserve than contract it

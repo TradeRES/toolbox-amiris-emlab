@@ -3,6 +3,7 @@ from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
 from modules.dismantle import Dismantle
 from domain.StrategicReserveOperator import StrategicReserveOperator
+import pandas as pd
 
 
 class PrepareFutureMarketClearing(PrepareMarket):
@@ -69,7 +70,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             if fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick >= 0:
                     profit = self.calculateAveragePastOperatingProfit(powerplant, horizon) #attention change this to IRR
-                    #profit = self.calculateAveragePastIRR(powerplant, horizon)
+                    # profit = self.calculateAveragePastIRR(powerplant, horizon)
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.status = globalNames.power_plant_status_decommissioned

@@ -34,15 +34,24 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
-            financialPowerPlantReport.setVariableCosts(
-                dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
-            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
+
+            if dispatch != None:
+                yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
+                accepted_amount = dispatch.accepted_amount
+                revenues = dispatch.revenues
+                variable_costs = dispatch.variable_costs   # these include already fuel, O&M, CO2 costs from AMIRIS
+            else:
+                yearly_costs = - fixed_on_m_cost
+                accepted_amount = 0
+                revenues = 0
+                variable_costs = 0
+
+            financialPowerPlantReport.setVariableCosts(variable_costs)
             financialPowerPlantReport.setTotalCosts(yearly_costs)
-            financialPowerPlantReport.setProduction(dispatch.accepted_amount)
-            financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
-            financialPowerPlantReport.setOverallRevenue(
-                financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
+            financialPowerPlantReport.setProduction(accepted_amount)
+            financialPowerPlantReport.setSpotMarketRevenue(revenues)
+            financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.capacityMarketRevenues_in_year + revenues)
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + revenues + yearly_costs
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
             irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.reps.energy_producers[self.reps.agent])
             financialPowerPlantReport.irr = irr

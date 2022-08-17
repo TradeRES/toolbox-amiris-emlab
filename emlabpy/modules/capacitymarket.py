@@ -38,10 +38,11 @@ class CapacityMarketSubmitBids(MarketModule):
                 price_to_bid = 0
                 if dispatch is None:
                     print("no dispatch found for " + powerplant.name)
+                    net_revenues = - fixed_on_m_cost
                 else:
                     net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
-                    if nominal_capacity > 0 and net_revenues <= 0:
-                        price_to_bid = -1 * net_revenues / (nominal_capacity * powerplant.technology.peak_segment_dependent_availability)
+                if nominal_capacity > 0 and net_revenues <= 0:
+                    price_to_bid = -1 * net_revenues / (nominal_capacity * powerplant.technology.peak_segment_dependent_availability)
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market, \
                                                                            nominal_capacity * powerplant.technology.peak_segment_dependent_availability,\
                                                                            price_to_bid, self.reps.current_tick)
