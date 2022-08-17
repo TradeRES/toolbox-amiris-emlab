@@ -211,6 +211,8 @@ def plot_CM_revenues(CM_revenues, path_to_plots):
     fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms.png', bbox_inches='tight', dpi=300)
 
 def plot_irrs_per_tech_per_year(irrs_per_tech_per_year,  path_to_plots,colors):
+    irrs_per_tech_per_year.drop("PV_utility_systems",  axis=1,inplace=True)
+    irrs_per_tech_per_year.drop("WTG_onshore", axis=1, inplace=True)
     axs16 = irrs_per_tech_per_year.plot(color=colors)
     axs16.set_axisbelow(True)
     plt.xlabel('Simulation years', fontsize='medium')
@@ -391,6 +393,7 @@ def prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_gene
         numeric =irrs_per_year.values.astype('float64')
         irrs_per_tech_per_year[technology_name] = np.nanmean(numeric, axis=1)
     irrs_per_tech_per_year.drop("zero", axis=1, inplace=True)
+
     return irrs_per_tech_per_year
 
 

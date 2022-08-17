@@ -67,6 +67,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 SR_price = i.strategic_reserve_price
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.lookAhead
+            # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick >= 0:
                     profit = self.calculateAveragePastOperatingProfit(powerplant, horizon) #attention change this to IRR
@@ -77,11 +78,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     else:
                         powerplant.fictional_status = globalNames.power_plant_status_operational
                         self.power_plants_list.append(powerplant)
-                        print(profit)
                 else:
                     powerplant.fictional_status = globalNames.power_plant_status_operational
                     self.power_plants_list.append(powerplant)
-                # todo better to make decisions according to expected profit and expected participation in capacity market
+                # todo better to make decisions according to expected profit and expected participation in capacity market/strategic reserve
+                # for planats that are in the strategic reserve
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
