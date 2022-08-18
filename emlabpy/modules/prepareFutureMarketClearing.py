@@ -88,14 +88,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 #powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
                 powerplant.owner = 'StrategicReserveOperator'
                 powerplant.technology.variable_operating_costs = SR_price
-                #self.power_plants_list[powerplant.name] = powerplant
-                print("added in SR", powerplant.name)
-                # todo :  Bart check  for german SR the power plants should not be added.
-                # decide for normal  and swedish
+                #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                 self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list.append(powerplant)
+
             elif powerplant.commissionedYear > self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
                 print("--------------------- in pipeline", powerplant.name)

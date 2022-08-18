@@ -35,7 +35,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_groupedDE"
+        self.simulation_name = "futureMarketWithHistoricProfit_DE"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -158,11 +158,17 @@ class Repository:
             return next(i for i in self.profits.values() if i.name == str(tick))
         except StopIteration:
             return None
+
     # def get_financial_report_per_tick(self, tick):
     #     try:
     #         return next(i for i in self.financialPowerPlantReports.values() if i.name == str(tick))
     #     except StopIteration:
     #         return None
+    def get_financial_report_for_plant(self, plant_name):
+        try:
+            return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
 
     def get_irrs_for_plant(self, plant_name):
         try:
