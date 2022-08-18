@@ -115,7 +115,7 @@ class PowerPlant(ImportObject):
             emission = 0
         return emission
 
-    def get_actual_fixed_operating_cost(self):
+    def calculate_fixed_operating_cost(self):
         per_mw = self.technology.get_fixed_operating_cost(self.constructionStartTime +
                                                           int(self.technology.expected_leadtime) +
                                                           int(self.technology.expected_permittime))

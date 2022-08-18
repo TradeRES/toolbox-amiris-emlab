@@ -29,7 +29,7 @@ class CreatingFinancialReports(DefaultModule):
                 financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
 
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
-            fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
+            fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
@@ -49,14 +49,16 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
-    def getProjectCashFlow(self, technology, average_profit, agent):
-        totalInvestment = technology.investment_cost_eur_MW  # todo: get the actual investmet costs, as in Invest, if getActualInvestedCapitalperMW is modified
+    def getProjectCashFlow(self, technology, operational_profit, agent):
+        # todo: get the actual investmet costs, as in Invest, if getActualInvestedCapitalperMW is modified
+        totalInvestment = technology.investment_cost_eur_MW
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
         # get average profits per technology
         fixed_costs = technology.fixed_operating_costs
-        operatingProfit = average_profit
+        operatingProfit = operational_profit
+
         equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
         restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]

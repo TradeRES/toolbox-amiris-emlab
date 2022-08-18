@@ -615,6 +615,13 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-        if object_class_name == str(reps.current_year): # importing only the current power dispatch plans
-            add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans,
+
+        if reps.runningModule == "plotting" :
+            new_db_line = list(db_line_amiris)
+            new_db_line[1] = db_line_amiris[0] # pass the class name as the object name
+            new_db_line[4] = db_line_amiris[1] # pass the object name (plant id) as the alternative
+            add_parameter_value_to_repository(reps, new_db_line, reps.power_plant_dispatch_plans,
+                                              PowerPlantDispatchPlansALL)
+        elif object_class_name == str(reps.current_year): # importing only the current power dispatch plans
+            add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans_in_year,
                                               PowerPlantDispatchPlan)

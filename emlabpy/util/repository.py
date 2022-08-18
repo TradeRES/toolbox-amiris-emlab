@@ -35,7 +35,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_DE"
+        self.simulation_name = "futureMarketWithHistoricProfit_groupedDE_until3"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -71,6 +71,7 @@ class Repository:
         self.capacity_markets = dict()
         self.co2_markets = dict()
         self.power_plant_dispatch_plans = dict()
+        self.power_plant_dispatch_plans_in_year = dict()
         self.bids = dict()
         self.power_generating_technologies = dict()
         self.used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", "Nuclear", "WTG_onshore",
@@ -192,7 +193,7 @@ class Repository:
                                           amount: float,
                                           price: float,
                                           time: int) -> PowerPlantDispatchPlan:
-        ppdp = next((ppdp for ppdp in self.power_plant_dispatch_plans.values() if ppdp.plant == plant and
+        ppdp = next((ppdp for ppdp in self.power_plant_dispatch_plans_in_year.values() if ppdp.plant == plant and
                      ppdp.bidding_market == bidding_market and
                      ppdp.tick == time), None)
         pass
@@ -286,6 +287,12 @@ class Repository:
         # the last 5 numbers are the power plant list
         return sorted([str(i.id)[-4:] for i in self.power_plants.values()])[-1]
 
+    def get_power_plant_by_id(self, id):
+        try:
+            return next(i for i in self.power_plants.values() if i.id == int(id))
+        except StopIteration:
+            return None
+
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit()for pp in powerplants])
 
@@ -374,7 +381,7 @@ class Repository:
         # MC is Euro / MW
         mc = power_plant.calculate_marginal_cost_excl_co2_market_cost(self, time)
         # FOC is Euro
-        foc = power_plant.get_actual_fixed_operating_cost()
+        foc = power_plant.calculate_fixed_operating_cost()
         # total capacity is in MWh
         total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time, market)
         return foc + mc * total_capacity
@@ -397,14 +404,14 @@ class Repository:
 
     def get_power_plant_electricity_dispatch(self, power_plant_id: str) -> float:
         try:
-            return self.power_plant_dispatch_plans.get(str(power_plant_id))
+            return self.power_plant_dispatch_plans_in_year.get(str(power_plant_id))
         except StopIteration:
             logging.warning('No PPDP Price found for plant' + str(power_plant_id))
         return 0
 
     def get_power_plant_electricity_spot_market_revenues_by_tick(self, power_plant_id: str, time: int) -> float:
         try:  # TODO fix this
-            return next(i.revenues for i in self.power_plant_dispatch_plans.values() if
+            return next(i.revenues for i in self.power_plant_dispatch_plans_in_year.values() if
                         i.power_plant_id == power_plant_id and i.tick == time)
         except StopIteration:
             logging.warning('No PPDP Price found for plant  and at time ' + str(time))
@@ -412,7 +419,7 @@ class Repository:
 
     def get_total_accepted_amounts_by_power_plant_and_tick_and_market(self, power_plant: PowerPlant, time: int,
                                                                       market: Market) -> float:
-        return sum([i.accepted_amount for i in self.power_plant_dispatch_plans.values() if i.tick == time and
+        return sum([i.accepted_amount for i in self.power_plant_dispatch_plans_in_year.values() if i.tick == time and
                     i.plant == power_plant and i.bidding_market == market])
 
 
@@ -422,11 +429,12 @@ class Repository:
                        if i.market == market.name and i.tick == time], key=lambda i: i.price)
 
     def get_power_plant_dispatch_plans_by_plant(self, plant: PowerPlant) -> List[PowerPlantDispatchPlan]:
-        return [i for i in self.power_plant_dispatch_plans.values() if i.plant == plant]
+        return [i for i in self.power_plant_dispatch_plans_in_year.values() if i.plant == plant]
 
-    def get_power_plant_dispatch_plans_by_plant_and_tick(self, plant: PowerPlant, time: int) -> \
+    def get_all_power_plant_dispatch_plans_by_tick(self, tick: int) -> \
             List[PowerPlantDispatchPlan]:
-        return [i for i in self.power_plant_dispatch_plans.values() if i.name == plant and i.tick == time]
+        return next(i for i in self.power_plant_dispatch_plans.values() if i.name == str(tick))
+
 
     def update_power_plant_status(self, plant: PowerPlant, price):
         new_status = globalNames.power_plant_status_strategic_reserve

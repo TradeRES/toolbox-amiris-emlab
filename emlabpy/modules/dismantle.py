@@ -45,7 +45,7 @@ class Dismantle(DefaultModule):
                                          (float(plant.getTechnology().getExpectedLifetime()))))
                         plant.setActualFixedOperatingCost(ModifiedOM)
                 else:
-                    logging.info("dont dismantle but increase OPEX of %s ".format(plant.name))
+                    logging.info("dont dismantle but increase fixed operating costs of %s ".format(plant.name))
                     if plant.age < plant.technology.getExpectedLifetime():
                         print("Age is less than expected life time")
                     else:

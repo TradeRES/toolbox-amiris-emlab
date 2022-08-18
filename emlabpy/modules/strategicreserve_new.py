@@ -30,7 +30,7 @@ class StrategicReserveSubmitBids(MarketModule):
                 power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
                 # Get Variable and Fixed Operating Costs
-                fixed_operating_costs = powerplant.get_actual_fixed_operating_cost()
+                fixed_operating_costs = powerplant.calculate_fixed_operating_cost()
                 variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
 
                 # Calculate normalised costs

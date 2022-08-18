@@ -518,17 +518,6 @@
                 ]
             },
             {
-                "name": "from specify year to Capacity Mechanism",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
                 "name": "from import AMIRIS to specify year",
                 "from": [
                     "import AMIRIS",
@@ -635,17 +624,6 @@
                 ]
             },
             {
-                "name": "from Capacity Mechanism to Financial Results",
-                "from": [
-                    "Capacity Mechanism",
-                    "right"
-                ],
-                "to": [
-                    "Financial Results",
-                    "left"
-                ]
-            },
-            {
                 "name": "from Financial Results to short investments",
                 "from": [
                     "Financial Results",
@@ -672,6 +650,17 @@
                 "from": [
                     "AMIRIS DB",
                     "bottom"
+                ],
+                "to": [
+                    "Financial Results",
+                    "left"
+                ]
+            },
+            {
+                "name": "from specify year to Financial Results",
+                "from": [
+                    "specify year",
+                    "right"
                 ],
                 "to": [
                     "Financial Results",
@@ -1017,8 +1006,8 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -583.246912241931,
-            "y": -131.31524734491578,
+            "x": -342.43365549839575,
+            "y": -1115.014682910489,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
             "cmd_line_args": [
