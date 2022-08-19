@@ -2367,6 +2367,7 @@ def aggregate_results(dmgr, config, params):
                 - outputs_per_agent[AmirisOutputs.VARIABLE_COSTS_IN_EURO.name]
             )
             to_concat.append(outputs_per_agent)
+
     all_outputs_per_agent = pd.concat(to_concat)
     all_outputs_per_agent.index.name = "identifier"
 

@@ -242,7 +242,7 @@ def plot_annual_generation(all_techs_generation, path_to_plots, colors_unique_te
     axs18 = all_techs_generation.plot.area(color=colors_unique_techs)
     axs18.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Installed Generation', fontsize='medium')
+    plt.ylabel('Annual Generation', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs18.set_title('Annual Generation')
     fig18 = axs18.get_figure()
@@ -626,8 +626,8 @@ def generate_plots():
     # check extension of power plants.
     # extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
     # section -----------------------------------------------------------------------------------------------Capacity Markets
-    CM_revenues = prepare_accepted_CapacityMechanism(reps)
-    plot_CM_revenues(CM_revenues, path_to_plots)
+    # CM_revenues = prepare_accepted_CapacityMechanism(reps)
+    # plot_CM_revenues(CM_revenues, path_to_plots)
 
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
     all_techs_capacity, all_techs_generation = prepare_capacity_and_generation_per_technology(reps, unique_technologies,

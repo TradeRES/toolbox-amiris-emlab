@@ -2,12 +2,14 @@
     "name": "define AMIRIS results year",
     "tooltype": "python",
     "includes": [
-        "defineResultsYear.py"
+        "defineResultsYearCSV.py"
     ],
     "description": "",
     "inputfiles": [],
     "inputfiles_opt": [],
-    "outputfiles": [],
+    "outputfiles": [
+        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
+    ],
     "cmdline_args": [],
     "execute_in_work": false,
     "includes_main_path": "../../../emlabpy/util",

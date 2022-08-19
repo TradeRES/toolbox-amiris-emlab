@@ -485,28 +485,6 @@
                 ]
             },
             {
-                "name": "from years to specify year",
-                "from": [
-                    "years",
-                    "right"
-                ],
-                "to": [
-                    "specify year",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to specify year",
-                "from": [
-                    "AMIRIS DB",
-                    "bottom"
-                ],
-                "to": [
-                    "specify year",
-                    "right"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to Next year",
                 "from": [
                     "EmlabDB2",
@@ -515,17 +493,6 @@
                 "to": [
                     "Next year",
                     "bottom"
-                ]
-            },
-            {
-                "name": "from import AMIRIS to specify year",
-                "from": [
-                    "import AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "specify year",
-                    "left"
                 ]
             },
             {
@@ -565,17 +532,6 @@
                 ],
                 "to": [
                     "AMIRIS",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS to import AMIRIS",
-                "from": [
-                    "AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "import AMIRIS",
                     "left"
                 ]
             },
@@ -657,13 +613,35 @@
                 ]
             },
             {
-                "name": "from specify year to Financial Results",
+                "name": "from AMIRIS to specify year",
+                "from": [
+                    "AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "specify year",
+                    "left"
+                ]
+            },
+            {
+                "name": "from specify year to import AMIRIS",
                 "from": [
                     "specify year",
                     "right"
                 ],
                 "to": [
-                    "Financial Results",
+                    "import AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from years to specify year",
+                "from": [
+                    "years",
+                    "right"
+                ],
+                "to": [
+                    "specify year",
                     "left"
                 ]
             }
@@ -1006,8 +984,8 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -342.43365549839575,
-            "y": -1115.014682910489,
+            "x": -675.7434341723899,
+            "y": -229.8313362680783,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1028,8 +1006,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -445.2470284398107,
-            "y": -448.69780116181585,
+            "x": -270.3959970042727,
+            "y": -439.5909766078816,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1062,8 +1040,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -211.3748537341655,
-            "y": -482.45808291813273,
+            "x": -0.09652408289048253,
+            "y": -435.1025952376745,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1108,8 +1086,8 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -953.3566395857378,
-            "y": -104.36648743171719,
+            "x": -505.30087153217187,
+            "y": -605.241837898102,
             "file_references": [
                 {
                     "type": "path",
@@ -1122,20 +1100,11 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -790.3457753380511,
-            "y": -128.75915286100695,
+            "x": -442.46507737776244,
+            "y": -449.319377159493,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "resource",
-                    "arg": "<project>/emlabpy/years.txt"
-                }
-            ]
+            "cmd_line_args": []
         },
         "Invest": {
             "type": "Tool",

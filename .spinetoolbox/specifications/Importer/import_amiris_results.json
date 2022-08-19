@@ -9,8 +9,7 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "0",
+                                "position": 5,
                                 "skip_columns": [
                                     4
                                 ]
@@ -30,7 +29,7 @@
                             {
                                 "map_type": "Alternative",
                                 "position": "hidden",
-                                "value": "latest"
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -64,7 +63,8 @@
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float"
+                "4": "float",
+                "5": "string"
             }
         },
         "table_row_types": {},
