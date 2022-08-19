@@ -1104,7 +1104,16 @@
             "y": -449.319377159493,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
-            "cmd_line_args": []
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "<project>/emlabpy/years.txt"
+                }
+            ]
         },
         "Invest": {
             "type": "Tool",
