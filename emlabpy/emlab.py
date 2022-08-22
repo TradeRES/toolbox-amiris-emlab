@@ -169,7 +169,8 @@ try:  # Try statement to always close DB properly
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
         capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-        capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
+        capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
+        capacity_market_clear = CapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
         capacity_market_submit_bids.act_and_commit()
         capacity_market_clear.act_and_commit()
         logging.info('End Run Capacity Market')

@@ -126,9 +126,11 @@ class StrategicReserveAssignment_ger(MarketModule):
             # Retrieve dispatch data of plants for variable costs and revenues
             dispatch = self.reps.get_power_plant_electricity_dispatch(plant.id)
             # Costs to be paid by Strategic Reserve Operator and to be received
+
             if dispatch is None:
                 SR_payment_to_plant = fixed_operating_costs
                 SR_payment_to_operator = 0
+
             else:
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues

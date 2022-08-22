@@ -35,7 +35,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_groupedDE_until3"
+        self.simulation_name = "futureMarketWithHistoricProfit_groupedDE"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -457,10 +457,16 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_bid_for_plant_and_tick(self, power_plant_name, tick) -> Optional[CapacityMarket]:
+        try:
+            return next(i for i in self.bids.values() if
+                        i.tick == tick and i.plant == power_plant_name)
+        except StopIteration:
+            return None
 
-    def get_accepted_CM_bids(self):
-        return [i for i in self.bids.values() if
-                i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted]
+    def get_accepted_CM_bids(self, tick):
+        return [i for i in self.bids.values() if i.tick == tick and
+                (i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted)]
 
     def create_or_update_power_plant_CapacityMarket_plan(self, plant: PowerPlant,
                                                          bidder: EnergyProducer,
@@ -542,10 +548,16 @@ class Repository:
     def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:
         try:
             return next(i for i in self.electricity_spot_markets.values() if
-                        i.parameters['zone'] == plant.location)
+                        i.zone == plant.location)
         except StopIteration:
             return None
 
+    def get_electricity_spot_market_demand(self) -> Optional[ElectricitySpotMarket]:
+        try:
+            return next(i.hourlyDemand[1] for i in self.electricity_spot_markets.values() if
+                        i.zone == self.country)
+        except StopIteration:
+            return None
 
 
     def get_allowances_in_circulation(self, zone: Zone, time: int) -> int:

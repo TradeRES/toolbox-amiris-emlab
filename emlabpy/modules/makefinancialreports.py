@@ -34,6 +34,12 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
+
+            if dispatch == None:
+                print("no dispatch for ", powerplant.name)
+                print(powerplant.id)
+                print(self.reps.current_year)
+                raise
             financialPowerPlantReport.setVariableCosts(
                 dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
             yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
@@ -42,8 +48,10 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
             financialPowerPlantReport.setOverallRevenue(
                 financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
+            loan_payment = powerplant.getLoan()
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs + loan_payment
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
+
             irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.reps.energy_producers[self.reps.agent])
             financialPowerPlantReport.irr = irr
             financialPowerPlantReports.append(financialPowerPlantReport)

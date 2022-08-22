@@ -226,8 +226,6 @@ def plot_irrs_per_tech_per_year(irrs_per_tech_per_year, path_to_plots, colors):
 
 
 def plot_installed_capacity(all_techs_capacity, path_to_plots, colors_unique_techs):
-    # axs17 = all_techs_capacity.plot(color=colors_unique_techs)
-
     axs17 = all_techs_capacity.plot.area(color=colors_unique_techs)
     axs17.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -247,6 +245,52 @@ def plot_annual_generation(all_techs_generation, path_to_plots, colors_unique_te
     axs18.set_title('Annual Generation')
     fig18 = axs18.get_figure()
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
+
+
+def plot_supply_ratio(supply_ratio, path_to_plots):
+    axs19 = supply_ratio.plot()
+    axs19.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('peak demand / total capacity', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs19.set_title('Supply ratio')
+    fig19 = axs19.get_figure()
+    fig19.savefig(path_to_plots + '/' + 'Supply ratio.png', bbox_inches='tight', dpi=300)
+
+
+def plot_shortages(shortages, path_to_plots):
+    axs20 = shortages.plot()
+    axs20.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Number of shortage hours', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs20.set_title('Number of shortages')
+    fig20 = axs20.get_figure()
+    fig20.savefig(path_to_plots + '/' + 'Shortages.png', bbox_inches='tight', dpi=300)
+
+
+def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_unique_techs):
+    # these market values only include plants if they have been dispatched
+    axs21 = all_techs_capacity.plot(color=colors_unique_techs)
+    axs21.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Market value (Euro/Mwh)', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs21.set_title('Market values (Market revenues / Production)')
+    fig21 = axs21.get_figure()
+    fig21.savefig(path_to_plots + '/' + 'Annual market values per technology.png', bbox_inches='tight', dpi=300)
+
+
+def plot_electricity_prices(electricity_price, path_to_plots):
+    axs22 = electricity_price.plot()
+    axs22.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Market price (Eur/Mwh)', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs22.set_title('Electricity prices')
+    fig22 = axs22.get_figure()
+    fig22.savefig(path_to_plots + '/' + 'Electricity prices.png', bbox_inches='tight', dpi=300)
+    pass
 
 
 # section -----------------------------------------------------------------------------------------------data preparation
@@ -278,9 +322,7 @@ def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, uniq
         if pp.status == globalNames.power_plant_status_decommissioned:
             year = pp.dismantleTime + reps.start_simulation_year
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-            if pp.technology.name == "Lignite PSC":
-                print(pp.id)
-                print(pp.capacity)
+
         elif pp.age <= reps.current_tick:
             # graphed according to commissioned year which is determined by age.
             year_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
@@ -442,7 +484,6 @@ def prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_gene
         numeric = irrs_per_year.values.astype('float64')
         irrs_per_tech_per_year[technology_name] = np.nanmean(numeric, axis=1)
     irrs_per_tech_per_year.drop("zero", axis=1, inplace=True)
-
     return irrs_per_tech_per_year
 
 
@@ -506,79 +547,104 @@ def prepare_screening_curves_candidates(reps, year):
     return yearly_costs_candidates
 
 
-def prepare_accepted_CapacityMechanism(reps):
-    tech_names = []
-    CM = []
-    for i in reps.financialPowerPlantReports.values():
-        tech_names.append(reps.power_plants[i.name].technology.name)
-        CM.append(i.capacityMarketRevenues_in_year)
-    grouped_CM_revenues = pd.DataFrame(CM, index=tech_names,
-                                       columns=['Capacity Mechanism Revenues'])
+def prepare_accepted_CapacityMechanism(reps, unique_technologies, years_to_generate):
+    capacity_mechanisms_per_tech = pd.DataFrame(index=years_to_generate, columns=unique_technologies).fillna(0)
+    for year in years_to_generate:
+        for technology_name in unique_technologies:
+            acceptedpertech = 0
+            for power_plant in reps.get_power_plants_by_technology(technology_name):
+                bid = reps.get_bid_for_plant_and_tick(power_plant.name, year)
+                if bid != None:
+                    acceptedpertech += bid.amount
+            capacity_mechanisms_per_tech.loc[year, technology_name] = acceptedpertech
+    return capacity_mechanisms_per_tech
+
+    # for i in reps.financialPowerPlantReports.values():
+    #         tech_names.append(reps.power_plants[i.name].technology.name)
+    #         CM.append(i.capacityMarketRevenues_in_year)
+    # grouped_CM_revenues = pd.DataFrame(CM, index=tech_names,
+    #                                    columns=['Capacity Mechanism Revenues'])
     # grouped_CM_revenues = CM_revenues.groupby('index').mean()
-    return grouped_CM_revenues.T
+    return
 
 
-def market_value_per_technology():
-    # if  pp_production_in_MWh != 0:
-    #      pp_market_price =  pp_revenues /  pp_production_in_MWh
-    # else:
-    #  pp_market_price = 0
-    pass
+# def market_value_per_technology(reps, unique_technologies, years_to_generate):
+#     all_techs_generation = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
+#     for year in years_to_generate:
+#         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
+#     for technology_name in unique_technologies:
+#         capacity_per_tech = 0
+#         generation_per_tech = 0
+#         for id, v in dispatch_per_year.accepted_amount.items():
+#             if  v > 0:
+#                  pp_market_price =  pp_revenues /  pp_production_in_MWh
+#             else:
+#              pp_market_price = 0
+#     pass
 
 
 def prepare_capacity_and_generation_per_technology(reps, unique_technologies, years_to_generate):
     all_techs_capacity = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     all_techs_generation = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
+    all_techs_market_value = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
+
+    electricity_price = pd.DataFrame(index=years_to_generate).fillna(0)
+    production_per_year = pd.DataFrame(index=years_to_generate).fillna(0)
     for year in years_to_generate:
         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
+        totalproduction = 0
+        all_market_value = 0
         for technology_name in unique_technologies:
             capacity_per_tech = 0
             generation_per_tech = 0
-            for id, v in dispatch_per_year.accepted_amount.items():
+            market_value_per_tech = 0
+
+            for id, pp_production_in_MWh in dispatch_per_year.accepted_amount.items():
                 power_plant = reps.get_power_plant_by_id(id)
                 if power_plant is not None:
                     if power_plant.technology.name == technology_name:
                         capacity_per_tech += power_plant.capacity
-                        generation_per_tech += v
+                        generation_per_tech += pp_production_in_MWh
+                        if pp_production_in_MWh > 0:
+                            # revenues in Euro/production in MWh
+                            market_value_per_tech += dispatch_per_year.revenues[id] / pp_production_in_MWh
+                            totalproduction += pp_production_in_MWh
+                            all_market_value += dispatch_per_year.revenues[id] / pp_production_in_MWh
+
+            all_techs_market_value.loc[technology_name, year] = market_value_per_tech
             all_techs_capacity.loc[technology_name, year] = capacity_per_tech
             all_techs_generation.loc[technology_name, year] = generation_per_tech
-    return all_techs_capacity, all_techs_generation
+
+        electricity_price.loc[year, 1] = all_market_value / totalproduction
+        production_per_year.loc[year, 1] = totalproduction
+    return all_techs_capacity, all_techs_generation, all_techs_market_value, electricity_price, production_per_year
 
 
 # from Bart van Nobelen
-def get_shortage_hours(reps, year, capacity):
-    demand_list = []
-    if reps.country == 'DE':
-        market_zone = 'GermanElectricitySpotMarket'
-    else:
-        market_zone = 'DutchElectricitySpotMarket'
-    trend = reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices, year)
-    peak_load_without_trend = max(reps.get_hourly_demand_by_power_grid_node_and_year(reps.country)[1])
-    peak_load_volume = peak_load_without_trend * trend
-    count = 0
-    for i in reps.electricity_spot_markets.values():
-        if i.name == market_zone:
-            demand_list = i.hourlyDemand[1].values
-    for i in demand_list:
-        x = i * trend
-        if x > capacity:
-            count += 1
-    shortage_hours = count
-    supply_ratio = capacity / peak_load_volume
-    return
+def get_shortage_hours(reps, years_to_generate, capacity):
+    # demand_list = []
+    shortage_hours = pd.DataFrame(index=years_to_generate)
+    supply_ratio = pd.DataFrame(index=years_to_generate)
+    for year in years_to_generate:
+        trend = reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices,
+                                                                       year)
+        peak_load_without_trend = max(reps.get_hourly_demand_by_power_grid_node_and_year(reps.country)[1])
+        peak_load_volume = peak_load_without_trend * trend
+        count = 0
+        demand_list = reps.get_electricity_spot_market_demand()
+        for i in demand_list:
+            x = i * trend
+            if x > capacity.loc[year]:
+                count += 1
+        shortage_hours.loc[year, 0] = count
+        supply_ratio.loc[year, 0] = capacity.loc[year] / peak_load_volume
+
+    return shortage_hours, supply_ratio
 
 
-def generate_plots():
+def generate_plots(reps):
     print('Establishing and querying EmlabDB')
-    emlab_url = sys.argv[1]
-    amiris_url = sys.argv[2]
-    # have to open the amiris DB also
-    # use "Amiris" if this should be read
-    spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
-    reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
-    spinedb_reader_writer.commit('Initialize all module import structures')
-    spinedb_reader_writer.db.close_connection()
-    spinedb_reader_writer.amirisdb.close_connection()
+
     scenario_name = reps.country + str(reps.start_simulation_year) + str(reps.end_simulation_year) \
                     + "_LookAhead" + str(reps.lookAhead) + "_DisStart" + str(reps.start_year_dismantling) \
                     + "_Past" + str(reps.pastTimeHorizon) + "_MaxInv" + str(reps.maximum_investment_capacity_per_year) \
@@ -587,7 +653,7 @@ def generate_plots():
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", scenario_name)
 
     # attention: erase this:
-   # reps.current_year = 2029
+    # reps.current_year = 2029
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
 
@@ -617,25 +683,28 @@ def generate_plots():
     test_tick = 1
     test_tech = "CCGT"
 
-    annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
-    last_year_in_pipeline, last_year_decommissioned, \
-    last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
-    last_year_strategic_reserve_capacity, number_per_status, number_per_status_last_year = \
-        prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
-
     # check extension of power plants.
     # extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
     # section -----------------------------------------------------------------------------------------------Capacity Markets
-    # CM_revenues = prepare_accepted_CapacityMechanism(reps)
-    # plot_CM_revenues(CM_revenues, path_to_plots)
+    CM_revenues = prepare_accepted_CapacityMechanism(reps, unique_technologies,
+                                                     years_to_generate)
+    plot_CM_revenues(CM_revenues, path_to_plots)
 
-    # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
-    all_techs_capacity, all_techs_generation = prepare_capacity_and_generation_per_technology(reps, unique_technologies,
-                                                                                              years_to_generate)
+    # section -----------------------------------------------------------------------------------------------capacities
+    # todo: correct electricity prices
+    all_techs_capacity, all_techs_generation, all_techs_market_price, electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
+        reps, unique_technologies,
+        years_to_generate)
+    plot_electricity_prices(electricity_price, path_to_plots)
+    total_capacity = all_techs_capacity.sum(axis=0)
     plot_installed_capacity(all_techs_capacity.T, path_to_plots, colors_unique_techs)
     plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
-    capacity = 0
-    # shortages = get_shortage_hours(reps, year, capacity)
+    plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
+    shortages, supply_ratio = get_shortage_hours(reps, years_to_generate, total_capacity)
+    plot_supply_ratio(supply_ratio, path_to_plots)
+    plot_shortages(shortages, path_to_plots)
+    # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+
     irrs_per_tech_per_year = prepare_irr_per_technology_per_year(reps, unique_technologies, years_to_generate,
                                                                  first_year)
     plot_irrs_per_tech_per_year(irrs_per_tech_per_year, path_to_plots, colors_unique_techs)
@@ -656,6 +725,11 @@ def generate_plots():
     plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
                                         colors_unique_techs)
 
+    annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
+    last_year_in_pipeline, last_year_decommissioned, \
+    last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
+    last_year_strategic_reserve_capacity, number_per_status, number_per_status_last_year = \
+        prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
     '''
@@ -717,12 +791,21 @@ technology_colors = {
     "Pumped_hydro": "darkcyan"
 }
 try:
-    generate_plots()
+    emlab_url = sys.argv[1]
+    amiris_url = sys.argv[2]
+    # have to open the amiris DB also
+    # use "Amiris" if this should be read
+    spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
+    reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
+    generate_plots(reps)
+
 except Exception as e:
     logging.error('Exception occurred: ' + str(e))
     raise
 finally:
     print("finished emlab")
+    spinedb_reader_writer.db.close_connection()
+    spinedb_reader_writer.amirisdb.close_connection()
 print('===== End Generating Plots =====')
 
 # amirisdb = SpineDB(sys.argv[2])

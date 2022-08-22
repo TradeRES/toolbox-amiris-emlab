@@ -39,7 +39,9 @@ class CapacityMarketSubmitBids(MarketModule):
                 price_to_bid = 0
                 if dispatch is None:
                     print("no dispatch found for " + powerplant.name)
+                    raise
                 else:
+                    # todo: should add loans to fixed costs?
                     net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
                     if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                         price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
@@ -53,9 +55,10 @@ class CapacityMarketClearing(MarketModule):
     The class that clears the Capacity Market based on the Sloping Demand curve
     """
 
-    def __init__(self, reps: Repository):
+    def __init__(self, reps: Repository, operator):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
         self.isTheMarketCleared = False
+        self.operator = operator
         reps.dbrw.stage_init_capacitymechanisms_structure()
 
     def act(self):
@@ -70,7 +73,12 @@ class CapacityMarketClearing(MarketModule):
         peakExpectedDemand = peak_load * (expectedDemandFactor)
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
-
+        self.operator.setZone(market.country)
+        CMO_name = "CMO_" + market.country
+        try:
+            CM_operator = self.reps.sr_operator[CMO_name]
+        except:
+            CM_operator = self.operator
         clearing_price = 0
         total_supply = 0
         # Set the clearing price through the merit order
@@ -82,6 +90,7 @@ class CapacityMarketClearing(MarketModule):
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
+                    self.operator.setPlants(ppdp.plant)
 
                 elif ppdp.price < sdc.get_price_at_volume(total_supply):
                     # print(ppdp.name , " partly ACCEPTED ")
@@ -89,6 +98,7 @@ class CapacityMarketClearing(MarketModule):
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                     ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
                     total_supply += sdc.get_volume_at_price(clearing_price)
+                    self.operator.setPlants(ppdp.plant)
                     self.isTheMarketCleared = True
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
@@ -102,8 +112,13 @@ class CapacityMarketClearing(MarketModule):
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
         else:
-            print("Market is not cleared", market.name)
-            # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
+            print("Market is not cleared", CMO_name)
+        # todo: save list of power plants in the strategic reserve
+        # self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
+        #                                                     0, 0, 0, 0,
+        #                                                     self.operator.getPlants())
+
+        # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
 
             # VERIFICATION #
             #
@@ -128,7 +143,8 @@ class CapacityMarketClearing(MarketModule):
 
     def stageCapacityMechanismRevenues(self, clearing_price):
         print("staging capacity market")
-        accepted_ppdp = self.reps.get_accepted_CM_bids()
+        # todo: test that bids are found
+        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)

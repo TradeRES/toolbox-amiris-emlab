@@ -169,7 +169,7 @@ class ForwardCapacityMarketClearing(MarketModule):
 
     def stageCapacityMechanismRevenues(self, clearing_price):
         print("staging capacity market")
-        accepted_ppdp = self.reps.get_accepted_CM_bids()
+        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)

@@ -488,12 +488,6 @@ class PowerPlant(ImportObject):
     def createOrUpdateDownPayment(self, downpayment):
         self.setDownpayment(downpayment)
 
-    # def isHistoricalCvarDummyPlant(self):
-    #     return self.historicalCvarDummyPlant
-
-    # # getter and setters
-    # def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
-    #     self.historicalCvarDummyPlant = historicalCvarDummyPlant
 
 
 class Decommissioned(ImportObject):

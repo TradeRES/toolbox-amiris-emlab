@@ -13,7 +13,7 @@ class EnergyProducer(EMLabAgent):
         self.longTermContractMargin = None
         self.longTermContractPastTimeHorizon = None
         self.equityInterestRate = None
-        self.downpaymentFractionOfCash = None
+        self.downpaymentFractionOfCash = None # this is to establish if there is enough money for downpayment in investment algorithm
         self.debtRatioOfInvestments = None
         self.willingToInvest = None
         self.loanInterestRate = None
