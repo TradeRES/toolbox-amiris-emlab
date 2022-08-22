@@ -30,7 +30,7 @@ class StrategicReserveSubmitBids(MarketModule):
                 power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
                 # Get Variable and Fixed Operating Costs
-                fixed_operating_costs = powerplant.calculate_fixed_operating_cost()
+                fixed_operating_costs = powerplant.get_actual_fixed_operating_cost()
                 variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
 
                 # Calculate normalised costs
@@ -43,8 +43,8 @@ class StrategicReserveSubmitBids(MarketModule):
                     #                                                              market, power_plant_capacity,
                     #                                                              normalised_costs, self.reps.current_tick)
                     self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
-                                                                                 market, power_plant_capacity,
-                                                                                 normalised_costs, self.reps.current_tick)
+                                                                               market, power_plant_capacity,
+                                                                               normalised_costs, self.reps.current_tick)
 
 class StrategicReserveAssignment(MarketModule):
     """
@@ -60,12 +60,10 @@ class StrategicReserveAssignment(MarketModule):
         # Assign plants to Strategic Reserve per region
         for market in self.reps.capacity_markets.values():
             # Set the strategic reserve zone to the same as the market
-            self.operator.setZone(market.zone)
+            self.operator.setZone(market.country)
 
             # Retrieve peak load volume of market
-            peak_load_without_trend = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.zone)[1])
-            trend = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices, self.reps.current_year)
-            peak_load_volume = peak_load_without_trend * trend
+            peak_load_volume = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[1])
 
             # Calculate needed strategic reserve capacity
             strategic_reserve_capacity = peak_load_volume * self.operator.getReserveVolumePercentSR()
@@ -78,7 +76,7 @@ class StrategicReserveAssignment(MarketModule):
 
             # Contract plants to Strategic Reserve Operator
             contracted_strategic_reserve_capacity = 0
-            SRO_name = "SRO_" + market.zone
+            SRO_name = "SRO_" + market.country
 
             for ppdp in sorted_ppdp:
                 # If plant capacity fits in strategic reserve than contract it

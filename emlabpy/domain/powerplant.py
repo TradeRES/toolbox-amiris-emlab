@@ -9,7 +9,7 @@ import logging
 
 from domain.loans import Loan
 from util import globalNames
-
+import numpy as np
 
 class PowerPlant(ImportObject):
     def __init__(self, name):
@@ -143,6 +143,10 @@ class PowerPlant(ImportObject):
         # return fc
         if self.technology.fuel != '':
             fc = self.technology.fuel.futurePrice.values[0] / self.technology.efficiency
+            # xp = [2020, 2050]
+            # fp = [self.technology.fuel.initialprice2020, self.technology.fuel.initialprice2050]
+            # newSimulatedPrice = np.interp(reps.current_year, xp, fp)
+            # fc = newSimulatedPrice / self.technology.efficiency
         else:
             fc = 0
         return fc
