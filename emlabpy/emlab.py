@@ -50,7 +50,9 @@ run_next_year_market = False
 run_financial_results = False
 run_prepare_next_year_market_clearing = False
 run_initialize_power_plants = False
+run_pay_loans = False
 run_create_results = False
+
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -84,6 +86,9 @@ for arg in sys.argv[3:]:
         run_initialize_power_plants = True
     if arg == 'run_create_results':
         run_create_results = True
+    if arg == 'run_pay_loans':
+        run_pay_loans = True
+
 # following modules need the results from AMIRIS that are being stored in a DB
 if sys.argv[3] in globalNames.modules_need_AMIRIS:
     emlab_url = sys.argv[1]
@@ -150,8 +155,10 @@ try:  # Try statement to always close DB properly
 
     if run_financial_results:
         logging.info('Start Saving Financial Results')
+        # paying_loans = PayForLoansRole(reps)
+        # paying_loans.act_and_commit(reps.agent)
         financial_report = CreatingFinancialReports(reps)
-        financial_report.act_and_commit()  # TODO make faster
+        financial_report.act_and_commit()
         logging.info('End saving Financial Results')
 
     if run_prepare_next_year_market_clearing:
@@ -237,6 +244,12 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run short term Investments')
         short_investing.act_and_commit()
         logging.info('End Run short term Investment')
+
+    if run_pay_loans:
+        logging.info('Start paying loans')
+        paying_loans = PayForLoansRole(reps)
+        paying_loans.act_and_commit(reps.agent)
+        logging.info('End logging results')
 
     if run_create_results:
         logging.info('Start logging results')

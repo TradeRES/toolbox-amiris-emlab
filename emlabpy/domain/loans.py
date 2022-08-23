@@ -14,6 +14,9 @@ class Loan:
         self.numberOfPaymentsDone = 0
         self.loanStartTime = 0
 
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)
+
     def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
         annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
 #        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))

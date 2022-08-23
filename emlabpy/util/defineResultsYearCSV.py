@@ -1,8 +1,5 @@
 import sys
 import pandas as pd
-import os
-from pathlib import Path
-
 
 amiris_results_path = sys.argv[1]
 years_file = sys.argv[2]

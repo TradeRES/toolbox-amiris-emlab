@@ -390,6 +390,7 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     # preparing investments per iteration
     df_zeros = np.zeros(shape=(max_iteration, len(unique_candidate_power_plants)))
     installed_capacity_per_iteration = pd.DataFrame(df_zeros, columns=unique_candidate_power_plants)
+
     for invest_name, investment in reps.investments.items():
         if len(investment.invested_in_iteration) > 0:
             if str(future_year) in investment.invested_in_iteration.keys():
@@ -646,8 +647,8 @@ def generate_plots(reps):
     print('Establishing and querying EmlabDB')
 
     scenario_name = reps.country + str(reps.start_simulation_year) + str(reps.end_simulation_year) \
-                    + "_LookAhead" + str(reps.lookAhead) + "_DisStart" + str(reps.start_year_dismantling) \
-                    + "_Past" + str(reps.pastTimeHorizon) + "_MaxInv" + str(reps.maximum_investment_capacity_per_year) \
+                    + "_LA" + str(reps.lookAhead) + "_SD" + str(reps.start_year_dismantling) \
+                    + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                     + reps.simulation_name
 
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", scenario_name)

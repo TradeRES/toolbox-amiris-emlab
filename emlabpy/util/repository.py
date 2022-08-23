@@ -35,7 +35,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_groupedDE"
+        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -84,6 +84,8 @@ class Repository:
         self.national_governments = dict()
         self.governments = dict()
         self.investments = dict()
+        self.investmentDecisions = dict()
+
         self.bigBank = BigBank("0")
         self.manufacturer = PowerPlantManufacturer("0")
         self.decommissioned = dict()
@@ -351,6 +353,12 @@ class Repository:
     def get_investments(self) -> List[ PowerPlant]:
         return [i for i in self.power_plants.values()
                 if  i.status == globalNames.power_plant_status_operational]
+
+    def get_power_plants_invested_in_tick(self, tick) -> List[ PowerPlant]:
+        plants = []
+        for k, v in self.investmentDecisions.items():
+            plants.extend(v.invested_in_tick[str(tick)])
+        return  plants
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

@@ -1,9 +1,28 @@
 from domain.import_object import *
 
-class Investments(ImportObject):
+class InvestmentDecisions(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.invested_in_iteration = dict()
+        self.invested_in_tick = dict()
+#   def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+    def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
+        """"
+        This function is being read for the plotting. The investment decisions  are saved in the invest module
+        """
+        future_year, iteration = parameter_name.split('-')
+        decision_year = alternative
+        if future_year not in self.invested_in_iteration.keys():
+            self.invested_in_iteration[future_year] = [iteration]
+            self.invested_in_tick[decision_year] = [id]
+        else:
+            self.invested_in_iteration[future_year].append(iteration)
+            self.invested_in_tick[decision_year].append(id)
+
+
+class Investments(ImportObject):
+    def __init__(self, name):
+        super().__init__(name)
        # self.invested_times_per_year = dict()
         self.project_value_year = dict()
 
@@ -12,15 +31,10 @@ class Investments(ImportObject):
         This function is being read for the plotting. The investment decisions  are saved in the invest module
         """
         future_year, iteration = parameter_name.split('-')
-        if alternative == "InvestmentDecisions":
-            if future_year not in self.invested_in_iteration.keys():
-                self.invested_in_iteration[future_year] = [iteration]
-            else:
-                self.invested_in_iteration[future_year].append(iteration)
-        else: #                                                     information from the  CandidatePlantsNPV class
-            if future_year not in self.project_value_year.keys():
-                self.project_value_year[future_year] = [(int(iteration), parameter_value)]
-            else:
+        # information from the  CandidatePlantsNPV class
+        if future_year not in self.project_value_year.keys():
+            self.project_value_year[future_year] = [(int(iteration), parameter_value)]
+        else:
 
-                self.project_value_year[future_year].append((int(iteration), parameter_value))
+            self.project_value_year[future_year].append((int(iteration), parameter_value))
 

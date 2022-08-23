@@ -50,13 +50,14 @@ class Investmentdecision(DefaultModule):
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + self.reps.investmentIteration
 
+        reps.dbrw.stage_init_loans_structure()
+        reps.dbrw.stage_init_downpayments_structure()
+        reps.dbrw.stage_init_alternative(reps.current_tick)
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_init_power_plant_profits()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
         # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
-        # self.node = None
-        # self.pgtNodeLimit = Double.MAX_VALUE
 
     def act(self):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
@@ -120,15 +121,24 @@ class Investmentdecision(DefaultModule):
                     # investing in best candidate power plant as it passed the checks.
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
-                    self.reps.dbrw.stage_investment_decisions(bestCandidatePowerPlant.name, self.now,
+                    self.reps.dbrw.stage_investment_decisions(bestCandidatePowerPlant.name, newplant.name,
                                                               self.reps.investmentIteration,
-                                                              self.futureInvestmentyear)
+                                                              self.futureInvestmentyear,  self.reps.current_tick)
                     self.continue_iteration()
                     return
                 else:
-                    print("no best power plant")
+                    print("no more power plant to invest, saving loans, next iteration")
                     self.stop_iteration()
+                    # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)
+                    # saving loans
+                    new_power_plants_in_tick = self.reps.get_power_plants_invested_in_tick(self.reps.current_tick)
+
+                    for pp_name  in new_power_plants_in_tick:
+                        pp = self.reps.get_power_plant_by_id(pp_name)
+                        self.reps.dbrw.stage_loans(pp)
+                        self.reps.dbrw.stage_downpayments(pp)
+                        self.reps.dbrw.stage_cash(pp)
                 # self.agent.readytoInvest = False # TOdo
             else:
                 print("all technologies are unprofitable")
@@ -157,13 +167,18 @@ class Investmentdecision(DefaultModule):
         downPayment = investmentCostPayedByEquity
         bigbank = self.reps.bigBank
         manufacturer = self.reps.manufacturer
+        #--------------------------------------------------------------------------------------creating downpayment
         self.createSpreadOutDownPayments(self.agent, manufacturer, downPayment, newplant)
+        newplant.createOrUpdateDownPayment(loan) # make the first payment and create the loan
+
+        #--------------------------------------------------------------------------------------creating loans
         amount = self.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(),
                                              self.agent.getLoanInterestRate())
         # (self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
         loan = self.reps.createLoan(self.agent, bigbank, amount, newplant.getTechnology().getDepreciationTime(),
                                     self.reps.current_tick, newplant)
         newplant.createOrUpdateLoan(loan)
+
         return newplant
 
     def setTimeHorizon(self):
@@ -207,6 +222,10 @@ class Investmentdecision(DefaultModule):
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
 
     def createSpreadOutDownPayments(self, agent, manufacturer, totalDownPayment, plant):
+        """
+        Make first payment and create the loan
+        """
+
         buildingTime = plant.getActualLeadtime()
         # one downpayment is done
         self.reps.createCashFlow(agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",

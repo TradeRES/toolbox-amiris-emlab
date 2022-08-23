@@ -6,12 +6,12 @@ from domain.energyproducer import EnergyProducer
 from domain.import_object import *
 from random import random
 import logging
-
+from domain.actors import EMLabAgent
 from domain.loans import Loan
 from util import globalNames
 import numpy as np
 
-class PowerPlant(ImportObject):
+class PowerPlant(EMLabAgent):
     def __init__(self, name):
         super().__init__(name)
         self.name = name
@@ -51,6 +51,7 @@ class PowerPlant(ImportObject):
         self.ReceivedMoneyinEUR = 0
         self.operationalProfit = 0
         self.initialEnergyLevelInMWH = 0
+        self.cash = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         # do not import decommissioned power plants to the repository if it is not the plotting step
@@ -76,12 +77,6 @@ class PowerPlant(ImportObject):
             self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'dismantleTime':
             self.dismantleTime = int(parameter_value)
-        # elif parameter_name == 'ComissionedYear':
-        #     # for amiris data the age can be read from the commisioned year
-        #     print(self.name, "assigned age by commissioned year ")
-        #     self.commissionedYear = int(parameter_value)
-        #     self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
-
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':
@@ -94,6 +89,10 @@ class PowerPlant(ImportObject):
             self.label = parameter_value
         elif parameter_name == 'InitialEnergyLevelInMWH':
             self.initialEnergyLevelInMWH = float(parameter_value)
+        elif parameter_name == 'Cash':
+            self.cash = int(parameter_value)
+        elif alternative == "Loans":
+            setattr(self.loans, parameter_name, parameter_value)
 
     def calculate_emission_intensity(self, reps):
         # emission = 0

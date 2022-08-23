@@ -937,8 +937,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 80.7867369581832,
-            "y": -159.5334777521137,
+            "x": 78.45022498658828,
+            "y": -159.53347775211367,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1100,7 +1100,7 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -442.46507737776244,
+            "x": -454.1476372357371,
             "y": -449.319377159493,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
