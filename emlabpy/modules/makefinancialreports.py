@@ -48,8 +48,8 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
             financialPowerPlantReport.setOverallRevenue(
                 financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
-            loan_payment = powerplant.getLoan()
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs + loan_payment
+            #loan_payment = powerplant.getLoan()
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
 
             irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.reps.energy_producers[self.reps.agent])
