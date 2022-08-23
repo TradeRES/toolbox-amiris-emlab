@@ -162,19 +162,26 @@ class Investmentdecision(DefaultModule):
         print("{0} invests in technology {1} at tick {2}, with id{3}".format(self.agent.name,
                                                                              bestCandidatePowerPlant.technology.name,
                                                                              self.reps.current_tick, newid))
+        #--------------------------------------------------------------------------------------Payments
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
-        downPayment = investmentCostPayedByEquity
+        totalDownPayment = investmentCostPayedByEquity
         bigbank = self.reps.bigBank
         manufacturer = self.reps.manufacturer
         #--------------------------------------------------------------------------------------creating downpayment
-        self.createSpreadOutDownPayments(self.agent, manufacturer, downPayment, newplant)
-        newplant.createOrUpdateDownPayment(loan) # make the first payment and create the loan
-
+        #self.createSpreadOutDownPayments(self.agent, manufacturer, totalDownPayment, newplant)
+        buildingTime = newplant.getActualLeadtime()
+        #         # make the first downpayment and create the loan
+        self.reps.createCashFlow(self.agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",
+                                 self.reps.current_tick, newplant)
+        #  buildingTime - 1 because one payment is already done
+        downpayment = self.reps.createLoan(self.agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1,
+                                           self.reps.current_tick, newplant)
+        # the rest of downpayments are scheduled. Are saved to the power plant
+        newplant.createOrUpdateDownPayment(downpayment)
         #--------------------------------------------------------------------------------------creating loans
         amount = self.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(),
                                              self.agent.getLoanInterestRate())
-        # (self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
         loan = self.reps.createLoan(self.agent, bigbank, amount, newplant.getTechnology().getDepreciationTime(),
                                     self.reps.current_tick, newplant)
         newplant.createOrUpdateLoan(loan)
@@ -221,19 +228,19 @@ class Investmentdecision(DefaultModule):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
 
-    def createSpreadOutDownPayments(self, agent, manufacturer, totalDownPayment, plant):
-        """
-        Make first payment and create the loan
-        """
-
-        buildingTime = plant.getActualLeadtime()
-        # one downpayment is done
-        self.reps.createCashFlow(agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",
-                                 self.reps.current_tick, plant)
-        downpayment = self.reps.createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1,
-                                           self.reps.current_tick, plant)
-        # the rest of downpayments are scheduled
-        plant.createOrUpdateDownPayment(downpayment)
+    # def createSpreadOutDownPayments(self, agent, manufacturer, totalDownPayment, plant):
+    #     """
+    #     Make first payment and create the loan
+    #     """
+    #
+    #     buildingTime = plant.getActualLeadtime()
+    #     # one downpayment is done
+    #     self.reps.createCashFlow(agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",
+    #                              self.reps.current_tick, plant)
+    #     downpayment = self.reps.createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1,
+    #                                        self.reps.current_tick, plant)
+    #     # the rest of downpayments are scheduled
+    #     plant.createOrUpdateDownPayment(downpayment)
 
     def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate): # TODO check which one is correct
         # annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
