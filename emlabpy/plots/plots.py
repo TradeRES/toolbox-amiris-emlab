@@ -299,7 +299,7 @@ def plot_electricity_prices(electricity_price, path_to_plots):
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
-    for pp, investments in reps.investments.items():
+    for pp, investments in reps.investmentDecisions.items():
         for year, year_investments in investments.invested_in_iteration.items():
             number_investments_per_technology[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
                 year_investments)
@@ -391,13 +391,21 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     df_zeros = np.zeros(shape=(max_iteration, len(unique_candidate_power_plants)))
     installed_capacity_per_iteration = pd.DataFrame(df_zeros, columns=unique_candidate_power_plants)
 
-    for invest_name, investment in reps.investments.items():
+    for invest_name, investment in reps.investmentDecisions.items():
         if len(investment.invested_in_iteration) > 0:
             if str(future_year) in investment.invested_in_iteration.keys():
                 index_invested_iteration = list(map(int, investment.invested_in_iteration[str(future_year)]))
                 installed_capacity_per_iteration.loc[
                     index_invested_iteration, reps.candidatePowerPlants[invest_name].technology.name] = \
                     reps.candidatePowerPlants[invest_name].capacityTobeInstalled
+
+    # for invest_name, investment in reps.investmentDecisions.items():
+    #     if len(investment.invested_in_iteration) > 0:
+    #         if str(future_year) in investment.invested_in_iteration.keys():
+    #             index_invested_iteration = list(map(int, investment.invested_in_iteration[str(future_year)]))
+    #             installed_capacity_per_iteration.loc[
+    #                 index_invested_iteration, reps.candidatePowerPlants[invest_name].technology.name] = \
+    #                 reps.candidatePowerPlants[invest_name].capacityTobeInstalled
 
     return installed_capacity_per_iteration, candidate_plants_project_value
 
@@ -681,7 +689,7 @@ def generate_plots(reps):
     first_year = years_to_generate[0]
     future_year = first_year + reps.lookAhead
     last_year = years_to_generate[-1]
-    test_tick = 1
+    test_tick = 0
     test_tech = "CCGT"
 
     # check extension of power plants.

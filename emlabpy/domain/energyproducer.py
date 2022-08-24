@@ -51,8 +51,6 @@ class EnergyProducer(EMLabAgent):
             self.priceMarkUp = float(parameter_value)
         elif parameter_name == 'willingToInvest':
             self.willingToInvest = parameter_value
-        elif parameter_name == 'Cash':
-            self.cash = int(parameter_value)
 
     def predictFuelPrices(self, agent, futureTimePoint):
         # Fuel Prices

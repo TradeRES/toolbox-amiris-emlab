@@ -89,10 +89,7 @@ class PowerPlant(EMLabAgent):
             self.label = parameter_value
         elif parameter_name == 'InitialEnergyLevelInMWH':
             self.initialEnergyLevelInMWH = float(parameter_value)
-        elif parameter_name == 'Cash':
-            self.cash = int(parameter_value)
-        elif alternative == "Loans":
-            setattr(self.loans, parameter_name, parameter_value)
+
 
     def calculate_emission_intensity(self, reps):
         # emission = 0

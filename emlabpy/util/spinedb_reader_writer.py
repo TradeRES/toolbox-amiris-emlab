@@ -34,7 +34,7 @@ class SpineDBReaderWriter:
         self.financial_reports_object_classname = 'FinancialReports'
         self.loans_object_classname = 'Loans'
         self.downpayments_object_classname = "Downpayments"
-        self.cash_flows_classname = 'CashFlows'
+
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
         self.investment_decisions_classname = "InvestmentDecisions"
         self.sro_classname = 'StrategicReserveOperators'
@@ -355,7 +355,6 @@ class SpineDBReaderWriter:
     Financial results
     """
 
-
     def stage_init_financial_results_structure(self):
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
@@ -385,31 +384,31 @@ class SpineDBReaderWriter:
     def stage_init_loans_structure(self):
         self.stage_object_class(self.loans_object_classname)
         self.stage_object_parameters(self.loans_object_classname,
-                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTime',  'totalNumberOfPayments' ])
+                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
 
 
     def stage_loans(self, pp):
-        self.stage_object(self.loans_object_classname, pp.id)
-        self.stage_object_parameter_values(self.loans_object_classname, pp.id,
+        self.stage_object(self.loans_object_classname, str(pp.id))
+        self.stage_object_parameter_values(self.loans_object_classname, str(pp.id),
                                            [('amountPerPayment', pp.loan.amountPerPayment),
                                             ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
-                                            ('loanStartTime', pp.loan.loanStartTime),
-                                            ('totalNumberOfPayments', pp.loan.totalNumberOfPayments),
+                                            ('loanStartTick', pp.loan.loanStartTick),
+                                            ('totalNumberOfPayments', pp.loan.totalNumberOfPayments)
                                             ],
                                            '0')
 
     def stage_init_downpayments_structure(self):
         self.stage_object_class(self.downpayments_object_classname)
         self.stage_object_parameters(self.downpayments_object_classname,
-                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTime',  'totalNumberOfPayments' ])
+                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
 
     def stage_downpayments(self, pp):
-        self.stage_object(self.downpayments_object_classname, pp.id)
-        self.stage_object_parameter_values(self.downpayments_object_classname, pp.id,
+        self.stage_object(self.downpayments_object_classname, str(pp.id))
+        self.stage_object_parameter_values(self.downpayments_object_classname, str(pp.id),
                                            [('amountPerPayment', pp.loan.amountPerPayment),
                                             ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
-                                            ('loanStartTime', pp.loan.loanStartTime),
-                                            ('totalNumberOfPayments', pp.loan.totalNumberOfPayments),
+                                            ('loanStartTick', pp.loan.loanStartTick),
+                                            ('totalNumberOfPayments', pp.loan.totalNumberOfPayments)
                                             ],
                                            '0')
 
@@ -427,10 +426,10 @@ class SpineDBReaderWriter:
                                            '0')
 
 
-    def set_energy_producer_cash(self, agent):
+    def stage_cash_agent(self, agent):
         self.stage_object(self.energyProducer_classname, agent.name )
         self.stage_object_parameter_values(self.energyProducer_classname,  agent.name,
-                                           [('Cash',  agent.cash)
+                                           [('cash',  agent.cash)
                                             ],
                                            '0')
 
@@ -634,16 +633,12 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions': # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
-
     elif object_class_name == 'Loans':
-        new_db_line = list(db_line)
-        new_db_line[4] = 'Loans'
-        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+        add_parameter_value_to_repository(reps, db_line, reps.loanList, Loan)
     elif object_class_name == 'Downpayments':
-        new_db_line = list(db_line)
-        new_db_line[4] = 'Downpayments'
-        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
-
+        # new_db_line = list(db_line)
+        # new_db_line[4] = 'Downpayments'
+        add_parameter_value_to_repository(reps, db_line, reps.loanList, Loan)
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":

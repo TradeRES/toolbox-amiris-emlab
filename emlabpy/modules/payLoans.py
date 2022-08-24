@@ -38,4 +38,4 @@ class PayForLoansRole(DefaultModule):
             else:
                 print(plant.name , "dont have downpayment")
 
-            self.reps.dbrw.set_energy_producer_cash(self.reps.energy_producers[self.reps.agent])
+            self.reps.dbrw.stage_cash_agent(self.reps.energy_producers[self.reps.agent])

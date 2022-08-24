@@ -116,11 +116,14 @@ class Investmentdecision(DefaultModule):
 
                 # saving: operational profits from candidate plants
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
-
+                # if the power plant is correctly saved
                 if bestCandidatePowerPlant is not None:
                     # investing in best candidate power plant as it passed the checks.
                     newplant = self.invest(bestCandidatePowerPlant)
                     self.reps.dbrw.stage_new_power_plant(newplant)
+                    self.reps.dbrw.stage_loans(newplant)
+                    self.reps.dbrw.stage_downpayments(newplant)
+                    self.reps.dbrw.stage_cash_agent(self.agent)
                     self.reps.dbrw.stage_investment_decisions(bestCandidatePowerPlant.name, newplant.name,
                                                               self.reps.investmentIteration,
                                                               self.futureInvestmentyear,  self.reps.current_tick)
@@ -134,11 +137,11 @@ class Investmentdecision(DefaultModule):
                     # saving loans
                     new_power_plants_in_tick = self.reps.get_power_plants_invested_in_tick(self.reps.current_tick)
 
-                    for pp_name  in new_power_plants_in_tick:
-                        pp = self.reps.get_power_plant_by_id(pp_name)
-                        self.reps.dbrw.stage_loans(pp)
-                        self.reps.dbrw.stage_downpayments(pp)
-                        self.reps.dbrw.stage_cash(pp)
+                    # for pp_name  in new_power_plants_in_tick:
+                    #     pp = self.reps.get_power_plant_by_id(pp_name)
+                    #     self.reps.dbrw.stage_loans(pp)
+                    #     self.reps.dbrw.stage_downpayments(pp)
+                    #self.reps.dbrw.stage_cash_agent(self.agent) # there was a payment from energy producer to manufacturer
                 # self.agent.readytoInvest = False # TOdo
             else:
                 print("all technologies are unprofitable")
@@ -175,15 +178,15 @@ class Investmentdecision(DefaultModule):
         self.reps.createCashFlow(self.agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",
                                  self.reps.current_tick, newplant)
         #  buildingTime - 1 because one payment is already done
-        downpayment = self.reps.createLoan(self.agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1,
+        downpayment = self.reps.createLoan(self.agent.name, manufacturer.name, totalDownPayment / buildingTime, buildingTime - 1,
                                            self.reps.current_tick, newplant)
         # the rest of downpayments are scheduled. Are saved to the power plant
         newplant.createOrUpdateDownPayment(downpayment)
         #--------------------------------------------------------------------------------------creating loans
         amount = self.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(),
                                              self.agent.getLoanInterestRate())
-        loan = self.reps.createLoan(self.agent, bigbank, amount, newplant.getTechnology().getDepreciationTime(),
-                                    self.reps.current_tick, newplant)
+        loan = self.reps.createLoan(self.agent.name, bigbank.name, amount, newplant.getTechnology().getDepreciationTime(),
+                                    (newplant.commissionedYear - self.reps.start_simulation_year), newplant)
         newplant.createOrUpdateLoan(loan)
 
         return newplant

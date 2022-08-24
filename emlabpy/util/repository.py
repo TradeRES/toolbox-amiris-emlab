@@ -35,7 +35,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit"
+        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_wloans"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -86,8 +86,8 @@ class Repository:
         self.investments = dict()
         self.investmentDecisions = dict()
 
-        self.bigBank = BigBank("0")
-        self.manufacturer = PowerPlantManufacturer("0")
+        self.bigBank = BigBank("bank")
+        self.manufacturer = PowerPlantManufacturer("manufacturer")
         self.decommissioned = dict()
         self.market_stability_reserves = dict()
         self.load = dict()
@@ -115,23 +115,23 @@ class Repository:
     """
 
     # ----------------------------------------------------------------------------section loans
-    def createLoan(self, from_agent, to, amount, numberOfPayments, loanStartTime, plant):
+    def createLoan(self, from_agent: str, to: str, amount, numberOfPayments, loanStartTime, plant):
         loan = Loan()
         loan.setFrom(from_agent)
         loan.setTo(to)
         loan.setAmountPerPayment(amount)
         loan.setTotalNumberOfPayments(numberOfPayments)
-        loan.setRegardingPowerPlant(plant)
+        #loan.setRegardingPowerPlant(plant)
         loan.setLoanStartTime(loanStartTime)
         loan.setNumberOfPaymentsDone(0)
         plant.setLoan(loan)
-        self.loanList.append(loan)
-        if from_agent not in self.loansFromAgent.keys():
-            self.loansFromAgent['from_agent'] = []
-        self.loansFromAgent['from_agent'] = loan
-        if to not in self.loansToAgent.keys():
-            self.loansToAgent['to'] = []
-        self.loansToAgent['to'] = loan
+        #self.loanList.append(loan)
+        # if from_agent not in self.loansFromAgent.keys():
+        #     self.loansFromAgent[from_agent] = []
+        # self.loansFromAgent[from_agent] = loan
+        # if to not in self.loansToAgent.keys():
+        #     self.loansToAgent[to] = []
+        # self.loansToAgent[to] = loan
         return loan
 
     def findLoansFromAgent(self, agent):
@@ -141,14 +141,14 @@ class Repository:
         return self.loansToAgent.get(agent)
 
     # ----------------------------------------------------------------------------section Cashflow
-    def createCashFlow(self, from_agent, to, amount, type, time, plant):
+    def createCashFlow(self, from_agent: object, to: object, amount, type, time, plant):
         cashFlow = CashFlow()
-        cashFlow.setFrom(from_agent)
-        cashFlow.setTo(to)
+        cashFlow.setFrom(from_agent.name)
+        cashFlow.setTo(to.name)
         cashFlow.setMoney(amount)
         cashFlow.setType(type)
         cashFlow.setTime(time)
-        cashFlow.setRegardingPowerPlant(plant)
+       # cashFlow.setRegardingPowerPlant(plant)
         from_agent.setCash(from_agent.getCash() - amount)
         if to is not None:
             to.setCash(to.getCash() + amount)
@@ -357,7 +357,8 @@ class Repository:
     def get_power_plants_invested_in_tick(self, tick) -> List[ PowerPlant]:
         plants = []
         for k, v in self.investmentDecisions.items():
-            plants.extend(v.invested_in_tick[str(tick)])
+            if str(tick) in v.invested_in_tick.keys():
+                plants.extend(v.invested_in_tick[str(tick)])
         return  plants
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
