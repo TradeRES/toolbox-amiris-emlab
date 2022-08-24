@@ -179,14 +179,14 @@ class Investmentdecision(DefaultModule):
                                  self.reps.current_tick, newplant)
         #  buildingTime - 1 because one payment is already done
         downpayment = self.reps.createLoan(self.agent.name, manufacturer.name, totalDownPayment / buildingTime, buildingTime - 1,
-                                           self.reps.current_tick, newplant)
+                                           self.reps.current_tick, 0 , newplant)
         # the rest of downpayments are scheduled. Are saved to the power plant
         newplant.createOrUpdateDownPayment(downpayment)
         #--------------------------------------------------------------------------------------creating loans
-        amount = self.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(),
+        amount = self.reps.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(),
                                              self.agent.getLoanInterestRate())
         loan = self.reps.createLoan(self.agent.name, bigbank.name, amount, newplant.getTechnology().getDepreciationTime(),
-                                    (newplant.commissionedYear - self.reps.start_simulation_year), newplant)
+                                    (newplant.commissionedYear - self.reps.start_simulation_year), 0 ,newplant)
         newplant.createOrUpdateLoan(loan)
 
         return newplant
@@ -245,12 +245,7 @@ class Investmentdecision(DefaultModule):
     #     # the rest of downpayments are scheduled
     #     plant.createOrUpdateDownPayment(downpayment)
 
-    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate): # TODO check which one is correct
-        # annuity = -npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
-        # annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
-        annuity = totalLoan * ((1 + interestRate) ** payBackTime * (interestRate)) / (
-                (1 + interestRate) ** payBackTime - 1)
-        return annuity
+
 
     def setPowerPlantExpectations(self, powerplant, time):
         powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)

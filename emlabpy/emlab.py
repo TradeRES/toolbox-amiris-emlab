@@ -124,21 +124,24 @@ try:  # Try statement to always close DB properly
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
         # adding id to power plants
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick )
+            power_plant.set_loans_installed_pp(reps)
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
                                   str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
                                   ))
         # saving ids in the DB
-        spinedb_reader_writer.stage_power_plant_id(reps.power_plants)
+        # todo assign id to installed power plants to unifor id and name
+        spinedb_reader_writer.stage_power_plant_id_and_loans(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
     else:
         # if the id initialization was done, it is not needed to store it again.
         # then only set actual lead time, permit time, efficiencies, correct status
+        # todo: save most in the db, so that it doesnt have to be recalculated.
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick )
 
     spinedb_reader_writer.commit('Initialize all module import structures')
     print("repository complete")
@@ -146,16 +149,16 @@ try:  # Try statement to always close DB properly
     # From here on modules will be run according to the previously set booleans
     if run_decommission_module:
         logging.info('Start Run dismantle')
-        # payingLoans = PayForLoansRole(reps)
-        # payingLoans.act_and_commit()
+        payingLoans = PayForLoansRole(reps)
+        payingLoans.act_and_commit()
         dismantling = Dismantle(reps)
         dismantling.act_and_commit()
         logging.info('End Run dismantle')
 
     if run_financial_results:
         logging.info('Start Saving Financial Results')
-        # paying_loans = PayForLoansRole(reps)
-        # paying_loans.act_and_commit()
+        paying_loans = PayForLoansRole(reps)
+        paying_loans.act_and_commit()
         financial_report = CreatingFinancialReports(reps)
         financial_report.act_and_commit()
         logging.info('End saving Financial Results')

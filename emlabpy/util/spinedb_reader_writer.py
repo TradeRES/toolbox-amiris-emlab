@@ -192,13 +192,24 @@ class SpineDBReaderWriter:
     Power plants
     """
 
-    def stage_power_plant_id(self, power_plants):
+    def stage_power_plant_id_and_loans(self, power_plants):
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameters(self.powerplant_installed_classname, ["Id"])
-        for power_plant_name, values in power_plants.items():
+        self.stage_object_class(self.loans_object_classname)
+        self.stage_object_parameters(self.loans_object_classname,
+                                          ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
+        for power_plant_name, pp in power_plants.items():
             self.stage_object(self.powerplant_installed_classname, power_plant_name)
-            self.db.import_object_parameter_values(
-                [(self.powerplant_installed_classname, power_plant_name, 'Id', values.id, '0')])
+            self.stage_object(self.loans_object_classname, str(power_plant_name))
+            self.stage_object_parameter_values(self.powerplant_installed_classname, str(power_plant_name),[('Id', pp.id)],'0')
+            self.stage_object_parameter_values(self.loans_object_classname, str(power_plant_name),
+                                               [('amountPerPayment', pp.loan.amountPerPayment),
+                                                ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
+                                                ('loanStartTick', pp.loan.loanStartTick),
+                                                ('totalNumberOfPayments', pp.loan.totalNumberOfPayments)
+                                                ],
+                                               '0')
+
 
     def stage_candidate_power_plant_id(self, candidate_power_plants):
         self.stage_object_class(self.candidate_powerplant_installed_classname)
@@ -633,15 +644,15 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions': # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
-    elif object_class_name in  ['Loans', 'Downpayments'] :
+    elif object_class_name in  ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting", "run_investment_module"] :
         object_name = db_line[1]
         parameter_name = db_line[2]
         parameter_value = db_line[3]
-        parameter_alt = db_line[4]
-        if object_name not in reps.loanList.keys():
-            reps.loanList[object_name] = Loan()
-        reps.loanList[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
-        #add_parameter_value_to_repository(reps, db_line, reps.loanList, Loan)
+        pp = reps.power_plants[object_name]
+        if object_class_name == "Loans":
+            setattr( pp.loan, parameter_name, parameter_value)
+        else:
+            setattr( pp.downpayment, parameter_name, parameter_value)
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":

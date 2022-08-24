@@ -2,7 +2,7 @@
 """
 This file contains Loans
 """
-import numpy_financial as npf
+
 
 class Loan:
     def __init__(self):
@@ -18,11 +18,6 @@ class Loan:
         setattr(self, parameter_name, parameter_value)
         # todo assign name to energy producer
 
-
-    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
-        annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
-#        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
-        return annuity
 
     def getLoanStartTime(self):
         return self.loanStartTick

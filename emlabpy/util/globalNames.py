@@ -8,6 +8,22 @@ power_plant_dispatch_plan_status_awaiting = 'Awaiting'
 capacity_mechanism_contracted = "contracted"
 capacity_mechanism_not_contracted = "not contracted"
 
+CF_UNCLASSIFIED = "UNCLASSIFIED"
+CF_ELECTRICITY_SPOT = "ELECTRICITY_SPOT"
+CF_ELECTRICITY_LONGTERM = "ELECTRICITY_LONGTERM"
+CF_FIXEDOMCOST = "FIXEDOMCOST"
+CF_COMMODITY = "COMMODITY"
+CF_CO2TAX = "CO2TAX"
+CF_CO2AUCTION = "CO2AUCTION"
+CF_LOAN = "LOAN"
+CF_DOWNPAYMENT = "DOWNPAYMENT"
+CF_NATIONALMINCO2 = "NATIONALMINCO2"
+CF_STRRESPAYMENT = "STRRESPAYMENT"
+CF_CAPMARKETPAYMENT = "CAPMARKETPAYMENT"
+CF_CO2HEDGING = "CO2HEDGING"
+
+
+
 power_plant_status_operational = 'Operational'
 power_plant_status_inPipeline = 'InPipeline'
 power_plant_status_decommissioned = 'Decommissioned'

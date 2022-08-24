@@ -24,8 +24,8 @@ class PayForLoansRole(DefaultModule):
                 if loan is not None:
                     if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                         payment = loan.getAmountPerPayment()
-                                            #   ( from_agent, to,       amount,   type,         time,                     plant)
-                        self.reps.createCashFlow(self.producer, loan.getTo(), payment, CashFlow.LOAN, self.reps.current_tick, loan.getRegardingPowerPlant())
+                                            #   createCashFlow(self, from_agent: object, to: object, amount, type, time, plant):
+                        self.reps.createCashFlow(self.producer, loan.getTo() , payment, globalNames.CF_LOAN, self.reps.current_tick, loan.getRegardingPowerPlant())
                         loan.setNumberOfPaymentsDone(loan.getNumberOfPaymentsDone() + 1)
                         self.reps.dbrw.set_number_loan_payments()
                         print("Paying {0} (euro) for loan {1}".format(payment, loan))
@@ -37,7 +37,7 @@ class PayForLoansRole(DefaultModule):
                 if downpayment is not None:
                     if downpayment.getNumberOfPaymentsDone() < downpayment.getTotalNumberOfPayments():
                         payment = downpayment.getAmountPerPayment()
-                        self.reps.createCashFlow(self.producer, downpayment.getTo(), payment, CashFlow.DOWNPAYMENT, self.reps.current_tick, downpayment.getRegardingPowerPlant())
+                        self.reps.createCashFlow(self.producer, downpayment.getTo(), payment, globalNames.CF_DOWNPAYMENT, self.reps.current_tick, downpayment.getRegardingPowerPlant())
                         downpayment.setNumberOfPaymentsDone(downpayment.getNumberOfPaymentsDone() + 1)
                         self.reps.dbrw.set_number_downpayments()
                         print( "Paying {0} (euro) for downpayment {1}".format(payment, downpayment))

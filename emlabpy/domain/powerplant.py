@@ -25,8 +25,8 @@ class PowerPlant(EMLabAgent):
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.fictional_status = globalNames.power_plant_status_not_set
-        self.loan = None
-        self.downpayment = None
+        self.loan = Loan()
+        self.downpayment = Loan()
         self.dismantleTime = 0  # in terms of tick
         self.expectedEndOfLife = 0  # in terms of tick
         # scenario from artificial emlab parameters
@@ -190,8 +190,20 @@ class PowerPlant(EMLabAgent):
             tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.status = globalNames.power_plant_status_inPipeline
 
+    def set_loans_installed_pp(self, reps):
+        amountPerPayment = reps.determineLoanAnnuities(
+            self.getActualInvestedCapital() * self.owner.getDebtRatioOfInvestments(),
+            self.getTechnology().getDepreciationTime(), self.owner.getLoanInterestRate())
+        # todo : check in emlab
+        #done_payments = -self.getConstructionStartTime()
+        # startpayments = self.getConstructionStartTime()
+        done_payments = self.age
+        startpayments = - self.age
+        reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment, self.getTechnology().getDepreciationTime(),
+                        startpayments , done_payments, self)
+
     # createPowerPlant from initial database
-    def specifyPowerPlantsInstalled(self, tick):
+    def specifyPowerPlantsInstalled(self, tick ):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
@@ -207,23 +219,8 @@ class PowerPlant(EMLabAgent):
         else:
             self.setExpectedEndOfLife(  # set in terms of tick
                 tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        self.setloan(self.owner)
         self.setPowerPlantsStatusforInstalledPowerPlants()
         return self
-
-    def setloan(self, energyProducer):
-        loan = Loan()
-        loan.setFrom(energyProducer.name)
-        loan.setTo(None)  # TODO check if this is really so or ot should be bank
-        amountPerPayment = loan.determineLoanAnnuities(
-            self.getActualInvestedCapital() * energyProducer.getDebtRatioOfInvestments(),
-            self.getTechnology().getDepreciationTime(), energyProducer.getLoanInterestRate())
-        loan.setAmountPerPayment(amountPerPayment)
-        loan.setTotalNumberOfPayments(self.getTechnology().getDepreciationTime())
-        loan.setLoanStartTime(self.getConstructionStartTime())  # minus years
-        loan.setNumberOfPaymentsDone(-self.getConstructionStartTime())
-        loan.setRegardingPowerPlant(self.name)
-        self.setLoan(loan)
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
         if self.age is not None:

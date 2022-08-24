@@ -22,6 +22,7 @@ from util import globalNames
 from domain.bids import Bid
 from numpy import mean
 from domain.StrategicReserveOperator import StrategicReserveOperator
+import numpy_financial as npf
 
 class Repository:
     """
@@ -115,7 +116,7 @@ class Repository:
     """
 
     # ----------------------------------------------------------------------------section loans
-    def createLoan(self, from_agent: str, to: str, amount, numberOfPayments, loanStartTime, plant):
+    def createLoan(self, from_agent: str, to: str, amount, numberOfPayments, loanStartTime, donePayments, plant):
         loan = Loan()
         loan.setFrom(from_agent)
         loan.setTo(to)
@@ -123,7 +124,7 @@ class Repository:
         loan.setTotalNumberOfPayments(numberOfPayments)
         #loan.setRegardingPowerPlant(plant)
         loan.setLoanStartTime(loanStartTime)
-        loan.setNumberOfPaymentsDone(0)
+        loan.setNumberOfPaymentsDone(donePayments)
         plant.setLoan(loan)
         #self.loanList.append(loan)
         # if from_agent not in self.loansFromAgent.keys():
@@ -133,6 +134,15 @@ class Repository:
         #     self.loansToAgent[to] = []
         # self.loansToAgent[to] = loan
         return loan
+
+
+    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):  # TODO check which one is correct
+        annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
+        #        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
+        # annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
+        #annuity_like_emlab = totalLoan * ((1 + interestRate) ** payBackTime * (interestRate)) / (
+        #        (1 + interestRate) ** payBackTime - 1)
+        return annuity
 
     def findLoansFromAgent(self, agent):
         return self.loansFromAgent.get(agent)
