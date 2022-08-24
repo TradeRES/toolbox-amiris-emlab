@@ -388,8 +388,8 @@ class SpineDBReaderWriter:
 
 
     def stage_loans(self, pp):
-        self.stage_object(self.loans_object_classname, str(pp.id))
-        self.stage_object_parameter_values(self.loans_object_classname, str(pp.id),
+        self.stage_object(self.loans_object_classname, str(pp.name))
+        self.stage_object_parameter_values(self.loans_object_classname, str(pp.name),
                                            [('amountPerPayment', pp.loan.amountPerPayment),
                                             ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
                                             ('loanStartTick', pp.loan.loanStartTick),
@@ -403,8 +403,8 @@ class SpineDBReaderWriter:
                                      ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
 
     def stage_downpayments(self, pp):
-        self.stage_object(self.downpayments_object_classname, str(pp.id))
-        self.stage_object_parameter_values(self.downpayments_object_classname, str(pp.id),
+        self.stage_object(self.downpayments_object_classname, str(pp.name))
+        self.stage_object_parameter_values(self.downpayments_object_classname, str(pp.name),
                                            [('amountPerPayment', pp.loan.amountPerPayment),
                                             ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
                                             ('loanStartTick', pp.loan.loanStartTick),
@@ -413,14 +413,14 @@ class SpineDBReaderWriter:
                                            '0')
 
     def set_number_loan_payments(self, pp):
-        self.stage_object(self.loans_object_classname, pp.id)
-        self.stage_object_parameter_values(self.loans_object_classname, pp.id,
+        self.stage_object(self.loans_object_classname, pp.name)
+        self.stage_object_parameter_values(self.loans_object_classname, pp.name,
                                            [('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone)
                                             ],
                                            '0')
     def set_number_downpayments(self, pp):
-        self.stage_object(self.loans_object_classname, pp.id)
-        self.stage_object_parameter_values(self.loans_object_classname, pp.id,
+        self.stage_object(self.loans_object_classname, pp.name)
+        self.stage_object_parameter_values(self.loans_object_classname, pp.name,
                                            [('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone)
                                             ],
                                            '0')
@@ -633,12 +633,15 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions': # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
-    elif object_class_name == 'Loans':
-        add_parameter_value_to_repository(reps, db_line, reps.loanList, Loan)
-    elif object_class_name == 'Downpayments':
-        # new_db_line = list(db_line)
-        # new_db_line[4] = 'Downpayments'
-        add_parameter_value_to_repository(reps, db_line, reps.loanList, Loan)
+    elif object_class_name in  ['Loans', 'Downpayments'] :
+        object_name = db_line[1]
+        parameter_name = db_line[2]
+        parameter_value = db_line[3]
+        parameter_alt = db_line[4]
+        if object_name not in reps.loanList.keys():
+            reps.loanList[object_name] = Loan()
+        reps.loanList[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
+        #add_parameter_value_to_repository(reps, db_line, reps.loanList, Loan)
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":

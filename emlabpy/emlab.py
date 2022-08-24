@@ -135,7 +135,6 @@ try:  # Try statement to always close DB properly
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
     else:
-
         # if the id initialization was done, it is not needed to store it again.
         # then only set actual lead time, permit time, efficiencies, correct status
         for p, power_plant in reps.power_plants.items():
@@ -156,7 +155,7 @@ try:  # Try statement to always close DB properly
     if run_financial_results:
         logging.info('Start Saving Financial Results')
         # paying_loans = PayForLoansRole(reps)
-        # paying_loans.act_and_commit(reps.agent)
+        # paying_loans.act_and_commit()
         financial_report = CreatingFinancialReports(reps)
         financial_report.act_and_commit()
         logging.info('End saving Financial Results')
@@ -244,12 +243,12 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run short term Investments')
         short_investing.act_and_commit()
         logging.info('End Run short term Investment')
-
-    if run_pay_loans:
-        logging.info('Start paying loans')
-        paying_loans = PayForLoansRole(reps)
-        paying_loans.act_and_commit(reps.agent)
-        logging.info('End logging results')
+    #
+    # if run_pay_loans:
+    #     logging.info('Start paying loans')
+    #     paying_loans = PayForLoansRole(reps)
+    #     paying_loans.act_and_commit()
+    #     logging.info('End logging results')
 
     if run_create_results:
         logging.info('Start logging results')

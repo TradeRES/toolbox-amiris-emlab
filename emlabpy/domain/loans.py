@@ -6,8 +6,8 @@ import numpy_financial as npf
 
 class Loan:
     def __init__(self):
-        self.from_agent = None
-        self.to = None
+        self.from_agent = ""
+        self.to = ""
         self.regardingPowerPlant = None
         self.amountPerPayment = 0
         self.totalNumberOfPayments = 0
