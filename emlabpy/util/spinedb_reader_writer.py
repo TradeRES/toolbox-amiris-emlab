@@ -283,18 +283,29 @@ class SpineDBReaderWriter:
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], "0")
 
+    # def stage_init_sr_operator_structure(self):
+    #     self.stage_object_class(self.sro_classname)
+    #     self.stage_object_parameters(self.sro_classname,
+    #                                  ['zone', 'strategic_reserve_price', 'strategic_reserve_volume_percent',
+    #                                   'strategic_reserve_volume', 'cash', 'list_of_plants', "tick"])
     def stage_init_sr_operator_structure(self):
         self.stage_object_class(self.sro_classname)
         self.stage_object_parameters(self.sro_classname,
-                                     ['zone', 'strategic_reserve_price', 'strategic_reserve_volume_percent',
-                                      'strategic_reserve_volume', 'cash', 'list_of_plants', "tick"])
-
+                                     ['zone',
+                                      'strategic_reserve_volume', 'cash', 'list_of_plants' ])
+    # def stage_sr_operator(self, SRO: StrategicReserveOperator):
+    #     self.stage_object(self.sro_classname, SRO.name)
+    #     self.stage_object_parameter_values(self.sro_classname, SRO.name,
+    #                                        [('zone', SRO.zone),
+    #                                         ('strategic_reserve_price', SRO.reservePriceSR),
+    #                                         ('strategic_reserve_volume_percent', SRO.reserveVolumePercentSR),
+    #                                         ('strategic_reserve_volume', SRO.reserveVolume),
+    #                                         ('cash', SRO.cash),
+    #                                         ('list_of_plants', SRO.list_of_plants)], "0")
     def stage_sr_operator(self, SRO: StrategicReserveOperator):
         self.stage_object(self.sro_classname, SRO.name)
         self.stage_object_parameter_values(self.sro_classname, SRO.name,
                                            [('zone', SRO.zone),
-                                            ('strategic_reserve_price', SRO.reservePriceSR),
-                                            ('strategic_reserve_volume_percent', SRO.reserveVolumePercentSR),
                                             ('strategic_reserve_volume', SRO.reserveVolume),
                                             ('cash', SRO.cash),
                                             ('list_of_plants', SRO.list_of_plants)], "0")

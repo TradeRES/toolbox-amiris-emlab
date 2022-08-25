@@ -51,17 +51,16 @@ class StrategicReserveAssignment(MarketModule):
     The class clearing the Strategic Reserve Market and assigning them to the Strategic Reserve Operator
     """
 
-    def __init__(self, reps: Repository, operator: StrategicReserveOperator):
+    def __init__(self, reps: Repository ):
         super().__init__('EM-Lab Strategic Reserve: Assign Plants', reps)
         reps.dbrw.stage_init_sr_operator_structure()
-        self.operator = operator
-
+        self.operator = None
     def act(self):
         # Assign plants to Strategic Reserve per region
         for market in self.reps.capacity_markets.values():
             # Set the strategic reserve zone to the same as the market
-            self.operator.setZone(market.country)
-
+            self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+            #self.operator.setZone(market.country)
             # Retrieve peak load volume of market
             peak_load_volume = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[1])
 
@@ -76,7 +75,7 @@ class StrategicReserveAssignment(MarketModule):
 
             # Contract plants to Strategic Reserve Operator
             contracted_strategic_reserve_capacity = 0
-            SRO_name = "SRO_" + market.country
+   #         SRO_name = "SRO_" + market.country
 
             for ppdp in sorted_ppdp:
                 # If plant capacity fits in strategic reserve than contract it
@@ -99,7 +98,8 @@ class StrategicReserveAssignment(MarketModule):
             self.createCashFlowforSR(self.operator, market)
 
             # Write operator to DB
-            self.reps.create_or_update_StrategicReserveOperator(SRO_name, self.operator.getZone(),
+            self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
+                                                                self.operator.getZone(),
                                                                 self.operator.getReservePriceSR(),
                                                                 self.operator.getReserveVolumePercentSR(),
                                                                 self.operator.getReserveVolume(),

@@ -651,14 +651,15 @@ class Repository:
                                                   volumeSR: float,
                                                   cash: float,
                                                   list_of_plants: list) -> StrategicReserveOperator:
+
         SRO = next((SRO for SRO in self.sr_operator.values() if SRO.name == name), None)
         if SRO is None:
             name = ("SRO_" + zone)
             SRO = StrategicReserveOperator(name)
 
-        SRO.zone = zone
-        SRO.reservePriceSR = priceSR
-        SRO.reserveVolumePercentSR = percentSR
+        #SRO.zone = zone
+        #SRO.reservePriceSR = priceSR
+        #SRO.reserveVolumePercentSR = percentSR
         SRO.reserveVolume = volumeSR
         SRO.cash = cash
         SRO.list_of_plants = list_of_plants
