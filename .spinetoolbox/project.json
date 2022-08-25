@@ -139,6 +139,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/financial_results.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/create_results.json"
                 }
             ],
             "Importer": [
@@ -644,6 +649,50 @@
                     "specify year",
                     "left"
                 ]
+            },
+            {
+                "name": "from Capacity Mechanism to createresults",
+                "from": [
+                    "Capacity Mechanism",
+                    "right"
+                ],
+                "to": [
+                    "createresults",
+                    "left"
+                ]
+            },
+            {
+                "name": "from createresults to Financial Results",
+                "from": [
+                    "createresults",
+                    "right"
+                ],
+                "to": [
+                    "Financial Results",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to createresults",
+                "from": [
+                    "AMIRIS DB",
+                    "right"
+                ],
+                "to": [
+                    "createresults",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to createresults",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "createresults",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -815,8 +864,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1128.660047782426,
-            "y": -574.4886023431898,
+            "x": -1135.6025967251499,
+            "y": -574.4886023431899,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -915,8 +964,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -116.31711088875238,
-            "y": -144.3178127072851,
+            "x": -97.8036470414889,
+            "y": -190.60147232544378,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -937,8 +986,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 78.45022498658828,
-            "y": -159.53347775211367,
+            "x": 164.07499528018184,
+            "y": -198.87458842754853,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -984,8 +1033,8 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -675.7434341723899,
-            "y": -229.8313362680783,
+            "x": -877.0773535113801,
+            "y": -174.2909447262879,
             "specification": "Capacity Mechanism",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1006,8 +1055,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -270.3959970042727,
-            "y": -439.5909766078816,
+            "x": -263.453448061549,
+            "y": -448.8477085315133,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1040,8 +1089,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -0.09652408289048253,
-            "y": -435.1025952376745,
+            "x": -11.667438987430153,
+            "y": -451.30187610403004,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1171,8 +1220,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -346.7334983602864,
-            "y": -126.97283038545697,
+            "x": -344.41931537937853,
+            "y": -177.8848559654315,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1187,6 +1236,28 @@
                 {
                     "type": "literal",
                     "arg": "run_financial_results"
+                }
+            ]
+        },
+        "createresults": {
+            "type": "Tool",
+            "description": "",
+            "x": -590.1166601315231,
+            "y": -173.56372356809504,
+            "specification": "create results",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_create_results"
                 }
             ]
         }

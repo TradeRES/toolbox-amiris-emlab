@@ -30,7 +30,7 @@ class StrategicReserveSubmitBids(MarketModule):
                 power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
                 # Get Variable and Fixed Operating Costs
-                fixed_operating_costs = powerplant.get_actual_fixed_operating_cost()
+                fixed_operating_costs = powerplant.getActualFixedOperatingCost()
                 variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
 
                 # Calculate normalised costs
@@ -134,3 +134,4 @@ class StrategicReserveAssignment(MarketModule):
             self.reps.createCashFlow(market, operator,
                                      SR_payment_to_operator, "CAPMARKETPAYMENT", self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
+            self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)

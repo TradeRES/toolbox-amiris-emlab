@@ -142,7 +142,7 @@ class Repository:
         # annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))
         #annuity_like_emlab = totalLoan * ((1 + interestRate) ** payBackTime * (interestRate)) / (
         #        (1 + interestRate) ** payBackTime - 1)
-        return annuity
+        return - annuity
 
     def findLoansFromAgent(self, agent):
         return self.loansFromAgent.get(agent)
