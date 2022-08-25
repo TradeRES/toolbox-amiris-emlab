@@ -106,13 +106,15 @@ class CapacityMarketClearing(MarketModule):
 
         # saving capacity market accepted amount and status
         self.reps.dbrw.set_power_plant_CapacityMarket_production(sorted_ppdp, self.reps.current_tick)
-        self.stageCapacityMechanismRevenues(clearing_price)
+        self.stageCapacityMechanismRevenues(CM_operator, clearing_price)
         # save clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
         else:
             print("Market is not cleared", CMO_name)
+
+
         # todo: save list of power plants in the strategic reserve
         # self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
         #                                                     0, 0, 0, 0,
@@ -133,18 +135,17 @@ class CapacityMarketClearing(MarketModule):
             # else:
             #     logging.WARN("does not match")
 
-    # def createCashFlowforCM(self, market, clearing_price):
-    #     accepted_ppdp = self.reps.get_accepted_CM_bids()
-    #     for accepted in accepted_ppdp:
-    #         # from_agent, to, amount, type, time, plant
-    #         self.reps.createCashFlow(market , accepted.bidder, accepted.accepted_amount * clearing_price,
-    #                                  "CAPMARKETPAYMENT", self.reps.current_tick,
-    #                                   accepted.plant)
 
-    def stageCapacityMechanismRevenues(self, clearing_price):
+
+    def stageCapacityMechanismRevenues(self, market,clearing_price):
         print("staging capacity market")
         # todo: test that bids are found
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
+                                    # from_agent: object, to: object, amount, type, time, plant):
+            self.reps.createCashFlow(market , self.reps.power_plants[accepted.plant] , accepted.accepted_amount * clearing_price,
+                                     globalNames.CF_CAPMARKETPAYMENT, self.reps.current_tick,
+                                     self.reps.power_plants[accepted.plant])
+            self.reps.dbrw.stage_cash_plant(self.reps.power_plants[accepted.plant])

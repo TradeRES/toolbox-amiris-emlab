@@ -127,11 +127,12 @@ class StrategicReserveAssignment(MarketModule):
 
             # from_agent, to, amount, type, time, plant
             # Payment from operator to plant
-            self.reps.createCashFlow(operator, self.reps.energy_producers[accepted.bidder],
-                                     SR_payment_to_plant, "CAPMARKETPAYMENT", self.reps.current_tick,
+            self.reps.createCashFlow(operator, plant,
+                                     SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
+            self.reps.dbrw.stage_cash_plant(plant)
             # Payment from market to operator
             self.reps.createCashFlow(market, operator,
-                                     SR_payment_to_operator, "CAPMARKETPAYMENT", self.reps.current_tick,
+                                     SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
             self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)

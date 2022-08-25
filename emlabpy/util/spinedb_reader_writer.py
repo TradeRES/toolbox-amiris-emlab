@@ -435,7 +435,12 @@ class SpineDBReaderWriter:
                                            [('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone)
                                             ],
                                            '0')
-
+    def stage_cash_plant(self, plant: object):
+        self.stage_object(self.powerplant_installed_classname, plant.name )
+        self.stage_object_parameter_values(self.powerplant_installed_classname,  plant.name,
+                                           [('cash',  plant.cash)
+                                            ],
+                                           '0')
 
     def stage_cash_agent(self, agent):
         self.stage_object(self.energyProducer_classname, agent.name )

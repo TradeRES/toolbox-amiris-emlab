@@ -793,6 +793,11 @@
                     "type": "path",
                     "relative": true,
                     "path": "data/exported_toward_bb.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/exported_toward_bb_2050.xlsx"
                 }
             ],
             "db_references": []
@@ -809,6 +814,10 @@
             "file_selection": [
                 [
                     "<project>/data/exported_toward_bb.xlsx",
+                    true
+                ],
+                [
+                    "<project>/data/exported_toward_bb_2050.xlsx",
                     true
                 ]
             ]
