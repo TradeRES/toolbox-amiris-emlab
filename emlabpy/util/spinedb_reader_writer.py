@@ -292,7 +292,7 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.sro_classname)
         self.stage_object_parameters(self.sro_classname,
                                      ['zone',
-                                      'strategic_reserve_volume', 'cash', 'list_of_plants' ])
+                                      'reserveVolume', 'cash', 'list_of_plants' ])
     # def stage_sr_operator(self, SRO: StrategicReserveOperator):
     #     self.stage_object(self.sro_classname, SRO.name)
     #     self.stage_object_parameter_values(self.sro_classname, SRO.name,
@@ -306,7 +306,7 @@ class SpineDBReaderWriter:
         self.stage_object(self.sro_classname, SRO.name)
         self.stage_object_parameter_values(self.sro_classname, SRO.name,
                                            [('zone', SRO.zone),
-                                            ('strategic_reserve_volume', SRO.reserveVolume),
+                                            ('reserveVolume', SRO.reserveVolume),
                                             ('cash', SRO.cash),
                                             ('list_of_plants', SRO.list_of_plants)], "0")
 

@@ -55,6 +55,7 @@ class StrategicReserveAssignment(MarketModule):
         super().__init__('EM-Lab Strategic Reserve: Assign Plants', reps)
         reps.dbrw.stage_init_sr_operator_structure()
         self.operator = None
+
     def act(self):
         # Assign plants to Strategic Reserve per region
         for market in self.reps.capacity_markets.values():

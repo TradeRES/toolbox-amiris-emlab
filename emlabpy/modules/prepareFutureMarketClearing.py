@@ -64,7 +64,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         for i in self.reps.sr_operator.values():
             if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
                 powerPlantsinSR = i.list_of_plants
-                SR_price = i.strategic_reserve_price
+                SR_price = i.reservePriceSR
+
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.lookAhead
             # for plants that have passed their lifetime, assume that these will be decommissioned
