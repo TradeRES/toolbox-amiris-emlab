@@ -139,11 +139,11 @@ class PowerPlant(EMLabAgent):
         #     fc += substance_in_fuel_mix_object.share * substance_in_fuel_mix.get_price_for_tick(time) / self.efficiency
         # return fc
         if self.technology.fuel != '':
-            fc = self.technology.fuel.futurePrice.values[0] / self.technology.efficiency
             xp = [2020, 2050]
             fp = [self.technology.fuel.initialprice2020, self.technology.fuel.initialprice2050]
             newSimulatedPrice = np.interp(reps.current_year, xp, fp)
             fc = newSimulatedPrice / self.technology.efficiency
+            # fc = self.technology.fuel.futurePrice.values[0] / self.technology.efficiency
         else:
             fc = 0
         return fc

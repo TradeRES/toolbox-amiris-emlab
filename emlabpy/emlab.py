@@ -198,7 +198,7 @@ try:  # Try statement to always close DB properly
         strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
         # strategic_reserve_assignment = StrategicReserveAssignment(reps)
         strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
-        strategic_reserve = StrategicReserveAssignment(reps, strategic_reserve_operator)  # This function adds rep to class capacity markets
+        strategic_reserve = StrategicReserveAssignment(reps, strategic_reserve_operator)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
         logging.info('End strategic reserve')
@@ -208,7 +208,7 @@ try:  # Try statement to always close DB properly
         strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
         # strategic_reserve_assignment = StrategicReserveAssignment_swe(reps)
         strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
-        strategic_reserve = StrategicReserveAssignment_swe(reps, strategic_reserve_operator)  # This function adds rep to class capacity markets
+        strategic_reserve = StrategicReserveAssignment_swe(reps, strategic_reserve_operator)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
         logging.info('End strategic reserve')
@@ -218,7 +218,7 @@ try:  # Try statement to always close DB properly
         strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
         # strategic_reserve_assignment = StrategicReserveAssignment_ger(reps)
         strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
-        strategic_reserve = StrategicReserveAssignment_ger(reps, strategic_reserve_operator)  # This function adds rep to class capacity markets
+        strategic_reserve = StrategicReserveAssignment_ger(reps, strategic_reserve_operator)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
         logging.info('End strategic reserve')

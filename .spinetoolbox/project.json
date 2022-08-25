@@ -318,17 +318,6 @@
                 ]
             },
             {
-                "name": "from short investments to prepare future market",
-                "from": [
-                    "short investments",
-                    "right"
-                ],
-                "to": [
-                    "prepare future market",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB to Prepare Data Amiris",
                 "from": [
                     "EmlabDB",
@@ -585,17 +574,6 @@
                 ]
             },
             {
-                "name": "from Financial Results to short investments",
-                "from": [
-                    "Financial Results",
-                    "right"
-                ],
-                "to": [
-                    "short investments",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to Financial Results",
                 "from": [
                     "EmlabDB2",
@@ -691,6 +669,17 @@
                 ],
                 "to": [
                     "createresults",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Financial Results to prepare future market",
+                "from": [
+                    "Financial Results",
+                    "right"
+                ],
+                "to": [
+                    "prepare future market",
                     "left"
                 ]
             }
@@ -964,8 +953,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -97.8036470414889,
-            "y": -190.60147232544378,
+            "x": 84.19687823262423,
+            "y": 370.4190885429985,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1048,7 +1037,7 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "run_capacity_market"
+                    "arg": "run_strategic_reserve"
                 }
             ]
         },
