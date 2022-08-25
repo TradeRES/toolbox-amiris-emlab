@@ -25,8 +25,8 @@ class PayForLoansRole(DefaultModule):
                         self.reps.createCashFlow(plant , self.reps.bigBank , payment, globalNames.CF_LOAN, self.reps.current_tick, loan.getRegardingPowerPlant())
                         loan.setNumberOfPaymentsDone(loan.getNumberOfPaymentsDone() + 1)
                         self.reps.dbrw.set_number_loan_payments(plant)
-                        print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
-                        print("Number of payments done {0}, total needed: {1}".format( loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()))
+                        # print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
+                        # print("Number of payments done {0}, total needed: {1}".format( loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()))
 
                 downpayment = plant.getDownpayment()
                 if downpayment is not None:
@@ -35,8 +35,8 @@ class PayForLoansRole(DefaultModule):
                         self.reps.createCashFlow(plant, self.reps.manufacturer , payment, globalNames.CF_DOWNPAYMENT, self.reps.current_tick, downpayment.getRegardingPowerPlant())
                         downpayment.setNumberOfPaymentsDone(downpayment.getNumberOfPaymentsDone() + 1)
                         self.reps.dbrw.set_number_downpayments(plant)
-                        print( "Paying {0} (euro) for downpayment {1}".format(payment, plant.name))
-                        print("Number of payments done {0}, total needed: {1}".format(downpayment.getNumberOfPaymentsDone(), downpayment.getTotalNumberOfPayments()))
+                        # print( "Paying {0} (euro) for downpayment {1}".format(payment, plant.name))
+                        # print("Number of payments done {0}, total needed: {1}".format(downpayment.getNumberOfPaymentsDone(), downpayment.getTotalNumberOfPayments()))
 
                 self.reps.dbrw.stage_cash_plant(plant)
-            self.reps.dbrw.stage_cash_agent(self.agent)
+        self.reps.dbrw.stage_cash_agent(self.agent)

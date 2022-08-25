@@ -469,6 +469,16 @@ class Repository:
 
 
     # ----------------------------------------------------------------------------section Capacity Mechanisms
+
+
+    def get_strategic_reserve_operator(self, zone ) -> Optional[StrategicReserveOperator]:
+        try:
+            return next(i for i in self.sr_operator.values() if
+                        i.zone == zone)
+        except StopIteration:
+            return None
+
+
     def get_capacity_market_for_plant(self, plant: PowerPlant) -> Optional[CapacityMarket]:
         try:
             return next(i for i in self.capacity_markets.values() if
@@ -564,10 +574,10 @@ class Repository:
         return mcp
 
     # Markets
-    def get_electricity_spot_market_for_plant(self, plant: PowerPlant) -> Optional[ElectricitySpotMarket]:
+    def get_electricity_spot_market_for_country(self, country: str) -> Optional[ElectricitySpotMarket]:
         try:
             return next(i for i in self.electricity_spot_markets.values() if
-                        i.zone == plant.location)
+                        i.country == country)
         except StopIteration:
             return None
 

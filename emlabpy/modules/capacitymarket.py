@@ -114,7 +114,6 @@ class CapacityMarketClearing(MarketModule):
         else:
             print("Market is not cleared", CMO_name)
 
-
         # todo: save list of power plants in the strategic reserve
         # self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
         #                                                     0, 0, 0, 0,

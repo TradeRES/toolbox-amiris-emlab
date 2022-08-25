@@ -23,8 +23,23 @@ class ElectricitySpotMarket(Market):
         self.valueOfLostLoad = 0
         self.hourlyDemand = None
         self.demandGrowthTrend = 0.0
-        self.zone = ""
-        self.substance = ""
+        self.country = ""
+    #    self.substance = ""
+
+    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+        if parameter_name == 'valueOfLostLoad':
+            self.valueOfLostLoad = int(parameter_value)
+        if parameter_name == 'growthTrend':
+            self.demandGrowthTrend = str(parameter_value)
+        # if parameter_name == 'referencePrice':
+        #     self.referencePrice = parameter_value
+        if parameter_name == 'zone':
+            self.country = str(parameter_value)
+        if parameter_name == 'substance':
+            self.substance = str(parameter_value)
+        if parameter_name == 'demand':
+            # todo: add dynamic load according to country for amiris,
+            self.hourlyDemand = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None)
 
     def getValueOfLostLoad(self):
         return self.valueOfLostLoad
@@ -50,20 +65,7 @@ class ElectricitySpotMarket(Market):
     def setZone(self, zone):
         self.zone = zone
 
-    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'valueOfLostLoad':
-            self.valueOfLostLoad = int(parameter_value)
-        if parameter_name == 'growthTrend':
-            self.demandGrowthTrend = str(parameter_value)
-        # if parameter_name == 'referencePrice':
-        #     self.referencePrice = parameter_value
-        if parameter_name == 'zone':
-            self.zone = str(parameter_value)
-        if parameter_name == 'substance':
-            self.substance = str(parameter_value)
-        if parameter_name == 'demand':
-            # todo: add dynamic load according to country for amiris,
-            self.hourlyDemand = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None)
+
 
     def peakLoadbyZoneMarket(self):
         return max(self.hourlyDemand)

@@ -786,14 +786,9 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1618.648766258308,
-            "y": -993.12567554783,
+            "x": -1660.3040599146507,
+            "y": -826.5045009224589,
             "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "data/exported_toward_bb.xlsx"
-                },
                 {
                     "type": "path",
                     "relative": true,
@@ -812,10 +807,6 @@
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
-                [
-                    "<project>/data/exported_toward_bb.xlsx",
-                    true
-                ],
                 [
                     "<project>/data/exported_toward_bb_2050.xlsx",
                     true
@@ -1114,8 +1105,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1364.6261371104738,
-            "y": -273.7018238424556,
+            "x": -1364.626137110474,
+            "y": -276.0160068233636,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "purge_before_writing": false,

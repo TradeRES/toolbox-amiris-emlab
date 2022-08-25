@@ -649,7 +649,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions': # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
-    elif object_class_name in  ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting", "run_investment_module"] :
+    elif object_class_name in  ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting", "run_investment_module"]:
         object_name = db_line[1]
         parameter_name = db_line[2]
         parameter_value = db_line[3]
@@ -662,8 +662,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
-
-    elif object_class_name == "Profits" and reps.runningModule == "plotting"  :
+    elif object_class_name == "Profits" and reps.runningModule == "plotting":
         object_name = db_line[1]
         year, iteration = object_name.split('-')
         new_db_line = list(db_line)

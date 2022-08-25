@@ -7,21 +7,38 @@ from domain.cashflow import CashFlow
 from domain.technologies import *
 import logging
 
+from util import globalNames
+
 
 class CreatingFinancialReports(DefaultModule):
 
     def __init__(self, reps):
         super().__init__("Creating Financial Reports", reps)
         reps.dbrw.stage_init_financial_results_structure()
+        self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
+        self.addingMarketClearingIncome( )
         self.createFinancialReportsForPowerPlantsAndTick()
         print("finished financial report")
 
+
+    def addingMarketClearingIncome(self):
+        all_dispatch = self.reps.power_plant_dispatch_plans_in_year
+        wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
+        SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
+        all_revenues = 0
+        for k, dispatch in all_dispatch.items():
+            if k not in SRO.list_of_plants:
+                all_revenues += dispatch.revenues
+        self.reps.createCashFlow(wholesale_market , self.agent ,all_revenues  ,
+                                     globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
+        self.reps.dbrw.stage_cash_agent(self.agent)
+
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.agent.name):
             financialPowerPlantReport = self.reps.get_financial_report_for_plant(powerplant.name)
 
             if financialPowerPlantReport is None:
@@ -36,9 +53,6 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
 
             if dispatch == None:
-                print("no dispatch for ", powerplant.name)
-                print(powerplant.id)
-                print(self.reps.current_year)
                 raise
             financialPowerPlantReport.setVariableCosts(
                 dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
@@ -52,7 +66,7 @@ class CreatingFinancialReports(DefaultModule):
             operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
 
-            irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.reps.energy_producers[self.reps.agent])
+            irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.agent)
             financialPowerPlantReport.irr = irr
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
