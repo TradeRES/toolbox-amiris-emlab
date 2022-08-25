@@ -349,6 +349,11 @@ class Repository:
                 if i.owner.name == owner and (
                         i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
+
+    def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.status in list_of_status  ]
+
     def get_operational_power_plants_by_owner_and_technologies(self, owner: EnergyProducer, listofTechnologies) -> List[
         PowerPlant]:
         return [i for i in self.power_plants.values()

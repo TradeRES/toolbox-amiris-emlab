@@ -19,10 +19,9 @@ class CreatingFinancialReports(DefaultModule):
 
     def act(self):
         # TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
-        self.addingMarketClearingIncome( )
+        self.addingMarketClearingIncome()
         self.createFinancialReportsForPowerPlantsAndTick()
         print("finished financial report")
-
 
     def addingMarketClearingIncome(self):
         all_dispatch = self.reps.power_plant_dispatch_plans_in_year
@@ -32,13 +31,17 @@ class CreatingFinancialReports(DefaultModule):
         for k, dispatch in all_dispatch.items():
             if k not in SRO.list_of_plants:
                 all_revenues += dispatch.revenues
-        self.reps.createCashFlow(wholesale_market , self.agent ,all_revenues  ,
-                                     globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
+        self.reps.createCashFlow(wholesale_market, self.agent, all_revenues,
+                                 globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
         self.reps.dbrw.stage_cash_agent(self.agent)
 
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.agent.name):
+        for powerplant in self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
+                                                                globalNames.power_plant_status_to_be_decommissioned,
+                                                                globalNames.power_plant_status_strategic_reserve,
+                                                                ]):
+
             financialPowerPlantReport = self.reps.get_financial_report_for_plant(powerplant.name)
 
             if financialPowerPlantReport is None:
@@ -58,7 +61,7 @@ class CreatingFinancialReports(DefaultModule):
                 dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
             loans = powerplant.loan_payments_in_year
 
-            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost # without loans
+            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
             financialPowerPlantReport.setTotalCosts(yearly_costs)
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
@@ -66,32 +69,29 @@ class CreatingFinancialReports(DefaultModule):
                 financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
 
             operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
-            financialPowerPlantReport.totalProfitswLoans = operational_profit - loans
+            operational_profit_with_loans = operational_profit - loans
+            financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
-            # irr = self.getProjectIRR(powerplant, operational_profit, self.agent)
-            # financialPowerPlantReport.irr = irr
+            irr = self.getProjectIRR(powerplant, operational_profit_with_loans, self.agent)
+            financialPowerPlantReport.irr = irr
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
-    def getProjectIRR(self, pp, operational_profit, agent):
-        # Attention! loans are not considereeeeed~!!!!
-        # todo /// consider that
+    def getProjectIRR(self, pp, operational_profit_with_loans, agent):
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
         technical_lifetime = pp.technology.expected_lifetime
         buildingTime = pp.technology.expected_leadtime
         # get average profits per technology
-        fixed_costs = pp.technology.fixed_operating_costs
-        operatingProfit = operational_profit
-
         equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
-        restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+        # the rest payment is considered in the loans
+        # restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
 
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
             investmentCashFlow[i] = - equalTotalDownPaymentInstallment
         for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow[i] = operatingProfit - restPayment - fixed_costs
+            investmentCashFlow[i] = operational_profit_with_loans
         IRR = npf.irr(investmentCashFlow)
         if pd.isna(IRR):
             return -100

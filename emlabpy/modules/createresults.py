@@ -284,12 +284,12 @@ class CreatingResultsExcel(DefaultModule):
         for i in self.reps.sr_operator.values():
             if len(i.list_of_plants) != 0 and i.zone == self.country:
                 self.SR_operator_cash = i.cash
-                self.SR_volume = i.strategic_reserve_volume
+                self.SR_volume = i.reserveVolume
                 self.nr_of_powerplants_in_sr = len(i.list_of_plants)
-                if i.cash == 0 or i.strategic_reserve_volume == 0:
+                if i.cash == 0 or i.reserveVolume == 0:
                     price_per_mw = 0
                 else:
-                    price_per_mw = -i.cash/i.strategic_reserve_volume
+                    price_per_mw = -i.cash/i.reserveVolume
                 self.SR_cost_per_MW = price_per_mw
 
     def get_shortage_hours(self, year, capacity):
