@@ -178,8 +178,8 @@ try:  # Try statement to always close DB properly
     if run_capacity_market:
         logging.info('Start Run Capacity Market')
         capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-        capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
-        capacity_market_clear = CapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
+        #capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
+        capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
         capacity_market_submit_bids.act_and_commit()
         capacity_market_clear.act_and_commit()
         logging.info('End Run Capacity Market')
@@ -272,5 +272,4 @@ finally:
     print("finished emlab")
     spinedb_reader_writer.db.close_connection()
     if sys.argv[3] in globalNames.modules_need_AMIRIS:
-   # if run_short_investment_module or run_capacity_market or run_strategic_reserve or run_financial_results or run_strategic_reserve_swe or run_strategic_reserve_ger or run_forward_market:
         spinedb_reader_writer.amirisdb.close_connection()
