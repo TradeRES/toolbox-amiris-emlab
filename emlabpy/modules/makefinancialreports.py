@@ -56,33 +56,37 @@ class CreatingFinancialReports(DefaultModule):
                 raise
             financialPowerPlantReport.setVariableCosts(
                 dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
-            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
+            loans = powerplant.loan_payments_in_year
+
+            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost # without loans
             financialPowerPlantReport.setTotalCosts(yearly_costs)
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
             financialPowerPlantReport.setOverallRevenue(
                 financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
-            #loan_payment =
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
-            financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
 
-            irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.agent)
-            financialPowerPlantReport.irr = irr
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
+            financialPowerPlantReport.totalProfitswLoans = operational_profit - loans
+            financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
+            # irr = self.getProjectIRR(powerplant, operational_profit, self.agent)
+            # financialPowerPlantReport.irr = irr
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
-    def getProjectCashFlow(self, technology, operational_profit, agent):
-        # todo: get the actual investmet costs, as in Invest, if getActualInvestedCapitalperMW is modified
-        totalInvestment = technology.investment_cost_eur_MW
-        depreciationTime = technology.depreciation_time
-        technical_lifetime = technology.expected_lifetime
-        buildingTime = technology.expected_leadtime
+    def getProjectIRR(self, pp, operational_profit, agent):
+        # Attention! loans are not considereeeeed~!!!!
+        # todo /// consider that
+        totalInvestment = pp.getActualInvestedCapital()
+        depreciationTime = pp.technology.depreciation_time
+        technical_lifetime = pp.technology.expected_lifetime
+        buildingTime = pp.technology.expected_leadtime
         # get average profits per technology
-        fixed_costs = technology.fixed_operating_costs
+        fixed_costs = pp.technology.fixed_operating_costs
         operatingProfit = operational_profit
 
         equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
         restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
             investmentCashFlow[i] = - equalTotalDownPaymentInstallment

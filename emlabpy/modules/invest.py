@@ -198,7 +198,7 @@ class Investmentdecision(DefaultModule):
     def getProjectCashFlow(self, candidatepowerplant, agent):
         # technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
         technology = candidatepowerplant.technology
-        totalInvestment = self.getActualInvestedCapitalperMW(technology)
+        totalInvestment = self.getActualInvestedCapitalperMW(technology) # candidate power plants only have 1MW installed
         # candidatepowerplant.InvestedCapital = totalInvestment
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime

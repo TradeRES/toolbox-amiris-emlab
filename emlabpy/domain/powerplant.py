@@ -26,6 +26,7 @@ class PowerPlant(EMLabAgent):
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.fictional_status = globalNames.power_plant_status_not_set
         self.loan = Loan()
+        self.loan_payments_in_year = 0
         self.downpayment = Loan()
         self.dismantleTime = 0  # in terms of tick
         self.expectedEndOfLife = 0  # in terms of tick

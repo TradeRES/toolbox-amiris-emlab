@@ -15,6 +15,7 @@ class FinancialPowerPlantReport(ImportObject):
         self.production = 0
         self.powerPlantStatus = 0
         self.totalProfits = 0
+        self.totalProfitswLoans = 0
         self.tick = 0
         self.iteration = 0
         self.schedule = None

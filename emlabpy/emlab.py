@@ -158,7 +158,7 @@ try:  # Try statement to always close DB properly
     if run_financial_results:
         logging.info('Start Saving Financial Results')
         paying_loans = PayForLoansRole(reps)
-        paying_loans.act_and_commit()
+        paying_loans.act()
         financial_report = CreatingFinancialReports(reps)
         financial_report.act_and_commit()
         logging.info('End saving Financial Results')
