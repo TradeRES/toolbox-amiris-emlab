@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_wloans"
+        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dis_by_profit_wloansIRR"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -589,7 +589,7 @@ class Repository:
     def get_electricity_spot_market_demand(self) -> Optional[ElectricitySpotMarket]:
         try:
             return next(i.hourlyDemand[1] for i in self.electricity_spot_markets.values() if
-                        i.zone == self.country)
+                        i.country == self.country)
         except StopIteration:
             return None
 

@@ -55,20 +55,31 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
 
-            if dispatch == None:
-                raise
-            financialPowerPlantReport.setVariableCosts(
-                dispatch.variable_costs)  # these include already fuel, O&M, CO2 costs from AMIRIS
+            if dispatch != None:
+                yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
+                accepted_amount = dispatch.accepted_amount
+                revenues = dispatch.revenues
+                variable_costs = dispatch.variable_costs   # these include already fuel, O&M, CO2 costs from AMIRIS
+            else:
+                yearly_costs = - fixed_on_m_cost
+                accepted_amount = 0
+                revenues = 0
+                variable_costs = 0
+
             loans = powerplant.loan_payments_in_year
-
-            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
+            financialPowerPlantReport.setVariableCosts(variable_costs)
             financialPowerPlantReport.setTotalCosts(yearly_costs)
-            financialPowerPlantReport.setProduction(dispatch.accepted_amount)
-            financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
-            financialPowerPlantReport.setOverallRevenue(
-                financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
+            financialPowerPlantReport.setProduction(accepted_amount)
+            financialPowerPlantReport.setSpotMarketRevenue(revenues)
 
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + yearly_costs
+            # yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
+            # financialPowerPlantReport.setTotalCosts(yearly_costs)
+            # financialPowerPlantReport.setProduction(dispatch.accepted_amount)
+            # financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+            financialPowerPlantReport.setOverallRevenue(
+                financialPowerPlantReport.capacityMarketRevenues_in_year +  revenues)
+
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + revenues + yearly_costs
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
