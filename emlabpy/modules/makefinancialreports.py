@@ -49,6 +49,8 @@ class CreatingFinancialReports(DefaultModule):
                 financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
 
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
+            if dispatch == None:
+                raise
             fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
@@ -61,9 +63,6 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setTotalCosts( yearly_costs)
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
-
-
-
             financialPowerPlantReport.setOverallRevenue(
                 financialPowerPlantReport.capacityMarketRevenues_in_year +  dispatch.revenues)
 
