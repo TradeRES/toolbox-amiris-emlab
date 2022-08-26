@@ -65,6 +65,7 @@ class CreatingFinancialReports(DefaultModule):
                 accepted_amount = 0
                 revenues = 0
                 variable_costs = 0
+                raise
 
             loans = powerplant.loan_payments_in_year
             financialPowerPlantReport.setVariableCosts(variable_costs)
