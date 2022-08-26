@@ -18,28 +18,25 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
 
     def act(self):
-        # For every EnergyProducer
-        for energy_producer in self.reps.energy_producers.values():
+        # For every PowerPlant owned by energyProducer
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
+                self.reps.agent):
+            # Retrieve vars
+            market = self.reps.get_capacity_market_for_plant(powerplant)
+            power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
-            # For every PowerPlant owned by energyProducer
-            for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
-                    energy_producer.name):
-                # Retrieve vars
-                market = self.reps.get_capacity_market_for_plant(powerplant)
-                power_plant_capacity = powerplant.get_actual_nominal_capacity()
+            # Get Variable and Fixed Operating Costs
+            fixed_operating_costs = powerplant.getActualFixedOperatingCost()
+            variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
 
-                # Get Variable and Fixed Operating Costs
-                fixed_operating_costs = powerplant.getActualFixedOperatingCost()
-                variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
+            # Calculate normalised costs
+            normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
 
-                # Calculate normalised costs
-                normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
-
-                # Place bids on market only if plant is conventional (full capacity at cost price per MW)
-                if market != None and powerplant.technology.type == 'ConventionalPlantOperator':
-                    self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
-                                                                               market, power_plant_capacity,
-                                                                               normalised_costs, self.reps.current_tick)
+            # Place bids on market only if plant is conventional (full capacity at cost price per MW)
+            if market != None and powerplant.technology.type == 'ConventionalPlantOperator':
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
+                                                                           market, power_plant_capacity,
+                                                                           normalised_costs, self.reps.current_tick)
 
 class StrategicReserveAssignment_ger(MarketModule):
     """

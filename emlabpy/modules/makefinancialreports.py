@@ -55,32 +55,19 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
 
-            if dispatch != None:
-                yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
-                accepted_amount = dispatch.accepted_amount
-                revenues = dispatch.revenues
-                variable_costs = dispatch.variable_costs   # these include already fuel, O&M, CO2 costs from AMIRIS
-            else:
-                yearly_costs = - fixed_on_m_cost
-                accepted_amount = 0
-                revenues = 0
-                variable_costs = 0
-                raise
-
             loans = powerplant.loan_payments_in_year
-            financialPowerPlantReport.setVariableCosts(variable_costs)
-            financialPowerPlantReport.setTotalCosts(yearly_costs)
-            financialPowerPlantReport.setProduction(accepted_amount)
-            financialPowerPlantReport.setSpotMarketRevenue(revenues)
+            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
+            financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)
+            financialPowerPlantReport.setTotalCosts( yearly_costs)
+            financialPowerPlantReport.setProduction(dispatch.accepted_amount)
+            financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
 
-            # yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
-            # financialPowerPlantReport.setTotalCosts(yearly_costs)
-            # financialPowerPlantReport.setProduction(dispatch.accepted_amount)
-            # financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+
+
             financialPowerPlantReport.setOverallRevenue(
-                financialPowerPlantReport.capacityMarketRevenues_in_year +  revenues)
+                financialPowerPlantReport.capacityMarketRevenues_in_year +  dispatch.revenues)
 
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + revenues + yearly_costs
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  yearly_costs
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
@@ -95,13 +82,13 @@ class CreatingFinancialReports(DefaultModule):
         technical_lifetime = pp.technology.expected_lifetime
         buildingTime = pp.technology.expected_leadtime
         # get average profits per technology
-        equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
+        equalTotalDownPaymentInstallment = (totalInvestment * (1 -agent.debtRatioOfInvestments)) / buildingTime
         # the rest payment is considered in the loans
         # restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
 
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+            investmentCashFlow[i] = - equalTotalDownPaymentInstallment * (1 + agent.equityInterestRate)
         for i in range(buildingTime, depreciationTime + buildingTime):
             investmentCashFlow[i] = operational_profit_with_loans
         IRR = npf.irr(investmentCashFlow)

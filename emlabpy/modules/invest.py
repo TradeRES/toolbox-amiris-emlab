@@ -21,8 +21,6 @@ class Investmentdecision(DefaultModule):
     """
     The class that decides to invest according to future dispatch results
     The results are not read from the DB, but from the csv to make faster simulations.
-
-
     """
 
     def __init__(self, reps: Repository):
@@ -206,8 +204,9 @@ class Investmentdecision(DefaultModule):
         buildingTime = technology.expected_leadtime
         operatingProfit = candidatepowerplant.get_Profit()
         fixed_costs = technology.fixed_operating_costs
-        equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
-        restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+        equity = (1 - agent.debtRatioOfInvestments)
+        equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
+        restPayment = (totalInvestment *  agent.debtRatioOfInvestments)/ depreciationTime
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         # print("total investment cost in MIll", totalInvestment / 1000000)
         for i in range(0, buildingTime):

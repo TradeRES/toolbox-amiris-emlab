@@ -24,32 +24,29 @@ class CapacityMarketSubmitBids(MarketModule):
         reps.dbrw.stage_init_bids_structure()
 
     def act(self):
-        # For every EnergyProducer
-        for energy_producer in self.reps.energy_producers.values():
-
-            # For every PowerPlant owned by energyProducer
-            for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
-                    energy_producer.name):
-                # Retrieve vars
-                market = self.reps.get_capacity_market_for_plant(powerplant)
-                fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
-                capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
-                powerplant_load_factor = 1  # TODO: Power Plant Load Factor
-                dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
-                price_to_bid = 0
-                if dispatch is None:
-                    net_revenues = - fixed_on_m_cost
-                    # print("no dispatch found for " + powerplant.name)
-                    # raise
-                else:
-                    # todo: should add loans to fixed costs?
-                    net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
-                # all power plants should bid
-                if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                    price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market, \
-                                                                           capacity * powerplant.technology.peak_segment_dependent_availability,\
-                                                                           price_to_bid, self.reps.current_tick)
+        # in the future : do for every EnergyProducer
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
+                self.reps.agent):
+            # Retrieve vars
+            market = self.reps.get_capacity_market_for_plant(powerplant)
+            fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
+            capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
+            powerplant_load_factor = 1  # TODO: Power Plant Load Factor
+            dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
+            price_to_bid = 0
+            if dispatch is None:
+                net_revenues = - fixed_on_m_cost
+                print("no dispatch found for " + powerplant.id)
+                raise
+            else:
+                # todo: should add loans to fixed costs?
+                net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
+            # all power plants should bid
+            if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
+                price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
+            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market, \
+                                                                       capacity * powerplant.technology.peak_segment_dependent_availability,\
+                                                                       price_to_bid, self.reps.current_tick)
 
 
 class CapacityMarketClearing(MarketModule):

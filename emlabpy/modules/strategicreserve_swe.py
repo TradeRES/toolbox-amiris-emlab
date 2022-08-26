@@ -18,25 +18,22 @@ class StrategicReserveSubmitBids_swe(MarketModule):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
 
     def act(self):
-        # For every EnergyProducer
-        for energy_producer in self.reps.energy_producers.values():
+        # For every PowerPlant owned by energyProducer
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
+                self.reps.agent):
+            # Retrieve vars
+            market = self.reps.get_capacity_market_for_plant(powerplant)
+            power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
-            # For every PowerPlant owned by energyProducer
-            for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
-                    energy_producer.name):
-                # Retrieve vars
-                market = self.reps.get_capacity_market_for_plant(powerplant)
-                power_plant_capacity = powerplant.get_actual_nominal_capacity()
+            # Get Variable Operating Costs
+            variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
 
-                # Get Variable Operating Costs
-                variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
-
-                # Place bids on market (full capacity at cost price per MW)
-                # Only renewable plants may participate in the Swedish strategic reserve
-                if market != None and powerplant.technology.type == 'VariableRenewableOperator':
-                    self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
-                                                                               market, power_plant_capacity,
-                                                                               variable_costs, self.reps.current_tick)
+            # Place bids on market (full capacity at cost price per MW)
+            # Only renewable plants may participate in the Swedish strategic reserve
+            if market != None and powerplant.technology.type == 'VariableRenewableOperator':
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
+                                                                           market, power_plant_capacity,
+                                                                           variable_costs, self.reps.current_tick)
 
 class StrategicReserveAssignment_swe(MarketModule):
     """
