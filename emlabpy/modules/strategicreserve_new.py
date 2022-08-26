@@ -17,6 +17,7 @@ class StrategicReserveSubmitBids(MarketModule):
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
+        self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # For every PowerPlant owned by energyProducer
@@ -39,7 +40,7 @@ class StrategicReserveSubmitBids(MarketModule):
                 # self.reps.create_or_update_power_plant_StrategicReserve_plan(powerplant, energy_producer,
                 #                                                              market, power_plant_capacity,
                 #                                                              normalised_costs, self.reps.current_tick)
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
                                                                            market, power_plant_capacity,
                                                                            normalised_costs, self.reps.current_tick)
 

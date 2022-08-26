@@ -16,6 +16,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
+        self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # For every PowerPlant owned by energyProducer
@@ -34,7 +35,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
             # Place bids on market only if plant is conventional (full capacity at cost price per MW)
             if market != None and powerplant.technology.type == 'ConventionalPlantOperator':
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
                                                                            market, power_plant_capacity,
                                                                            normalised_costs, self.reps.current_tick)
 

@@ -22,11 +22,12 @@ class CapacityMarketSubmitBids(MarketModule):
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
+        self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # in the future : do for every EnergyProducer
         for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
-                self.reps.agent):
+                self.agent.name):
             # Retrieve vars
             market = self.reps.get_capacity_market_for_plant(powerplant)
             fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
@@ -43,7 +44,7 @@ class CapacityMarketSubmitBids(MarketModule):
             # all power plants should bid
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
-            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer, market, \
+            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, \
                                                                        capacity * powerplant.technology.peak_segment_dependent_availability,\
                                                                        price_to_bid, self.reps.current_tick)
 

@@ -16,6 +16,7 @@ class StrategicReserveSubmitBids_swe(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
+        self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # For every PowerPlant owned by energyProducer
@@ -31,7 +32,7 @@ class StrategicReserveSubmitBids_swe(MarketModule):
             # Place bids on market (full capacity at cost price per MW)
             # Only renewable plants may participate in the Swedish strategic reserve
             if market != None and powerplant.technology.type == 'VariableRenewableOperator':
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, energy_producer,
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
                                                                            market, power_plant_capacity,
                                                                            variable_costs, self.reps.current_tick)
 
