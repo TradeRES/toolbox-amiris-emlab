@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dis_by_profit_wloansIRR"
+        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dis_by_profit_NL"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent

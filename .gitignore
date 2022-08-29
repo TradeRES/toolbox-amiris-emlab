@@ -23,7 +23,6 @@ logs/
 amiris/
 *amiris-jar-with-dependencies*
 data/powerplantsGermany/
-amiris_workflow/amiris-config/data
 amiris_workflow/amiris/
 amiris_workflow/amiris-config/scenario.yaml
 amiris_workflow/output/amiris_results.csv

@@ -95,6 +95,7 @@ class PrepareMarket(DefaultModule):
                 Co2Prices.append(fuel_price)
             elif substance.name == "electricity":
                 new_demand = demand.copy()
+                print(fuel_price)
                 new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
                 new_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
 

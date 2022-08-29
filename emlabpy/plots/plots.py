@@ -848,8 +848,9 @@ technology_colors = {
     "Pumped_hydro": "darkcyan"
 }
 try:
-    name = "DE20202030_LA4_SD10_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_no_dismantle"
+    #name = "DE20202030_LA4_SD10_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_no_dismantle"
     #name = "DE20202030_LA4_SD4_PH3_MI10000futureMarketWithHistoricProfit_groupedDE_dis_by_profit_wloansIRR"
+    name = ""
     if name == "":
         emlab_url = sys.argv[1]
         amiris_url = sys.argv[2]
