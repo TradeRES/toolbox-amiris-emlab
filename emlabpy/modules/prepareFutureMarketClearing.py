@@ -110,8 +110,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         startfutureyear = self.reps.start_simulation_year +   self.reps.lookAhead
                         #  self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
         self.simulation_year = self.reps.current_year + self.reps.lookAhead
-        #self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
         self.Years =  [self.simulation_year]
+
 
     def setExpectations(self):
         """

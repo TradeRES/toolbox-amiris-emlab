@@ -95,8 +95,13 @@ class CreatingFinancialReports(DefaultModule):
             return -100
         else:
             return round(IRR, 4)
-
-
+            # if plant.getFuelMix() is None:
+            #     plant.setFuelMix(java.util.HashSet())
+            # for share in plant.getFuelMix():
+            #     amount = share.getShare() * totalSupply
+            #     substance = share.getSubstance()
+            #     substanceCost = findLastKnownPriceForSubstance(substance) * amount
+            #     financialPowerPlantReport.setCommodityCosts(financialPowerPlantReport.getCommodityCosts() + substanceCost)
             # TODO add cash flows
             # cashFlows = self.reps.getCashFlowsForPowerPlant(plant, tick)
             # financialPowerPlantReport.setCo2Costs(self.calculateCO2CostsOfPowerPlant(cashFlows))
@@ -140,3 +145,14 @@ class CreatingFinancialReports(DefaultModule):
     #     toReturn = cashFlows.stream().filter(lambda p : p.getType() == emlab.gen.domain.contract.CashFlow.CO2HEDGING).collect(java.util.stream.Collectors.summarizingDouble(emlab.gen.domain.contract.CashFlow::getMoney)).getSum()
     #     java.util.logging.Logger.getGlobal().finer("Income CO2 Hedging" + toReturn)
     #     return toReturn
+    #
+    # def calculateCO2CostsOfPowerPlant(self, list):
+    #     return list.stream().filter(lambda p : (p.getType() == emlab.gen.domain.contract.CashFlow.CO2TAX) or (p.getType() == emlab.gen.domain.contract.CashFlow.CO2AUCTION) or (p.getType() == emlab.gen.domain.contract.CashFlow.NATIONALMINCO2)).mapToDouble(lambda p : p.getMoney()).sum()
+
+    # def calculateFixedCostsOfPowerPlant(self, list):
+    #     pass
+    #     #return list.stream().filter(lambda p : (p.getType() ==  CashFlow.FIXEDOMCOST) or (p.getType() == CashFlow.LOAN) or (p.getType() == CashFlow.DOWNPAYMENT)).mapToDouble(lambda p : p.getMoney()).sum()
+    #
+    # def calculateFixedOMCostsOfPowerPlant(self, list):
+    #     pass
+    #     #return list.stream().filter(lambda p : (p.getType() == CashFlow.FIXEDOMCOST)).mapToDouble(lambda p : p.getMoney()).sum()

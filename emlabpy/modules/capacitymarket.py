@@ -63,13 +63,13 @@ class CapacityMarketClearing(MarketModule):
     def act(self):
         print("capacity market clearing")
         market = self.reps.get_capacity_market_in_country(self.reps.country)
-        peak_load = max(
-            self.reps.get_hourly_demand_by_country(market.country)[
-                1])  # todo later it should be also per year
-        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.simulated_prices,
-                                                                                           self.reps.current_year)
+        # Retrieve peak load volume of market
+        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        print(str(peak_load))
+        expectedDemandFactor = self.reps.get_expected_demand_factor(self.reps.current_year)
+        print(str(expectedDemandFactor))
         peakExpectedDemand = peak_load * (expectedDemandFactor)
+        print(str(peakExpectedDemand))
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
         # self.operator.setZone(market.country)

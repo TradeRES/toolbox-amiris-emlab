@@ -23,6 +23,7 @@ from domain.bids import Bid
 from numpy import mean
 from domain.StrategicReserveOperator import StrategicReserveOperator
 import numpy_financial as npf
+import numpy as np
 
 class Repository:
     """
@@ -36,7 +37,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dis_by_profit_NL"
+        self.simulation_name = "futureMarketWithHistoricProfit_extendedDE_dis_by_profit_wloansIRR"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -657,8 +658,6 @@ class Repository:
 
     def create_or_update_StrategicReserveOperator(self, name: str,
                                                   zone: str,
-                                                  priceSR: float,
-                                                  percentSR: float,
                                                   volumeSR: float,
                                                   cash: float,
                                                   list_of_plants: list) -> StrategicReserveOperator:
@@ -699,6 +698,11 @@ class Repository:
                 i.technology.type == 'ConventionalPlantOperator' and \
                 (i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_inPipeline)]
 
+    def get_expected_demand_factor(self, year):
+        xp = [2020, 2054]
+        fp = [1, 0.8628666666666667]
+        # fp = [1, 0.879]
+        return np.interp(year, xp, fp)
 
 
     def __str__(self):

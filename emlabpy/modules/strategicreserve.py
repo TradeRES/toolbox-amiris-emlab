@@ -17,8 +17,8 @@ class StrategicReserve(MarketModule):
         for market in self.reps.capacity_markets.values():
             node = self.reps.get_power_grid_node_by_zone(market.parameters['zone'])
             peak_load = max(
-                self.reps.get_hourly_demand_by_country(node, self.reps.current_tick +
-                                                       self.reps.start_simulation_year))
+                self.reps.get_hourly_demand_by_power_grid_node_and_year(node, self.reps.current_tick +
+                                                                        self.reps.start_simulation_year))
             trend = ElectricitySpotMarket.getDemandGrowthTrend().getValue(self.reps.current_tick)
             # trend is calculated in substances
             peakLoadforMarket = trend * peakLoadforMarket
