@@ -6,13 +6,12 @@ from domain.energyproducer import EnergyProducer
 from domain.import_object import *
 from random import random
 import logging
-
+from domain.actors import EMLabAgent
 from domain.loans import Loan
 from util import globalNames
 import numpy as np
 
-
-class PowerPlant(ImportObject):
+class PowerPlant(EMLabAgent):
     def __init__(self, name):
         super().__init__(name)
         self.name = name
@@ -26,8 +25,9 @@ class PowerPlant(ImportObject):
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.fictional_status = globalNames.power_plant_status_not_set
-        self.loan = None
-        self.downpayment = None
+        self.loan = Loan()
+        self.loan_payments_in_year = 0
+        self.downpayment = Loan()
         self.dismantleTime = 0  # in terms of tick
         self.expectedEndOfLife = 0  # in terms of tick
         # scenario from artificial emlab parameters
@@ -52,10 +52,11 @@ class PowerPlant(ImportObject):
         self.ReceivedMoneyinEUR = 0
         self.operationalProfit = 0
         self.initialEnergyLevelInMWH = 0
+        self.cash = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         # do not import decommissioned power plants to the repository if it is not the plotting step
-        if reps.dbrw.read_investments == False and self.name in (
+        if reps.runningModule != "plotting" and self.name in (
                 reps.decommissioned["Decommissioned"]).Decommissioned:
             return
         elif parameter_name == 'Status':
@@ -77,12 +78,6 @@ class PowerPlant(ImportObject):
             self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'dismantleTime':
             self.dismantleTime = int(parameter_value)
-        # elif parameter_name == 'ComissionedYear':
-        #     # for amiris data the age can be read from the commisioned year
-        #     print(self.name, "assigned age by commissioned year ")
-        #     self.commissionedYear = int(parameter_value)
-        #     self.age = reps.current_tick + reps.start_simulation_year - int(parameter_value)
-
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':
@@ -95,6 +90,7 @@ class PowerPlant(ImportObject):
             self.label = parameter_value
         elif parameter_name == 'InitialEnergyLevelInMWH':
             self.initialEnergyLevelInMWH = float(parameter_value)
+
 
     def calculate_emission_intensity(self, reps):
         # emission = 0
@@ -116,7 +112,7 @@ class PowerPlant(ImportObject):
             emission = 0
         return emission
 
-    def get_actual_fixed_operating_cost(self):
+    def calculate_fixed_operating_cost(self):
         per_mw = self.technology.get_fixed_operating_cost(self.constructionStartTime +
                                                           int(self.technology.expected_leadtime) +
                                                           int(self.technology.expected_permittime))
@@ -195,8 +191,20 @@ class PowerPlant(ImportObject):
             tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.status = globalNames.power_plant_status_inPipeline
 
+    def set_loans_installed_pp(self, reps):
+        amountPerPayment = reps.determineLoanAnnuities(
+            self.getActualInvestedCapital() * self.owner.getDebtRatioOfInvestments(),
+            self.getTechnology().getDepreciationTime(), self.owner.getLoanInterestRate())
+        # todo : check in emlab
+        #done_payments = -self.getConstructionStartTime()
+        # startpayments = self.getConstructionStartTime()
+        done_payments = self.age
+        startpayments = - self.age
+        reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment, self.getTechnology().getDepreciationTime(),
+                        startpayments , done_payments, self)
+
     # createPowerPlant from initial database
-    def specifyPowerPlantsInstalled(self, tick):
+    def specifyPowerPlantsInstalled(self, tick ):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
@@ -212,23 +220,8 @@ class PowerPlant(ImportObject):
         else:
             self.setExpectedEndOfLife(  # set in terms of tick
                 tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        self.setloan(self.owner)
         self.setPowerPlantsStatusforInstalledPowerPlants()
         return self
-
-    def setloan(self, energyProducer):
-        loan = Loan()
-        loan.setFrom(energyProducer.name)
-        loan.setTo(None)  # TODO check if this is really so or ot should be bank
-        amountPerPayment = loan.determineLoanAnnuities(
-            self.getActualInvestedCapital() * energyProducer.getDebtRatioOfInvestments(),
-            self.getTechnology().getDepreciationTime(), energyProducer.getLoanInterestRate())
-        loan.setAmountPerPayment(amountPerPayment)
-        loan.setTotalNumberOfPayments(self.getTechnology().getDepreciationTime())
-        loan.setLoanStartTime(self.getConstructionStartTime())  # minus years
-        loan.setNumberOfPaymentsDone(-self.getConstructionStartTime())
-        loan.setRegardingPowerPlant(self.name)
-        self.setLoan(loan)
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
         if self.age is not None:
@@ -493,12 +486,6 @@ class PowerPlant(ImportObject):
     def createOrUpdateDownPayment(self, downpayment):
         self.setDownpayment(downpayment)
 
-    # def isHistoricalCvarDummyPlant(self):
-    #     return self.historicalCvarDummyPlant
-
-    # # getter and setters
-    # def setHistoricalCvarDummyPlant(self, historicalCvarDummyPlant):
-    #     self.historicalCvarDummyPlant = historicalCvarDummyPlant
 
 
 class Decommissioned(ImportObject):

@@ -54,9 +54,7 @@ class CandidatePowerPlant(PowerPlant):
         #self.calculateAndSetActualInvestedCapital(tick)
         self.calculateAndSetActualFixedOperatingCosts(tick)
         self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-        # print("specifyTemporaryPowerPlant tick", tick,  "permit", self.getActualPermittime() ,
-        #       "actuallead" ,self.getActualLeadtime() ,"lifetime",  self.getTechnology().getExpectedLifetime(),
-        #       "setExpectedEndOfLife", self.expectedEndOfLife)
+
         return self
 
     def setConstructionStartTime(self):

@@ -5,13 +5,15 @@ class StrategicReserveOperator(ImportObject):
 
     def __init__(self, name):
         super().__init__(name)
-
         self.reserveVolume = 0
         self.zone = None
-        self.reservePriceSR = 800
-        self.reserveVolumePercentSR = 0.06 # todo add this to
+        self.reservePriceSR = 0
+        self.reserveVolumePercentSR = 0
         self.cash = 0
         self.list_of_plants = []
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)
 
     def getReserveVolume(self):
         return self.reserveVolume
@@ -46,8 +48,6 @@ class StrategicReserveOperator(ImportObject):
     def getPlants(self):
         return self.list_of_plants
 
-    def setPlants(self, plant):
-        self.list_of_plants.append(plant)
+    def setPlants(self, plants):
+        self.list_of_plants = plants
 
-    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
-        setattr(self, parameter_name, parameter_value)

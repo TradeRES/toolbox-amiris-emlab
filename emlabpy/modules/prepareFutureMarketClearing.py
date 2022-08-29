@@ -64,37 +64,37 @@ class PrepareFutureMarketClearing(PrepareMarket):
         for i in self.reps.sr_operator.values():
             if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
                 powerPlantsinSR = i.list_of_plants
-                SR_price = i.strategic_reserve_price
+                SR_price = i.reservePriceSR
+
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.reps.lookAhead
+            # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick >= 0:
-                    profit = self.calculateAveragePastOperatingProfit(powerplant, horizon) #attention change this to IRR
-                    # profit = self.calculateAveragePastIRR(powerplant, horizon)
+                    # calculate the IRR
+                    profit = self.calculateAveragePastOperatingProfit(powerplant, horizon)
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.status = globalNames.power_plant_status_decommissioned
                     else:
                         powerplant.fictional_status = globalNames.power_plant_status_operational
                         self.power_plants_list.append(powerplant)
-                        print(profit)
                 else:
                     powerplant.fictional_status = globalNames.power_plant_status_operational
                     self.power_plants_list.append(powerplant)
-                # todo better to make decisions according to expected profit and expected participation in capacity market
+                # todo better to make decisions according to expected profit and expected participation in capacity market/strategic reserve
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
                 #powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
                 powerplant.owner = 'StrategicReserveOperator'
                 powerplant.technology.variable_operating_costs = SR_price
-                #self.power_plants_list[powerplant.name] = powerplant
-                print("added in SR", powerplant.name)
+                #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                 self.power_plants_list.append(powerplant)
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
-                #self.power_plants_list[powerplant.name] = powerplant
                 self.power_plants_list.append(powerplant)
+
             elif powerplant.commissionedYear > self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
                 print("--------------------- in pipeline", powerplant.name)
@@ -110,7 +110,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         startfutureyear = self.reps.start_simulation_year +   self.reps.lookAhead
                         #  self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
         self.simulation_year = self.reps.current_year + self.reps.lookAhead
-        self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
+        self.Years =  [self.simulation_year]
 
 
     def setExpectations(self):
@@ -123,6 +123,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)  # todo: save this as a map in DB
+
+
+
 
 
     def calculateAveragePastOperatingProfit(self, plant, horizon ):

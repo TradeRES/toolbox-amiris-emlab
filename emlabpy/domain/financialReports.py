@@ -15,6 +15,7 @@ class FinancialPowerPlantReport(ImportObject):
         self.production = 0
         self.powerPlantStatus = 0
         self.totalProfits = 0
+        self.totalProfitswLoans = 0
         self.tick = 0
         self.iteration = 0
         self.schedule = None
@@ -43,16 +44,17 @@ class FinancialPowerPlantReport(ImportObject):
             else:
                 self.capacityMarketRevenues_in_year = 0
 
-        # elif parameter_name == 'irr':
-        #     array = parameter_value.to_dict()
-        #     df = pd.DataFrame(array['data'])
-        #     df.set_index(0, inplace=True)
-        #     if str(reps.current_tick) in df.index:
-        #         self.irr_in_year = df.loc[str(reps.current_tick)][1]
-        #     else:
-        #         self.irr_in_year = 0
-        #     pass
-
+        elif reps.runningModule == "plotting" and  parameter_name in ['irr', 'totalProfitswLoans', 'totalProfits']:
+            array = parameter_value.to_dict()
+            df = pd.DataFrame(array['data'])
+            df.set_index(0, inplace=True)
+            df.index.astype('int64')
+            if parameter_name == 'irr':
+                self.irr = df
+            elif parameter_name == 'totalProfitswLoans':
+                self.totalProfitswLoans = df
+            elif parameter_name == 'totalProfits':
+                self.totalProfits = df
 
     def getTime(self):
         return self.tick

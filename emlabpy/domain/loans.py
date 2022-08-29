@@ -2,28 +2,28 @@
 """
 This file contains Loans
 """
-import numpy_financial as npf
+
 
 class Loan:
     def __init__(self):
-        self.from_agent = None
-        self.to = None
+        self.from_agent = ""
+        self.to = ""
         self.regardingPowerPlant = None
         self.amountPerPayment = 0
         self.totalNumberOfPayments = 0
         self.numberOfPaymentsDone = 0
-        self.loanStartTime = 0
+        self.loanStartTick = 0
 
-    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
-        annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
-#        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
-        return annuity
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)
+        # todo assign name to energy producer
+
 
     def getLoanStartTime(self):
-        return self.loanStartTime
+        return self.loanStartTick
 
     def setLoanStartTime(self, loanStartTime):
-        self.loanStartTime = loanStartTime
+        self.loanStartTick = loanStartTime
 
     def getTotalNumberOfPayments(self):
         return self.totalNumberOfPayments

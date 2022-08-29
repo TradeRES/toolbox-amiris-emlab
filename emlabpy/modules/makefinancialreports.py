@@ -7,21 +7,41 @@ from domain.cashflow import CashFlow
 from domain.technologies import *
 import logging
 
+from util import globalNames
+
 
 class CreatingFinancialReports(DefaultModule):
 
     def __init__(self, reps):
         super().__init__("Creating Financial Reports", reps)
         reps.dbrw.stage_init_financial_results_structure()
+        self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
+        self.addingMarketClearingIncome()
         self.createFinancialReportsForPowerPlantsAndTick()
         print("finished financial report")
 
+    def addingMarketClearingIncome(self):
+        all_dispatch = self.reps.power_plant_dispatch_plans_in_year
+        wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
+        SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
+        all_revenues = 0
+        for k, dispatch in all_dispatch.items():
+            if k not in SRO.list_of_plants:
+                all_revenues += dispatch.revenues
+        self.reps.createCashFlow(wholesale_market, self.agent, all_revenues,
+                                 globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
+        self.reps.dbrw.stage_cash_agent(self.agent)
+
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+        for powerplant in self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
+                                                                globalNames.power_plant_status_to_be_decommissioned,
+                                                                globalNames.power_plant_status_strategic_reserve,
+                                                                ]):
+
             financialPowerPlantReport = self.reps.get_financial_report_for_plant(powerplant.name)
 
             if financialPowerPlantReport is None:
@@ -29,50 +49,47 @@ class CreatingFinancialReports(DefaultModule):
                 financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
 
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
-            fixed_on_m_cost = powerplant.get_actual_fixed_operating_cost()
+            if dispatch == None:
+                raise
+            fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
 
-            if dispatch != None:
-                yearly_costs = - dispatch.variable_costs - fixed_on_m_cost
-                accepted_amount = dispatch.accepted_amount
-                revenues = dispatch.revenues
-                variable_costs = dispatch.variable_costs   # these include already fuel, O&M, CO2 costs from AMIRIS
-            else:
-                yearly_costs = - fixed_on_m_cost
-                accepted_amount = 0
-                revenues = 0
-                variable_costs = 0
+            loans = powerplant.loan_payments_in_year
+            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
+            financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)
+            financialPowerPlantReport.setTotalCosts( yearly_costs)
+            financialPowerPlantReport.setProduction(dispatch.accepted_amount)
+            financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+            financialPowerPlantReport.setOverallRevenue(
+                financialPowerPlantReport.capacityMarketRevenues_in_year +  dispatch.revenues)
 
-            financialPowerPlantReport.setVariableCosts(variable_costs)
-            financialPowerPlantReport.setTotalCosts(yearly_costs)
-            financialPowerPlantReport.setProduction(accepted_amount)
-            financialPowerPlantReport.setSpotMarketRevenue(revenues)
-            financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.capacityMarketRevenues_in_year + revenues)
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + revenues + yearly_costs
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  yearly_costs
+            operational_profit_with_loans = operational_profit - loans
+            financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
-            irr = self.getProjectCashFlow(powerplant.technology, operational_profit, self.reps.energy_producers[self.reps.agent])
+            irr = self.getProjectIRR(powerplant, operational_profit_with_loans, self.agent)
             financialPowerPlantReport.irr = irr
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
 
-    def getProjectCashFlow(self, technology, average_profit, agent):
-        totalInvestment = technology.investment_cost_eur_MW  # todo: get the actual investmet costs, as in Invest, if getActualInvestedCapitalperMW is modified
-        depreciationTime = technology.depreciation_time
-        technical_lifetime = technology.expected_lifetime
-        buildingTime = technology.expected_leadtime
+    def getProjectIRR(self, pp, operational_profit_with_loans, agent):
+        totalInvestment = pp.getActualInvestedCapital()
+        depreciationTime = pp.technology.depreciation_time
+        technical_lifetime = pp.technology.expected_lifetime
+        buildingTime = pp.technology.expected_leadtime
         # get average profits per technology
-        fixed_costs = technology.fixed_operating_costs
-        operatingProfit = average_profit
-        equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
-        restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+        equalTotalDownPaymentInstallment = (totalInvestment * (1 -agent.debtRatioOfInvestments)) / buildingTime
+        # the rest payment is considered in the loans
+        # restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+            investmentCashFlow[i] = - equalTotalDownPaymentInstallment * (1 + agent.equityInterestRate)
         for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow[i] = operatingProfit - restPayment - fixed_costs
+            investmentCashFlow[i] = operational_profit_with_loans
         IRR = npf.irr(investmentCashFlow)
         if pd.isna(IRR):
             return -100

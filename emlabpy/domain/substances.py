@@ -50,7 +50,10 @@ class Substance(ImportObject):
     def get_price_for_next_tick(self, reps, tick, year, substance):
         if tick < reps.start_year_fuel_trends or substance.name == "CO2":
             if substance.name == "electricity":
-                self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year. TODO
+                xp = [2020, 2050]
+                fp = [1, 0.879]
+                self.newSimulatedPrice = np.interp(year, xp, fp)
+                # self.newSimulatedPrice = np.float64(1.0) # set electricity demand change as 1 for the first year. TODO
             else:
                 xp = [2020, 2050] # TODO avoid this to be hardcoded
                 fp = [substance.initialprice2020, substance.initialprice2050]
@@ -69,6 +72,11 @@ class Substance(ImportObject):
         if substance.name == "CO2":
             xp = [2020, 2050] # todo: dont hard coded
             fp = [substance.initialprice2020, substance.initialprice2050]
+            self.newFuturePrice = np.interp(futureYear, xp, fp)
+            return self.newFuturePrice
+        elif substance.name == "electricity":
+            xp = [2020, 2054]
+            fp = [1, 0.8628666666666667]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice
         elif reps.current_tick >= reps.start_year_fuel_trends:

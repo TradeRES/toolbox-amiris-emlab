@@ -2,7 +2,7 @@ from modules.defaultmodule import DefaultModule
 import pandas as pd
 from datetime import datetime, timedelta
 from util import globalNames
-
+import os
 
 class PrepareMarket(DefaultModule):
     """
@@ -25,11 +25,10 @@ class PrepareMarket(DefaultModule):
         reps.dbrw.stage_init_next_prices_structure()
 
     def act(self):
-        totallist = []
-        for energy_producer in self.reps.energy_producers.values():
-            totallist.append(
-                self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(energy_producer.name))
-        self.power_plants_list = totallist[0]
+        self.power_plants_list =  self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
+                                                                globalNames.power_plant_status_to_be_decommissioned,
+                                                                globalNames.power_plant_status_strategic_reserve,
+                                                                ])
         self.setTimeHorizon()
         self.setExpectations()
         self.openwriter()
@@ -46,7 +45,8 @@ class PrepareMarket(DefaultModule):
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
         self.simulation_year = self.reps.current_year
-        self.Years = (list(range(self.reps.start_simulation_year, self.simulation_year + 1, 1)))
+        #self.Years = (list(range(self.reps.start_simulation_year, self.simulation_year + 1, 1)))
+        self.Years =  [self.simulation_year]
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
@@ -69,7 +69,12 @@ class PrepareMarket(DefaultModule):
         FuelPrice_NATURAL_GAS = []
         FuelPrice_OIL = []
 
-        demand = ["./timeseries/demand/load.csv"] * len(self.Years)
+        #demand = ["./timeseries/demand/load.csv"] * len(self.Years)
+        wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
+        demand = wholesale_market.getHourlyDemand()
+        path_demand = 'amiris_workflow\\amiris-config\\data\\load.csv'
+        write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
+        demand_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), path_demand )
 
         for k, substance in self.reps.substances.items():
             if calculatedprices == "next_year_price":
@@ -88,13 +93,18 @@ class PrepareMarket(DefaultModule):
                 FuelPrice_OIL.append(fuel_price)
             elif substance.name == "CO2":
                 Co2Prices.append(fuel_price)
+            elif substance.name == "electricity":
+                new_demand = demand.copy()
+                new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
+                new_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
 
         d = {'Co2Prices': Co2Prices,
              'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
              'FuelPrice_HARD_COAL': FuelPrice_HARD_COAL, 'FuelPrice_NATURAL_GAS': FuelPrice_NATURAL_GAS,
              'FuelPrice_OIL': FuelPrice_OIL,
-             'DemandSeries': demand}
-        df = pd.DataFrame.from_dict(d, orient='index', columns=self.Years)
+             'DemandSeries': write_demand}
+
+        df = pd.DataFrame.from_dict(d, orient='index',  columns=self.Years)
         df.to_excel(self.writer, sheet_name="scenario_data_emlab")
 
     def write_conventionals(self):
@@ -118,7 +128,7 @@ class PrepareMarket(DefaultModule):
              'Efficiency': Efficiency, 'BlockSizeInMW': BlockSizeInMW,
              'InstalledPowerInMW': InstalledPowerInMW}
 
-        df = pd.DataFrame(data=d)
+        df = pd.DataFrame(data=d, )
         df.to_excel(self.writer, sheet_name="conventionals")
 
     def write_renewables(self):
