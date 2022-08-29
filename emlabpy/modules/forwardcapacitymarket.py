@@ -63,48 +63,36 @@ class ForwardCapacityMarketClearing(MarketModule):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
         reps.dbrw.stage_init_sr_operator_structure()
         reps.dbrw.stage_init_capacitymechanisms_structure()
-        self.operator = operator
+        self.operator = None
         self.isTheMarketCleared = False
 
     def act(self):
         print("capacity market clearing")
         market = self.reps.get_capacity_market_in_country(self.reps.country)
+        self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
         # Calculate the peak load for 4 years in the future
         future_year = self.reps.current_year + 4
-        peak_load = max(
-            self.reps.get_hourly_demand_by_country(market.country)[
-                1])  # todo later it should be also per year
-        try:
-            expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
+        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            future_year)
-        except:
-            expectedDemandFactor = self.get_extrapolated_demand_factor(self.reps.current_year, future_year)
-
         peakExpectedDemand = peak_load * (expectedDemandFactor)
 
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
-
-        self.operator.setZone(market.country)
-        CMO_name = "CMO_" + market.country
-        try:
-            CM_operator = self.reps.sr_operator[CMO_name]
-        except:
-            CM_operator = self.operator
-
+        
+        list_of_plants = self.operator.list_of_plants
         clearing_price = 0
         total_supply = 0
         # Set the clearing price through the merit order
         for ppdp in sorted_ppdp:
             if self.isTheMarketCleared == False:
                 plant = self.reps.power_plants[ppdp.plant]
-                if ppdp.plant in CM_operator.list_of_plants and plant.age < 15:
+                if ppdp.plant in list_of_plants and plant.age < 15:
                     total_supply += ppdp.amount
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
-                    self.operator.setPlants(ppdp.plant)
 
                 elif ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
                     total_supply += ppdp.amount
@@ -112,7 +100,7 @@ class ForwardCapacityMarketClearing(MarketModule):
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
                     if plant.status == globalNames.power_plant_status_inPipeline:
-                        self.operator.setPlants(ppdp.plant)
+                        list_of_plants.append(ppdp.plant)
 
                 elif ppdp.price < sdc.get_price_at_volume(total_supply):
                     clearing_price = ppdp.price
@@ -121,7 +109,7 @@ class ForwardCapacityMarketClearing(MarketModule):
                     total_supply += sdc.get_volume_at_price(clearing_price)
                     self.isTheMarketCleared = True
                     if plant.status == globalNames.power_plant_status_inPipeline:
-                        self.operator.setPlants(ppdp.plant)
+                        list_of_plants.append(ppdp.plant)
 
                 elif ppdp.price > sdc.get_price_at_volume(total_supply):
                     self.isTheMarketCleared = True
@@ -130,10 +118,13 @@ class ForwardCapacityMarketClearing(MarketModule):
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
                 ppdp.accepted_amount = 0
 
+        self.operator.setPlants(list_of_plants)
         self.reps.dbrw.set_power_plant_CapacityMarket_production(sorted_ppdp, self.reps.current_tick)
-        self.stageCapacityMechanismRevenues(clearing_price)
-        self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
-                                                            0, 0, 0, 0,
+        self.stageCapacityMechanismRevenues(market, clearing_price)
+        self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
+                                                            self.operator.getZone(),
+                                                            0,
+                                                            0,
                                                             self.operator.getPlants())
         # save clearing point
         if self.isTheMarketCleared == True:
@@ -144,13 +135,6 @@ class ForwardCapacityMarketClearing(MarketModule):
             print("Market is not cleared")
 
 
-    # def createCashFlowforCM(self, market, clearing_price):
-    #     accepted_ppdp = self.reps.get_accepted_CM_bids()
-    #     for accepted in accepted_ppdp:
-    #         # from_agent, to, amount, type, time, plant
-    #         self.reps.createCashFlow(market, self.reps.energy_producers[accepted.bidder], accepted.accepted_amount * clearing_price,
-    #                                  "CAPMARKETPAYMENT", self.reps.current_tick,
-    #                                  self.reps.power_plants[accepted.plant])
 
     def get_extrapolated_demand_factor(self, current_year, future_year):
         demand_factor = []
@@ -167,10 +151,16 @@ class ForwardCapacityMarketClearing(MarketModule):
         extrapolated_demand_factor = interpolate.interp1d(x, demand_factor, fill_value='extrapolate')
         return extrapolated_demand_factor(future_year)
 
-    def stageCapacityMechanismRevenues(self, clearing_price):
+    def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
+        # todo: test that bids are found
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
+            # from_agent: object, to: object, amount, type, time, plant):
+            self.reps.createCashFlow(market , self.reps.power_plants[accepted.plant] , accepted.accepted_amount * clearing_price,
+                                     globalNames.CF_CAPMARKETPAYMENT, self.reps.current_tick,
+                                     self.reps.power_plants[accepted.plant])
+            self.reps.dbrw.stage_cash_plant(self.reps.power_plants[accepted.plant])
 

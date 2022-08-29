@@ -54,29 +54,22 @@ class CapacityMarketClearing(MarketModule):
     The class that clears the Capacity Market based on the Sloping Demand curve
     """
 
-    def __init__(self, reps: Repository ):
+    def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
         self.isTheMarketCleared = False
-        #self.operator = operator
         reps.dbrw.stage_init_capacitymechanisms_structure()
 
     def act(self):
         print("capacity market clearing")
         market = self.reps.get_capacity_market_in_country(self.reps.country)
-        peak_load = max(
-            self.reps.get_hourly_demand_by_country(market.country)[
-                1])  # todo later it should be also per year
+        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1]) 
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
         peakExpectedDemand = peak_load * (expectedDemandFactor)
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
-        # self.operator.setZone(market.country)
-        # try:
-        #     CM_operator = self.reps.sr_operator[market.name]
-        # except:
-        #     CM_operator = self.operator
+
         clearing_price = 0
         total_supply = 0
         # Set the clearing price through the merit order

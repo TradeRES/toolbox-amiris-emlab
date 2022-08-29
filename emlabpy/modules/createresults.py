@@ -298,19 +298,21 @@ class CreatingResultsExcel(DefaultModule):
             market_zone = 'GermanElectricitySpotMarket'
         else:
             market_zone = 'DutchElectricitySpotMarket'
-        trend = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices, year)
-        peak_load_without_trend = max(self.reps.get_hourly_demand_by_country(self.country)[1])
-        peak_load_volume = peak_load_without_trend * trend
+        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
+                                                                                           globalNames.simulated_prices,
+                                                                                           self.reps.current_year)
+        peakExpectedDemand = peak_load * (expectedDemandFactor)
         count = 0
         for i in self.reps.electricity_spot_markets.values():
             if i.name == market_zone:
                 demand_list = i.hourlyDemand[1].values
         for i in demand_list:
-            x = i * trend
+            x = i * expectedDemandFactor
             if x > capacity:
                 count += 1
         self.shortage_hours = count
-        self.supply_ratio = capacity/peak_load_volume
+        self.supply_ratio = capacity/peakExpectedDemand
 
     def get_powerplant_values(self, powerplant):
         self.pp_name = powerplant.name
