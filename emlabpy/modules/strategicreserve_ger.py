@@ -56,7 +56,7 @@ class StrategicReserveAssignment_ger(MarketModule):
             self.operator.setZone(market.country)
 
             # Retrieve peak load volume of market
-            peak_load_volume = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[1])
+            peak_load_volume = max(self.reps.get_hourly_demand_by_country(market.country)[1])
 
             # Calculate needed strategic reserve capacity
             strategic_reserve_capacity = peak_load_volume * self.operator.getReserveVolumePercentSR()

@@ -64,7 +64,7 @@ class CapacityMarketClearing(MarketModule):
         print("capacity market clearing")
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         peak_load = max(
-            self.reps.get_hourly_demand_by_power_grid_node_and_year(market.country)[
+            self.reps.get_hourly_demand_by_country(market.country)[
                 1])  # todo later it should be also per year
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,

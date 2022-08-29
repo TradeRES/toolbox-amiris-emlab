@@ -1037,7 +1037,7 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "run_strategic_reserve"
+                    "arg": "run_capacity_market"
                 }
             ]
         },

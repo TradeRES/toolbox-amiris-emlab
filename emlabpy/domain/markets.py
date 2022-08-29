@@ -5,7 +5,7 @@ Sanchez 5-22
 """
 from domain.actors import EMLabAgent
 from domain.import_object import *
-from spinedb_api import Map
+import os
 import pandas as pd
 from util import globalNames
 
@@ -39,7 +39,10 @@ class ElectricitySpotMarket(Market):
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
             # todo: add dynamic load according to country for amiris,
-            self.hourlyDemand = pd.read_csv(globalNames.load_path,  delimiter= ";", header=None)
+            parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
+            load_path = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_' + reps.country +'.csv')
+            self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
+
 
     def getValueOfLostLoad(self):
         return self.valueOfLostLoad

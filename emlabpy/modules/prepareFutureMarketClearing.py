@@ -125,6 +125,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
                                                     future_price)  # todo: save this as a map in DB
 
 
+
+
+
     def calculateAveragePastOperatingProfit(self, plant, horizon ):
         # "totalProfits" or "irr"
         averagePastOperatingProfit = 0

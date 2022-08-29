@@ -299,7 +299,7 @@ class CreatingResultsExcel(DefaultModule):
         else:
             market_zone = 'DutchElectricitySpotMarket'
         trend = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices, year)
-        peak_load_without_trend = max(self.reps.get_hourly_demand_by_power_grid_node_and_year(self.country)[1])
+        peak_load_without_trend = max(self.reps.get_hourly_demand_by_country(self.country)[1])
         peak_load_volume = peak_load_without_trend * trend
         count = 0
         for i in self.reps.electricity_spot_markets.values():

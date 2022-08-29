@@ -687,7 +687,7 @@ def get_shortage_hours(reps, years_to_generate, capacity):
     for year in years_to_generate:
         trend = reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices,
                                                                        year)
-        peak_load_without_trend = max(reps.get_hourly_demand_by_power_grid_node_and_year(reps.country)[1])
+        peak_load_without_trend = max(reps.get_hourly_demand_by_country(reps.country)[1])
         peak_load_volume = peak_load_without_trend * trend
         count = 0
         demand_list = reps.get_electricity_spot_market_demand()
@@ -856,7 +856,7 @@ try:
         # use "Amiris" if this should be read
         spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
         reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
-        name = reps.country + str(reps.start_simulation_year) + str(reps.end_simulation_year) \
+        name = reps.country  + str(reps.end_simulation_year) \
                + "_LA" + str(reps.lookAhead) + "_SD" + str(reps.start_year_dismantling) \
                + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                + reps.simulation_name
