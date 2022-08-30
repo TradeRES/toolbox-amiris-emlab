@@ -48,6 +48,6 @@ class StrategicReserveOperator(ImportObject):
     def getPlants(self):
         return self.list_of_plants
 
-    def setPlants(self, plant):
-        self.list_of_plants.append(plant)
+    def setPlants(self, plants):
+        self.list_of_plants = plants
 

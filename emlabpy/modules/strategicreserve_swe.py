@@ -44,57 +44,61 @@ class StrategicReserveAssignment_swe(MarketModule):
     def __init__(self, reps: Repository, operator: StrategicReserveOperator):
         super().__init__('EM-Lab Strategic Reserve: Assign Plants', reps)
         reps.dbrw.stage_init_sr_operator_structure()
-        self.operator = operator
+        self.operator = None
 
     def act(self):
         # Assign plants to Strategic Reserve per region
-        for market in self.reps.capacity_markets.values():
-            # Set the strategic reserve zone to the same as the market
-            self.operator.setZone(market.country)
+        market = self.reps.get_capacity_market_in_country(self.reps.country)
+        # Set the strategic reserve zone to the same as the market
+        self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
-            # Retrieve peak load volume of market
-            peak_load_volume = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        # Retrieve peak load volume of market
+        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
+                                                                                           globalNames.simulated_prices,
+                                                                                           self.reps.current_year)
+        peakExpectedDemand = peak_load * (expectedDemandFactor)
 
-            # Calculate needed strategic reserve capacity
-            strategic_reserve_capacity = peak_load_volume * self.operator.getReserveVolumePercentSR()
+        # Calculate needed strategic reserve capacity
+        strategic_reserve_capacity = peakExpectedDemand * self.operator.getReserveVolumePercentSR()
 
-            # Retrieve SR price
-            SR_price = self.operator.getReservePriceSR()
+        # Retrieve SR price
+        SR_price = self.operator.getReservePriceSR()
 
-            # Sort the bids in descending order
-            sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
+        # Sort the bids in descending order
+        sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
-            # Contract plants to Strategic Reserve
-            contracted_strategic_reserve_capacity = 0
-            SRO_name = "SRO_" + market.country
+        # Contract plants to Strategic Reserve
+        list_of_plants = []
+        contracted_strategic_reserve_capacity = 0
 
-            for ppdp in sorted_ppdp:
-                # If plant capacity fits in strategic reserve than contract it
-                if (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
-                    contracted_strategic_reserve_capacity += ppdp.amount
-                    ppdp.status = globalNames.power_plant_status_strategic_reserve
-                    ppdp.accepted_amount = ppdp.amount
-                    # Add plant to the list of the StrategicReserveOperator
-                    self.operator.setPlants(ppdp.plant)
-                    # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
-                    self.reps.update_power_plant_status(ppdp.plant, SR_price)
-                else:
-                    # When strategic reserve is full nothing actually changes for the power plant
-                    ppdp.accepted_amount = 0
+        for ppdp in sorted_ppdp:
+            # If plant capacity fits in strategic reserve than contract it
+            if (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
+                contracted_strategic_reserve_capacity += ppdp.amount
+                ppdp.status = globalNames.power_plant_status_strategic_reserve
+                ppdp.accepted_amount = ppdp.amount
+                # Add plant to the list of the StrategicReserveOperator
+                list_of_plants.append(ppdp.plant)
+                # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
+                self.reps.update_power_plant_status(ppdp.plant, SR_price)
+            else:
+                # When strategic reserve is full nothing actually changes for the power plant
+                ppdp.accepted_amount = 0
 
-            # Pass the total contracted volume to the strategic reserve operator
-            self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
+        # Pass the total contracted volume to the strategic reserve operator
+        self.operator.setPlants(list_of_plants)
+        self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
 
-            # Pay the contracted plants in the strategic reserve
-            self.createCashFlowforSR(self.operator, market)
+        # Pay the contracted plants in the strategic reserve
+        self.createCashFlowforSR(self.operator, market)
 
-            # Write operator to DB
-            self.reps.create_or_update_StrategicReserveOperator(SRO_name, self.operator.getZone(),
-                                                                self.operator.getReservePriceSR(),
-                                                                self.operator.getReserveVolumePercentSR(),
-                                                                self.operator.getReserveVolume(),
-                                                                self.operator.getCash(),
-                                                                self.operator.getPlants())
+        # Write operator to DB
+        self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
+                                                            self.operator.getZone(),
+                                                            self.operator.getReserveVolume(),
+                                                            self.operator.getCash(),
+                                                            self.operator.getPlants())
 
 
     # Cashflow function for the operation of the strategic reserve
@@ -118,12 +122,11 @@ class StrategicReserveAssignment_swe(MarketModule):
             # from_agent, to, amount, type, time, plant
             # Payment from operator to plant
             self.reps.createCashFlow(operator, plant,
-                                     SR_payment_to_plant,globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
+                                     SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
             self.reps.dbrw.stage_cash_plant(plant)
             # Payment from market to operator
             self.reps.createCashFlow(market, operator,
                                      SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
-
             self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
