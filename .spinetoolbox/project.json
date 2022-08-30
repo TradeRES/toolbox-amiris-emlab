@@ -775,8 +775,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1660.3040599146507,
-            "y": -826.5045009224589,
+            "x": -1657.671268970705,
+            "y": -829.1372918664046,
             "file_references": [
                 {
                     "type": "path",

@@ -63,20 +63,24 @@ def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_t
     plt.show()
 
 
-def plot_investments(annual_installed_capacity, annual_commissioned, years_to_generate, path_to_plots, colors):
+def plot_investments(annual_installed_capacity, annual_commissioned, annual_decommissioned_capacity, years_to_generate, path_to_plots, colors):
     print('Capacity Investments plot')
-    fig6, axs6 = plt.subplots(2, 1)
+    fig6, axs6 = plt.subplots(3, 1)
     fig6.tight_layout()
     annual_installed_capacity.plot.bar(ax=axs6[0], stacked=True, rot=0, color=colors, grid=True, legend=False)
     annual_commissioned.plot.bar(ax=axs6[1], stacked=True, rot=0, color=colors, grid=True, legend=False)
+    annual_decommissioned_capacity.plot.bar(ax=axs6[2], stacked=True, rot=0, color=colors, grid=True, legend=False)
     axs6[0].set_axisbelow(True)
-    axs6[1].set_xlabel('Years', fontsize='medium')
+    axs6[2].set_xlabel('Years', fontsize='medium')
     for label in axs6[0].get_xticklabels(which='major'):
         label.set(rotation=50, horizontalalignment='right')
     for label in axs6[1].get_xticklabels(which='major'):
         label.set(rotation=50, horizontalalignment='right')
-    axs6[0].set_ylabel('Capacity MW', fontsize='small')
-    axs6[1].set_ylabel('Capacity MW', fontsize='small')
+    for label in axs6[2].get_xticklabels(which='major'):
+        label.set(rotation=50, horizontalalignment='right')
+    axs6[0].set_ylabel('In pipeline MW', fontsize='small')
+    axs6[1].set_ylabel('Commissioned MW', fontsize='small')
+    axs6[1].set_ylabel('Decommissioned MW', fontsize='small')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     axs6[0].set_title('Investments by decision year (up) and by commissioning year (down)')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
@@ -745,18 +749,18 @@ def generate_plots(reps,scenario_name ):
 
     # section -----------------------------------------------------------------------------------------------capacities
     # todo: correct electricity prices
-    # all_techs_capacity, all_techs_generation, all_techs_market_price, all_techs_capacity_factor, electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
-    #     reps, unique_technologies,
-    #     years_to_generate)
-    # plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
-    # plot_electricity_prices(electricity_price, path_to_plots)
-    # total_capacity = all_techs_capacity.sum(axis=0)
-    # plot_installed_capacity(all_techs_capacity.T, path_to_plots, colors_unique_techs)
-    # plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
-    # plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
-    # shortages, supply_ratio = get_shortage_hours(reps, years_to_generate, total_capacity)
-    # plot_supply_ratio(supply_ratio, path_to_plots)
-    # plot_shortages(shortages, path_to_plots)
+    all_techs_capacity, all_techs_generation, all_techs_market_price, all_techs_capacity_factor, electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
+        reps, unique_technologies,
+        years_to_generate)
+    plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
+    plot_electricity_prices(electricity_price, path_to_plots)
+    total_capacity = all_techs_capacity.sum(axis=0)
+    plot_installed_capacity(all_techs_capacity.T, path_to_plots, colors_unique_techs)
+    plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
+    plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
+    shortages, supply_ratio = get_shortage_hours(reps, years_to_generate, total_capacity)
+    plot_supply_ratio(supply_ratio, path_to_plots)
+    plot_shortages(shortages, path_to_plots)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
 
     total_profits_per_tech_per_year = prepare_operational_profit_per_year_per_tech(reps, unique_technologies, years_to_generate,
@@ -778,9 +782,9 @@ def generate_plots(reps,scenario_name ):
 
     sorted_average_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps,
                                                                                                               test_tick)
-    plot_revenues_per_iteration(revenues_per_iteration, test_tech, path_to_plots, test_tick)
-    plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
-                                        colors_unique_techs)
+    #plot_revenues_per_iteration(revenues_per_iteration, test_tech, path_to_plots, test_tick)
+    # plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
+    #                                     colors_unique_techs)
 
     annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     last_year_in_pipeline, last_year_decommissioned, \
@@ -792,9 +796,9 @@ def generate_plots(reps,scenario_name ):
     '''
     future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
 
-    plot_investments(annual_in_pipeline_capacity, annual_commissioned, years_to_generate, path_to_plots,
+    plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity, years_to_generate, path_to_plots,
                      colors_unique_techs)
-    plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
+    #plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
     # last_year_strategic_reserve_capacity
     plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots, colors_unique_techs)
     plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots,
@@ -849,8 +853,9 @@ technology_colors = {
 }
 try:
     #name = "DE20202030_LA4_SD10_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_no_dismantle"
-    #name = "DE20202030_LA4_SD4_PH3_MI10000futureMarketWithHistoricProfit_groupedDE_dis_by_profit_wloansIRR"
+    #name = "NL2030_LA4_SD4_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dis_by_profit_NL"
     name = ""
+
     if name == "":
         emlab_url = sys.argv[1]
         amiris_url = sys.argv[2]
@@ -879,6 +884,7 @@ finally:
     print("finished emlab")
     spinedb_reader_writer.db.close_connection()
     spinedb_reader_writer.amirisdb.close_connection()
+
 print('===== End Generating Plots =====')
 
 # amirisdb = SpineDB(sys.argv[2])

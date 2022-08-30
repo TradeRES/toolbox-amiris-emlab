@@ -38,7 +38,6 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            # todo: add dynamic load according to country for amiris,
             parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
             load_path = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_' + reps.country +'.csv')
             self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
