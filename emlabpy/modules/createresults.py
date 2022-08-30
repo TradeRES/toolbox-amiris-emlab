@@ -259,8 +259,6 @@ class CreatingResultsExcel(DefaultModule):
         pp_year = 'Powerplants' + str(self.year)
         powerplant_data.to_excel(writer, sheet_name=pp_year)
         writer.save()
-
-
     # Section with functions for retrieving data
 
     def get_accepted_bids_CM(self):

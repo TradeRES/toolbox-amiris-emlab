@@ -14,7 +14,7 @@ class Profits(ImportObject):
         This function is being read for the plotting. The totalProfits are being saved in the module Investmentdecision
         # object name =  year
         # alternative = iteration
-        The data is stored in db investment with the object name "tick  - iteration"
+        The data is stored in db investment with the object name "tick - iteration"
         """
         # -----------------------------Profits and PowerPlants are read from the Profits classname
         if parameter_name == 'PowerPlants':
