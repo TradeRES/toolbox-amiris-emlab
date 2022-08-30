@@ -70,11 +70,11 @@ class Substance(ImportObject):
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice
         elif reps.current_tick >= reps.start_year_fuel_trends:
-            self.initializeGeometricTrendRegression(reps, substance) # TODO should this
+            self.initializeGeometricTrendRegression(reps, substance)
             self.newFuturePrice = self.geometricRegression.predict(futureYear)
             return self.newFuturePrice
         else:
-            xp = [2020, 2050] # todo: hard coded
+            xp = [2020, 2050]
             fp = [substance.initialprice2020, substance.initialprice2050]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice
