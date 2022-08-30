@@ -612,17 +612,6 @@
                 ]
             },
             {
-                "name": "from specify year to import AMIRIS",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "import AMIRIS",
-                    "left"
-                ]
-            },
-            {
                 "name": "from years to specify year",
                 "from": [
                     "years",
@@ -707,6 +696,28 @@
                 ],
                 "to": [
                     "importing EnergyExchange",
+                    "left"
+                ]
+            },
+            {
+                "name": "from importing EnergyExchange to import AMIRIS",
+                "from": [
+                    "importing EnergyExchange",
+                    "right"
+                ],
+                "to": [
+                    "import AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from specify year to import AMIRIS",
+                "from": [
+                    "specify year",
+                    "right"
+                ],
+                "to": [
+                    "import AMIRIS",
                     "left"
                 ]
             }
@@ -1084,7 +1095,7 @@
                 ],
                 [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchange.csv",
-                    false
+                    true
                 ]
             ]
         },
@@ -1288,8 +1299,8 @@
         "importing EnergyExchange": {
             "type": "Importer",
             "description": "",
-            "x": -265.9118853385229,
-            "y": -610.8074989954188,
+            "x": -263.27909439457716,
+            "y": -613.4402899393644,
             "specification": "Import Energy Exchange",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -1308,8 +1319,8 @@
         "energy exchange": {
             "type": "Data Store",
             "description": "",
-            "x": -36.85907321524079,
-            "y": -626.6042446590934,
+            "x": -34.22628227129503,
+            "y": -629.2370356030391,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
