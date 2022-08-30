@@ -755,6 +755,7 @@ def generate_plots(reps,scenario_name ):
     plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
     plot_electricity_prices(electricity_price, path_to_plots)
     total_capacity = all_techs_capacity.sum(axis=0)
+
     plot_installed_capacity(all_techs_capacity.T, path_to_plots, colors_unique_techs)
     plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
     plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
@@ -782,9 +783,9 @@ def generate_plots(reps,scenario_name ):
 
     sorted_average_revenues_per_iteration_first_year, revenues_per_iteration = prepare_revenues_per_iteration(reps,
                                                                                                               test_tick)
-    #plot_revenues_per_iteration(revenues_per_iteration, test_tech, path_to_plots, test_tick)
-    # plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
-    #                                     colors_unique_techs)
+    plot_revenues_per_iteration(revenues_per_iteration, test_tech, path_to_plots, test_tick)
+    plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
+                                        colors_unique_techs)
 
     annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     last_year_in_pipeline, last_year_decommissioned, \
@@ -852,9 +853,10 @@ technology_colors = {
     "Pumped_hydro": "darkcyan"
 }
 try:
-    #name = "DE20202030_LA4_SD10_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_no_dismantle"
+
+    name = "DE20202030_LA4_SD10_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dismantle_by_profit_no_dismantle"
     #name = "NL2030_LA4_SD4_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dis_by_profit_NL"
-    name = ""
+    #name = ""
 
     if name == "":
         emlab_url = sys.argv[1]

@@ -298,7 +298,7 @@ class CreatingResultsExcel(DefaultModule):
             market_zone = 'GermanElectricitySpotMarket'
         else:
             market_zone = 'DutchElectricitySpotMarket'
-        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        peak_load = max(self.reps.get_hourly_demand_by_country(self.reps.country)[1])
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
