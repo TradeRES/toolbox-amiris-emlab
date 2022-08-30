@@ -1,0 +1,94 @@
+{
+    "name": "Import Energy Exchange",
+    "item_type": "Importer",
+    "mapping": {
+        "table_mappings": {
+            "data": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Results",
+                                "skip_columns": [
+                                    0,
+                                    2,
+                                    4
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 5
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden",
+                                "value": "time"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "selected_tables": [
+            "data"
+        ],
+        "table_options": {
+            "data": {
+                "encoding": "ascii",
+                "delimiter": ";",
+                "quotechar": "\"",
+                "skip": 0,
+                "has_header": false
+            }
+        },
+        "table_types": {
+            "data": {
+                "0": "float",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "string"
+            }
+        },
+        "table_row_types": {
+            "data": {
+                "1": "string"
+            }
+        },
+        "source_type": "CSVConnector"
+    },
+    "description": ""
+}

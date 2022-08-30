@@ -41,6 +41,12 @@
         },
         "years": {
             "db_credentials": {}
+        },
+        "energy exchange": {
+            "url": {
+                "username": "",
+                "password": ""
+            }
         }
     }
 }

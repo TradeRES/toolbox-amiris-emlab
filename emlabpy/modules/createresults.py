@@ -159,8 +159,11 @@ class CreatingResultsExcel(DefaultModule):
         self.get_shortage_hours(self.year, self.total_installed_capacity)
         self.nr_of_powerplants = len(self.reps.power_plants)
 
+        # adding results from raw csvs
+        self.saving_energy_exchange()
         self.get_accepted_bids_CM()
         self.get_strategic_reserve_values()
+
         try:
             self.average_price_per_mwh = self.total_costs / self.total_production
         except:
@@ -178,6 +181,7 @@ class CreatingResultsExcel(DefaultModule):
                                         'Market clearing volume (MWh)':self.total_production,
                                         'Market clearing price (€)':self.total_costs,
                                         'Average price of electricity (€/MWh)':self.average_price_per_mwh,
+                                        'Average electricity from raw values (€/MWh)':self.average_electricity_price,
                                         'Number of power plants':self.nr_of_powerplants,
                                         'Total installed capacity (MW)':self.total_installed_capacity,
                                         'Shortage hours':self.shortage_hours,
@@ -313,6 +317,10 @@ class CreatingResultsExcel(DefaultModule):
                 count += 1
         self.shortage_hours = count
         self.supply_ratio = capacity/peakExpectedDemand
+
+    def saving_energy_exchange(self):
+        energyexchange_results = pd.read_csv(globalNames.amiris_RAWresults_path, sep=";")
+        self.average_electricity_price = energyexchange_results['ElectricityPriceInEURperMWH'].mean()
 
     def get_powerplant_values(self, powerplant):
         self.pp_name = powerplant.name

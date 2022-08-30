@@ -201,6 +201,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/grouped_power_plants.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/import_energy_exchange.json"
                 }
             ],
             "Exporter": [
@@ -682,6 +687,28 @@
                     "prepare future market",
                     "left"
                 ]
+            },
+            {
+                "name": "from importing EnergyExchange to energy exchange",
+                "from": [
+                    "importing EnergyExchange",
+                    "right"
+                ],
+                "to": [
+                    "energy exchange",
+                    "left"
+                ]
+            },
+            {
+                "name": "from specify year to importing EnergyExchange",
+                "from": [
+                    "specify year",
+                    "right"
+                ],
+                "to": [
+                    "importing EnergyExchange",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -1054,6 +1081,10 @@
                 [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
+                ],
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchange.csv",
+                    false
                 ]
             ]
         },
@@ -1138,8 +1169,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -454.1476372357371,
-            "y": -449.319377159493,
+            "x": -456.7804281796829,
+            "y": -449.31937715949294,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1150,6 +1181,10 @@
                 {
                     "type": "resource",
                     "arg": "<project>/emlabpy/years.txt"
+                },
+                {
+                    "type": "resource",
+                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchange.csv"
                 }
             ]
         },
@@ -1249,6 +1284,42 @@
                     "arg": "run_create_results"
                 }
             ]
+        },
+        "importing EnergyExchange": {
+            "type": "Importer",
+            "description": "",
+            "x": -265.9118853385229,
+            "y": -610.8074989954188,
+            "specification": "Import Energy Exchange",
+            "cancel_on_error": false,
+            "purge_before_writing": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    false
+                ],
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchange.csv",
+                    true
+                ]
+            ]
+        },
+        "energy exchange": {
+            "type": "Data Store",
+            "description": "",
+            "x": -36.85907321524079,
+            "y": -626.6042446590934,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/energy_exchange/energy exchange.sqlite"
+                }
+            }
         }
     }
 }
