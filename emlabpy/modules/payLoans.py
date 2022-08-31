@@ -28,19 +28,16 @@ class PayForLoansRole(DefaultModule):
                             self.agent.CF_LOAN += payment
                             plant.loan_payments_in_year += payment
                             self.reps.dbrw.set_number_loan_payments(plant)
-                            print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
-                            print("Number of payments done {0}, total needed: {1}".format( loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()))
+                            # print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
+                            # print("Number of payments done {0}, total needed: {1}".format( loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()))
                 else:
                     downpayment = plant.getDownpayment()
                     if downpayment is not None:
                         if downpayment.getNumberOfPaymentsDone() < downpayment.getTotalNumberOfPayments():
                             payment = downpayment.getAmountPerPayment()
-                            print(30*"-")
-                            print("before", plant.cash, "downpayment", downpayment.getNumberOfPaymentsDone())
                             downpayment.setNumberOfPaymentsDone(downpayment.getNumberOfPaymentsDone() + 1)
                             self.agent.CF_DOWNPAYMENT -= payment
                             self.reps.dbrw.set_number_downpayments(plant)
                             plant.loan_payments_in_year += payment
-                            print("after", plant.cash, "downpayment", downpayment.getNumberOfPaymentsDone())
-                            print( "Paying {0} (euro) for downpayment {1}".format(payment, plant.name))
-                            print("Number of payments done {0}, total needed: {1}".format(downpayment.getNumberOfPaymentsDone(), downpayment.getTotalNumberOfPayments()))
+                            # print( "Paying {0} (euro) for downpayment {1}".format(payment, plant.name))
+                            # print("Number of payments done {0}, total needed: {1}".format(downpayment.getNumberOfPaymentsDone(), downpayment.getTotalNumberOfPayments()))
