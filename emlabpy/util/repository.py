@@ -122,17 +122,20 @@ class Repository:
         loan.setTo(to)
         loan.setAmountPerPayment(amount)
         loan.setTotalNumberOfPayments(numberOfPayments)
-        #loan.setRegardingPowerPlant(plant)
         loan.setLoanStartTime(loanStartTime)
         loan.setNumberOfPaymentsDone(donePayments)
         plant.setLoan(loan)
-        #self.loanList.append(loan)
-        # if from_agent not in self.loansFromAgent.keys():
-        #     self.loansFromAgent[from_agent] = []
-        # self.loansFromAgent[from_agent] = loan
-        # if to not in self.loansToAgent.keys():
-        #     self.loansToAgent[to] = []
-        # self.loansToAgent[to] = loan
+        return loan
+
+    def createDownpayment(self, from_agent: str, to: str, amount, numberOfPayments, loanStartTime, donePayments, plant):
+        loan = Loan()
+        loan.setFrom(from_agent)
+        loan.setTo(to)
+        loan.setAmountPerPayment(amount)
+        loan.setTotalNumberOfPayments(numberOfPayments)
+        loan.setLoanStartTime(loanStartTime)
+        loan.setNumberOfPaymentsDone(donePayments)
+        plant.setDownpayment(loan)
         return loan
 
 

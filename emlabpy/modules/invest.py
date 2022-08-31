@@ -121,7 +121,6 @@ class Investmentdecision(DefaultModule):
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_loans(newplant)
                     self.reps.dbrw.stage_downpayments(newplant)
-                    self.reps.dbrw.stage_cash_agent(self.agent)
                     self.reps.dbrw.stage_investment_decisions(bestCandidatePowerPlant.name, newplant.name,
                                                               self.reps.investmentIteration,
                                                               self.futureInvestmentyear,  self.reps.current_tick)
@@ -172,11 +171,12 @@ class Investmentdecision(DefaultModule):
         #--------------------------------------------------------------------------------------creating downpayment
         #self.createSpreadOutDownPayments(self.agent, manufacturer, totalDownPayment, newplant)
         buildingTime = newplant.getActualLeadtime()
+
         #         # make the first downpayment and create the loan
-        self.reps.createCashFlow(self.agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",
-                                 self.reps.current_tick, newplant)
-        #  buildingTime - 1 because one payment is already done
-        downpayment = self.reps.createLoan(self.agent.name, manufacturer.name, totalDownPayment / buildingTime, buildingTime - 1,
+        # self.reps.createCashFlow(self.agent, manufacturer, totalDownPayment / buildingTime, globalNames.CF_DOWNPAYMENT,
+        #                          self.reps.current_tick, newplant)
+        # todo: check  buildingTime - 1 because one payment is already done
+        downpayment = self.reps.createDownpayment(self.agent.name, manufacturer.name, totalDownPayment / buildingTime, buildingTime ,
                                            self.reps.current_tick, 0 , newplant)
         # the rest of downpayments are scheduled. Are saved to the power plant
         newplant.createOrUpdateDownPayment(downpayment)
@@ -186,7 +186,6 @@ class Investmentdecision(DefaultModule):
         loan = self.reps.createLoan(self.agent.name, bigbank.name, amount, newplant.getTechnology().getDepreciationTime(),
                                     (newplant.commissionedYear - self.reps.start_simulation_year), 0 ,newplant)
         newplant.createOrUpdateLoan(loan)
-
         return newplant
 
     def setTimeHorizon(self):
@@ -229,22 +228,6 @@ class Investmentdecision(DefaultModule):
     def getinvestmentcosts(self, investmentCostperTechnology, time):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
-
-    # def createSpreadOutDownPayments(self, agent, manufacturer, totalDownPayment, plant):
-    #     """
-    #     Make first payment and create the loan
-    #     """
-    #
-    #     buildingTime = plant.getActualLeadtime()
-    #     # one downpayment is done
-    #     self.reps.createCashFlow(agent, manufacturer, totalDownPayment / buildingTime, "DOWNPAYMENT",
-    #                              self.reps.current_tick, plant)
-    #     downpayment = self.reps.createLoan(agent, manufacturer, totalDownPayment / buildingTime, buildingTime - 1,
-    #                                        self.reps.current_tick, plant)
-    #     # the rest of downpayments are scheduled
-    #     plant.createOrUpdateDownPayment(downpayment)
-
-
 
     def setPowerPlantExpectations(self, powerplant, time):
         powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)

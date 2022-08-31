@@ -135,7 +135,8 @@ class CapacityMarketClearing(MarketModule):
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
                                     # from_agent: object, to: object, amount, type, time, plant):
-            self.reps.createCashFlow(market , self.reps.power_plants[accepted.plant] , accepted.accepted_amount * clearing_price,
-                                     globalNames.CF_CAPMARKETPAYMENT, self.reps.current_tick,
-                                     self.reps.power_plants[accepted.plant])
-            self.reps.dbrw.stage_cash_plant(self.reps.power_plants[accepted.plant])
+            # self.reps.createCashFlow(market , self.reps.power_plants[accepted.plant] , accepted.accepted_amount * clearing_price,
+            #                          globalNames.CF_CAPMARKETPAYMENT, self.reps.current_tick,
+            #                          self.reps.power_plants[accepted.plant])
+
+           # self.reps.dbrw.stage_cash_plant(self.reps.power_plants[accepted.plant])

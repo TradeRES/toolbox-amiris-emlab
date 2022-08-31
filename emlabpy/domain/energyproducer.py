@@ -21,13 +21,21 @@ class EnergyProducer(EMLabAgent):
         self.dismantlingRequiredOperatingProfit = None
         self.pastTimeHorizon = None
         self.readytoInvest = True
+        self.cash = 0
+        self.CF_ELECTRICITY_SPOT = 0
+        self.CF_LOAN = 0
+        self.CF_DOWNPAYMENT = 0
+        self.CF_STRRESPAYMENT = 0
+        self.CF_CAPMARKETPAYMENT = 0
+        self.CF_FIXEDOMCOST = 0
+        self.CF_COMMODITY = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value: object, alternative):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
-        if parameter_name == 'cash':
-            self.cash = int(parameter_value)
+        # if parameter_name == 'cash':
+        #     self.cash = parameter_value
         #From here are the inputs from emlab unit
-        elif parameter_name == 'debtRatioOfInvestments':
+        if parameter_name == 'debtRatioOfInvestments':
             self.debtRatioOfInvestments = float(parameter_value)
         elif parameter_name == 'dismantlingProlongingYearsAfterTechnicalLifetime':
             self.dismantlingProlongingYearsAfterTechnicalLifetime = int(parameter_value)

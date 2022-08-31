@@ -15,25 +15,14 @@ class CreatingFinancialReports(DefaultModule):
     def __init__(self, reps):
         super().__init__("Creating Financial Reports", reps)
         reps.dbrw.stage_init_financial_results_structure()
+       # reps.dbrw.stage_init_cash_agent()
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
         # TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
-        self.addingMarketClearingIncome()
         self.createFinancialReportsForPowerPlantsAndTick()
+        self.addingMarketClearingIncome()
         print("finished financial report")
-
-    def addingMarketClearingIncome(self):
-        all_dispatch = self.reps.power_plant_dispatch_plans_in_year
-        wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-        SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
-        all_revenues = 0
-        for k, dispatch in all_dispatch.items():
-            if k not in SRO.list_of_plants:
-                all_revenues += dispatch.revenues
-        self.reps.createCashFlow(wholesale_market, self.agent, all_revenues,
-                                 globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
-        self.reps.dbrw.stage_cash_agent(self.agent)
 
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
@@ -50,21 +39,32 @@ class CreatingFinancialReports(DefaultModule):
 
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
             if dispatch == None:
+                print("no dispatch found for ", powerplant.id)
                 raise
             fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
+            self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
 
             loans = powerplant.loan_payments_in_year
+            print(powerplant.name,  "---->" ,loans)
             yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
+
             financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)
+            self.agent.CF_COMMODITY -= dispatch.variable_costs
+
             financialPowerPlantReport.setTotalCosts( yearly_costs)
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
+
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+            self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
+
             financialPowerPlantReport.setOverallRevenue(
                 financialPowerPlantReport.capacityMarketRevenues_in_year +  dispatch.revenues)
+
+            self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
 
             operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  yearly_costs
             operational_profit_with_loans = operational_profit - loans
@@ -74,7 +74,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.irr = irr
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
-
+        self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
     def getProjectIRR(self, pp, operational_profit_with_loans, agent):
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
@@ -97,46 +97,21 @@ class CreatingFinancialReports(DefaultModule):
             return round(IRR, 4)
 
 
+    def addingMarketClearingIncome(self):
+        all_dispatch = self.reps.power_plant_dispatch_plans_in_year
+        SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
+        all_revenues = 0
+        for k, dispatch in all_dispatch.items():
+            if k not in SRO.list_of_plants:
+                all_revenues += dispatch.revenues
+                self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
+
+        # adding market revenues to energy producer
+        # wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
+        # self.reps.createCashFlow(wholesale_market, self.agent, all_revenues,
+        #                          globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
+
+
             # TODO add cash flows
-            # cashFlows = self.reps.getCashFlowsForPowerPlant(plant, tick)
-            # financialPowerPlantReport.setCo2Costs(self.calculateCO2CostsOfPowerPlant(cashFlows))
             # financialPowerPlantReport.setVariableCosts(financialPowerPlantReport.getCommodityCosts() + financialPowerPlantReport.getCo2Costs())
-            # Determine fixed costs
-            # financialPowerPlantReport.setFixedCosts(self.calculateFixedCostsOfPowerPlant(cashFlows))
-            # financialPowerPlantReport.setFixedOMCosts(self.calculateFixedOMCostsOfPowerPlant(cashFlows))
-            # financialPowerPlantReport.setStrategicReserveRevenue(self.calculateStrategicReserveRevenueOfPowerPlant(cashFlows))
-            # financialPowerPlantReport.setCapacityMarketRevenue(self.calculateCapacityMarketRevenueOfPowerPlant(cashFlows))
-            # financialPowerPlantReport.setCo2HedgingRevenue(self.calculateCO2HedgingRevenueOfPowerPlant(cashFlows))
             # financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.getCapacityMarketRevenue() + financialPowerPlantReport.getCo2HedgingRevenue() + financialPowerPlantReport.getSpotMarketRevenue() + financialPowerPlantReport.getStrategicReserveRevenue())
-            # Calculate Full load hours
-            # financialPowerPlantReport.setFullLoadHours(self.reps.calculateFullLoadHoursOfPowerPlant(plant, tick))
-
-    # def createFinancialReportsForNewInvestments(self):
-    #     self.createFinancialReportsForPowerPlantsAndTick(
-    #         self.reps.findAllPowerPlantsWithConstructionStartTimeInTick(self.reps.current_tick), self.reps.current_tick)
-
-    #
-    # def calculateSpotMarketRevenueOfPowerPlant(self, cashFlows):
-    #     toReturn = cashFlows.stream().filter(lambda p : p.getType() == emlab.gen.domain.contract.CashFlow.ELECTRICITY_SPOT).collect(java.util.stream.Collectors.summarizingDouble(emlab.gen.domain.contract.CashFlow::getMoney)).getSum()
-    #     java.util.logging.Logger.getGlobal().finer("Income Spot " + toReturn)
-    #     return toReturn
-    #
-    # def calculateLongTermContractRevenueOfPowerPlant(self, cashFlows):
-    #     toReturn = cashFlows.stream().filter(lambda p : p.getType() == emlab.gen.domain.contract.CashFlow.ELECTRICITY_LONGTERM).collect(java.util.stream.Collectors.summarizingDouble(emlab.gen.domain.contract.CashFlow::getMoney)).getSum()
-    #     java.util.logging.Logger.getGlobal().finer("Income LT " + toReturn)
-    #     return toReturn
-    #
-    # def calculateStrategicReserveRevenueOfPowerPlant(self, cashFlows):
-    #     toReturn = cashFlows.stream().filter(lambda p : p.getType() == emlab.gen.domain.contract.CashFlow.STRRESPAYMENT).collect(java.util.stream.Collectors.summarizingDouble(emlab.gen.domain.contract.CashFlow::getMoney)).getSum()
-    #     java.util.logging.Logger.getGlobal().finer("Income strategic reserve " + toReturn)
-    #     return toReturn
-    #
-    # def calculateCapacityMarketRevenueOfPowerPlant(self, cashFlows):
-    #     toReturn = cashFlows.stream().filter(lambda p : p.getType() == emlab.gen.domain.contract.CashFlow.CAPMARKETPAYMENT).collect(java.util.stream.Collectors.summarizingDouble(emlab.gen.domain.contract.CashFlow::getMoney)).getSum()
-    #     java.util.logging.Logger.getGlobal().finer("Income Capacity market " + toReturn)
-    #     return toReturn
-    #
-    # def calculateCO2HedgingRevenueOfPowerPlant(self, cashFlows):
-    #     toReturn = cashFlows.stream().filter(lambda p : p.getType() == emlab.gen.domain.contract.CashFlow.CO2HEDGING).collect(java.util.stream.Collectors.summarizingDouble(emlab.gen.domain.contract.CashFlow::getMoney)).getSum()
-    #     java.util.logging.Logger.getGlobal().finer("Income CO2 Hedging" + toReturn)
-    #     return toReturn

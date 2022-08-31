@@ -18,15 +18,17 @@ from util.repository import *
 from util.spinedb import SpineDB
 from domain.powerplant import Decommissioned
 
+
 class SpineDBReaderWriter:
     """
     The class that handles all writing and reading to the SpineDB.
     """
+
     def __init__(self, open_db, *db_urls: str):
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first is always emlab
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
-        self.powerplantprofits_classname =  'Profits'
+        self.powerplantprofits_classname = 'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
         self.bids_classname = 'Bids'
@@ -49,7 +51,6 @@ class SpineDBReaderWriter:
         if open_db == "Amiris":
             print("opening amiris")
             self.amirisdb = SpineDB(db_urls[1])
-
 
     def read_db_and_create_repository(self, module) -> Repository:
         """
@@ -80,7 +81,8 @@ class SpineDBReaderWriter:
                 reps.current_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'InvestmentIteration':
                 reps.investmentIteration = int(row['parameter_value'])
-            elif row['parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
+            elif row[
+                'parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = str(row['parameter_value'])
                 reps.agent = "Producer" + reps.country
             elif row['parameter_name'] == 'short_term_investment_minimal_irr':
@@ -94,7 +96,7 @@ class SpineDBReaderWriter:
             elif row['parameter_name'] == 'typeofProfitforPastHorizon':
                 reps.typeofProfitforPastHorizon = str(row['parameter_value'])
             elif row['parameter_name'] == 'max_permit_build_time':
-                reps.max_permit_build_time =  int(row['parameter_value'])
+                reps.max_permit_build_time = int(row['parameter_value'])
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
@@ -134,7 +136,6 @@ class SpineDBReaderWriter:
             db_amirisdata = self.amirisdb.export_data()
             add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata)
         return reps
-
 
     """
     Markets
@@ -197,11 +198,16 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.powerplant_installed_classname, ["Id"])
         self.stage_object_class(self.loans_object_classname)
         self.stage_object_parameters(self.loans_object_classname,
-                                          ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
+                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',
+                                      'totalNumberOfPayments'])
+
         for power_plant_name, pp in power_plants.items():
             self.stage_object(self.powerplant_installed_classname, power_plant_name)
             self.stage_object(self.loans_object_classname, str(power_plant_name))
-            self.stage_object_parameter_values(self.powerplant_installed_classname, str(power_plant_name),[('Id', pp.id)],'0')
+            self.stage_object_parameter_values(self.powerplant_installed_classname, str(power_plant_name),
+                                               [('Id', pp.id)], '0')
+
+
             self.stage_object_parameter_values(self.loans_object_classname, str(power_plant_name),
                                                [('amountPerPayment', pp.loan.amountPerPayment),
                                                 ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
@@ -209,7 +215,6 @@ class SpineDBReaderWriter:
                                                 ('totalNumberOfPayments', pp.loan.totalNumberOfPayments)
                                                 ],
                                                '0')
-
 
     def stage_candidate_power_plant_id(self, candidate_power_plants):
         self.stage_object_class(self.candidate_powerplant_installed_classname)
@@ -224,7 +229,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.powerplant_installed_classname,
                                      ["Id", "Age", "Efficiency", "DischargingEfficiency", "Capacity", "Location",
                                       "Owner", "Status", "Cash"
-                                      "Technology"])
+                                                         "Technology"])
 
     def stage_new_power_plant(self, powerplant):
         object_name = str(powerplant.name)
@@ -270,8 +275,7 @@ class SpineDBReaderWriter:
         self.db.import_object_parameter_values(
             [(self.powerplant_installed_classname, powerplant_name, "dismantleTime", tick, '0')])
 
-
-    def stage_bids(self, bid: Bid ):
+    def stage_bids(self, bid: Bid):
         self.stage_object(self.bids_classname, bid.name)
         self.stage_object_parameter_values(self.bids_classname, bid.name,
                                            [('plant', bid.plant),
@@ -292,7 +296,8 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.sro_classname)
         self.stage_object_parameters(self.sro_classname,
                                      ['zone',
-                                      'reserveVolume', 'cash', 'list_of_plants' ])
+                                      'reserveVolume', 'cash', 'list_of_plants'])
+
     # def stage_sr_operator(self, SRO: StrategicReserveOperator):
     #     self.stage_object(self.sro_classname, SRO.name)
     #     self.stage_object_parameter_values(self.sro_classname, SRO.name,
@@ -310,7 +315,6 @@ class SpineDBReaderWriter:
                                             ('cash', SRO.cash),
                                             ('list_of_plants', SRO.list_of_plants)], "0")
 
-
     def stage_init_candidate_plants_value(self, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object_class(self.candidate_plants_NPV_classname)
@@ -320,8 +324,7 @@ class SpineDBReaderWriter:
         # self.stage_init_alternative("costs")
         # self.stage_init_alternative("revenues")
 
-
-    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear ):
+    def stage_candidate_power_plants_value(self, powerplant, powerPlantvalue, iteration, futureYear):
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object(self.candidate_plants_NPV_classname, powerplant)
         self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
@@ -341,28 +344,29 @@ class SpineDBReaderWriter:
         year_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object(self.investment_decisions_classname, powerplant)
         self.stage_object_parameter_values(self.investment_decisions_classname, powerplant,
-                                           [(year_iteration, power_plant_id)],  str(tick))
+                                           [(year_iteration, power_plant_id)], str(tick))
 
-    def stage_init_power_plant_profits(self ):
+    def stage_init_power_plant_profits(self):
         self.stage_object_class(self.powerplantprofits_classname)
-        self.stage_object_parameters(self.powerplantprofits_classname, ["Profits", "PowerPlants","ProfitsC", "PowerPlantsC"])
+        self.stage_object_parameters(self.powerplantprofits_classname,
+                                     ["Profits", "PowerPlants", "ProfitsC", "PowerPlantsC"])
 
-    def stage_power_plant_results(self, reps, pp_numbers,  pp_profits):
+    def stage_power_plant_results(self, reps, pp_numbers, pp_profits):
         # object name =  simulation tick  - iteration
         objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
         self.stage_object(self.powerplantprofits_classname, objectname)
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
-                                           [("Profits", pp_profits) ], "0")
+                                           [("Profits", pp_profits)], "0")
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
-                                           [("PowerPlants", pp_numbers) ], "0")
+                                           [("PowerPlants", pp_numbers)], "0")
 
-    def stage_candidate_plant_results(self, reps, pp_numbers,  pp_profits):
+    def stage_candidate_plant_results(self, reps, pp_numbers, pp_profits):
         objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
         self.stage_object(self.powerplantprofits_classname, objectname)
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
-                                           [("ProfitsC", pp_profits) ], "0")
+                                           [("ProfitsC", pp_profits)], "0")
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
-                                           [("PowerPlantsC", pp_numbers) ], "0")
+                                           [("PowerPlantsC", pp_numbers)], "0")
 
     def get_last_iteration(self):
         return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
@@ -381,8 +385,8 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.financial_reports_object_classname)
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['PowerPlant', 'latestTick', 'spotMarketRevenue', 'overallRevenue', 'production',
-                                      'powerPlantStatus', 'totalProfits', 'totalProfitswLoans' ,'variableCosts', 'fixedCosts', 'totalCosts', 'irr'])
-
+                                      'powerPlantStatus', 'totalProfits', 'totalProfitswLoans', 'variableCosts',
+                                      'fixedCosts', 'totalCosts', 'irr'])
 
     def stage_financial_results(self, financialreports):
         for fr in financialreports:
@@ -399,7 +403,8 @@ class SpineDBReaderWriter:
                                                 ('fixedCosts', Map([str(fr.tick)], [str(fr.fixedCosts)])),
                                                 ('totalCosts', Map([str(fr.tick)], [str(fr.totalCosts)])),
                                                 ('totalProfits', Map([str(fr.tick)], [str(fr.totalProfits)])),
-                                                ('totalProfitswLoans', Map([str(fr.tick)], [str(fr.totalProfitswLoans)])),
+                                                ('totalProfitswLoans',
+                                                 Map([str(fr.tick)], [str(fr.totalProfitswLoans)])),
                                                 ('irr', Map([str(fr.tick)], [str(fr.irr)])),
                                                 ],
                                                '0')
@@ -407,8 +412,8 @@ class SpineDBReaderWriter:
     def stage_init_loans_structure(self):
         self.stage_object_class(self.loans_object_classname)
         self.stage_object_parameters(self.loans_object_classname,
-                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
-
+                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',
+                                      'totalNumberOfPayments'])
 
     def stage_loans(self, pp):
         self.stage_object(self.loans_object_classname, str(pp.name))
@@ -423,15 +428,16 @@ class SpineDBReaderWriter:
     def stage_init_downpayments_structure(self):
         self.stage_object_class(self.downpayments_object_classname)
         self.stage_object_parameters(self.downpayments_object_classname,
-                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',  'totalNumberOfPayments' ])
+                                     ['amountPerPayment', 'numberOfPaymentsDone', 'loanStartTick',
+                                      'totalNumberOfPayments'])
 
     def stage_downpayments(self, pp):
         self.stage_object(self.downpayments_object_classname, str(pp.name))
         self.stage_object_parameter_values(self.downpayments_object_classname, str(pp.name),
-                                           [('amountPerPayment', pp.loan.amountPerPayment),
-                                            ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
-                                            ('loanStartTick', pp.loan.loanStartTick),
-                                            ('totalNumberOfPayments', pp.loan.totalNumberOfPayments)
+                                           [('amountPerPayment', pp.downpayment.amountPerPayment),
+                                            ('numberOfPaymentsDone', pp.downpayment.numberOfPaymentsDone),
+                                            ('loanStartTick', pp.downpayment.loanStartTick),
+                                            ('totalNumberOfPayments', pp.downpayment.totalNumberOfPayments)
                                             ],
                                            '0')
 
@@ -441,23 +447,43 @@ class SpineDBReaderWriter:
                                            [('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone)
                                             ],
                                            '0')
+
     def set_number_downpayments(self, pp):
         self.stage_object(self.loans_object_classname, pp.name)
         self.stage_object_parameter_values(self.loans_object_classname, pp.name,
                                            [('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone)
                                             ],
                                            '0')
+
     def stage_cash_plant(self, plant: object):
-        self.stage_object(self.powerplant_installed_classname, plant.name )
-        self.stage_object_parameter_values(self.powerplant_installed_classname,  plant.name,
-                                           [('cash',  plant.cash)
+        self.stage_object(self.powerplant_installed_classname, plant.name)
+        self.stage_object_parameter_values(self.powerplant_installed_classname, plant.name,
+                                           [('cash', plant.cash)
                                             ],
                                            '0')
 
-    def stage_cash_agent(self, agent):
-        self.stage_object(self.energyProducer_classname, agent.name )
-        self.stage_object_parameter_values(self.energyProducer_classname,  agent.name,
-                                           [('cash',  agent.cash)
+    # def stage_init_cash_agent(self):
+    #     self.stage_object_class(self.energyProducer_classname)
+    #     self.stage_object_parameters(self.energyProducer_classname, ['cash',
+    #                                                                  'CF_ELECTRICITY_SPOT',
+    #                                                                  'CF_LOAN',
+    #                                                                  'CF_DOWNPAYMENT',
+    #                                                                  'CF_STRRESPAYMENT',
+    #                                                                  'CF_CAPMARKETPAYMENT',
+    #                                                                  'CF_FIXEDOMCOST',
+    #                                                                  'CF_COMMODITY'])
+
+    def stage_cash_agent(self, agent, current_tick):
+        self.stage_object(self.energyProducer_classname, agent.name)
+        self.stage_object_parameter_values(self.energyProducer_classname, agent.name,
+                                           [#('cash', Map([str(current_tick)], [agent.cash])),
+                                            ('CF_ELECTRICITY_SPOT', Map([str(current_tick)], [str(agent.CF_ELECTRICITY_SPOT)])),
+                                            ('CF_LOAN', Map([str(current_tick)], [str(agent.CF_LOAN)])),
+                                            ('CF_DOWNPAYMENT', Map([str(current_tick)], [str(agent.CF_DOWNPAYMENT)])),
+                                            ('CF_STRRESPAYMENT', Map([str(current_tick)], [str(agent.CF_STRRESPAYMENT)])),
+                                            ('CF_CAPMARKETPAYMENT', Map([str(current_tick)], [str(agent.CF_CAPMARKETPAYMENT)])),
+                                            ('CF_FIXEDOMCOST', Map([str(current_tick)], [str(agent.CF_FIXEDOMCOST)])),
+                                            ('CF_COMMODITY', Map([str(current_tick)], [str(agent.CF_COMMODITY)]))
                                             ],
                                            '0')
 
@@ -474,15 +500,16 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['capacityMechanismRevenues'])
 
-
     def stage_CM_revenues(self, power_plant, amount, current_tick: int):
         self.stage_object(self.financial_reports_object_classname, power_plant)
         self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
                                            [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
                                            '0')
+
     """
     Fuel prices
     """
+
     def stage_init_next_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
         self.stage_object_parameters(self.fuel_classname, [globalNames.simulated_prices])
@@ -573,7 +600,7 @@ def add_parameter_value_to_repository(reps: Repository, db_line: list, to_dict: 
     object_name = db_line[1]
     parameter_name = db_line[2]
     parameter_value = db_line[3]
-    parameter_alt = db_line[4] #
+    parameter_alt = db_line[4]  #
     if object_name not in to_dict.keys():
         to_dict[object_name] = class_to_create(object_name)
     to_dict[object_name].add_parameter_value(reps, parameter_name, parameter_value, parameter_alt)
@@ -615,7 +642,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
-    elif object_class_name == 'Decommissioned': # this decommissioned is to avoid reading the decommissioned plants
+    elif object_class_name == 'Decommissioned':  # this decommissioned is to avoid reading the decommissioned plants
         add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
     elif object_class_name == 'PowerPlantsInstalled':
         add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
@@ -631,20 +658,23 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
     elif object_class_name == 'TechnologiesEmlab':
         if db_line[1] in reps.used_technologies:
-            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
+                                              PowerGeneratingTechnology)
         else:
             pass
         # data from Traderes
     elif object_class_name == 'technologyPotentials':  # From traderes these potentials are the maximum that can be installed per country. The units are in GW
         if db_line[1] in reps.used_technologies:
-            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
+                                              PowerGeneratingTechnology)
         else:
             pass
             # From here are the inputs from TechnologyEmlab
     elif object_class_name == 'unit':
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
         if db_line[1] in reps.used_technologies:
-            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies, PowerGeneratingTechnology)
+            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
+                                              PowerGeneratingTechnology)
         else:
             pass
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
@@ -653,23 +683,24 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-    elif object_class_name == 'Bids' and reps.runningModule in globalNames.modules_need_bids: # only read this when capacity mechanism
+    elif object_class_name == 'Bids' and reps.runningModule in globalNames.modules_need_bids:  # only read this when capacity mechanism
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
-    elif object_class_name == 'InvestmentDecisions': # needed fo "run_financial_results", "plotting", investment
+    elif object_class_name == 'InvestmentDecisions':  # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
-    elif object_class_name in  ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting", "run_investment_module"]:
+    elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting",
+                                                                                   "run_investment_module"]:
         object_name = db_line[1]
         parameter_name = db_line[2]
         parameter_value = db_line[3]
         pp = reps.power_plants[object_name]
         if object_class_name == "Loans":
-            setattr( pp.loan, parameter_name, parameter_value)
+            setattr(pp.loan, parameter_name, parameter_value)
         else:
-            setattr( pp.downpayment, parameter_name, parameter_value)
+            setattr(pp.downpayment, parameter_name, parameter_value)
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
@@ -678,7 +709,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         object_name = db_line[1]
         year, iteration = object_name.split('-')
         new_db_line = list(db_line)
-        new_db_line[1] = year # object name
+        new_db_line[1] = year  # object name
         new_db_line[4] = iteration  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.profits, Profits)
     else:
@@ -705,12 +736,12 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
 
-        if reps.runningModule == "plotting" :
+        if reps.runningModule == "plotting":
             new_db_line = list(db_line_amiris)
-            new_db_line[1] = db_line_amiris[0] # pass the class name as the object name
-            new_db_line[4] = db_line_amiris[1] # pass the object name (plant id) as the alternative
+            new_db_line[1] = db_line_amiris[0]  # pass the class name as the object name
+            new_db_line[4] = db_line_amiris[1]  # pass the object name (plant id) as the alternative
             add_parameter_value_to_repository(reps, new_db_line, reps.power_plant_dispatch_plans,
                                               PowerPlantDispatchPlansALL)
-        elif object_class_name == str(reps.current_year): # importing only the current power dispatch plans
+        elif object_class_name == str(reps.current_year):  # importing only the current power dispatch plans
             add_parameter_value_to_repository(reps, db_line_amiris, reps.power_plant_dispatch_plans_in_year,
                                               PowerPlantDispatchPlan)
