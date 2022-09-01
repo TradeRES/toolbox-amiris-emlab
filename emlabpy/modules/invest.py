@@ -53,7 +53,7 @@ class Investmentdecision(DefaultModule):
         reps.dbrw.stage_init_alternative(reps.current_tick)
         reps.dbrw.stage_init_future_prices_structure()
         reps.dbrw.stage_init_power_plant_structure()
-        reps.dbrw.stage_init_power_plant_profits()
+        reps.dbrw.stage_init_future_operational_profits()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
         # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
 
@@ -70,7 +70,7 @@ class Investmentdecision(DefaultModule):
         for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
             pp_numbers.append(pp.name)
             pp_profits.append(pp.operationalProfit)
-        self.reps.dbrw.stage_power_plant_results(self.reps, pp_numbers, pp_profits)
+        self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_numbers, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
 
         # save the iteration

@@ -22,6 +22,7 @@ class FinancialPowerPlantReport(ImportObject):
         self.fullLoadHours = [] # [0 for i in range(reps.simulation_length)]
         self.longTermMarketRevenue = 0
         self.capacityMarketRevenues_in_year = 0
+        self.capacityMarketRevenues = 0
         self.strategicReserveRevenue = 0
         self.co2HedgingRevenue = 0
         self.commodityCosts = 0
@@ -35,16 +36,8 @@ class FinancialPowerPlantReport(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         # -----------------------------CM revenues from financial Reports classname
-        if parameter_name == 'capacityMechanismRevenues':
-            array = parameter_value.to_dict()
-            df = pd.DataFrame(array['data'])
-            df.set_index(0, inplace=True)
-            if str(reps.current_tick) in df.index:
-                self.capacityMarketRevenues_in_year = df.loc[str(reps.current_tick)][1]
-            else:
-                self.capacityMarketRevenues_in_year = 0
-
-        elif reps.runningModule == "plotting" and  parameter_name in ['irr', 'totalProfitswLoans', 'totalProfits']:
+        if reps.runningModule == "plotting" and  parameter_name in ['irr', 'totalProfitswLoans', 'totalProfits']:
+            # todo: change this to pd series
             array = parameter_value.to_dict()
             df = pd.DataFrame(array['data'])
             df.set_index(0, inplace=True)
@@ -55,6 +48,18 @@ class FinancialPowerPlantReport(ImportObject):
                 self.totalProfitswLoans = df
             elif parameter_name == 'totalProfits':
                 self.totalProfits = df
+        elif reps.runningModule == "plotting" and  parameter_name in ['capacityMechanismRevenues']:
+            array = parameter_value.to_dict()
+            self.capacityMarketRevenues = pd.Series(i[1] for i in array["data"])
+
+        elif parameter_name == 'capacityMechanismRevenues':
+            array = parameter_value.to_dict()
+            df = pd.DataFrame(array['data'])
+            df.set_index(0, inplace=True)
+            if str(reps.current_tick) in df.index:
+                self.capacityMarketRevenues_in_year = df.loc[str(reps.current_tick)][1]
+            else:
+                self.capacityMarketRevenues_in_year = 0
 
     def getTime(self):
         return self.tick

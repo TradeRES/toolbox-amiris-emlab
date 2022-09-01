@@ -174,11 +174,14 @@ class SpineDBReaderWriter:
         self.stage_object_parameter('MarketStabilityReserve', param_name)
         self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
 
-    def set_power_plant_CapacityMarket_production(self, bids, current_tick):
-        for bid in bids:
-            self.stage_object_parameter_values("Bids", bid.name,
-                                               [('accepted_amount', bid.accepted_amount),
-                                                ('status', bid.status)], current_tick)
+    def set_power_plant_CapacityMarket_production(self, bid, current_tick):
+        # if bid.status == globalNames.power_plant_dispatch_plan_status_accepted:
+        #     print(bid.name)
+        # else:
+        #     print("u")
+        self.stage_object_parameter_values("Bids", bid.name,
+                                           [('accepted_amount', bid.accepted_amount),
+                                            ('status', bid.status)], current_tick)
 
     def stage_power_plant_status(self, power_plant):
         self.stage_object(self.powerplant_installed_classname, power_plant.name)
@@ -346,12 +349,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.investment_decisions_classname, powerplant,
                                            [(year_iteration, power_plant_id)], str(tick))
 
-    def stage_init_power_plant_profits(self):
+    def stage_init_future_operational_profits(self):
         self.stage_object_class(self.powerplantprofits_classname)
         self.stage_object_parameters(self.powerplantprofits_classname,
                                      ["Profits", "PowerPlants", "ProfitsC", "PowerPlantsC"])
 
-    def stage_power_plant_results(self, reps, pp_numbers, pp_profits):
+    def stage_future_operational_profits_installed_plants(self, reps, pp_numbers, pp_profits):
         # object name =  simulation tick  - iteration
         objectname = str(reps.current_tick) + "-" + str(reps.investmentIteration)
         self.stage_object(self.powerplantprofits_classname, objectname)
@@ -683,7 +686,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)
-    elif object_class_name == 'Bids' and reps.runningModule in globalNames.modules_need_bids:  # only read this when capacity mechanism
+    elif object_class_name == 'Bids' and reps.runningModule in globalNames.modules_need_bids:  # only read this when capacity mechanism and when plotting
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
@@ -714,21 +717,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, new_db_line, reps.profits, Profits)
     else:
         logging.info('Object Class not defined: ' + object_class_name)
-
-    # elif object_class_name == 'PowerGridNodes':
-    #     add_parameter_value_to_repository(reps, db_line, reps.power_grid_nodes, PowerGridNode)
-    # elif object_class_name == 'NationalGovernments':
-    #     add_parameter_value_to_repository(reps, db_line, reps.national_governments, NationalGovernment)
-    # elif object_class_name == 'Governments':
-    #     add_parameter_value_to_repository(reps, db_line, reps.governments, Government)
-    # elif object_class_name == 'MarketStabilityReserve':
-    #     add_parameter_value_to_repository(reps, db_line, reps.market_stability_reserves, MarketStabilityReserve)
-    # elif object_class_name == 'PowerGeneratingTechnologyFuel':
-    #     add_parameter_value_to_repository(reps, db_line, reps.power_plants_fuel_mix, SubstanceInFuelMix)
-    # elif object_class_name == 'YearlyEmissions':
-    #     add_parameter_value_to_repository(reps, db_line, reps.emissions, YearlyEmissions)
-    # elif object_class_name == 'CO2Auction':
-    #     add_parameter_value_to_repository(reps, db_line, reps.co2_markets, CO2Market)
 
 
 def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, reps, db_amirisdata):

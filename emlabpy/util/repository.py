@@ -175,11 +175,12 @@ class Repository:
         except StopIteration:
             return None
 
-    # def get_financial_report_per_tick(self, tick):
-    #     try:
-    #         return next(i for i in self.financialPowerPlantReports.values() if i.name == str(tick))
-    #     except StopIteration:
-    #         return None
+    def get_CM_revenues(self, plant_name ):
+        try:
+            return next(i.capacityMarketRevenues for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
+
     def get_financial_report_for_plant(self, plant_name):
         try:
             return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)

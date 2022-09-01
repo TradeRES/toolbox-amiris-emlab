@@ -75,6 +75,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
+
     def getProjectIRR(self, pp, operational_profit_with_loans, agent):
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
