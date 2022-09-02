@@ -25,6 +25,7 @@ class ForwardCapacityMarketSubmitBids(MarketModule):
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
+        reps.dbrw.stage_init_market_clearing_point_structure()
 
     def act(self):
         # For every EnergyProducer

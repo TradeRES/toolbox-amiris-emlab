@@ -141,9 +141,7 @@ class SpineDBReaderWriter:
     Markets
     """
 
-    def stage_init_market_clearing_point_structure(self):
-        self.stage_object_class(self.market_clearing_point_object_classname)
-        self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'TotalCapacity'])
+
 
     def stage_init_bids_structure(self):
         self.stage_object_class(self.bids_classname)
@@ -151,14 +149,19 @@ class SpineDBReaderWriter:
                                      ['plant', 'market', 'price', 'amount', 'bidder', 'accepted_amount',
                                       'status', "tick"])
 
-    def stage_market_clearing_point(self, mcp: MarketClearingPoint, current_tick: int):
+    def stage_init_market_clearing_point_structure(self):
+        self.stage_object_class(self.market_clearing_point_object_classname)
+        self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'Volume', 'Tick'])
+
+    def stage_market_clearing_point(self, mcp: MarketClearingPoint ):
         object_name = mcp.name
+        print(self.market_clearing_point_object_classname, object_name,mcp.market.name )
         self.stage_object(self.market_clearing_point_object_classname, object_name)
         self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
                                            [('Market', mcp.market.name),
                                             ('Price', mcp.price),
-                                            ('Time', mcp.time),
-                                            ('Volume', mcp.volume)], current_tick)
+                                            ('Tick', mcp.tick),
+                                            ('Volume', mcp.volume)], "0")
 
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)

@@ -23,6 +23,7 @@ class CapacityMarketSubmitBids(MarketModule):
         super().__init__('EM-Lab Capacity Market: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
         self.agent = reps.energy_producers[reps.agent]
+        reps.dbrw.stage_init_market_clearing_point_structure()
 
     def act(self):
         # in the future : do for every EnergyProducer

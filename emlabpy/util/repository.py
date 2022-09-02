@@ -585,7 +585,7 @@ class Repository:
         mcp.tick = time
         mcp.volume = volume
         self.market_clearing_points[mcp.name] = mcp
-        self.dbrw.stage_market_clearing_point(mcp, time)
+        self.dbrw.stage_market_clearing_point(mcp )
         return mcp
 
     # Markets
