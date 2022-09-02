@@ -493,7 +493,7 @@ class Decommissioned(ImportObject):
         super().__init__(name)
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
-        if parameter_value == None:
+        if parameter_value == 0.0:
             self.Decommissioned = []
         else:
             setattr(self, parameter_name, parameter_value)
