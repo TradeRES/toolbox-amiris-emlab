@@ -174,14 +174,10 @@ class SpineDBReaderWriter:
         self.stage_object_parameter('MarketStabilityReserve', param_name)
         self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
 
-    def set_power_plant_CapacityMarket_production(self, bid, current_tick):
-        # if bid.status == globalNames.power_plant_dispatch_plan_status_accepted:
-        #     print(bid.name)
-        # else:
-        #     print("u")
+    def set_power_plant_CapacityMarket_production(self, bid):
         self.stage_object_parameter_values("Bids", bid.name,
                                            [('accepted_amount', bid.accepted_amount),
-                                            ('status', bid.status)], current_tick)
+                                            ('status', bid.status)], '0')
 
     def stage_power_plant_status(self, power_plant):
         self.stage_object(self.powerplant_installed_classname, power_plant.name)

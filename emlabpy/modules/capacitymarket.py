@@ -95,12 +95,12 @@ class CapacityMarketClearing(MarketModule):
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
                 ppdp.accepted_amount = 0
 
-
         self.stageCapacityMechanismRevenues(market, clearing_price)
         # save clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
+            print("Cleared market", market.name)
         else:
             print("Market is not cleared", market.name)
 
@@ -134,7 +134,7 @@ class CapacityMarketClearing(MarketModule):
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
             # saving capacity market accepted amount and status
-            self.reps.dbrw.set_power_plant_CapacityMarket_production(accepted, self.reps.current_tick)
+            self.reps.dbrw.set_power_plant_CapacityMarket_production(accepted)
 
 
 

@@ -266,3 +266,4 @@ finally:
     spinedb_reader_writer.db.close_connection()
     if sys.argv[3] in globalNames.modules_need_AMIRIS:
         spinedb_reader_writer.amirisdb.close_connection()
+        print("closed amiris")
