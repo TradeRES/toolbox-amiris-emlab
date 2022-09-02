@@ -49,7 +49,7 @@ class CreatingFinancialReports(DefaultModule):
             self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
 
             loans = powerplant.loan_payments_in_year
-            print(powerplant.name,  "---->" ,loans)
+
             yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
 
             financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)
@@ -70,8 +70,9 @@ class CreatingFinancialReports(DefaultModule):
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
-            irr = self.getProjectIRR(powerplant, operational_profit_with_loans, self.agent)
+            irr, npv = self.getProjectIRR(powerplant, operational_profit_with_loans, self.agent)
             financialPowerPlantReport.irr = irr
+            financialPowerPlantReport.npv = npv
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -92,10 +93,19 @@ class CreatingFinancialReports(DefaultModule):
         for i in range(buildingTime, depreciationTime + buildingTime):
             investmentCashFlow[i] = operational_profit_with_loans
         IRR = npf.irr(investmentCashFlow)
+
+
+        wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
+        npv = npf.npv(wacc, investmentCashFlow)
+
         if pd.isna(IRR):
-            return -100
+            return -100, npv
         else:
-            return round(IRR, 4)
+            return round(IRR, 4), npv
+
+
+
+
 
 
     def addingMarketClearingIncome(self):

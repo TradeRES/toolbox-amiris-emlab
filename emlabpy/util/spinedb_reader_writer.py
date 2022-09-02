@@ -36,7 +36,6 @@ class SpineDBReaderWriter:
         self.financial_reports_object_classname = 'FinancialReports'
         self.loans_object_classname = 'Loans'
         self.downpayments_object_classname = "Downpayments"
-
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
         self.investment_decisions_classname = "InvestmentDecisions"
         self.sro_classname = 'StrategicReserveOperators'
@@ -388,7 +387,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['PowerPlant', 'latestTick', 'spotMarketRevenue', 'overallRevenue', 'production',
                                       'powerPlantStatus', 'totalProfits', 'totalProfitswLoans', 'variableCosts',
-                                      'fixedCosts', 'totalCosts', 'irr'])
+                                      'fixedCosts', 'totalCosts', 'irr', 'npv'])
 
     def stage_financial_results(self, financialreports):
         for fr in financialreports:
@@ -408,6 +407,7 @@ class SpineDBReaderWriter:
                                                 ('totalProfitswLoans',
                                                  Map([str(fr.tick)], [str(fr.totalProfitswLoans)])),
                                                 ('irr', Map([str(fr.tick)], [str(fr.irr)])),
+                                                ('npv', Map([str(fr.tick)], [str(fr.npv)])),
                                                 ],
                                                '0')
 

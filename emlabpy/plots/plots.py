@@ -681,8 +681,6 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
     return CM_revenues_per_technology, accepted_pp_per_technology
 
 
-
-
     #yearly_electricity_prices.drop("zero", axis=1, inplace=True)
     #     for technology_name in unique_technologies:
     #         if reps.power_plants[CMrevenues.name].technology.name == technology_name:
@@ -903,9 +901,6 @@ def generate_plots(reps, scenario_name, electricity_prices):
     price_duration_curves = pd.DataFrame()
 
     # section -----------------------------------------------------------------------------------------------AMIRIS
-
-
-
 
     # db_amiris_url = sys.argv[2]
     # print(db_amiris_url)

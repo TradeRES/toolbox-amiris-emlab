@@ -33,6 +33,7 @@ class FinancialPowerPlantReport(ImportObject):
         self.fixedOMCosts = 0
         self.irr = 0.0
         self.irr_in_year = 0.0
+        self.npv = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         # -----------------------------CM revenues from financial Reports classname

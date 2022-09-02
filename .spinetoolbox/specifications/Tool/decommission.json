@@ -4,7 +4,7 @@
     "includes": [
         "emlab.py"
     ],
-    "description": "",
+    "description": "decommision, save ppower plants status and age",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [],
