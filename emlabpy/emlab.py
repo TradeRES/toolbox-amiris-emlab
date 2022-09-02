@@ -103,7 +103,7 @@ else:
 
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository(sys.argv[3])  # Load repository
-    # Ignore decommissioned power plants
+    # Ignore decommissioned power plants # todo: this anyways shouldnt be imported
     reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in (
         reps.decommissioned["Decommissioned"]).Decommissioned}
     # for the first year, specify the power plants and add a unique id to the power plants.
@@ -135,6 +135,7 @@ try:  # Try statement to always close DB properly
         # todo assign id to installed power plants to unifor id and name
         spinedb_reader_writer.stage_power_plant_id_and_loans(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
+
         print('Staged IDs')
     else:
         # if the id initialization was done, it is not needed to store it again.

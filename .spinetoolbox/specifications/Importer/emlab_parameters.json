@@ -981,8 +981,7 @@
                             },
                             {
                                 "map_type": "Object",
-                                "position": "table_name",
-                                "value": "Decommissioned"
+                                "position": 0
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -990,8 +989,7 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": "table_name",
-                                "value": "Decommissioned"
+                                "position": -1
                             },
                             {
                                 "map_type": "Alternative",
@@ -1407,7 +1405,8 @@
                 "6": "string"
             },
             "Decommissioned": {
-                "0": "string"
+                "0": "string",
+                "1": "string"
             },
             "StrategicReserveOperator": {
                 "0": "float",
