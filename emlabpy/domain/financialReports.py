@@ -37,18 +37,20 @@ class FinancialPowerPlantReport(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         # -----------------------------CM revenues from financial Reports classname
-        if reps.runningModule == "plotting" and  parameter_name in ['irr', 'totalProfitswLoans', 'totalProfits']:
-            # todo: change this to pd series
+        if reps.runningModule == "plotting" and  parameter_name in ['irr','npv',  'totalProfitswLoans', 'totalProfits']:
             array = parameter_value.to_dict()
-            df = pd.DataFrame(array['data'])
-            df.set_index(0, inplace=True)
-            df.index.astype('int64')
+            pd_series = pd.Series(i[1] for i in array["data"])
             if parameter_name == 'irr':
-                self.irr = df
+                self.irr = pd_series
+            elif parameter_name == 'npv':
+                self.npv = pd_series
+            # df = pd.DataFrame(array['data'])
+            # df.set_index(0, inplace=True)
+            # df.index.astype('int64')
             elif parameter_name == 'totalProfitswLoans':
-                self.totalProfitswLoans = df
+                self.totalProfitswLoans = pd_series
             elif parameter_name == 'totalProfits':
-                self.totalProfits = df
+                self.totalProfits = pd_series
         elif reps.runningModule == "plotting" and  parameter_name in ['capacityMechanismRevenues']:
             array = parameter_value.to_dict()
             self.capacityMarketRevenues = pd.Series(i[1] for i in array["data"])

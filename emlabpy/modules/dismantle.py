@@ -25,7 +25,7 @@ class Dismantle(DefaultModule):
         #self.erase_bids_class()
 
     def erase_bids_class(self):
-        # todo finish this
+        # todo finish this if bids are being erased then the awarded capapcity of CM should also be saved.
         db_map = DatabaseMapping(self.reps.dbrw.db_urls[0])
         def class_id_for_name(name):
             return db_map.query(db_map.entity_class_sq).filter(db_map.entity_class_sq.c.name == name).first().id

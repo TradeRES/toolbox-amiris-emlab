@@ -10,16 +10,11 @@ data = [(1,'sravan'),(2,'ojaswi'),
         (3,'bobby'),(4,'rohith'),
         (5,'gnanesh')]
 
-
-a = pd.Series(dict(data))
-print("current", os.getcwd())
-
-
-
-years_to_generate = list(range(1,7))
+years_to_generate = list(range(1,10))
 hours = np.array(list(range(1,10)))
 
 df = pd.DataFrame(index = hours)
+df.loc[hours <= 4, 'equal_or_lower_than_4?'] = 'True'
 
 np.array(list(range(1,10)))
 dos = np.array(list(range(1,10)))

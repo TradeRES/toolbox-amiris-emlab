@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_highDemand"
+        self.simulation_name = "extendedDE_CapacityMarket"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -190,6 +190,12 @@ class Repository:
     def get_irrs_for_plant(self, plant_name):
         try:
             return next(i.irr for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
+
+    def get_npvs_for_plant(self, plant_name):
+        try:
+            return next(i.npv for i in self.financialPowerPlantReports.values() if i.name == plant_name)
         except StopIteration:
             return None
 
