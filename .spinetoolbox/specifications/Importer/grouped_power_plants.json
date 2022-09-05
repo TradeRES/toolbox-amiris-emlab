@@ -174,10 +174,48 @@
                         ]
                     }
                 }
+            ],
+            "groupedDE_RES": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "powerplants_grouped"
+            "groupedDE_RES"
         ],
         "table_options": {
             "Sheet4": {},
@@ -188,7 +226,8 @@
             },
             "powerplants_grouped": {},
             "extendedDE": {},
-            "extendedNL": {}
+            "extendedNL": {},
+            "groupedDE_RES": {}
         },
         "table_types": {
             "Sheet4": {
@@ -227,7 +266,8 @@
                 "5": "string",
                 "6": "string",
                 "7": "string",
-                "8": "string"
+                "8": "string",
+                "9": "string"
             },
             "extendedNL": {
                 "0": "string",
@@ -237,7 +277,19 @@
                 "4": "string",
                 "5": "string",
                 "6": "string",
-                "7": "string"
+                "7": "string",
+                "8": "string"
+            },
+            "groupedDE_RES": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float"
             }
         },
         "table_row_types": {},
