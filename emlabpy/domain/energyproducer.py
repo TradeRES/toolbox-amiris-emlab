@@ -1,5 +1,5 @@
 import logging
-
+import pandas as pd
 from domain.actors import EMLabAgent
 from domain.import_object import *
 
@@ -59,6 +59,11 @@ class EnergyProducer(EMLabAgent):
             self.priceMarkUp = float(parameter_value)
         elif parameter_name == 'willingToInvest':
             self.willingToInvest = parameter_value
+        else:
+            array = parameter_value.to_dict()
+            pd_series = pd.Series(float(i[1]) for i in array["data"])
+            setattr(self, parameter_name, pd_series)
+
 
     def predictFuelPrices(self, agent, futureTimePoint):
         # Fuel Prices

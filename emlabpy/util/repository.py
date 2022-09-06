@@ -205,9 +205,11 @@ class Repository:
         except StopIteration:
             return None
 
-    def getCashFlowsForPowerPlant(self, plant, tick):
-
-        pass
+    def getCashFlowsForEnergyProducer(self, energyproducer):
+        try:
+            return next(i for i in self.energy_producers.values() if i.name == energyproducer)
+        except StopIteration:
+            return None
         # [cf for cf in self.reps.cashFlows.getRegardingPowerPlant(plant) ][tick]
         #  return cashFlows.stream().filter(lambda p : p.getTime() == tick).filter(lambda p : p.getRegardingPowerPlant() is not None).filter(lambda p : p.getRegardingPowerPlant() is plant).collect(Collectors.toList())
     #

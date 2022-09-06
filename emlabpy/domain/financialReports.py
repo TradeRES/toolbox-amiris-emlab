@@ -44,9 +44,6 @@ class FinancialPowerPlantReport(ImportObject):
                 self.irr = pd_series
             elif parameter_name == 'npv':
                 self.npv = pd_series
-            # df = pd.DataFrame(array['data'])
-            # df.set_index(0, inplace=True)
-            # df.index.astype('int64')
             elif parameter_name == 'totalProfitswLoans':
                 self.totalProfitswLoans = pd_series
             elif parameter_name == 'totalProfits':

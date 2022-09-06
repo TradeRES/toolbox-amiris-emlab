@@ -93,8 +93,6 @@ class CreatingFinancialReports(DefaultModule):
         for i in range(buildingTime, depreciationTime + buildingTime):
             investmentCashFlow[i] = operational_profit_with_loans
         IRR = npf.irr(investmentCashFlow)
-
-
         wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         npv = npf.npv(wacc, investmentCashFlow)
 
@@ -102,11 +100,6 @@ class CreatingFinancialReports(DefaultModule):
             return -100, npv
         else:
             return round(IRR, 4), npv
-
-
-
-
-
 
     def addingMarketClearingIncome(self):
         all_dispatch = self.reps.power_plant_dispatch_plans_in_year
