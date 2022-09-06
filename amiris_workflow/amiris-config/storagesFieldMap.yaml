@@ -1,7 +1,7 @@
 Agents:
   - column: StorageType
     target: STORAGE
-    map:
+    create:
       - attribute: Type
         value: StorageTrader
       - attribute: Id

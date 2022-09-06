@@ -1,7 +1,7 @@
 Agents:
   - column: Set
     target: Biogas
-    map:
+    create:
       - attribute: Type
         value: Biogas
       - attribute: Id
@@ -21,7 +21,6 @@ Agents:
 
 
 AgentGroups:
-  - &forecaster 6
   - &marketer 2
 
 Contracts:

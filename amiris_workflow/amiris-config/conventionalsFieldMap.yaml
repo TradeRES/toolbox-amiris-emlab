@@ -2,396 +2,79 @@ Agents:
   # NUCLEAR
   - column: FuelType
     target: NUCLEAR
-    map:
-      - attribute: Type
-        value: PredefinedPlantBuilder
-      - attribute: Id
-        column: identifier
-        suffix: 0
-      - attribute: Attributes/InstalledPowerInMW
-        column: InstalledPowerInMW
-      - attribute: Attributes/PortfolioBuildingOffsetInSeconds
-        value: 60
-      - attribute: Attributes/BlockSizeInMW
-        column: BlockSizeInMW
-      - attribute: Attributes/Prototype/FuelType
-        column: FuelType
-      - attribute: Attributes/Prototype/OpexVarInEURperMWH
-        value: 0.5
-      - attribute: Attributes/Prototype/PlannedAvailability
-        value: 1.0
-      - attribute: Attributes/Prototype/CyclingCostInEURperMW
-        value: 0.0
-      - attribute: Attributes/Prototype/SpecificCo2EmissionsInTperMWH
-        value: 0.0
-      - attribute: Attributes/Prototype/UnplannedAvailabilityFactor
-        value: 1.0
-      - attribute: Attributes/Efficiency/Maximal
-        column: Efficiency
-      - attribute: Attributes/Efficiency/Minimal
-        column: Efficiency
-  - column: FuelType
-    target: NUCLEAR
-    map:
-      - attribute: Type
-        value: ConventionalPlantOperator
-      - attribute: Id
-        column: identifier
-  - column: FuelType
-    target: NUCLEAR
-    map:
-      - attribute: Type
-        value: ConventionalTrader
-      - attribute: Id
-        column: identifier
-        suffix: 1
-      - attribute: Attributes/minMarkup
-        value: 0
-      - attribute: Attributes/maxMarkup
-        value: 0
-    
+    append:
+      - agent: 2000
+        below: Attributes/Plants
+        elements:
+           - attribute: Efficiency
+             column: Efficiency
+           - attribute: NetCapacityInMW
+             column: InstalledPowerInMW
+           - attribute: Id
+             column: identifier
+           - attribute: Override/PlannedAvailability
+             column: OpexVarInEURperMWH
+
   # LIGNITE
   - column: FuelType
     target: LIGNITE
-    map:
-      - attribute: Type
-        value: PredefinedPlantBuilder
-      - attribute: Id
-        column: identifier
-        suffix: 0
-      - attribute: Attributes/InstalledPowerInMW
-        column: InstalledPowerInMW
-      - attribute: Attributes/PortfolioBuildingOffsetInSeconds
-        value: 60
-      - attribute: Attributes/BlockSizeInMW
-        column: BlockSizeInMW
-      - attribute: Attributes/Prototype/FuelType
-        column: FuelType
-      - attribute: Attributes/Prototype/OpexVarInEURperMWH
-        value: 2.0
-      - attribute: Attributes/Prototype/PlannedAvailability
-        value: 1.0
-      - attribute: Attributes/Prototype/CyclingCostInEURperMW
-        value: 0.0
-      - attribute: Attributes/Prototype/SpecificCo2EmissionsInTperMWH
-        value: 0.364
-      - attribute: Attributes/Prototype/UnplannedAvailabilityFactor
-        value: 1.0
-      - attribute: Attributes/Efficiency/Maximal
-        column: Efficiency
-      - attribute: Attributes/Efficiency/Minimal
-        column: Efficiency
-  - column: FuelType
-    target: LIGNITE
-    map:
-      - attribute: Type
-        value: ConventionalPlantOperator
-      - attribute: Id
-        column: identifier
-  - column: FuelType
-    target: LIGNITE
-    map:
-      - attribute: Type
-        value: ConventionalTrader
-      - attribute: Id
-        column: identifier
-        suffix: 1
-      - attribute: Attributes/minMarkup
-        value: 0
-      - attribute: Attributes/maxMarkup
-        value: 0
+    append:
+      - agent: 2001
+        below: Attributes/Plants
+        elements:
+           - attribute: Efficiency
+             column: Efficiency
+           - attribute: NetCapacityInMW
+             column: InstalledPowerInMW
+           - attribute: Id
+             column: identifier
+           - attribute: Override/PlannedAvailability
+             column: OpexVarInEURperMWH
 
   # HARD_COAL
   - column: FuelType
     target: HARD_COAL
-    map:
-      - attribute: Type
-        value: PredefinedPlantBuilder
-      - attribute: Id
-        column: identifier
-        suffix: 0
-      - attribute: Attributes/InstalledPowerInMW
-        column: InstalledPowerInMW
-      - attribute: Attributes/PortfolioBuildingOffsetInSeconds
-        value: 60
-      - attribute: Attributes/BlockSizeInMW
-        column: BlockSizeInMW
-      - attribute: Attributes/Prototype/FuelType
-        column: FuelType
-      - attribute: Attributes/Prototype/OpexVarInEURperMWH
-        value: 2.5
-      - attribute: Attributes/Prototype/PlannedAvailability
-        value: 1.0
-      - attribute: Attributes/Prototype/CyclingCostInEURperMW
-        value: 0.0
-      - attribute: Attributes/Prototype/SpecificCo2EmissionsInTperMWH
-        value: 0.34055972755
-      - attribute: Attributes/Prototype/UnplannedAvailabilityFactor
-        value: 1.0
-      - attribute: Attributes/Efficiency/Maximal
-        column: Efficiency
-      - attribute: Attributes/Efficiency/Minimal
-        column: Efficiency
-  - column: FuelType
-    target: HARD_COAL
-    map:
-      - attribute: Type
-        value: ConventionalPlantOperator
-      - attribute: Id
-        column: identifier
-  - column: FuelType
-    target: HARD_COAL
-    map:
-      - attribute: Type
-        value: ConventionalTrader
-      - attribute: Id
-        column: identifier
-        suffix: 1
-      - attribute: Attributes/minMarkup
-        value: 0
-      - attribute: Attributes/maxMarkup
-        value: 0
+    append:
+      - agent: 2002
+        below: Attributes/Plants
+        elements:
+           - attribute: Efficiency
+             column: Efficiency
+           - attribute: NetCapacityInMW
+             column: InstalledPowerInMW
+           - attribute: Id
+             column: identifier
+           - attribute: Override/PlannedAvailability
+             column: OpexVarInEURperMWH
 
   # NATURAL_GAS
   - column: FuelType
     target: NATURAL_GAS
-    map:
-      - attribute: Type
-        value: PredefinedPlantBuilder
-      - attribute: Id
-        column: identifier
-        suffix: 0
-      - attribute: Attributes/InstalledPowerInMW
-        column: InstalledPowerInMW
-      - attribute: Attributes/PortfolioBuildingOffsetInSeconds
-        value: 60
-      - attribute: Attributes/BlockSizeInMW
-        column: BlockSizeInMW
-      - attribute: Attributes/Prototype/FuelType
-        column: FuelType
-      - attribute: Attributes/Prototype/OpexVarInEURperMWH
-        value: 3.0
-      - attribute: Attributes/Prototype/PlannedAvailability
-        value: 1.0
-      - attribute: Attributes/Prototype/CyclingCostInEURperMW
-        value: 0.0
-      - attribute: Attributes/Prototype/SpecificCo2EmissionsInTperMWH
-        value: 0.2019598384
-      - attribute: Attributes/Prototype/UnplannedAvailabilityFactor
-        value: 1.0
-      - attribute: Attributes/Efficiency/Maximal
-        column: Efficiency
-      - attribute: Attributes/Efficiency/Minimal
-        column: Efficiency
-  - column: FuelType
-    target: NATURAL_GAS
-    map:
-      - attribute: Type
-        value: ConventionalPlantOperator
-      - attribute: Id
-        column: identifier
-  - column: FuelType
-    target: NATURAL_GAS
-    map:
-      - attribute: Type
-        value: ConventionalTrader
-      - attribute: Id
-        column: identifier
-        suffix: 1
-      - attribute: Attributes/minMarkup
-        value: 0
-      - attribute: Attributes/maxMarkup
-        value: 0
+    append:
+      - agent: 2003
+        below: Attributes/Plants
+        elements:
+           - attribute: Efficiency
+             column: Efficiency
+           - attribute: NetCapacityInMW
+             column: InstalledPowerInMW
+           - attribute: Id
+             column: identifier
+           - attribute: Override/PlannedAvailability
+             column: OpexVarInEURperMWH
 
   # OIL
   - column: FuelType
     target: OIL
-    map:
-      - attribute: Type
-        value: PredefinedPlantBuilder
-      - attribute: Id
-        column: identifier
-        suffix: 0
-      - attribute: Attributes/InstalledPowerInMW
-        column: InstalledPowerInMW
-      - attribute: Attributes/PortfolioBuildingOffsetInSeconds
-        value: 60
-      - attribute: Attributes/BlockSizeInMW
-        column: BlockSizeInMW
-      - attribute: Attributes/Prototype/FuelType
-        column: FuelType
-      - attribute: Attributes/Prototype/OpexVarInEURperMWH
-        value: 3.0
-      - attribute: Attributes/Prototype/PlannedAvailability
-        value: 1.0
-      - attribute: Attributes/Prototype/CyclingCostInEURperMW
-        value: 0.0
-      - attribute: Attributes/Prototype/SpecificCo2EmissionsInTperMWH
-        value: 0.26676
-      - attribute: Attributes/Prototype/UnplannedAvailabilityFactor
-        value: 1.0
-      - attribute: Attributes/Efficiency/Maximal
-        column: Efficiency
-      - attribute: Attributes/Efficiency/Minimal
-        column: Efficiency
-  - column: FuelType
-    target: OIL
-    map:
-      - attribute: Type
-        value: ConventionalPlantOperator
-      - attribute: Id
-        column: identifier
-  - column: FuelType
-    target: OIL
-    map:
-      - attribute: Type
-        value: ConventionalTrader
-      - attribute: Id
-        column: identifier
-        suffix: 1
-      - attribute: Attributes/minMarkup
-        value: 0
-      - attribute: Attributes/maxMarkup
-        value: 0
-
-Contracts:
-#################################
-# -- PlantBuildingManagement -- #
-#################################
-  - SenderType: PredefinedPlantBuilder
-    ReceiverType: ConventionalPlantOperator
-    ProductName: PowerPlantPortfolio
-    FirstDeliveryTime: -60
-    DeliveryIntervalInSteps: 31536000
-
-##############################
-# -- Forecast Preparation -- #
-##############################
-  - SenderId: 6
-    ReceiverType: ConventionalTrader
-    ProductName: ForecastRequest
-    FirstDeliveryTime: -26
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalTrader
-    ReceiverType: ConventionalPlantOperator
-    ProductName: ForecastRequestForward
-    FirstDeliveryTime: -25
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalPlantOperator
-    ReceiverId: 4
-    ProductName: FuelPriceForecastRequest
-    FirstDeliveryTime: -24
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalPlantOperator
-    ReceiverId: 3
-    ProductName: Co2PriceForecastRequest
-    FirstDeliveryTime: -24
-    DeliveryIntervalInSteps: 3600    
-
-  - SenderId: 4
-    ReceiverType: ConventionalPlantOperator
-    ProductName: FuelPriceForecast
-    FirstDeliveryTime: -23
-    DeliveryIntervalInSteps: 3600
-
-  - SenderId: 3
-    ReceiverType: ConventionalPlantOperator
-    ProductName: Co2PriceForecast
-    FirstDeliveryTime: -23
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalPlantOperator
-    ReceiverType: ConventionalTrader
-    ProductName: MarginalCostForecast
-    FirstDeliveryTime: -22
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalTrader
-    ReceiverId: 6
-    ProductName: BidsForecast
-    FirstDeliveryTime: -21
-    DeliveryIntervalInSteps: 3600
-
-#################
-# -- Bidding -- #
-#################
-  - SenderId: 1
-    ReceiverType: ConventionalTrader
-    ProductName: GateClosureInfo
-    FirstDeliveryTime: -10
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalTrader
-    ReceiverType: ConventionalPlantOperator
-    ProductName: GateClosureForward
-    FirstDeliveryTime: -9
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalPlantOperator
-    ReceiverId: 4
-    ProductName: FuelPriceRequest
-    FirstDeliveryTime: -3
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalPlantOperator
-    ReceiverId: 3
-    ProductName: Co2PriceRequest
-    FirstDeliveryTime: -3
-    DeliveryIntervalInSteps: 3600
-
-  - SenderId: 4
-    ReceiverType: ConventionalPlantOperator
-    ProductName: FuelPrice
-    FirstDeliveryTime: -2
-    DeliveryIntervalInSteps: 3600
-
-  - SenderId: 3
-    ReceiverType: ConventionalPlantOperator
-    ProductName: Co2Price
-    FirstDeliveryTime: -2
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalPlantOperator
-    ReceiverType: ConventionalTrader
-    ProductName: MarginalCost
-    FirstDeliveryTime: -1
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalTrader
-    ReceiverId: 1
-    ProductName: Bids
-    FirstDeliveryTime: 0
-    DeliveryIntervalInSteps: 3600
-
-####################
-# -- Evaluation -- #
-####################  
-  - SenderId: 1
-    ReceiverType: ConventionalTrader
-    ProductName: Awards
-    FirstDeliveryTime: 4
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalTrader
-    ReceiverType: ConventionalPlantOperator
-    ProductName: DispatchAssignment
-    FirstDeliveryTime: 5
-    DeliveryIntervalInSteps: 3600
-
-  - SenderType: ConventionalTrader
-    ReceiverType: ConventionalPlantOperator
-    ProductName: Payout
-    FirstDeliveryTime: 6
-    DeliveryIntervalInSteps: 3600
-
-####################
-#   -- Output --   #
-####################
-#   - SenderType: ConventionalPlantOperator
-#     ReceiverType: ConventionalPlantOperator
-#     ProductName: AnnualCostReport
-#     FirstDeliveryTime: 1
-#     DeliveryIntervalInSteps: 31536000
+    append:
+      - agent: 2004
+        below: Attributes/Plants
+        elements:
+           - attribute: Efficiency
+             column: Efficiency
+           - attribute: NetCapacityInMW
+             column: InstalledPowerInMW
+           - attribute: Id
+             column: identifier
+           - attribute: Override/PlannedAvailability
+             column: OpexVarInEURperMWH

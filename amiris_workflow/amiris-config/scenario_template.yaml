@@ -14,7 +14,7 @@ Variables:
   - &portfolioBuildingOffset 60
 
 Agents:
-  - Type: EnergyExchange
+  - Type: EnergyExchangeMulti
     Id: 1
     Attributes:
       DistributionMethod: SAME_SHARES
@@ -64,22 +64,126 @@ Agents:
       DistributionMethod: SAME_SHARES
       ForecastPeriodInHours: 168
       ForecastRequestOffsetInSeconds: 27
-#
-#  - Type: VariableRenewableOperator
-#    Id: 10
-#    Attributes:
-#      EnergyCarrier: PV
-#      InstalledPowerInMW: 45436
-#      OpexVarInEURperMWH: 0.0
-#      YieldProfile: "amiris-config/data/pv.csv"
-#
-#  - Type: VariableRenewableOperator
-#    Id: 20
-#    Attributes:
-#      EnergyCarrier: WindOn
-#      InstalledPowerInMW: 51945
-#      OpexVarInEURperMWH: 0
-#      YieldProfile: "amiris-config/data/windon.csv"
+
+  - Type: IndividualPlantBuilder
+    Id: 2000
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'NUCLEAR'
+        SpecificCo2EmissionsInTperMWH: 0.0
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 0.5
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1000
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 500
+
+  - Type: IndividualPlantBuilder
+    Id: 2001
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'LIGNITE'
+        SpecificCo2EmissionsInTperMWH: 0.364
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 2.0
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1001
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 501
+
+  - Type: IndividualPlantBuilder
+    Id: 2002
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'HARD_COAL'
+        SpecificCo2EmissionsInTperMWH: 0.34055972755
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 2.5
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1002
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 502
+
+  - Type: IndividualPlantBuilder
+    Id: 2003
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'NATURAL_GAS'
+        SpecificCo2EmissionsInTperMWH: 0.2019598384
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 3.0
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1003
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 503
+
+  - Type: IndividualPlantBuilder
+    Id: 2004
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'OIL'
+        SpecificCo2EmissionsInTperMWH: 0.26676
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 3.0
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1004
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 504
 
 Contracts: !include ["yaml/contracts/*.yaml", "Contracts"]
 
