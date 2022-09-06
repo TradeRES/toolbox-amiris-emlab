@@ -12,7 +12,7 @@ Agents:
              column: InstalledPowerInMW
            - attribute: Id
              column: identifier
-           - attribute: Override/PlannedAvailability
+           - attribute: Override/OpexVarInEURperMWH
              column: OpexVarInEURperMWH
 
   # LIGNITE
@@ -28,7 +28,7 @@ Agents:
              column: InstalledPowerInMW
            - attribute: Id
              column: identifier
-           - attribute: Override/PlannedAvailability
+           - attribute: Override/OpexVarInEURperMWH
              column: OpexVarInEURperMWH
 
   # HARD_COAL
@@ -44,7 +44,7 @@ Agents:
              column: InstalledPowerInMW
            - attribute: Id
              column: identifier
-           - attribute: Override/PlannedAvailability
+           - attribute: Override/OpexVarInEURperMWH
              column: OpexVarInEURperMWH
 
   # NATURAL_GAS
@@ -60,7 +60,7 @@ Agents:
              column: InstalledPowerInMW
            - attribute: Id
              column: identifier
-           - attribute: Override/PlannedAvailability
+           - attribute: Override/OpexVarInEURperMWH
              column: OpexVarInEURperMWH
 
   # OIL
@@ -76,5 +76,5 @@ Agents:
              column: InstalledPowerInMW
            - attribute: Id
              column: identifier
-           - attribute: Override/PlannedAvailability
+           - attribute: Override/OpexVarInEURperMWH
              column: OpexVarInEURperMWH

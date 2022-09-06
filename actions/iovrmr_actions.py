@@ -22,7 +22,13 @@ from iovrmr_tools import (
     get_field,
     write_yaml,
     to_list,
-    raise_and_log_critical_error, get_all_csv_files_in_folder, OPERATOR_AGENTS, AmirisOutputs, sum_per_agent,
+    raise_and_log_critical_error,
+    get_all_csv_files_in_folder,
+    OPERATOR_AGENTS,
+    AmirisOutputs,
+    sum_per_agent,
+    CONVENTIONAL_AGENT_RESULTS,
+    sum_per_plant,
 )
 
 
@@ -229,10 +235,11 @@ def aggregate_results(data_manager, config, params):
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
     files = get_all_csv_files_in_folder(folder=folder_name)
     to_concat = []
+    conventional_series = []
     for file in files:
-        type_df = pd.read_csv(file, sep=";")
-        agent_name = file.rsplit("/", 1)[1].rsplit(".", 1)[0]
-        if agent_name in OPERATOR_AGENTS:
+        file_name = file.rsplit("/", 1)[1].rsplit(".", 1)[0]
+        if file_name in OPERATOR_AGENTS:
+            type_df = pd.read_csv(file, sep=";")
             column_names = {
                 "VariableCostsInEUR": AmirisOutputs.VARIABLE_COSTS_IN_EURO.name,
                 "ReceivedMoneyInEUR": AmirisOutputs.REVENUES_IN_EURO.name,
@@ -240,13 +247,25 @@ def aggregate_results(data_manager, config, params):
             }
             outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
             outputs_per_agent.rename(columns=column_names, inplace=True)
-            outputs_per_agent[AmirisOutputs.CONTRIBUTION_MARGIN_IN_EURO.name] = (
-                outputs_per_agent[AmirisOutputs.REVENUES_IN_EURO.name]
-                - outputs_per_agent[AmirisOutputs.VARIABLE_COSTS_IN_EURO.name]
-            )
             to_concat.append(outputs_per_agent)
+        elif file_name in CONVENTIONAL_AGENT_RESULTS.keys():
+            conventional_df = pd.read_csv(file, sep=";")
+            column_names = {
+                "VariableCostsInEURperPlant": AmirisOutputs.VARIABLE_COSTS_IN_EURO.name,
+                "ReceivedMoneyInEURperPlant": AmirisOutputs.REVENUES_IN_EURO.name,
+                "DispatchedPowerInMWHperPlant": AmirisOutputs.PRODUCTION_IN_MWH.name,
+            }
+            column = CONVENTIONAL_AGENT_RESULTS[file_name]
+            column_per_plant = sum_per_plant(conventional_df, column, column_names[column])
+            conventional_series.append(column_per_plant)
 
+    to_concat.append(pd.concat(conventional_series, axis=1))
     all_outputs_per_agent = pd.concat(to_concat)
+    all_outputs_per_agent[AmirisOutputs.CONTRIBUTION_MARGIN_IN_EURO.name] = (
+        all_outputs_per_agent[AmirisOutputs.REVENUES_IN_EURO.name]
+        - all_outputs_per_agent[AmirisOutputs.VARIABLE_COSTS_IN_EURO.name]
+    )
+
     all_outputs_per_agent.index.name = "identifier"
 
     if params["args"]["write"]:

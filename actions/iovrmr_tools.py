@@ -15,12 +15,16 @@ from ioproc.logger import mainlogger
 OUTPUT_FILE_ENDING = ".csv"
 OPERATOR_AGENTS = [
     "VariableRenewableOperator",
-    "ConventionalPlantOperator",
     "Biogas",
     "StorageTrader",
 ]
 SUPPORTED_AGENTS = ["RenewableTrader", "SystemOperatorTrader"]
 EXCHANGE = ["EnergyExchangeMulti"]
+CONVENTIONAL_AGENT_RESULTS = {
+    "ConventionalPlantOperator_VariableCostsInEURperPlant": "VariableCostsInEURperPlant",
+    "ConventionalPlantOperator_ReceivedMoneyInEURperPlant": "ReceivedMoneyInEURperPlant",
+    "ConventionalPlantOperator_DispatchedPowerInMWHperPlant": "DispatchedPowerInMWHperPlant",
+}
 
 
 class FilterType(Enum):
@@ -302,3 +306,14 @@ def call_function_per_agent(type_df: pd.DataFrame, function: Callable[[pd.DataFr
     """Splits given dataframe by AgentId and applies `function`; Returns dict of {AgentId: `function` return value}"""
     groups = type_df.groupby(by="AgentId", sort=False)
     return {agent_id: function(agent_df) for agent_id, agent_df in groups}
+
+
+def sum_per_plant(df: pd.DataFrame, column: str, target_name: str) -> pd.Series:
+    """Calculates summed values per plant ID and given column returning renamed Series"""
+    df["ID"] = df["ID"].astype(str)
+    to_drop = df.loc[df["ID"].str.contains("Auto_")]
+    df.drop(index=to_drop.index, inplace=True)
+    groups = df.groupby(by="ID", sort=False)
+    function = calc_sum(column)
+    result = {plant_id: function(plant_df) for plant_id, plant_df in groups}
+    return pd.Series(data=result, name=target_name)
