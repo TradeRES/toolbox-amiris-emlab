@@ -103,6 +103,8 @@ class CapacityMarketClearing(MarketModule):
                                                              self.reps.current_tick)
             print("Cleared market", market.name)
         else:
+            self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
+                                                             self.reps.current_tick)
             print("Market is not cleared", market.name)
 
         # todo: save list of power plants in the strategic reserve

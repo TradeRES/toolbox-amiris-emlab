@@ -6,65 +6,69 @@ import sys
 from functools import reduce
 import pandas as pd
 
-data = [(1,'sravan'),(2,'ojaswi'),
-        (3,'bobby'),(4,'rohith'),
-        (5,'gnanesh')]
-
-years_to_generate = list(range(1,10))
-hours = np.array(list(range(1,10)))
-
-df = pd.DataFrame(index = hours)
-df.loc[hours <= 4, 'equal_or_lower_than_4?'] = 'True'
-
-np.array(list(range(1,10)))
-dos = np.array(list(range(1,10)))
-for i in range(1, 4):
-    df["dos"+ str(i)] = dos * 3
-df.plot()
-plt.show()
+import ioproc.runners as run
 
 
-df.index.name = "key"
 
-other = pd.DataFrame({'key': [1, 2, 5],
-                      'B': ['B0', 'B1', 'B2']})
-ssd = pd.DataFrame({'key': [1, 2, 3],
-                      'C': ['B0', 'B1', 'B2']})
-other.set_index('key')
-ssd.set_index('key')
-df = pd.merge(df, other,   on='key', how='inner')
-df = pd.merge(df, ssd,   on='key', how='inner')
-df.join(ssd, how='left')
-print(df)
-merged_df = reduce(lambda df, other: pd.merge(df, other, on='date', how='inner'), dfs)
-
-
-record1= {'Math': list(range(100))}
-
-record2= {'Math': [0,0,0,0,0],
-          'Science': [0,0,0,0,0],
-          'English': [0,0,0,0,100000]}
-
-
-def plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
-                                    ):
-    print('project values')
-    fig8, ax1 = plt.subplots()
-    ax2 = ax1.twinx()
-    ax1.plot( candidate_plants_project_value )
-    ax2.plot(installed_capacity_per_iteration , 'o')
-    ax1.set_xlabel('Iterations', fontsize='medium')
-    ax1.set_ylabel('Project value', fontsize='medium')
-    ax2.set_ylabel('Investments', fontsize='medium')
-    ax1.set_title('Investments and project value per iterations')
-    ax1.legend( candidate_plants_project_value.columns.values.tolist())
-    print(candidate_plants_project_value.columns)
-
-candidate_plants_project_value = pd.DataFrame(record1)
-installed_capacity_per_iteration =  pd.DataFrame(record2)
-plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration )
-print('Showing plots...')
-plt.show()
+# data = [(1,'sravan'),(2,'ojaswi'),
+#         (3,'bobby'),(4,'rohith'),
+#         (5,'gnanesh')]
+#
+# years_to_generate = list(range(1,10))
+# hours = np.array(list(range(1,10)))
+#
+# df = pd.DataFrame(index = hours)
+# df.loc[hours <= 4, 'equal_or_lower_than_4?'] = 'True'
+#
+# np.array(list(range(1,10)))
+# dos = np.array(list(range(1,10)))
+# for i in range(1, 4):
+#     df["dos"+ str(i)] = dos * 3
+# df.plot()
+# plt.show()
+#
+#
+# df.index.name = "key"
+#
+# other = pd.DataFrame({'key': [1, 2, 5],
+#                       'B': ['B0', 'B1', 'B2']})
+# ssd = pd.DataFrame({'key': [1, 2, 3],
+#                       'C': ['B0', 'B1', 'B2']})
+# other.set_index('key')
+# ssd.set_index('key')
+# df = pd.merge(df, other,   on='key', how='inner')
+# df = pd.merge(df, ssd,   on='key', how='inner')
+# df.join(ssd, how='left')
+# print(df)
+# merged_df = reduce(lambda df, other: pd.merge(df, other, on='date', how='inner'), dfs)
+#
+#
+# record1= {'Math': list(range(100))}
+#
+# record2= {'Math': [0,0,0,0,0],
+#           'Science': [0,0,0,0,0],
+#           'English': [0,0,0,0,100000]}
+#
+#
+# def plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+#                                     ):
+#     print('project values')
+#     fig8, ax1 = plt.subplots()
+#     ax2 = ax1.twinx()
+#     ax1.plot( candidate_plants_project_value )
+#     ax2.plot(installed_capacity_per_iteration , 'o')
+#     ax1.set_xlabel('Iterations', fontsize='medium')
+#     ax1.set_ylabel('Project value', fontsize='medium')
+#     ax2.set_ylabel('Investments', fontsize='medium')
+#     ax1.set_title('Investments and project value per iterations')
+#     ax1.legend( candidate_plants_project_value.columns.values.tolist())
+#     print(candidate_plants_project_value.columns)
+#
+# candidate_plants_project_value = pd.DataFrame(record1)
+# installed_capacity_per_iteration =  pd.DataFrame(record2)
+# plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration )
+# print('Showing plots...')
+# plt.show()
 
 
 # from domain.import_object import *

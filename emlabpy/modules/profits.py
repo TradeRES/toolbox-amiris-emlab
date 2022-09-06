@@ -11,7 +11,8 @@ class Profits(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         """"
-        This function is being read for the plotting. The totalProfits are being saved in the module Investmentdecision
+        This function is being read for the plotting.
+        The totalProfits are being saved in the module Investmentdecision
         # object name =  year
         # alternative = iteration
         The data is stored in db investment with the object name "tick - iteration"

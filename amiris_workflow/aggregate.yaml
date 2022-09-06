@@ -1,0 +1,29 @@
+action_folder: '../actions'
+
+from_check_point: start
+
+debug:
+  time_it: False
+  enable_development_mode: False
+  log_level: DEBUG
+
+global:
+  pbDir: "amiris/result/"
+  pbFile: traderes.pb
+  output:
+    filePath: amiris-config/
+    timeSeriesDateFormat: '%Y-%m-%d_%H:%M:%S'
+    pbOutputRaw: "output/raw/"
+    pbOutputProcessed: "output/"
+    csvSeparator: ";"
+
+workflow:
+  - action:
+      project: general
+      call: aggregate_results
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: all_outputs_per_agent
+      args:
+        write: True
+        file_name: amiris_results.csv

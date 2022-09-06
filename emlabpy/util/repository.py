@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_CapacityMarket"
+        self.simulation_name = "groupedDE_RES"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -248,6 +248,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_electricity_voll(self) -> Optional[ElectricitySpotMarket]:
+        try:
+            return next(i.valueOfLostLoad for i in self.electricity_spot_markets.values() if
+                        i.country == self.country)
+        except StopIteration:
+            return None
 
     # ----------------------------------------------------------------------------section technologies
     # PowerGeneratingTechnologies
@@ -602,12 +608,6 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_electricity_spot_market_demand(self) -> Optional[ElectricitySpotMarket]:
-        try:
-            return next(i.hourlyDemand[1] for i in self.electricity_spot_markets.values() if
-                        i.country == self.country)
-        except StopIteration:
-            return None
 
 
     def get_allowances_in_circulation(self, zone: Zone, time: int) -> int:

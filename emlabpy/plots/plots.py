@@ -32,20 +32,6 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
 
 def plot_annual_to_be_decommissioned_capacity(plot_annual_to_be_decommissioned_capacity, years_to_generate,
                                               path_to_plots, colors):
-    fig4, axs5 = plt.subplots()
-    axs4 = plot_annual_to_be_decommissioned_capacity.plot.bar(stacked=True, rot=0, color=colors, grid=True,
-                                                              legend=False)
-    axs4.set_axisbelow(True)
-    axs4.set_xlabel('Years', fontsize='medium')
-    axs4.set_ylabel('Capacity (MW)', fontsize='medium')
-    # plt.ylim([-4.3e5, 5.5e5])
-    axs4.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs4.set_title('Capacity per Technology to be decommissioned')
-    # fig4 = a.get_figure()
-    fig4.savefig(path_to_plots + '/' + 'Capacity to be decommissioned.png', bbox_inches='tight', dpi=300)
-    plt.show()
-
-
 def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors):
     print('Create decommissioning plot')
     fig5, axs5 = plt.subplots()
@@ -203,7 +189,6 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     fig26 = axs26.get_figure()
     fig26.savefig(path_to_plots + '/' + 'Capacity Mechanisms number.png', bbox_inches='tight', dpi=300)
 
-
     axs15 = CM_revenues_per_technology.plot(color=colors_unique_techs)
     axs15.set_axisbelow(True)
     plt.xlabel('tick', fontsize='medium')
@@ -340,7 +325,7 @@ def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_uniq
     fig21.savefig(path_to_plots + '/' + 'Annual market values per technology.png', bbox_inches='tight', dpi=300)
 
 
-def plot_electricity_prices(electricity_price, path_to_plots):
+def plot_yearly_average_electricity_prices(electricity_price, path_to_plots):
     axs22 = electricity_price.plot()
     axs22.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -531,10 +516,10 @@ def prepare_revenues_per_iteration(reps, tick):
 
     future_operational_profit_per_iteration["tech"] = tech
     grouped_revenues = future_operational_profit_per_iteration.groupby('tech').mean()
-    sorted_average_revenues_per_iteration_first_year = grouped_revenues.T.sort_index()
+    sorted_average_revenues_per_iteration_test_tick = grouped_revenues.T.sort_index()
 
     all_future_operational_profit = future_operational_profit_per_iteration.set_index('tech').T.sort_index(level=0)
-    return sorted_average_revenues_per_iteration_first_year, all_future_operational_profit
+    return sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit
 
 
 def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simulation_years, test_tech):
@@ -678,13 +663,14 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
         cm_number_of_awarded_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
         powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
         for pp in powerplants_per_tech:
+            print(technology_name)
             CMrevenues = reps.get_CM_revenues(pp.name)
-            cm_revenues_per_pp.at[:, pp.name] = CMrevenues
-            cm_number_of_awarded_pp.loc[CMrevenues> 0, pp.name] += 1
-        a = cm_revenues_per_pp.sum(axis=1, skipna=True)
-        b = cm_number_of_awarded_pp.sum(axis=1, skipna=True)
-        CM_revenues_per_technology[technology_name] = a
-        accepted_pp_per_technology[technology_name] = b
+            cm_revenues_per_pp.at[:, pp.name] = CMrevenues # matrix with CM revenues
+        print(cm_revenues_per_pp)
+        accepted_pp_per_technology[technology_name] = cm_revenues_per_pp.gt(0).sum()
+        total_revenues_per_technology = cm_revenues_per_pp.sum(axis=1, skipna=True)
+        #b = cm_number_of_awarded_pp.sum(axis=1, skipna=True)
+        CM_revenues_per_technology[technology_name] = total_revenues_per_technology
     return CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech
 
 
@@ -750,41 +736,47 @@ def reading_electricity_prices(raw_results_url):
     db_raw = SpineDB(raw_results_url)
     db_electricity_prices = db_raw.query_object_parameter_values_by_object_class('Results')
     db_raw.close_connection()
-    yearly_electricity_prices = pd.DataFrame(columns=["zero"]).fillna(0)
+    yearly_electricity_prices = pd.DataFrame()
     for yearly in db_electricity_prices:
         year = int(yearly["object_name"])
         electricity_prices = yearly['parameter_value'].to_dict()
         a = pd.Series(i[1] for i in electricity_prices["data"])
         yearly_electricity_prices.at[:, year] = a
-    yearly_electricity_prices.drop("zero", axis=1, inplace=True)
+  #  yearly_electricity_prices.drop("zero", axis=1, inplace=True)
 
     return yearly_electricity_prices
 
+def get_shortage_hours_and_power_ratio(reps, years_to_generate,yearly_electricity_prices, all_techs_capacity):
+    total_capacity = all_techs_capacity.sum(axis=0)
+    all_techs_capacity.drop(['PV_utility_systems','WTG_onshore' , "WTG_offshore"], inplace= True)
+    controllable_capacity = all_techs_capacity.sum(axis=0)
 
-
-# from Bart van Nobelen
-def get_shortage_hours_and_power_ratio(reps, years_to_generate, capacity):
-    # demand_list = []
     shortage_hours = pd.DataFrame(index=years_to_generate)
     supply_ratio = pd.DataFrame(index=years_to_generate)
+    # todo: define the VOLL from emlab to amiris
+    voll = reps.get_electricity_voll()
+    shortage_hours["from prices >3000"] = yearly_electricity_prices.eq(3000).sum()
+
+    shortage_from_capacity = []
     for year in years_to_generate:
         trend = reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices,
                                                                        year)
-
-        peak_load_without_trend = max(reps.get_hourly_demand_by_country(reps.country)[1])
+        load = reps.get_hourly_demand_by_country(reps.country)[1]
+        peak_load_without_trend = max(load)
         peak_load_volume = peak_load_without_trend * trend
-
         count = 0
-        demand_list = reps.get_electricity_spot_market_demand()
-        for i in demand_list:
+        # from Bart van Nobelen
+        # some blocks of energy actually cannot be dispatched,
+        for i in load:
             x = i * trend
-            if x > capacity.loc[year]:
+            if x > total_capacity.loc[year]:
                 count += 1
-        shortage_hours.loc[year, 0] = count
-        supply_ratio.loc[year, 0] = capacity.loc[year] / peak_load_volume
+        # todo => residual_load load
+        supply_ratio.loc[year, 0] = controllable_capacity.loc[year] / peak_load_volume
+        shortage_from_capacity.append(count)
 
+    shortage_hours["demand> capacity"] = shortage_from_capacity
     return shortage_hours, supply_ratio
-
 
 def generate_plots(reps, scenario_name, electricity_prices):
     print("Databases read")
@@ -817,57 +809,54 @@ def generate_plots(reps, scenario_name, electricity_prices):
     last_year = years_to_generate[-1]
     test_tick = 0
     test_tech = "PV_utility_systems"
+    if  electricity_prices is not None:
+        plot_hourly_electricity_prices(electricity_prices, path_to_plots)
+        plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots)
 
-    # plot_hourly_electricity_prices(electricity_prices, path_to_plots)
-    # plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots)
-
-    # check extension of power plants.
+    # #check extension of power plants.
     # extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
-    # section -----------------------------------------------------------------------------------------------Capacity Markets
+    # #section -----------------------------------------------------------------------------------------------Capacity Markets
 
-    # CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech = prepare_accepted_CapacityMechanism(reps, unique_technologies,
-    #                                                  ticks_to_generate)
-    # plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, path_to_plots, colors_unique_techs)
+    CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech = prepare_accepted_CapacityMechanism(reps, unique_technologies,
+                                                     ticks_to_generate)
+    plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, path_to_plots, colors_unique_techs)
 
     # # section -----------------------------------------------------------------------------------------------capacities
-
+    #
     # all_techs_capacity, all_techs_generation, all_techs_market_price, all_techs_capacity_factor, electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
     #     reps, unique_technologies,
     #     years_to_generate)
+    # shortages, supply_ratio = get_shortage_hours_and_power_ratio(reps, years_to_generate, electricity_prices, all_techs_capacity)
+    # plot_supply_ratio(supply_ratio, path_to_plots)
+    # plot_shortages(shortages, path_to_plots)
     # plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
-    # plot_electricity_prices(electricity_price, path_to_plots)
-    # total_capacity = all_techs_capacity.sum(axis=0)
+    # plot_yearly_average_electricity_prices(electricity_price, path_to_plots)
     # plot_installed_capacity(all_techs_capacity.T, path_to_plots, colors_unique_techs)
     # plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
     # plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
-    # all_techs_capacity.drop(['PV_utility_systems','WTG_onshore' , "WTG_offshore"], inplace= True)
-    # controllable_capacity = all_techs_capacity.sum(axis=0)
-    # shortages, supply_ratio = get_shortage_hours_and_power_ratio(reps, years_to_generate, controllable_capacity)
-    # plot_supply_ratio(supply_ratio, path_to_plots)
-    # plot_shortages(shortages, path_to_plots)
     # # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
     # #
-    average_profits_per_tech_per_year, profits_for_test_tech_per_year = prepare_operational_profit_per_year_per_tech(
-        reps, unique_technologies, ticks_to_generate  test_tech)
-    plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
-
-    plot_profits_for_tech_per_year(profits_for_test_tech_per_year, test_tech, path_to_plots, colors_unique_techs)
-    irrs_per_tech_per_year, npvs_per_tech_per_year = prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
-    plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year,npvs_per_tech_per_year, path_to_plots, colors_unique_techs)
-
+    # average_profits_per_tech_per_year, profits_for_test_tech_per_year = prepare_operational_profit_per_year_per_tech(
+    #     reps, unique_technologies, ticks_to_generate  ,test_tech)
+    # plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
     #
+    # plot_profits_for_tech_per_year(profits_for_test_tech_per_year, test_tech, path_to_plots, colors_unique_techs)
+    # irrs_per_tech_per_year, npvs_per_tech_per_year = prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
+    # plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year,npvs_per_tech_per_year, path_to_plots, colors_unique_techs)
+    #
+    # #
     # installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
     #     future_year, reps, unique_candidate_power_plants)
     #
     # plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
     #                                        first_year, path_to_plots, colors_unique_candidates)
-    # # section -----------------------------------------------------------------------------------------------revenues per iteration
+    # section -----------------------------------------------------------------------------------------------revenues per iteration
     #
-    # sorted_average_revenues_per_iteration_first_year, all_future_operational_profit = prepare_revenues_per_iteration(
+    # sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit = prepare_revenues_per_iteration(
     #     reps,
     #     test_tick)
     # plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, test_tech, path_to_plots, test_tick)
-    # plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_first_year, path_to_plots, first_year,
+    # plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_test_tick, path_to_plots, first_year,
     #                                     colors_unique_techs)
     #
     # annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
@@ -883,11 +872,10 @@ def generate_plots(reps, scenario_name, electricity_prices):
     # plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
     #                  years_to_generate, path_to_plots,
     #                  colors_unique_techs)
-    #
-    # # last_year_strategic_reserve_capacity
-    #
-    # plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots,
-    #                                           colors_unique_techs)
+
+    # last_year_strategic_reserve_capacity
+
+
     # power_plants_status(number_per_status, path_to_plots)
     # power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # # section -----------------------------------------------------------------------------------------------revenues per iteration
@@ -897,11 +885,11 @@ def generate_plots(reps, scenario_name, electricity_prices):
     #                                 colors_unique_candidates)
     # plot_screening_curve(yearly_costs, path_to_plots, first_year, colors_unique_techs)
     # plot_future_fuel_prices(future_fuel_prices, path_to_plots)
-    #
-    # # section -----------------------------------------------------------------------------------------------todos
-    # residual_load_curves = pd.DataFrame()
-    # load_duration_curves = pd.DataFrame()
-    # price_duration_curves = pd.DataFrame()
+
+    # section -----------------------------------------------------------------------------------------------todos
+    residual_load_curves = pd.DataFrame()
+    load_duration_curves = pd.DataFrame()
+    price_duration_curves = pd.DataFrame()
 
     # section -----------------------------------------------------------------------------------------------AMIRIS
 
@@ -946,14 +934,14 @@ try:
     #name = "DE2030_LA4_SD4_PH3_MI10000extendedDE_EOM"
     name = ""
     if len(sys.argv) == 4:
-        # raw_results_url = sys.argv[3]
-        # electricity_prices = reading_electricity_prices(raw_results_url)
+        raw_results_url = sys.argv[3]
+        electricity_prices = reading_electricity_prices(raw_results_url)
         # path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", "DE2030_LA4_SD4_PH3_MI10000extendedDE_EOM")
         # plot_hourly_electricity_prices(electricity_prices, path_to_plots)
         # plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots)
-        electricity_prices = 0
+
     else:
-        electricity_prices = 0
+        electricity_prices = None
 
     if name == "":
         # if the energy exchange DB with electricity prices
@@ -980,10 +968,9 @@ except Exception as e:
     logging.error('Exception occurred: ' + str(e))
     raise
 finally:
-    print("finished emlab")
     spinedb_reader_writer.db.close_connection()
     spinedb_reader_writer.amirisdb.close_connection()
-
+    print("finished emlab")
 
 
 print('===== End Generating Plots =====')
@@ -1009,3 +996,20 @@ print('===== End Generating Plots =====')
 #     fig7.savefig(path_to_plots + '/' + 'Candidate plants profits per iteration ' + str(test_tick) + '.png',
 #                  bbox_inches='tight', dpi=300)
 # plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots, colors_unique_techs)
+# plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots,
+#                                           colors_unique_techs)
+#
+# def plot_annual_to_be_decommissioned_capacity(plot_annual_to_be_decommissioned_capacity, years_to_generate,
+#                                               path_to_plots, colors):
+#     fig4, axs5 = plt.subplots()
+#     axs4 = plot_annual_to_be_decommissioned_capacity.plot.bar(stacked=True, rot=0, color=colors, grid=True,
+#                                                               legend=False)
+#     axs4.set_axisbelow(True)
+#     axs4.set_xlabel('Years', fontsize='medium')
+#     axs4.set_ylabel('Capacity (MW)', fontsize='medium')
+#     # plt.ylim([-4.3e5, 5.5e5])
+#     axs4.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+#     axs4.set_title('Capacity per Technology to be decommissioned')
+#     # fig4 = a.get_figure()
+#     fig4.savefig(path_to_plots + '/' + 'Capacity to be decommissioned.png', bbox_inches='tight', dpi=300)
+#     plt.show()
