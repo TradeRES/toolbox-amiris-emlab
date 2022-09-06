@@ -566,6 +566,7 @@ class Repository:
         except StopIteration:
             return None
 
+
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:
@@ -576,7 +577,10 @@ class Repository:
     def get_market_clearing_point_price_for_market_and_time(self, market: Market, time: int) -> float:
         if time >= 0:
             mcp = self.get_market_clearing_point_for_market_and_time(market, time)
-            return mcp.price
+            if mcp is None:
+                return None
+            else:
+                return mcp.price
         else:
             return 0
 

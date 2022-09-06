@@ -139,10 +139,7 @@ class CapacityMarketClearing(MarketModule):
             # saving capacity market accepted amount and status
             self.reps.dbrw.set_power_plant_CapacityMarket_production(accepted)
 
-
-
-
-                                    # from_agent: object, to: object, amount, type, time, plant):
+                                   # from_agent: object, to: object, amount, type, time, plant):
             # self.reps.createCashFlow(market , self.reps.power_plants[accepted.plant] , accepted.accepted_amount * clearing_price,
             #                          globalNames.CF_CAPMARKETPAYMENT, self.reps.current_tick,
             #                          self.reps.power_plants[accepted.plant])

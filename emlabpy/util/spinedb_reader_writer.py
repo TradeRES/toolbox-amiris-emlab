@@ -504,6 +504,7 @@ class SpineDBReaderWriter:
 
     def stage_CM_revenues(self, power_plant, amount, current_tick: int):
         self.stage_object(self.financial_reports_object_classname, power_plant)
+        print(power_plant, "in tick", amount)
         self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
                                            [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
                                            '0')

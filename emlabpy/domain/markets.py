@@ -119,7 +119,7 @@ class MarketClearingPoint(ImportObject):
                 self.market = reps.co2_markets[parameter_value]
         if parameter_name == 'TotalCapacity':
             self.capacity = float(parameter_value)
-        if parameter_name == 'Time':
+        if parameter_name == 'Tick':
             self.tick = int(parameter_value)
         if parameter_name == 'Volume':
             self.volume = int(parameter_value)
