@@ -1,0 +1,141 @@
+AgentGroups:
+  - &exchange 1
+  - &carbonMarket 3
+  - &fuelsMarket 4
+  - &forecaster 6
+  - &builders [2000, 2001, 2002, 2003, 2004]
+  - &traders [1000, 1001, 1002, 1003, 1004]
+  - &operators [500, 501, 502, 503, 504]
+
+Contracts:
+#################################
+# -- PlantBuildingManagement -- #
+#################################
+  - SenderId: *builders
+    ReceiverId: *operators
+    ProductName: PowerPlantPortfolio
+    FirstDeliveryTime: -60
+    DeliveryIntervalInSteps: 31536000
+
+##############################
+# -- Forecast Preparation -- #
+##############################
+  - SenderId: *forecaster
+    ReceiverId: *traders
+    ProductName: ForecastRequest
+    FirstDeliveryTime: -26
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *traders
+    ReceiverId: *operators
+    ProductName: ForecastRequestForward
+    FirstDeliveryTime: -25
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *operators
+    ReceiverId: *fuelsMarket
+    ProductName: FuelPriceForecastRequest
+    FirstDeliveryTime: -24
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *operators
+    ReceiverId: *carbonMarket
+    ProductName: Co2PriceForecastRequest
+    FirstDeliveryTime: -24
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *fuelsMarket
+    ReceiverId: *operators
+    ProductName: FuelPriceForecast
+    FirstDeliveryTime: -23
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *carbonMarket
+    ReceiverId: *operators
+    ProductName: Co2PriceForecast
+    FirstDeliveryTime: -23
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *operators
+    ReceiverId: *traders
+    ProductName: MarginalCostForecast
+    FirstDeliveryTime: -22
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *traders
+    ReceiverId: *forecaster
+    ProductName: BidsForecast
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: 3600
+
+#################
+# -- Bidding -- #
+#################
+  - SenderId: *exchange
+    ReceiverId: *traders
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *traders
+    ReceiverId: *operators
+    ProductName: GateClosureForward
+    FirstDeliveryTime: -9
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *operators
+    ReceiverId: *fuelsMarket
+    ProductName: FuelPriceRequest
+    FirstDeliveryTime: -3
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *operators
+    ReceiverId: *carbonMarket
+    ProductName: Co2PriceRequest
+    FirstDeliveryTime: -3
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *fuelsMarket
+    ReceiverId: *operators
+    ProductName: FuelPrice
+    FirstDeliveryTime: -2
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *carbonMarket
+    ReceiverId: *operators
+    ProductName: Co2Price
+    FirstDeliveryTime: -2
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *operators
+    ReceiverId: *traders
+    ProductName: MarginalCost
+    FirstDeliveryTime: -1
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *traders
+    ReceiverId: *exchange
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: 3600
+
+####################
+# -- Evaluation -- #
+####################
+  - SenderId: *exchange
+    ReceiverId: *traders
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *traders
+    ReceiverId: *operators
+    ProductName: DispatchAssignment
+    FirstDeliveryTime: 5
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *traders
+    ReceiverId: *operators
+    ProductName: Payout
+    FirstDeliveryTime: 6
+    DeliveryIntervalInSteps: 3600
