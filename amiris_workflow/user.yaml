@@ -5,7 +5,7 @@ from_check_point: start
 debug:
   time_it: False
   enable_development_mode: False
-  log_level: DEBUG
+  log_level: INFO
 
 global:
   pbDir: "amiris/result/"
@@ -18,7 +18,7 @@ global:
     csvSeparator: ";"
 
 workflow:
-  # Add conventionals (append to scenario skeleton)
+  # Add conventional plants to their corresponding individual plant builder
   - action:
       project: general
       call: parse_excel
@@ -32,7 +32,7 @@ workflow:
 
   - action:
       project: general
-      call: write_AMIRIS_config
+      call: write_amiris_config
       data:
         read_from_dmgr: powerPlants
         write_to_dmgr: null
@@ -40,11 +40,6 @@ workflow:
         AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
         templateFile: amiris-config/scenario_template.yaml
         outputFile: scenario.yaml
-
-  - actionCheck:
-      project: general
-      call: checkpoint
-      tag: conventionals_processed
 
   # Add storages (append to scenario)
   - action:
@@ -60,7 +55,7 @@ workflow:
 
   - action:
       project: general
-      call: write_AMIRIS_config
+      call: write_amiris_config
       data:
         read_from_dmgr: storages
         write_to_dmgr: null
@@ -68,11 +63,6 @@ workflow:
         AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
         templateFile: amiris-config/scenario.yaml
         outputFile: scenario.yaml
-
-  - actionCheck:
-      project: general
-      call: checkpoint
-      tag: storages_processed
 
   # Add renewables, but biogas (append to scenario)
   - action:
@@ -88,7 +78,7 @@ workflow:
 
   - action:
       project: general
-      call: write_AMIRIS_config
+      call: write_amiris_config
       data:
         read_from_dmgr: renewables
         write_to_dmgr: null
@@ -111,7 +101,7 @@ workflow:
 
   - action:
       project: general
-      call: write_AMIRIS_config
+      call: write_amiris_config
       data:
         read_from_dmgr: biogas
         write_to_dmgr: null
@@ -120,25 +110,20 @@ workflow:
         templateFile: amiris-config/scenario.yaml
         outputFile: scenario.yaml
 
-  - actionCheck:
-      project: general
-      call: checkpoint
-      tag: renewables_processed
-
   - action:
       project: general
-      call: create_AMIRIS_protobuf
+      call: create_amiris_protobuf
       args:
         input: amiris-config/scenario.yaml
         output: amiris-config/config.pb
 
   - action:
       project: general
-      call: run_AMIRIS
+      call: run_amiris
       args:
         input: "amiris-config/config.pb"
         model:
-          jar: 'amiris/amiris-core_1.2-jar-with-dependencies.jar'
+          jar: 'amiris/amiris-core_1.2.4-jar-with-dependencies.jar'
           vm: '-ea -Xmx2000M'
           fame_args: '-Dlog4j.configuration=file:amiris/log4j.properties'
           runner: 'de.dlr.gitlab.fame.setup.FameRunner'

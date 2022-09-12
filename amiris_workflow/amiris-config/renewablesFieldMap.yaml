@@ -2,7 +2,7 @@ Agents:
   # PVRooftop
   - column: Set
     target: PVRooftop
-    map:
+    create:
       - attribute: Type
         value: VariableRenewableOperator
       - attribute: Id
@@ -23,7 +23,7 @@ Agents:
   # OtherPV
   - column: Set
     target: OtherPV
-    map:
+    create:
       - attribute: Type
         value: VariableRenewableOperator
       - attribute: Id
@@ -44,7 +44,7 @@ Agents:
   # WindOn
   - column: Set
     target: WindOn
-    map:
+    create:
       - attribute: Type
         value: VariableRenewableOperator
       - attribute: Id
@@ -65,7 +65,7 @@ Agents:
   # WindOff
   - column: Set
     target: WindOff
-    map:
+    create:
       - attribute: Type
         value: VariableRenewableOperator
       - attribute: Id
@@ -86,7 +86,7 @@ Agents:
   # RunOfRiver
   - column: Set
     target: RunOfRiver
-    map:
+    create:
       - attribute: Type
         value: VariableRenewableOperator
       - attribute: Id
@@ -107,7 +107,7 @@ Agents:
   # Other RES (Undefined)
   - column: Set
     target: Undefined
-    map:
+    create:
       - attribute: Type
         value: VariableRenewableOperator
       - attribute: Id
@@ -124,7 +124,6 @@ Agents:
         value: "amiris-config/data/otherres.csv"
 
 AgentGroups:
-  - &forecaster 6
   - &marketer 2
 
 Contracts:
@@ -181,12 +180,3 @@ Contracts:
     ProductName: Payout
     FirstDeliveryTime: 2626204
     DeliveryIntervalInSteps: 2628000
-
-####################
-#   -- Output --   #
-####################
-#   - SenderType: VariableRenewableOperator
-#     ReceiverType: VariableRenewableOperator
-#     ProductName: AnnualCostReport
-#     FirstDeliveryTime: 1
-#     DeliveryIntervalInSteps: 31536000
