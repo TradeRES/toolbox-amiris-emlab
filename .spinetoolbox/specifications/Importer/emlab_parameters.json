@@ -1019,8 +1019,7 @@
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden",
-                                "value": "ProducerDE"
+                                "position": 0
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -1050,7 +1049,7 @@
                             },
                             {
                                 "map_type": "ParameterValueIndex",
-                                "position": 0
+                                "position": 1
                             },
                             {
                                 "map_type": "ExpandedValue",
@@ -1410,15 +1409,16 @@
                 "3": "string"
             },
             "cash": {
-                "0": "string",
-                "1": "float",
+                "0": "float",
+                "1": "string",
                 "2": "float",
                 "3": "float",
                 "4": "float",
                 "5": "float",
                 "6": "float",
                 "7": "float",
-                "8": "float"
+                "8": "float",
+                "9": "float"
             },
             "Dismantled": {
                 "0": "string",
