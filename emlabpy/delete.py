@@ -14,10 +14,10 @@ def erase_bids_class():
     #     db_map.connection.close()
     try:
         subquery = db_map.object_parameter_value_sq
-        statuses = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "Status")}
-        removable_object_ids = {object_id for object_id, status in statuses.items() if status != "TobeDecommissioned"}
+        statuses = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+        removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
         db_map.cascade_remove_items(object=removable_object_ids)
-        print("removed")
+        print("removed awaiting bids")
         db_map.commit_session("Removed unacceptable objects.")
     finally:
         db_map.connection.close()

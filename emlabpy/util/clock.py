@@ -14,6 +14,7 @@ import csv
 import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
+from spinedb_api import DatabaseMapping, from_database
 
 def reset_candidate_investable_status():
     class_name = "CandidatePowerPlants"
@@ -22,7 +23,6 @@ def reset_candidate_investable_status():
         db_emlab.import_object_parameter_values([(class_name, candidate["object_name"] , "ViableInvestment",  bool(1) , '0')])
 
 def update_years_file(current_year, initial, final_year, lookAhead):
-
     print("updated years file")
     #once the spine bug is fixed. then it can be exported to the output folder.
     # the clock is executed in the util folder. So save the results in the parent folder: emlabpy
@@ -31,6 +31,16 @@ def update_years_file(current_year, initial, final_year, lookAhead):
     years_str = str(current_year)+"/" + str(initial)+"/"+ str(final_year) + "/"+ str(current_year + lookAhead)
     f.write(years_str)
     f.close()
+
+def erase_not_accepted_bids(db_url):
+    print("removing awaiting bids")
+    db_map = DatabaseMapping(db_url)
+    subquery = db_map.object_parameter_value_sq
+    statuses = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+    removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
+    print(removable_object_ids)
+    db_map.cascade_remove_items(object=removable_object_ids)
+
 
 try:
     class_name = "Configuration"
@@ -74,6 +84,7 @@ try:
 
             new_tick = step + previous_tick
             print('Incrementing Clock to ' + str(new_tick))
+            #erase_not_accepted_bids(db_url)
 
             Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
