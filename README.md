@@ -31,6 +31,7 @@ Make sure that java > 8 is installed
 in toolbox-amiris-emlab folder
 ```
 conda env create -f environment.yml
+pip install -r requirements.txt
 ``` 
 
 ### EMLABpy
@@ -64,8 +65,8 @@ imterpreter: path to the python.exe in your conda environment emlabpy
 name: emlabpy
 make kernel specification > ok
 
-Also change the path on the (Amiris future tool > basic console) to the iovrmr conda enviroment
-And change the results path to
+Also change the path on the (Amiris future tool > basic console) to the emlabEnv conda enviroment
+
 
 ###  kernel
 after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool
