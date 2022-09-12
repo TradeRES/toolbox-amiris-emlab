@@ -16,6 +16,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
+        reps.dbrw.stage_init_bids_structure()
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
@@ -44,13 +45,14 @@ class StrategicReserveAssignment_ger(MarketModule):
     The class clearing the Strategic Reserve Market and assigning them to the Strategic Reserve Operator
     """
 
-    def __init__(self, reps: Repository, operator: StrategicReserveOperator):
+    def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Assign Plants', reps)
         reps.dbrw.stage_init_sr_operator_structure()
         self.operator = None
 
     def act(self):
         # Assign plants to Strategic Reserve per region
+        # for market in self.reps.capacity_markets.values():
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         # Set the strategic reserve zone to the same as the market
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
@@ -74,7 +76,11 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Contract plants to Strategic Reserve Operator
         list_of_plants = self.operator.list_of_plants
         contracted_strategic_reserve_capacity = 0
-
+        # SRO_name = "SRO_" + market.country
+        # try:
+        #     SR_operator = self.reps.sr_operator[SRO_name]
+        # except:
+        #     SR_operator = self.operator
 
         for ppdp in sorted_ppdp:
             # If plants are already in strategic reserve they have to be until end of life

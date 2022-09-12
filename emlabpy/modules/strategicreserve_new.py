@@ -17,6 +17,7 @@ class StrategicReserveSubmitBids(MarketModule):
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
+        reps.dbrw.stage_init_sr_operator_structure()
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):

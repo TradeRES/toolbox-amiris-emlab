@@ -673,8 +673,6 @@ class Repository:
 
     def create_or_update_StrategicReserveOperator(self, name: str,
                                                   zone: str,
-                                                  priceSR: float,
-                                                  percentSR: float,
                                                   volumeSR: float,
                                                   cash: float,
                                                   list_of_plants: list) -> StrategicReserveOperator:
