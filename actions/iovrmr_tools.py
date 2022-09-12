@@ -317,3 +317,22 @@ def sum_per_plant(df: pd.DataFrame, column: str, target_name: str) -> pd.Series:
     function = calc_sum(column)
     result = {plant_id: function(plant_df) for plant_id, plant_df in groups}
     return pd.Series(data=result, name=target_name)
+
+
+def clear_folder(path: str) -> None:
+    for file in get_all_csv_files_in_folder_except(path):
+        try:
+            os.remove(file)
+        except FileNotFoundError:
+            print(f"Info: File for deletion not found: {file}")
+
+
+def get_all_csv_files_in_folder_except(folder: str, exceptions: List[str] = None) -> List[str]:
+    """Returns list of strings including path to folder for CSV files"""
+    if exceptions is None:
+        exceptions = list()
+    return [
+        folder + "/" + file
+        for file in os.listdir(folder)
+        if file.endswith(OUTPUT_FILE_ENDING) and file not in exceptions
+    ]

@@ -29,6 +29,8 @@ from iovrmr_tools import (
     sum_per_agent,
     CONVENTIONAL_AGENT_RESULTS,
     sum_per_plant,
+    clear_folder
+
 )
 
 
@@ -178,6 +180,7 @@ def convert_pb(data_manager, config, params):
     }
 
     ensure_path_exists(run_config[Options.OUTPUT])
+    clear_folder(run_config[Options.OUTPUT])
 
     if config["user"]["global"]["pbDir"]:
         path_to_pb = config["user"]["global"]["pbDir"] + config["user"]["global"]["pbFile"]
@@ -185,6 +188,7 @@ def convert_pb(data_manager, config, params):
         path_to_pb = config["user"]["global"]["pbFile"]
 
     convert_results(path_to_pb, run_config)
+
 
 
 @action("general")
