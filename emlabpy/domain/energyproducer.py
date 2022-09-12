@@ -3,6 +3,7 @@ import pandas as pd
 from domain.actors import EMLabAgent
 from domain.import_object import *
 
+
 class EnergyProducer(EMLabAgent):
 
     def __init__(self, name):
@@ -13,7 +14,7 @@ class EnergyProducer(EMLabAgent):
         self.longTermContractMargin = None
         self.longTermContractPastTimeHorizon = None
         self.equityInterestRate = None
-        self.downpaymentFractionOfCash = None # this is to establish if there is enough money for downpayment in investment algorithm
+        self.downpaymentFractionOfCash = None  # this is to establish if there is enough money for downpayment in investment algorithm
         self.debtRatioOfInvestments = None
         self.willingToInvest = None
         self.loanInterestRate = None
@@ -34,7 +35,7 @@ class EnergyProducer(EMLabAgent):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
         # if parameter_name == 'cash':
         #     self.cash = parameter_value
-        #From here are the inputs from emlab unit
+        # From here are the inputs from emlab unit
         if parameter_name == 'debtRatioOfInvestments':
             self.debtRatioOfInvestments = float(parameter_value)
         elif parameter_name == 'dismantlingProlongingYearsAfterTechnicalLifetime':
@@ -59,16 +60,15 @@ class EnergyProducer(EMLabAgent):
             self.priceMarkUp = float(parameter_value)
         elif parameter_name == 'willingToInvest':
             self.willingToInvest = parameter_value
-        else:
+        elif parameter_name in ["CF_ELECTRICITY_SPOT", "CF_LOAN", "CF_DOWNPAYMENT", "CF_STRRESPAYMENT",
+                                "CF_CAPMARKETPAYMENT", "CF_FIXEDOMCOST", "CF_COMMODITY"] and reps.runningModule == "plotting":
             array = parameter_value.to_dict()
             pd_series = pd.Series(float(i[1]) for i in array["data"])
             setattr(self, parameter_name, pd_series)
 
-
     def predictFuelPrices(self, agent, futureTimePoint):
         # Fuel Prices
         expectedFuelPrices = {}
-
 
         # for substance in self.reps.substances:
         #     cps = reps.findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(substance, getCurrentTick() - (agent.getNumberOfYearsBacklookingForForecasting() - 1), getCurrentTick(), False)
@@ -83,7 +83,7 @@ class EnergyProducer(EMLabAgent):
     #    @SimulationParameter(label = "Price Mark-Up for spotmarket (as multiplier)", from = 1, to = 2)
     #    @SimulationParameter(label = "Long-term contract margin", from = 0, to = 1)
     #    @SimulationParameter(label = "Long-term contract horizon", from = 0, to = 10)
-    #Investment
+    # Investment
     #    @SimulationParameter(label = "Investment horizon", from = 0, to = 15)
     #    @SimulationParameter(label = "Equity Interest Rate", from = 0, to = 1)
     #    @SimulationParameter(label = "Debt ratio in investments", from = 0, to = 1)
@@ -93,18 +93,21 @@ class EnergyProducer(EMLabAgent):
     def calculateAveragePastOperatingProfit(self, pp, horizon):
         averagePastOperatingProfit = 0
         for i in range(-horizon, 1):
-            #JAVA TO PYTHON CONVERTER TODO TASK: Java to Python Converter cannot determine whether both operands of this division are integer types - if they are then you should change 'lhs / rhs' to 'math.trunc(lhs / float(rhs))':
-            averagePastOperatingProfit += calculatePastOperatingProfitInclFixedOMCost(pp, getCurrentTick() + i) / horizon
-        logging.INFO(" %s has had an average operating profits of %s", pp  , averagePastOperatingProfit)
+            # JAVA TO PYTHON CONVERTER TODO TASK: Java to Python Converter cannot determine whether both operands of this division are integer types - if they are then you should change 'lhs / rhs' to 'math.trunc(lhs / float(rhs))':
+            averagePastOperatingProfit += calculatePastOperatingProfitInclFixedOMCost(pp,
+                                                                                      getCurrentTick() + i) / horizon
+        logging.INFO(" %s has had an average operating profits of %s", pp, averagePastOperatingProfit)
         return averagePastOperatingProfit
 
     def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):
         rep = self.reps.findFinancialPowerPlantReportsForPlantForTime(plant, clearingTick)
         if rep is not None:
-            logging.INFO(" %s report: tick %s , revenue: %s  + rep.getOverallRevenue()  var cost: rep.getVariableCosts()  fixed om cost: rep.getFixedOMCosts()"  , plant , clearingTick)
+            logging.INFO(
+                " %s report: tick %s , revenue: %s  + rep.getOverallRevenue()  var cost: rep.getVariableCosts()  fixed om cost: rep.getFixedOMCosts()",
+                plant, clearingTick)
             return rep.getOverallRevenue() - rep.getVariableCosts() - rep.getFixedOMCosts()
-        logging.INFO("No financial report for %s for tick %s, so returning 0",  plant , clearingTick)
-        return Double.MAX_VALUE #TODO avoid dismantling simply becuase you have no data for the full horizon?
+        logging.INFO("No financial report for %s for tick %s, so returning 0", plant, clearingTick)
+        return Double.MAX_VALUE  # TODO avoid dismantling simply becuase you have no data for the full horizon?
 
     def isWillingToInvest(self):
         return self.willingToInvest
@@ -141,7 +144,6 @@ class EnergyProducer(EMLabAgent):
 
     def setDismantlingRequiredOperatingProfit(self, dismantlingRequiredOperatingProfit):
         self.dismantlingRequiredOperatingProfit = dismantlingRequiredOperatingProfit
-
 
     def getEquityInterestRate(self):
         return self.equityInterestRate

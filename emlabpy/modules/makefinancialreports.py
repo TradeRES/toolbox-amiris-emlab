@@ -1,5 +1,7 @@
 import numpy_financial as npf
 import pandas as pd
+
+from domain.powerplantDispatchPlan import PowerPlantDispatchPlan
 from modules.defaultmodule import DefaultModule
 from domain.financialReports import FinancialPowerPlantReport
 from domain.powerplant import PowerPlant
@@ -40,7 +42,11 @@ class CreatingFinancialReports(DefaultModule):
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
             if dispatch == None:
                 print("no dispatch found for ", powerplant.id)
-                raise
+                dispatch = PowerPlantDispatchPlan(powerplant.id)
+                dispatch.variable_costs = 0
+                dispatch.accepted_amount = 0
+                dispatch.revenues = 0
+
             fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name

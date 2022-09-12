@@ -797,8 +797,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1373.7672620028834,
-            "y": -467.46147937725306,
+            "x": -1373.7672620028832,
+            "y": -465.1269428740316,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -873,8 +873,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1264.182383263412,
-            "y": -835.3650906373838,
+            "x": -1261.8478467601906,
+            "y": -835.3650906373837,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -917,8 +917,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -737.2288791053483,
-            "y": -450.46787008751465,
+            "x": -734.8943426021269,
+            "y": -450.4678700875147,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -969,8 +969,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -965.2933345498928,
-            "y": -360.3114225317748,
+            "x": -962.9587980466715,
+            "y": -360.3114225317747,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -991,8 +991,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -96.66597541836713,
-            "y": -180.64741867486575,
+            "x": -96.66597541836714,
+            "y": -215.66546622318637,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1095,7 +1095,7 @@
                 ],
                 [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
-                    true
+                    false
                 ]
             ]
         },
@@ -1180,8 +1180,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -456.7804281796829,
-            "y": -449.31937715949294,
+            "x": -454.4458916764615,
+            "y": -449.3193771594929,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1224,7 +1224,7 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -582.6676935536656,
+            "x": -580.3331570504442,
             "y": -450.6930436870515,
             "specification": "Amiris future",
             "execute_in_work": false,
@@ -1233,7 +1233,7 @@
         "Initialize power plants": {
             "type": "Tool",
             "description": "run_initialize_power_plants",
-            "x": -1023.2065730409579,
+            "x": -1020.8720365377364,
             "y": -830.6438731143244,
             "specification": "Initialize Power plants",
             "execute_in_work": false,
