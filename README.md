@@ -31,6 +31,7 @@ Make sure that java > 8 is installed
 in toolbox-amiris-emlab folder
 ```
 conda env create -f environment.yml
+activate the environment
 pip install -r requirements.txt
 ``` 
 

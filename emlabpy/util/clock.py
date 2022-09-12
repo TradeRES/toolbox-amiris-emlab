@@ -35,12 +35,21 @@ def update_years_file(current_year, initial, final_year, lookAhead):
 def erase_not_accepted_bids(db_url):
     print("removing awaiting bids")
     db_map = DatabaseMapping(db_url)
-    subquery = db_map.object_parameter_value_sq
-    statuses = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
-    removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
-    print(removable_object_ids)
-    db_map.cascade_remove_items(object=removable_object_ids)
 
+    try:
+        subquery = db_map.object_parameter_value_sq
+        statuses = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+        removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
+        db_map.cascade_remove_items(object=removable_object_ids)
+        print("removed awaiting bids")
+        db_map.commit_session("Removed unacceptable objects.")
+    finally:
+        db_map.connection.close()
+
+
+
+# erase not Accepted bids from capacity mechanisms
+# erase_not_accepted_bids(db_url)
 
 try:
     class_name = "Configuration"
@@ -84,7 +93,7 @@ try:
 
             new_tick = step + previous_tick
             print('Incrementing Clock to ' + str(new_tick))
-            #erase_not_accepted_bids(db_url)
+
 
             Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
@@ -98,6 +107,7 @@ try:
                 update_years_file(updated_year , StartYear, final_year, lookAhead)
                 db_emlab.commit('Clock increment')
                 print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
+
     else:
         print('No mode specified.')
 except Exception:
