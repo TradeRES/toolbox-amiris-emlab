@@ -25,7 +25,7 @@ class PayForLoansRole(DefaultModule):
                         if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                             payment = loan.getAmountPerPayment()
                             loan.setNumberOfPaymentsDone(loan.getNumberOfPaymentsDone() + 1)
-                            self.agent.CF_LOAN += payment
+                            self.agent.CF_LOAN -= payment
                             plant.loan_payments_in_year += payment
                             self.reps.dbrw.set_number_loan_payments(plant)
                             # print("Paying {0} (euro) for loan {1}".format(payment, plant.name))

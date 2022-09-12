@@ -1409,7 +1409,7 @@
                 "3": "string"
             },
             "cash": {
-                "0": "float",
+                "0": "string",
                 "1": "string",
                 "2": "float",
                 "3": "float",
