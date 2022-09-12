@@ -26,9 +26,9 @@ class PrepareMarket(DefaultModule):
 
     def act(self):
         self.power_plants_list =  self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
-                                                                globalNames.power_plant_status_to_be_decommissioned,
-                                                                globalNames.power_plant_status_strategic_reserve,
-                                                                ])
+                                                                        globalNames.power_plant_status_to_be_decommissioned,
+                                                                        globalNames.power_plant_status_strategic_reserve,
+                                                                        ])
         self.setTimeHorizon()
         self.setExpectations()
         self.openwriter()
@@ -115,12 +115,16 @@ class PrepareMarket(DefaultModule):
         Efficiency = []
         BlockSizeInMW = []
         InstalledPowerInMW = []
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
         for pp in self.power_plants_list:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
-                OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                if pp.name in operator.list_of_plants:
+                    OpexVarInEURperMWH.append(operator.reservePriceSR)
+                else:
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
                 Efficiency.append(pp.technology.efficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
@@ -129,7 +133,7 @@ class PrepareMarket(DefaultModule):
              'Efficiency': Efficiency, 'BlockSizeInMW': BlockSizeInMW,
              'InstalledPowerInMW': InstalledPowerInMW}
 
-        df = pd.DataFrame(data=d, )
+        df = pd.DataFrame(data=d)
         df.to_excel(self.writer, sheet_name="conventionals")
 
     def write_renewables(self):
@@ -141,13 +145,17 @@ class PrepareMarket(DefaultModule):
         FIT = []
         Premium = []
         Lcoe = []
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
         for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] != "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
-                OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                if pp.name in operator.list_of_plants:
+                    OpexVarInEURperMWH.append(operator.reservePriceSR)
+                else:
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
                 Set.append(self.reps.dictionaryTechSet[pp.technology.name])
                 SupportInstrument.append("-")
                 FIT.append("-")
@@ -172,13 +180,17 @@ class PrepareMarket(DefaultModule):
         FIT = []
         Premium = []
         Lcoe = []
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
         for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] == "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
-                OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                if pp.name in operator.list_of_plants:
+                    OpexVarInEURperMWH.append(operator.reservePriceSR)
+                else:
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
                 Set.append(self.reps.dictionaryTechSet[pp.technology.name])
                 SupportInstrument.append("-")
                 FIT.append("-")

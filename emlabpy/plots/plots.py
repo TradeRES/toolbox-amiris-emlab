@@ -571,7 +571,7 @@ def prepare_cash_per_agent(reps, simulation_years):
     cash_per_agent = pd.DataFrame(index=simulation_years).fillna(0)
     all_info = reps.getCashFlowsForEnergyProducer(reps.agent)
     cash_per_agent["Commodities"] = all_info.CF_COMMODITY
-    cash_per_agent["Laons"] = all_info.CF_LOAN
+    cash_per_agent["Loans"] = - all_info.CF_LOAN
     cash_per_agent["Fixed costs"] = all_info.CF_FIXEDOMCOST
     cash_per_agent["Wholesale market"] = all_info.CF_ELECTRICITY_SPOT
     cash_per_agent["Downpayments"] = all_info.CF_DOWNPAYMENT
@@ -974,7 +974,8 @@ try:
     # name = "NL2030_LA4_SD4_PH3_MI10000futureMarketWithHistoricProfit_extendedDE_dis_by_profit_NL"
     #name = "DE20202030_LA4_SD4_PH3_MI10000futureMarketWithHistoricProfit_groupedDE_dis_by_profit_wloansIRR"
     #name = "DE2030_LA4_SD4_PH3_MI10000extendedDE_EOM"
-    name = "DE2030_LA4_SD4_PH3_MI10000extendedDE_CapacityMarket"
+    #name = "DE2030_LA4_SD4_PH3_MI10000extendedDE_CapacityMarket"
+    name = ""
     if len(sys.argv) == 4:
         raw_results_url = sys.argv[3]
         electricity_prices = reading_electricity_prices(raw_results_url)

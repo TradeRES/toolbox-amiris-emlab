@@ -27,7 +27,7 @@ spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be execute
 (with miniconda there have been some errors)
 ### install java
 Make sure that java > 8 is installed
-### AMIRIS (iovrmr)
+### AMIRIS (emlabEnv)
 in toolbox-amiris-emlab folder
 ```
 conda env create -f environment.yml

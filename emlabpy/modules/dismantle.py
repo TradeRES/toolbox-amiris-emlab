@@ -22,24 +22,30 @@ class Dismantle(DefaultModule):
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
 
-        #self.erase_bids_class()
+       # self.erase_bids_class()
 
     def erase_bids_class(self):
         # todo finish this if bids are being erased then the awarded capapcity of CM should also be saved.
         db_map = DatabaseMapping(self.reps.dbrw.db_urls[0])
         def class_id_for_name(name):
             return db_map.query(db_map.entity_class_sq).filter(db_map.entity_class_sq.c.name == name).first().id
-
         try:
-            subquery = db_map.object_parameter_value_sq
-            for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status"):
-                print(row.type)
-            statuses = dict()
-            removable_object_ids = {object_id for object_id, status in statuses.items() if status != "Accepted"}
-            db_map.cascade_remove_items(object=removable_object_ids)
-            db_map.commit_session("Removed unacceptable objects.")
+            id_to_remove = class_id_for_name("Bids")
+            db_map.cascade_remove_items(**{"object_class": {id_to_remove}})
+            db_map.commit_session("Removed ")
         finally:
             db_map.connection.close()
+        # try:
+        #     subquery = db_map.object_parameter_value_sq
+        #     for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status"):
+        #         print(row.type)
+        #
+        #     statuses = dict()
+        #     removable_object_ids = {object_id for object_id, status in statuses.items() if status != "Accepted"}
+        #     db_map.cascade_remove_items(object=removable_object_ids)
+        #     db_map.commit_session("Removed unacceptable objects.")
+        # finally:
+        #     db_map.connection.close()
 
     def decommision_by_age_and_profit(self):
         for producer, producer_specs in self.reps.energy_producers.items():
