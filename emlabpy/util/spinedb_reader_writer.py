@@ -5,7 +5,8 @@ Ingrid Sanchez 18-2-2022 modified
 Jim Hommes - 25-3-2021
 """
 import logging
-from spinedb_api import Map
+
+from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 
 from domain.financialReports import FinancialPowerPlantReport
@@ -26,7 +27,7 @@ class SpineDBReaderWriter:
 
     def __init__(self, open_db, *db_urls: str):
         self.db_urls = db_urls
-        self.db = SpineDB(db_urls[0])  # the first is always emlab
+        self.db = SpineDB(db_urls[0])  # the first url is always emlab
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.powerplantprofits_classname = 'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
@@ -59,7 +60,6 @@ class SpineDBReaderWriter:
         reps = Repository()
         reps.runningModule = module
         reps.dbrw = self
-        db_data = self.db.export_data()
         self.stage_init_alternative("0")
 
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
@@ -114,10 +114,15 @@ class SpineDBReaderWriter:
                                 in
                                 self.db.query_object_parameter_values_by_object_class_and_object_name("Configuration",
                                                                                                       "priority")}
+        db_data = self.db.export_data()
         sorted_parameter_names = sorted(db_data['object_parameters'],
                                         key=lambda item: parameter_priorities[item[0]]
                                         if item[0] in parameter_priorities.keys() else 0, reverse=True)
         object_parameter_values = db_data['object_parameter_values']
+
+        # trying to read DB faster
+        # db_map = DatabaseMapping(self.db_urls[0])
+        #object_parameter_values = export_object_parameter_values(db_map)
 
         for (object_class_name, parameter_name, _, _, _) in sorted_parameter_names:
             for (_, object_name, _) in [i for i in db_data['objects'] if i[0] == object_class_name]:
@@ -505,7 +510,6 @@ class SpineDBReaderWriter:
 
     def stage_CM_revenues(self, power_plant, amount, current_tick: int):
         self.stage_object(self.financial_reports_object_classname, power_plant)
-        print(power_plant, "in tick", amount)
         self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
                                            [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
                                            '0')
