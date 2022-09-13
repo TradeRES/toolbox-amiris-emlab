@@ -4,6 +4,7 @@ __maintainer__ = "Felix Nitsch"
 __email__ = "felix.nitsch@dlr.de"
 
 import os
+import subprocess
 
 import pandas as pd
 import yaml
@@ -229,7 +230,7 @@ def run_amiris(data_manager, config, params):
         model["vm"], model["jar"], model["fame_args"], model["runner"], args["input"], fame_setup_path
     )
 
-    os.system(call)
+    subprocess.run(call, check=True)
 
 
 @action("general")
