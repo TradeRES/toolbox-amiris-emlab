@@ -37,8 +37,8 @@ class CapacityMarketSubmitBids(MarketModule):
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
             price_to_bid = 0
             if dispatch is None:
-                print("no dispatch found for " + powerplant.id)
-                raise
+                #print("no dispatch found for " + str(powerplant.id)+  " with name "+str(powerplant.name))
+                net_revenues =  - fixed_on_m_cost
             else:
                 # todo: should add loans to fixed costs?
                 net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
