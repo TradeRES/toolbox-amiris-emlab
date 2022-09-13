@@ -190,7 +190,6 @@ def convert_pb(data_manager, config, params):
     convert_results(path_to_pb, run_config)
 
 
-
 @action("general")
 def run_amiris(data_manager, config, params):
     """
@@ -263,7 +262,9 @@ def aggregate_results(data_manager, config, params):
             column_per_plant = sum_per_plant(conventional_df, column, column_names[column])
             conventional_series.append(column_per_plant)
 
-    to_concat.append(pd.concat(conventional_series, axis=1))
+    if conventional_series:
+        to_concat.append(pd.concat(conventional_series, axis=1))
+
     all_outputs_per_agent = pd.concat(to_concat)
     all_outputs_per_agent[AmirisOutputs.CONTRIBUTION_MARGIN_IN_EURO.name] = (
         all_outputs_per_agent[AmirisOutputs.REVENUES_IN_EURO.name]
