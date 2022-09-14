@@ -95,9 +95,9 @@ class CapacityMarketClearing(MarketModule):
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
                 ppdp.accepted_amount = 0
-
+        # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(market, clearing_price)
-        # save clearing point
+        # saving clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
@@ -107,6 +107,17 @@ class CapacityMarketClearing(MarketModule):
                                                              self.reps.current_tick)
             print("Market is not cleared", market.name)
 
+    def stageCapacityMechanismRevenues(self, market, clearing_price):
+        print("staging capacity market")
+        # todo: test that bids are found
+        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
+        for accepted in accepted_ppdp:
+            amount = accepted.accepted_amount * clearing_price
+            # saving yearly CM revenues to the power plants
+            self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
+            # saving capacity market accepted bids amount and status
+            self.reps.dbrw.set_power_plant_CapacityMarket_production(accepted)
+
         # todo: save list of power plants in the strategic reserve
         # self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
         #                                                     0, 0, 0, 0,
@@ -114,34 +125,15 @@ class CapacityMarketClearing(MarketModule):
 
         # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
 
-            # VERIFICATION #
-            #
-            # clearingPoint  = self.reps.get_market_clearing_point_price_for_market_and_time(market,self.reps.current_tick)
-            # q1 = clearingPoint.volume
-            # q2 = peakExpectedDemand * (1 - SlopingDemandCurve.lm) + (
-            #             (SlopingDemandCurve.price_cap - clearingPoint.price ) * (
-            #         SlopingDemandCurve.um + SlopingDemandCurve.lm) * peakExpectedDemand ) / SlopingDemandCurve.price_cap
-            # q3 = ((clearingPoint.price - SlopingDemandCurve.price_cap) / - SlopingDemandCurve.m) + SlopingDemandCurve.lm_volume
-            # if q1 == q2:
-            #     logging.WARN("matches")
-            # else:
-            #     logging.WARN("does not match")
-
-
-
-    def stageCapacityMechanismRevenues(self, market, clearing_price):
-        print("staging capacity market")
-        # todo: test that bids are found
-        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
-        for accepted in accepted_ppdp:
-            amount = accepted.accepted_amount * clearing_price
-            self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
-            # saving capacity market accepted amount and status
-            self.reps.dbrw.set_power_plant_CapacityMarket_production(accepted)
-
-                                   # from_agent: object, to: object, amount, type, time, plant):
-            # self.reps.createCashFlow(market , self.reps.power_plants[accepted.plant] , accepted.accepted_amount * clearing_price,
-            #                          globalNames.CF_CAPMARKETPAYMENT, self.reps.current_tick,
-            #                          self.reps.power_plants[accepted.plant])
-
-           # self.reps.dbrw.stage_cash_plant(self.reps.power_plants[accepted.plant])
+        # VERIFICATION #
+        #
+        # clearingPoint  = self.reps.get_market_clearing_point_price_for_market_and_time(market,self.reps.current_tick)
+        # q1 = clearingPoint.volume
+        # q2 = peakExpectedDemand * (1 - SlopingDemandCurve.lm) + (
+        #             (SlopingDemandCurve.price_cap - clearingPoint.price ) * (
+        #         SlopingDemandCurve.um + SlopingDemandCurve.lm) * peakExpectedDemand ) / SlopingDemandCurve.price_cap
+        # q3 = ((clearingPoint.price - SlopingDemandCurve.price_cap) / - SlopingDemandCurve.m) + SlopingDemandCurve.lm_volume
+        # if q1 == q2:
+        #     logging.WARN("matches")
+        # else:
+        #     logging.WARN("does not match")
