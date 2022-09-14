@@ -18,6 +18,7 @@ def erase_bids_class():
         removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
         db_map.cascade_remove_items(object=removable_object_ids)
         print("removed awaiting bids")
+        print(removable_object_ids)
         db_map.commit_session("Removed unacceptable objects.")
     finally:
         db_map.connection.close()

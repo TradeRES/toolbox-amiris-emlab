@@ -52,7 +52,7 @@ run_prepare_next_year_market_clearing = False
 run_initialize_power_plants = False
 run_pay_loans = False
 run_create_results = False
-
+#tic = time.perf_counter()
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -268,3 +268,5 @@ finally:
     if sys.argv[3] in globalNames.modules_need_AMIRIS:
         spinedb_reader_writer.amirisdb.close_connection()
         print("closed amiris")
+    # toc = time.perf_counter()
+    # print(f"emlabpy in {toc - tic:0.4f} seconds")

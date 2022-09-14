@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedNL_CM"
+        self.simulation_name = "extendedDE_CM_newAmiris"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -572,7 +572,7 @@ class Repository:
     # MarketClearingPoints
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:
-            return next(i for i in self.market_clearing_points.values() if i.market == market and i.tick == time)
+            return next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time)
         except StopIteration:
             return None
 
