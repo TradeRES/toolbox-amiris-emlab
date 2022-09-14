@@ -62,7 +62,7 @@ class ForwardCapacityMarketClearing(MarketModule):
 
     def __init__(self, reps: Repository, operator: StrategicReserveOperator):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
-        reps.dbrw.stage_init_sr_operator_structure()
+        reps.dbrw.stage_init_sr_results_structure()
         reps.dbrw.stage_init_capacitymechanisms_structure()
         self.operator = None
         self.isTheMarketCleared = False

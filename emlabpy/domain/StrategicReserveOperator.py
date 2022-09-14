@@ -1,19 +1,33 @@
 
 from domain.import_object import *
+import pandas as pd
 
 class StrategicReserveOperator(ImportObject):
 
     def __init__(self, name):
         super().__init__(name)
-        self.reserveVolume = 0
         self.zone = None
         self.reservePriceSR = 0
         self.reserveVolumePercentSR = 0
         self.cash = 0
+        self.reserveVolume = 0
         self.list_of_plants = []
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
-        setattr(self, parameter_name, parameter_value)
+        if parameter_name == 'zone':
+            self.zone = str(parameter_value)
+        elif parameter_name == 'cash':
+            self.cash = int(parameter_value)
+        elif parameter_name == 'reserveVolumePercentSR':
+            self.reserveVolumePercentSR = parameter_value
+        elif parameter_name == 'reservePriceSR':
+            self.reservePriceSR = parameter_value
+        elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
+            array = parameter_value.to_dict()
+            self.list_of_plants = pd.Series(i[1] for i in array["data"])
+        elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
+            array = parameter_value.to_dict()
+            self.reserveVolume = pd.Series(i[1] for i in array["data"])
 
     def getReserveVolume(self):
         return self.reserveVolume

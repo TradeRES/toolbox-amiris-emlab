@@ -17,7 +17,7 @@ class StrategicReserveSubmitBids(MarketModule):
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
         reps.dbrw.stage_init_bids_structure()
-        reps.dbrw.stage_init_sr_operator_structure()
+        reps.dbrw.stage_init_sr_results_structure()
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
@@ -52,8 +52,9 @@ class StrategicReserveAssignment(MarketModule):
 
     def __init__(self, reps: Repository ):
         super().__init__('EM-Lab Strategic Reserve: Assign Plants', reps)
-        reps.dbrw.stage_init_sr_operator_structure()
+        reps.dbrw.stage_init_capacitymechanisms_structure()
         self.operator = None
+
 
     def act(self):
         # Assign plants to Strategic Reserve per region
@@ -96,14 +97,16 @@ class StrategicReserveAssignment(MarketModule):
                 # When strategic reserve is full nothing actually changes for the power plant
                 ppdp.accepted_amount = 0
 
-        # Pass the total contracted volume to the strategic reserve operator
+        # setting the plants to be saved in the strategic reserve
         self.operator.setPlants(list_of_plants)
+        # Pass the total contracted volume to the strategic reserve operator
         self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
 
+        #saving the revenues to revenues to the power plants
         # Pay the contracted plants in the strategic reserve
         self.createCashFlowforSR(self.operator, market)
 
-        # Write operator to DB
+        #saving the revenues to the operator
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),
                                                             self.operator.getReserveVolume(),
@@ -129,14 +132,17 @@ class StrategicReserveAssignment(MarketModule):
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues
 
-            # from_agent, to, amount, type, time, plant
-            # Payment from operator to plant
+            # Payment (fixed costs and variable costs ) from operator to plant
             self.reps.createCashFlow(operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
-            self.reps.dbrw.stage_cash_plant(plant)
-            # Payment from market to operator
+            # saving the revenues to the power plants
+            self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
+
+            # # saving the cash to the power plants -> attention not longer needed  as the revenues are stored in the step before
+            # self.reps.dbrw.stage_cash_plant(plant)
+
+            # Payment (market revenues) from market to operator
             self.reps.createCashFlow(market, operator,
                                      SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
-            self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)

@@ -41,17 +41,3 @@ class PowerPlantDispatchPlansALL(ImportObject):
             self.revenues[plant_id] = float(parameter_value)
         if parameter_name == 'VARIABLE_COSTS_IN_EURO':
             self.variable_costs[plant_id] = float(parameter_value)
-
-
-
-        # elif parameter_name == 'EnergyProducer':
-        #     try:
-        #         self.bidder = reps.energy_producers[parameter_value]
-        #     except KeyError:
-        #         logging.warning('New Energy Producer created for: ' + self.name + ', ' + str(parameter_name))
-        #         reps.energy_producers[parameter_value] = EnergyProducer(parameter_value)
-        #         self.bidder = reps.energy_producers[parameter_value]
-        # if parameter_name == 'Market':
-        #     self.bidding_market = reps.capacity_markets[parameter_value] if \
-        #         parameter_value in reps.capacity_markets.keys() \
-        #         else reps.electricity_spot_markets[parameter_value]

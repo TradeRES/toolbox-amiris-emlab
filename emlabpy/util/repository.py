@@ -684,14 +684,12 @@ class Repository:
             name = ("SRO_" + zone)
             SRO = StrategicReserveOperator(name)
 
-        #SRO.zone = zone
-        #SRO.reservePriceSR = priceSR
-        #SRO.reserveVolumePercentSR = percentSR
         SRO.reserveVolume = volumeSR
         SRO.cash = cash
         SRO.list_of_plants = list_of_plants
         self.sr_operator[SRO.name] = SRO
-        self.dbrw.stage_sr_operator(SRO)
+        self.dbrw.stage_sr_operator_cash(SRO)
+        self.dbrw.stage_sr_operator_results(SRO, self.current_tick)
         return SRO
 
     def update_power_plant_status_ger_first_year(self, plant: PowerPlant, price):

@@ -14,6 +14,9 @@ dist
 *.egg-info
 
 # Data and scripts
+
+*.sqlite
+*.sqlite-journal
 *.log
 *.h5f
 *.pb
@@ -38,8 +41,5 @@ scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
 emlabpy/plots/Scenarios/
 emlabpy/logs
-
-
-*.sqlite
 
 

@@ -16,7 +16,7 @@ class StrategicReserveSubmitBids_swe(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Submit Bids', reps)
-        reps.dbrw.stage_init_sr_operator_structure()
+        reps.dbrw.stage_init_sr_results_structure()
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
@@ -44,7 +44,8 @@ class StrategicReserveAssignment_swe(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Strategic Reserve: Assign Plants', reps)
-        reps.dbrw.stage_init_sr_operator_structure()
+        reps.dbrw.stage_init_sr_results_structure()
+        reps.dbrw.stage_init_capacitymechanisms_structure()
         self.operator = None
 
     def act(self):

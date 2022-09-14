@@ -40,6 +40,7 @@ class SpineDBReaderWriter:
         self.candidate_plants_NPV_classname = "CandidatePlantsNPV"
         self.investment_decisions_classname = "InvestmentDecisions"
         self.sro_classname = 'StrategicReserveOperators'
+        self.sro_results_classname = 'StrategicReserveResults'
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.energyProducer_classname = "EnergyProducers"
@@ -101,7 +102,6 @@ class SpineDBReaderWriter:
             elif row['parameter_name'] == 'realistic_candidate_capacities':
                 reps.realistic_candidate_capacities = bool(row['parameter_value'])
 
-
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
                                     self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
@@ -127,7 +127,7 @@ class SpineDBReaderWriter:
 
         # trying to read DB faster
         # db_map = DatabaseMapping(self.db_urls[0])
-        #object_parameter_values = export_object_parameter_values(db_map)
+        # object_parameter_values = export_object_parameter_values(db_map)
 
         for (object_class_name, parameter_name, _, _, _) in sorted_parameter_names:
             for (_, object_name, _) in [i for i in db_data['objects'] if i[0] == object_class_name]:
@@ -150,8 +150,6 @@ class SpineDBReaderWriter:
     Markets
     """
 
-
-
     def stage_init_bids_structure(self):
         self.stage_object_class(self.bids_classname)
         self.stage_object_parameters(self.bids_classname,
@@ -162,9 +160,9 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.market_clearing_point_object_classname)
         self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'Volume', 'Tick'])
 
-    def stage_market_clearing_point(self, mcp: MarketClearingPoint ):
+    def stage_market_clearing_point(self, mcp: MarketClearingPoint):
         object_name = mcp.name
-        print(self.market_clearing_point_object_classname, object_name,mcp.market.name )
+        print(self.market_clearing_point_object_classname, object_name, mcp.market.name)
         self.stage_object(self.market_clearing_point_object_classname, object_name)
         self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
                                            [('Market', mcp.market.name),
@@ -217,7 +215,6 @@ class SpineDBReaderWriter:
             self.stage_object(self.loans_object_classname, str(power_plant_name))
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(power_plant_name),
                                                [('Id', pp.id)], '0')
-
 
             self.stage_object_parameter_values(self.loans_object_classname, str(power_plant_name),
                                                [('amountPerPayment', pp.loan.amountPerPayment),
@@ -298,32 +295,21 @@ class SpineDBReaderWriter:
                                             ('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], "0")
 
-    # def stage_init_sr_operator_structure(self):
-    #     self.stage_object_class(self.sro_classname)
-    #     self.stage_object_parameters(self.sro_classname,
-    #                                  ['zone', 'strategic_reserve_price', 'strategic_reserve_volume_percent',
-    #                                   'strategic_reserve_volume', 'cash', 'list_of_plants', "tick"])
-    def stage_init_sr_operator_structure(self):
-        self.stage_object_class(self.sro_classname)
-        self.stage_object_parameters(self.sro_classname,
-                                     ['zone',
-                                      'reserveVolume', 'cash', 'list_of_plants'])
-
-    # def stage_sr_operator(self, SRO: StrategicReserveOperator):
-    #     self.stage_object(self.sro_classname, SRO.name)
-    #     self.stage_object_parameter_values(self.sro_classname, SRO.name,
-    #                                        [('zone', SRO.zone),
-    #                                         ('strategic_reserve_price', SRO.reservePriceSR),
-    #                                         ('strategic_reserve_volume_percent', SRO.reserveVolumePercentSR),
-    #                                         ('strategic_reserve_volume', SRO.reserveVolume),
-    #                                         ('cash', SRO.cash),
-    #                                         ('list_of_plants', SRO.list_of_plants)], "0")
-    def stage_sr_operator(self, SRO: StrategicReserveOperator):
+    def stage_sr_operator_cash(self, SRO: StrategicReserveOperator):
         self.stage_object(self.sro_classname, SRO.name)
         self.stage_object_parameter_values(self.sro_classname, SRO.name,
-                                           [('zone', SRO.zone),
-                                            ('reserveVolume', SRO.reserveVolume),
-                                            ('cash', SRO.cash),
+                                           [
+                                               ('cash', SRO.cash)], "0")
+
+    def stage_init_sr_results_structure(self):
+        self.stage_object_class(self.sro_results_classname)
+        self.stage_object_parameters(self.sro_results_classname,
+                                     ['reserveVolume', 'list_of_plants'])
+
+    def stage_sr_operator_results(self, SRO: StrategicReserveOperator, current_tick):
+        self.stage_object(self.sro_results_classname, str(current_tick))
+        self.stage_object_parameter_values(self.sro_results_classname, str(current_tick),
+                                           [('reserveVolume', SRO.reserveVolume),
                                             ('list_of_plants', SRO.list_of_plants)], "0")
 
     def stage_init_candidate_plants_value(self, iteration, futureYear):
@@ -488,17 +474,21 @@ class SpineDBReaderWriter:
     def stage_cash_agent(self, agent, current_tick):
         self.stage_object(self.energyProducer_classname, agent.name)
         self.stage_object_parameter_values(self.energyProducer_classname, agent.name,
-                                           [#('cash', Map([str(current_tick)], [agent.cash])),
-                                            ('CF_ELECTRICITY_SPOT', Map([str(current_tick)], [str(agent.CF_ELECTRICITY_SPOT)])),
-                                            ('CF_LOAN', Map([str(current_tick)], [str(agent.CF_LOAN)])),
-                                            ('CF_DOWNPAYMENT', Map([str(current_tick)], [str(agent.CF_DOWNPAYMENT)])),
-                                            ('CF_STRRESPAYMENT', Map([str(current_tick)], [str(agent.CF_STRRESPAYMENT)])),
-                                            ('CF_CAPMARKETPAYMENT', Map([str(current_tick)], [str(agent.CF_CAPMARKETPAYMENT)])),
-                                            ('CF_FIXEDOMCOST', Map([str(current_tick)], [str(agent.CF_FIXEDOMCOST)])),
-                                            ('CF_COMMODITY', Map([str(current_tick)], [str(agent.CF_COMMODITY)]))
-                                            ],
+                                           [  # ('cash', Map([str(current_tick)], [agent.cash])),
+                                               ('CF_ELECTRICITY_SPOT',
+                                                Map([str(current_tick)], [str(agent.CF_ELECTRICITY_SPOT)])),
+                                               ('CF_LOAN', Map([str(current_tick)], [str(agent.CF_LOAN)])),
+                                               (
+                                               'CF_DOWNPAYMENT', Map([str(current_tick)], [str(agent.CF_DOWNPAYMENT)])),
+                                               ('CF_STRRESPAYMENT',
+                                                Map([str(current_tick)], [str(agent.CF_STRRESPAYMENT)])),
+                                               ('CF_CAPMARKETPAYMENT',
+                                                Map([str(current_tick)], [str(agent.CF_CAPMARKETPAYMENT)])),
+                                               (
+                                               'CF_FIXEDOMCOST', Map([str(current_tick)], [str(agent.CF_FIXEDOMCOST)])),
+                                               ('CF_COMMODITY', Map([str(current_tick)], [str(agent.CF_COMMODITY)]))
+                                           ],
                                            '0')
-
 
     # todo this could also be read as all other functions
     def findFinancialValueForPlant(self, powerplant, value):
@@ -582,7 +572,6 @@ class SpineDBReaderWriter:
         """"
         object name has to be a string!!!!
         """
-
         self.stage_objects([(object_class, object_name)])
 
     def stage_objects(self, arr_of_tuples: list):
