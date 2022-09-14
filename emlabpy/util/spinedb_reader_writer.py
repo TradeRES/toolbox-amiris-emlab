@@ -96,6 +96,8 @@ class SpineDBReaderWriter:
                 reps.typeofProfitforPastHorizon = str(row['parameter_value'])
             elif row['parameter_name'] == 'max_permit_build_time':
                 reps.max_permit_build_time = int(row['parameter_value'])
+            elif row['parameter_name'] == 'fix_prices_to_2020':
+                reps.fix_prices_to_2020 = bool(row['parameter_value'])
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in

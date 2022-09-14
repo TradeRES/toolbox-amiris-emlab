@@ -5,9 +5,6 @@
 *.pyc
 *ipynb_checkpoints
 .spinetoolbox/items/amiris_future
-.spinetoolbox/items/emlabdb/EmlabDB.sqlite
-.spinetoolbox/items/amiris_db/AMIRIS db.sqlite
-.spinetoolbox/items/energy_exchange/energy exchange.sqlite
 .spinetoolbox/items/next_year/output/*
 .spinetoolbox/items/invest/output/*
 # Packaging
@@ -41,5 +38,8 @@ scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
 emlabpy/plots/Scenarios/
 emlabpy/logs
+
+
+*.sqlite
 
 

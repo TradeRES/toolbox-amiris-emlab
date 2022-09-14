@@ -122,11 +122,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             future_price = substance.get_price_for_future_tick(self.reps, self.simulation_year, substance)
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
-                                                    future_price)  # todo: save this as a map in DB
-
-
-
-
+                                                    future_price)
 
     def calculateAveragePastOperatingProfit(self, plant, horizon ):
         # "totalProfits" or "irr"

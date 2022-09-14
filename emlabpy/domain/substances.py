@@ -35,12 +35,13 @@ class Substance(ImportObject):
         elif parameter_name == 'price2020': # TODO take out the hardcoded price
             self.initialprice2020 = float(parameter_value)
         elif parameter_name == 'price2050':
-            self.initialprice2050 = float(parameter_value)
-        # elif parameter_name == 'co2_price':
-        #     self.co2_price = float(parameter_value)
+            if reps.fix_prices_to_2020 == True: # for verification runs. If its indicated fuel prices, CO2 prices and electricity demand is fix to 2020
+                self.initialprice2050 = self.initialprice2020
+            else:
+                self.initialprice2050 = float(parameter_value)
         elif parameter_name == 'annual_resource_limit' and alternative == "biopotential_2020":# TODO take out the hardcoded scenario
             self.resource_limit2020 = float(parameter_value)
-        elif parameter_name == 'trend': # TODO check the values and how the fuel values are assigned to the traderes fuels
+        elif parameter_name == 'trend':
             self.trend = reps.trends[parameter_value]
         elif parameter_name == 'futurePrice':
             self.futurePrice = parameter_value
