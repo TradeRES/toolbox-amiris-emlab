@@ -937,7 +937,6 @@
                                 "position": "table_name",
                                 "value": "CandidatePowerPlants",
                                 "skip_columns": [
-                                    5,
                                     6
                                 ]
                             },
@@ -1400,7 +1399,12 @@
                 "3": "float",
                 "4": "string",
                 "5": "string",
-                "6": "string"
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string"
             },
             "StrategicReserveOperator": {
                 "0": "float",

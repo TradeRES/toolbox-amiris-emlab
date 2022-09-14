@@ -98,6 +98,9 @@ class SpineDBReaderWriter:
                 reps.max_permit_build_time = int(row['parameter_value'])
             elif row['parameter_name'] == 'fix_prices_to_2020':
                 reps.fix_prices_to_2020 = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'realistic_candidate_capacities':
+                reps.realistic_candidate_capacities = bool(row['parameter_value'])
+
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
