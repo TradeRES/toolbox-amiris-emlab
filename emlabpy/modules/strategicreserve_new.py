@@ -102,11 +102,11 @@ class StrategicReserveAssignment(MarketModule):
         # Pass the total contracted volume to the strategic reserve operator
         self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
 
-        #saving the revenues to revenues to the power plants
+        #saving the revenues to the power plants in financial results
         # Pay the contracted plants in the strategic reserve
         self.createCashFlowforSR(self.operator, market)
 
-        #saving the revenues to the operator
+        #saving the cash to the operator and the volume and list of power plants to SRResults
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),
                                                             self.operator.getReserveVolume(),

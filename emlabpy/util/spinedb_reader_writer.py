@@ -192,11 +192,8 @@ class SpineDBReaderWriter:
     def stage_power_plant_status(self, power_plant):
         self.stage_object(self.powerplant_installed_classname, power_plant.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, power_plant.name,
-                                           [('plant', power_plant.name),
-                                            ('status', power_plant.status),
-                                            ('owner', power_plant.owner),
-                                            ('variable_operating_costs',
-                                             power_plant.technology.variable_operating_costs)], '0')
+                                           [
+                                            ('Status', power_plant.status)], '0')
 
     """
     Power plants

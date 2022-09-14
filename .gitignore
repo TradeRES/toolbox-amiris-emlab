@@ -7,6 +7,7 @@
 .spinetoolbox/items/amiris_future
 .spinetoolbox/items/next_year/output/*
 .spinetoolbox/items/invest/output/*
+
 # Packaging
 build
 dist
@@ -30,8 +31,11 @@ amiris_workflow/amiris-config/data/load.csv
 amiris_workflow/output/amiris_results.csv
 amiris_workflow/amiris_data_structure.xlsx
 amiris_workflow/output/*
+
 emlabpy/years.txt
 emlabpy/Yearly_results.xlsx
+emlabpy/plots/Scenarios/
+emlabpy/logs
 data/competes/
 data/sources/other/
 
@@ -39,7 +43,6 @@ test.py
 test2.py
 scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
-emlabpy/plots/Scenarios/
-emlabpy/logs
+
 
 
