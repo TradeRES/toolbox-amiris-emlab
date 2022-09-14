@@ -26,10 +26,12 @@ amiris/
 data/powerplantsGermany/
 amiris_workflow/amiris/
 amiris_workflow/amiris-config/scenario.yaml
+amiris_workflow/amiris-config/data/load.csv
 amiris_workflow/output/amiris_results.csv
 amiris_workflow/amiris_data_structure.xlsx
-amiris_workflow/output/raw/*
+amiris_workflow/output/*
 emlabpy/years.txt
+emlabpy/Yearly_results.xlsx
 data/competes/
 data/sources/other/
 
