@@ -5,10 +5,7 @@ import os
 import sys
 from functools import reduce
 import pandas as pd
-
-import ioproc.runners as run
-
-
+from matplotlib.offsetbox import AnchoredText
 
 # data = [(1,'sravan'),(2,'ojaswi'),
 #         (3,'bobby'),(4,'rohith'),
@@ -29,11 +26,18 @@ import ioproc.runners as run
 #
 #
 # df.index.name = "key"
-#
+df = pd.DataFrame({"A": [5, 3, None, 4],
+                   "B": [None, 2, 4, 3],
+                   "C": [4, 3, 8, 5],
+                   "D": [5, 4, 2, None]})
+aaa = pd.Series([3,4], index=[3 ,4 ])
+df["E" ] = aaa
+print(df)
 # other = pd.DataFrame({'key': [1, 2, 5],
 #                       'B': ['B0', 'B1', 'B2']})
 # ssd = pd.DataFrame({'key': [1, 2, 3],
 #                       'C': ['B0', 'B1', 'B2']})
+
 # other.set_index('key')
 # ssd.set_index('key')
 # df = pd.merge(df, other,   on='key', how='inner')
@@ -43,33 +47,38 @@ import ioproc.runners as run
 # merged_df = reduce(lambda df, other: pd.merge(df, other, on='date', how='inner'), dfs)
 #
 #
-# record1= {'Math': list(range(100))}
+# record1 = {'Math': list(range(100))}
 #
-# record2= {'Math': [0,0,0,0,0],
-#           'Science': [0,0,0,0,0],
-#           'English': [0,0,0,0,100000]}
+# record2 = {'Math': [0, 0, 0, 0, 0],
+#            'Science': [0, 0, 0, 0, 0],
+#            'English': [0, 0, 0, 0, 100000]}
 #
 #
 # def plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
-#                                     ):
+#                                    ):
 #     print('project values')
 #     fig8, ax1 = plt.subplots()
 #     ax2 = ax1.twinx()
-#     ax1.plot( candidate_plants_project_value )
-#     ax2.plot(installed_capacity_per_iteration , 'o')
+#     ax1.annotate('figure fraction',
+#                  xy=(.025, 1), xycoords='figure fraction',
+#                  horizontalalignment='left', verticalalignment='top',
+#                  fontsize='medium')
+#
+#     ax1.plot(candidate_plants_project_value)
+#     ax2.plot(installed_capacity_per_iteration, 'o')
 #     ax1.set_xlabel('Iterations', fontsize='medium')
 #     ax1.set_ylabel('Project value', fontsize='medium')
 #     ax2.set_ylabel('Investments', fontsize='medium')
 #     ax1.set_title('Investments and project value per iterations')
-#     ax1.legend( candidate_plants_project_value.columns.values.tolist())
+#     ax1.legend(candidate_plants_project_value.columns.values.tolist())
 #     print(candidate_plants_project_value.columns)
 #
+#
 # candidate_plants_project_value = pd.DataFrame(record1)
-# installed_capacity_per_iteration =  pd.DataFrame(record2)
-# plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration )
+# installed_capacity_per_iteration = pd.DataFrame(record2)
+# plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration)
 # print('Showing plots...')
 # plt.show()
-
 
 # from domain.import_object import *
 # from twine.repository import Repository
@@ -102,7 +111,3 @@ import ioproc.runners as run
 # test.add_parameter_value( "2020-1", 213123, 0)
 # test.add_parameter_value( "2020-1", 213123, "Invested")
 # test.add_parameter_value( "2020-1", 213123, 0)
-
-
-
-

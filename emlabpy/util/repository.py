@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_CM_newAmiris"
+        self.simulation_name = "groupedDE_CM_small_limitedInvestments_fixprices"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -294,6 +294,9 @@ class Repository:
     def get_investable_candidate_power_plants_by_owner(self, owner: EnergyProducer) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values()
                 if i.viableInvestment is True and i.owner == owner]
+
+    def get_candidate_capacity(self, tech):
+        return next(i.capacityTobeInstalled for i in self.candidatePowerPlants.values() if i.technology.name == tech)
 
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
@@ -690,12 +693,12 @@ class Repository:
                 i.status = new_status
                 i.owner = new_owner
                 i.technology.variable_operating_costs = new_price
-                self.power_plants[i.name] = i
                 self.dbrw.stage_power_plant_status(i)
 
 
     def update_power_plant_status(self, plant: PowerPlant, price):
         new_status = globalNames.power_plant_status_strategic_reserve
+        # todo: Bart: why change the owner?
         new_owner = 'StrategicReserveOperator'
         new_price = price
         for i in self.power_plants.values():
@@ -703,13 +706,9 @@ class Repository:
                 i.status = new_status
                 i.owner = new_owner
                 i.technology.variable_operating_costs = new_price
+                # todo: Bart: ?
                 self.power_plants[i.name] = i
                 self.dbrw.stage_power_plant_status(i)
-
-
-
-
-
 
     def get_operational_and_in_pipeline_conventional_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

@@ -1,3 +1,0 @@
-sklearn
-numpy_financial
-fameio

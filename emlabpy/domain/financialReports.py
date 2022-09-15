@@ -37,9 +37,11 @@ class FinancialPowerPlantReport(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         # -----------------------------CM revenues from financial Reports classname
-        if reps.runningModule == "plotting" and  parameter_name in ['irr','npv',  'totalProfitswLoans', 'totalProfits']:
+        if reps.runningModule == "plotting" and  parameter_name in ['irr','npv',  'totalProfitswLoans', 'totalProfits', 'capacityMechanismRevenues']:
             array = parameter_value.to_dict()
-            pd_series = pd.Series(i[1] for i in array["data"])
+            values = [i[1] for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
             if parameter_name == 'irr':
                 self.irr = pd_series
             elif parameter_name == 'npv':
@@ -48,11 +50,12 @@ class FinancialPowerPlantReport(ImportObject):
                 self.totalProfitswLoans = pd_series
             elif parameter_name == 'totalProfits':
                 self.totalProfits = pd_series
-        elif reps.runningModule == "plotting" and  parameter_name in ['capacityMechanismRevenues']:
-            array = parameter_value.to_dict()
-            self.capacityMarketRevenues = pd.Series(i[1] for i in array["data"])
+            elif  parameter_name == 'capacityMechanismRevenues':
+                # for plotting import all capacity mechanisms
+                self.capacityMarketRevenues = pd_series
 
         elif parameter_name == 'capacityMechanismRevenues':
+            # to making financial results, only retrieve the CM of that year
             array = parameter_value.to_dict()
             df = pd.DataFrame(array['data'])
             df.set_index(0, inplace=True)

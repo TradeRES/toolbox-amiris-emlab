@@ -386,21 +386,22 @@ class SpineDBReaderWriter:
         for fr in financialreports:
             object_name = fr.name
             self.stage_object(self.financial_reports_object_classname, object_name)
+            print(type(fr.spotMarketRevenue))
             self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
                                                [('PowerPlant', fr.powerPlant),
                                                 ('latestTick', (fr.tick)),
-                                                ('spotMarketRevenue', Map([str(fr.tick)], [str(fr.spotMarketRevenue)])),
-                                                ('overallRevenue', Map([str(fr.tick)], [str(fr.overallRevenue)])),
-                                                ('production', Map([str(fr.tick)], [str(fr.production)])),
+                                                ('spotMarketRevenue', Map([str(fr.tick)], [float(fr.spotMarketRevenue)])),
+                                                ('overallRevenue', Map([str(fr.tick)], [float(fr.overallRevenue)])),
+                                                ('production', Map([str(fr.tick)], [float(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
-                                                ('variableCosts', Map([str(fr.tick)], [str(fr.variableCosts)])),
-                                                ('fixedCosts', Map([str(fr.tick)], [str(fr.fixedCosts)])),
-                                                ('totalCosts', Map([str(fr.tick)], [str(fr.totalCosts)])),
-                                                ('totalProfits', Map([str(fr.tick)], [str(fr.totalProfits)])),
+                                                ('variableCosts', Map([str(fr.tick)], [float(fr.variableCosts)])),
+                                                ('fixedCosts', Map([str(fr.tick)], [float(fr.fixedCosts)])),
+                                                ('totalCosts', Map([str(fr.tick)], [float(fr.totalCosts)])),
+                                                ('totalProfits', Map([str(fr.tick)], [float(fr.totalProfits)])),
                                                 ('totalProfitswLoans',
-                                                 Map([str(fr.tick)], [str(fr.totalProfitswLoans)])),
-                                                ('irr', Map([str(fr.tick)], [str(fr.irr)])),
-                                                ('npv', Map([str(fr.tick)], [str(fr.npv)])),
+                                                 Map([str(fr.tick)], [float(fr.totalProfitswLoans)])),
+                                                ('irr', Map([str(fr.tick)], [float(fr.irr)])),
+                                                ('npv', Map([str(fr.tick)], [float(fr.npv)])),
                                                 ],
                                                '0')
 
@@ -473,17 +474,17 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.energyProducer_classname, agent.name,
                                            [  # ('cash', Map([str(current_tick)], [agent.cash])),
                                                ('CF_ELECTRICITY_SPOT',
-                                                Map([str(current_tick)], [str(agent.CF_ELECTRICITY_SPOT)])),
-                                               ('CF_LOAN', Map([str(current_tick)], [str(agent.CF_LOAN)])),
+                                                Map([str(current_tick)], [float(agent.CF_ELECTRICITY_SPOT)])),
+                                               ('CF_LOAN', Map([str(current_tick)], [float(agent.CF_LOAN)])),
                                                (
-                                               'CF_DOWNPAYMENT', Map([str(current_tick)], [str(agent.CF_DOWNPAYMENT)])),
+                                               'CF_DOWNPAYMENT', Map([str(current_tick)], [float(agent.CF_DOWNPAYMENT)])),
                                                ('CF_STRRESPAYMENT',
-                                                Map([str(current_tick)], [str(agent.CF_STRRESPAYMENT)])),
+                                                Map([str(current_tick)], [float(agent.CF_STRRESPAYMENT)])),
                                                ('CF_CAPMARKETPAYMENT',
-                                                Map([str(current_tick)], [str(agent.CF_CAPMARKETPAYMENT)])),
+                                                Map([str(current_tick)], [float(agent.CF_CAPMARKETPAYMENT)])),
                                                (
-                                               'CF_FIXEDOMCOST', Map([str(current_tick)], [str(agent.CF_FIXEDOMCOST)])),
-                                               ('CF_COMMODITY', Map([str(current_tick)], [str(agent.CF_COMMODITY)]))
+                                               'CF_FIXEDOMCOST', Map([str(current_tick)], [float(agent.CF_FIXEDOMCOST)])),
+                                               ('CF_COMMODITY', Map([str(current_tick)], [float(agent.CF_COMMODITY)]))
                                            ],
                                            '0')
 

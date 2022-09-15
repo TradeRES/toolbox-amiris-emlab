@@ -22,12 +22,12 @@ class StrategicReserveOperator(ImportObject):
             self.reserveVolumePercentSR = parameter_value
         elif parameter_name == 'reservePriceSR':
             self.reservePriceSR = parameter_value
-        elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
-            array = parameter_value.to_dict()
-            self.list_of_plants = pd.Series(i[1] for i in array["data"])
-        elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
-            array = parameter_value.to_dict()
-            self.reserveVolume = pd.Series(i[1] for i in array["data"])
+        # elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
+        #     array = parameter_value.to_dict()
+        #     self.list_of_plants = pd.Series(i[1] for i in array["data"])
+        # elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
+        #     array = parameter_value.to_dict()
+        #     self.reserveVolume = pd.Series(i[1] for i in array["data"])
 
     def getReserveVolume(self):
         return self.reserveVolume

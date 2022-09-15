@@ -4,9 +4,8 @@ Commandline arguments provide which modules are run and which aren't.
 Ingrid Sanchez 28-3-2022
 Jim Hommes - 25-3-2021
 """
-import sys
+
 import logging
-import os
 import time
 from modules.payLoans import PayForLoansRole
 from modules.short_invest import ShortInvestmentdecision
@@ -16,13 +15,10 @@ from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from modules.prepareMarketClearing import PrepareMarket
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
-from domain.StrategicReserveOperator import *
 from modules.forwardcapacitymarket import *
-from domain.StrategicReserveOperator import *
 from modules.strategicreserve_new import *
 from modules.strategicreserve_swe import *
 from modules.strategicreserve_ger import *
-# from modules.strategicreserve import *
 from modules.co2market import *
 from modules.invest import *
 from modules.prepareFutureMarketClearing import *
@@ -196,8 +192,6 @@ try:  # Try statement to always close DB properly
     if run_strategic_reserve:
         logging.info('Start strategic reserve')
         strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
-        # strategic_reserve_assignment = StrategicReserveAssignment(reps)
-        #strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
         strategic_reserve = StrategicReserveAssignment(reps)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
@@ -206,8 +200,6 @@ try:  # Try statement to always close DB properly
     if run_strategic_reserve_swe:
         logging.info('Start strategic reserve')
         strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
-        # strategic_reserve_assignment = StrategicReserveAssignment_swe(reps)
-        #strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
         strategic_reserve = StrategicReserveAssignment_swe(reps)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
@@ -216,8 +208,6 @@ try:  # Try statement to always close DB properly
     if run_strategic_reserve_ger:
         logging.info('Start strategic reserve')
         strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
-        # strategic_reserve_assignment = StrategicReserveAssignment_ger(reps)
-        #strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
         strategic_reserve = StrategicReserveAssignment_ger(reps)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
