@@ -25,6 +25,7 @@ class PrepareMarket(DefaultModule):
         reps.dbrw.stage_init_next_prices_structure()
 
     def act(self):
+        # look for all power plants, except for decommissioned and in pipeline
         self.power_plants_list =  self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
                                                                         globalNames.power_plant_status_to_be_decommissioned,
                                                                         globalNames.power_plant_status_strategic_reserve,

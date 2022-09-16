@@ -61,6 +61,8 @@ class PowerPlant(EMLabAgent):
             return
         elif parameter_name == 'Status':
             self.status = str(parameter_value)
+            if self.name =='0':
+                print(self.status)
         elif parameter_name == 'Efficiency':  # the efficiency stored in the DB is the actual one
             self.actualEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
@@ -224,6 +226,8 @@ class PowerPlant(EMLabAgent):
         return self
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
+        # todo if the plant is in strategic reserve. Then the status shouldnt change? this is better kept through the list of power plants
+        # and self.status != globalNames.power_plant_status_strategic_reserve
         if self.age is not None:
             if self.age >= self.technology.expected_lifetime:
                 self.status = globalNames.power_plant_status_to_be_decommissioned

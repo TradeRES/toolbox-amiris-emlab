@@ -32,6 +32,7 @@ class ForwardCapacityMarketSubmitBids(MarketModule):
         for energy_producer in self.reps.energy_producers.values():
 
             # For every PowerPlant owned by energyProducer
+            # todo: Bart shouldnt the plants to be decommissioned also should participate?
             for powerplant in self.reps.get_operational_and_in_pipeline_conventional_power_plants_by_owner(energy_producer.name):
                 # Retrieve vars
 
@@ -126,14 +127,16 @@ class ForwardCapacityMarketClearing(MarketModule):
                                                             self.operator.getZone(),
                                                             0,
                                                             0,
+                                                            0,
                                                             self.operator.getPlants())
-        # save clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
-            # self.createCashFlowforCM(market, clearing_price)
+            print("Cleared market", market.name)
         else:
-            print("Market is not cleared")
+            self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
+                                                             self.reps.current_tick)
+            print("Market is not cleared", market.name)
 
 
 

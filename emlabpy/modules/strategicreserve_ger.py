@@ -72,6 +72,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         SR_price = self.operator.getReservePriceSR()
 
         # Sort the bids in descending order
+
         sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
 
         # Contract plants to Strategic Reserve Operator

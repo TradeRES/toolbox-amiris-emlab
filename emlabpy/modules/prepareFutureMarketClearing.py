@@ -1,8 +1,6 @@
 
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
-from modules.dismantle import Dismantle
-from domain.StrategicReserveOperator import StrategicReserveOperator
 import pandas as pd
 
 
@@ -87,6 +85,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
                 #powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                # todo: if plant is in strategic reserve , it should be decommissioned after some time?
                 powerplant.owner = 'StrategicReserveOperator'
                 powerplant.technology.variable_operating_costs = SR_price
                 #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
