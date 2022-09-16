@@ -281,7 +281,7 @@ class CreatingResultsExcel(DefaultModule):
         else:
             price_per_mw = total_price/accepted_amount
         self.CM_cost_per_MW = price_per_mw
-
+    # todo: Bart , isnt the cash having a different start each year?
     def get_strategic_reserve_values(self):
         for i in self.reps.sr_operator.values():
             if len(i.list_of_plants) != 0 and i.zone == self.country:

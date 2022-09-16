@@ -50,7 +50,6 @@ class SpineDBReaderWriter:
         self.amirisdb = None
 
         if open_db == "Amiris":
-            print("opening amiris")
             self.amirisdb = SpineDB(db_urls[1])
 
     def read_db_and_create_repository(self, module) -> Repository:
@@ -184,7 +183,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameter('MarketStabilityReserve', param_name)
         self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
 
-    def set_power_plant_CapacityMarket_production(self, bid):
+    def stage_bids_status(self, bid):
         self.stage_object_parameter_values("Bids", bid.name,
                                            [('accepted_amount', bid.accepted_amount),
                                             ('status', bid.status)], '0')
@@ -301,12 +300,13 @@ class SpineDBReaderWriter:
     def stage_init_sr_results_structure(self):
         self.stage_object_class(self.sro_results_classname)
         self.stage_object_parameters(self.sro_results_classname,
-                                     ['reserveVolume', 'list_of_plants'])
+                                     ['reserveVolume', 'list_of_plants', 'revenues_per_year'])
 
     def stage_sr_operator_results(self, SRO: StrategicReserveOperator, current_tick):
         self.stage_object(self.sro_results_classname, str(current_tick))
         self.stage_object_parameter_values(self.sro_results_classname, str(current_tick),
                                            [('reserveVolume', SRO.reserveVolume),
+                                            ('revenues_per_year', SRO.revenues_per_year),
                                             ('list_of_plants', SRO.list_of_plants)], "0")
 
     def stage_init_candidate_plants_value(self, iteration, futureYear):
@@ -689,6 +689,11 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
+    elif object_class_name == 'StrategicReserveResults':
+        new_db_line = list(db_line)
+        new_db_line[1] = "SRO_" + reps.country   # object name
+        new_db_line[4] =  int(db_line[1])  # alternative
+        add_parameter_value_to_repository(reps, new_db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions':  # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
     elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting",
@@ -720,7 +725,6 @@ def add_parameter_value_to_repository_based_on_object_class_name_amiris(self, re
     for db_line_amiris in db_amirisdata['object_parameter_values']:
         object_class_name = db_line_amiris[0]
         object_name = db_line_amiris[1]
-
         if reps.runningModule == "plotting":
             new_db_line = list(db_line_amiris)
             new_db_line[1] = db_line_amiris[0]  # pass the class name as the object name

@@ -120,7 +120,7 @@ class ForwardCapacityMarketClearing(MarketModule):
                 ppdp.accepted_amount = 0
 
         self.operator.setPlants(list_of_plants)
-        self.reps.dbrw.set_power_plant_CapacityMarket_production(sorted_ppdp)
+        self.reps.dbrw.stage_bids_status(sorted_ppdp)
         self.stageCapacityMechanismRevenues(market, clearing_price)
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),

@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "groupedDE_CM_small_limitedInvestments_fixprices"
+        self.simulation_name = "extendedDE_SR_small_limitedInvestments_fixprices"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -509,6 +509,13 @@ class Repository:
         except StopIteration:
             return None
 
+    # def get_strategic_reserve_operator_per_tick(self, tick:int ) -> Optional[StrategicReserveOperator]:
+    #     try:
+    #         return next(i for i in self.sr_operator.list_of_plants_all.values() if
+    #                     i.zone == self.country  )
+    #     except StopIteration:
+    #         return None
+
 
     def get_capacity_market_for_plant(self, plant: PowerPlant) -> Optional[CapacityMarket]:
         try:
@@ -667,13 +674,14 @@ class Repository:
                                                   zone: str,
                                                   volumeSR: float,
                                                   cash: float,
+                                                  revenues_per_year: float,
                                                   list_of_plants: list) -> StrategicReserveOperator:
 
         SRO = next((SRO for SRO in self.sr_operator.values() if SRO.name == name), None)
         if SRO is None:
             name = ("SRO_" + zone)
             SRO = StrategicReserveOperator(name)
-
+        SRO.revenues_per_year = revenues_per_year
         SRO.reserveVolume = volumeSR
         SRO.cash = cash
         SRO.list_of_plants = list_of_plants

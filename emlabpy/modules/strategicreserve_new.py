@@ -62,7 +62,6 @@ class StrategicReserveAssignment(MarketModule):
         
         # Set the strategic reserve zone to the same as the market
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-
         # Retrieve peak load volume of market
         peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
@@ -102,26 +101,25 @@ class StrategicReserveAssignment(MarketModule):
         # Pass the total contracted volume to the strategic reserve operator
         self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
 
-        #saving the revenues to the power plants in financial results
+        #saving the revenues to the power plants
         # Pay the contracted plants in the strategic reserve
-        self.createCashFlowforSR(self.operator, market)
+        self.createCashFlowforSR( market)
 
         #saving the cash to the operator and the volume and list of power plants to SRResults
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),
                                                             self.operator.getReserveVolume(),
                                                             self.operator.getCash(),
+                                                            self.operator.revenues_per_year,
                                                             self.operator.getPlants())
 
-
     # Cashflow function for the operation of the strategic reserve
-    def createCashFlowforSR(self, operator, market):
+    def createCashFlowforSR(self, market):
         accepted_ppdp = self.reps.get_accepted_SR_bids()
         for accepted in accepted_ppdp:
             plant = self.reps.power_plants[accepted.plant]
             # Fixed operating costs of plants
             fixed_operating_costs = plant.actualFixedOperatingCost
-            # fixed_operating_costs = accepted.plant.get_actual_fixed_operating_cost()
             # Retrieve dispatch data of plants for variable costs and revenues
             dispatch = self.reps.get_power_plant_electricity_dispatch(plant.id)
             # Costs to be paid by Strategic Reserve Operator and to be received
@@ -131,18 +129,21 @@ class StrategicReserveAssignment(MarketModule):
             else:
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues
-
+            #
+            # # saving the bids status # todo: the bids could be erased later on
+            # self.reps.dbrw.stage_bids_status(accepted)
             # Payment (fixed costs and variable costs ) from operator to plant
-            self.reps.createCashFlow(operator, plant,
+            self.reps.createCashFlow(self.operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
             # saving the revenues to the power plants
             self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
 
-            # # saving the cash to the power plants -> attention not longer needed  as the revenues are stored in the step before
-            # self.reps.dbrw.stage_cash_plant(plant)
 
             # Payment (market revenues) from market to operator
-            self.reps.createCashFlow(market, operator,
+            self.reps.createCashFlow(market, self.operator,
                                      SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
+
+            self.operator.revenues_per_year += SR_payment_to_operator
+

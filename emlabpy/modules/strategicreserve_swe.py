@@ -93,18 +93,19 @@ class StrategicReserveAssignment_swe(MarketModule):
         self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
 
         # Pay the contracted plants in the strategic reserve
-        self.createCashFlowforSR(self.operator, market)
+        self.createCashFlowforSR( market)
 
         # Write operator to DB
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),
                                                             self.operator.getReserveVolume(),
                                                             self.operator.getCash(),
+                                                            self.operator.revenues_per_year,
                                                             self.operator.getPlants())
 
 
     # Cashflow function for the operation of the strategic reserve
-    def createCashFlowforSR(self, operator, market):
+    def createCashFlowforSR(self,  market):
         accepted_ppdp = self.reps.get_accepted_SR_bids()
         for accepted in accepted_ppdp:
             plant = self.reps.power_plants[accepted.plant]
@@ -123,12 +124,14 @@ class StrategicReserveAssignment_swe(MarketModule):
 
             # from_agent, to, amount, type, time, plant
             # Payment from operator to plant
-            self.reps.createCashFlow(operator, plant,
+            self.reps.createCashFlow(self.operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
-            self.reps.dbrw.stage_cash_plant(plant)
+
+            self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
             # Payment from market to operator
-            self.reps.createCashFlow(market, operator,
+            self.reps.createCashFlow(market, self.operator,
                                      SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
-            self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
+            self.operator.revenues_per_year += SR_payment_to_operator
+

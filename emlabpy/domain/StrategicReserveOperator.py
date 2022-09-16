@@ -10,10 +10,13 @@ class StrategicReserveOperator(ImportObject):
         self.reservePriceSR = 0
         self.reserveVolumePercentSR = 0
         self.cash = 0
-        self.reserveVolume = 0
+        self.revenues_per_year = 0
+        self.reserveVolume = dict()
         self.list_of_plants = []
+        self.list_of_plants_all = dict()
 
-    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative):
+        # for list of plants and reserve volume, pass the tick as alternative
         if parameter_name == 'zone':
             self.zone = str(parameter_value)
         elif parameter_name == 'cash':
@@ -22,12 +25,15 @@ class StrategicReserveOperator(ImportObject):
             self.reserveVolumePercentSR = parameter_value
         elif parameter_name == 'reservePriceSR':
             self.reservePriceSR = parameter_value
-        # elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
-        #     array = parameter_value.to_dict()
-        #     self.list_of_plants = pd.Series(i[1] for i in array["data"])
-        # elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
-        #     array = parameter_value.to_dict()
-        #     self.reserveVolume = pd.Series(i[1] for i in array["data"])
+        elif parameter_name == 'list_of_plants' and   reps.runningModule != "plotting" and alternative == reps.current_tick:
+            self.list_of_plants = parameter_value
+        elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
+            self.list_of_plants_all[alternative] = parameter_value
+        elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
+            self.reserveVolume[alternative] = parameter_value
+        elif reps.runningModule == "plotting" and  parameter_name == "revenues_per_year":
+            self.revenues_per_year[alternative] = parameter_value
+
 
     def getReserveVolume(self):
         return self.reserveVolume
