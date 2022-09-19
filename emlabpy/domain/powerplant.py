@@ -213,7 +213,7 @@ class PowerPlant(EMLabAgent):
 
         if self.actualEfficiency == 0: # if there is not initial efficiency, then assign the efficiency by the technology
            self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
-        if self.actualFixedOperatingCost != 'NOTSET': # old power plants have set their fixed costs
+        if self.actualFixedOperatingCost == 'NOTSET': # old power plants have set their fixed costs
             self.calculateAndSetActualFixedOperatingCosts()
         self.setDismantleTime(1000)  # TODO set this first to 1000 and then it changes in later stage?
         # as a default the expected end of life is assigned by the technology expected lifetime

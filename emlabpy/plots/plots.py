@@ -1054,7 +1054,6 @@ try:
         raw_results_url = sys.argv[3]
         electricity_prices = reading_electricity_prices(raw_results_url)
 
-
     if name == "":
         # if the energy exchange DB with electricity prices
         emlab_url = sys.argv[1]

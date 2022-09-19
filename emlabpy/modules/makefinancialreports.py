@@ -117,7 +117,6 @@ class CreatingFinancialReports(DefaultModule):
         # self.reps.createCashFlow(wholesale_market, self.agent, all_revenues,
         #                          globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
 
-
-            # TODO add cash flows
+            # TODO add CO2 costs
             # financialPowerPlantReport.setVariableCosts(financialPowerPlantReport.getCommodityCosts() + financialPowerPlantReport.getCo2Costs())
             # financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.getCapacityMarketRevenue() + financialPowerPlantReport.getCo2HedgingRevenue() + financialPowerPlantReport.getSpotMarketRevenue() + financialPowerPlantReport.getStrategicReserveRevenue())
