@@ -18,46 +18,6 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/run_config2.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/amiris_gas.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/combineresultsgas.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/amirisgas.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/combine_results_gas.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/run_config_river.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/amiris_river.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/combineresultsriver.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/best_investment.json"
                 },
                 {
@@ -89,11 +49,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/prepare_market.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/amiris_wrapper.json"
                 },
                 {
                     "type": "path",
@@ -667,17 +622,6 @@
                 ]
             },
             {
-                "name": "from Financial Results to prepare future market",
-                "from": [
-                    "Financial Results",
-                    "right"
-                ],
-                "to": [
-                    "prepare future market",
-                    "left"
-                ]
-            },
-            {
                 "name": "from importing EnergyExchange to energy exchange",
                 "from": [
                     "importing EnergyExchange",
@@ -718,6 +662,28 @@
                 ],
                 "to": [
                     "import AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Financial Results to short investments",
+                "from": [
+                    "Financial Results",
+                    "right"
+                ],
+                "to": [
+                    "short investments",
+                    "left"
+                ]
+            },
+            {
+                "name": "from short investments to prepare future market",
+                "from": [
+                    "short investments",
+                    "right"
+                ],
+                "to": [
+                    "prepare future market",
                     "left"
                 ]
             }
@@ -991,8 +957,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -96.66597541836714,
-            "y": -215.66546622318637,
+            "x": -99.03880622889878,
+            "y": -177.7001732546803,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1090,11 +1056,11 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    true
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
+                    false
                 ],
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
                 ]
             ]
@@ -1307,12 +1273,12 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    false
-                ],
-                [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
                     true
+                ],
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    false
                 ]
             ]
         },
