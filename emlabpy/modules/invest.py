@@ -131,13 +131,6 @@ class Investmentdecision(DefaultModule):
                     self.stop_iteration()
                     # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)
-                    # saving loans
-                    new_power_plants_in_tick = self.reps.get_power_plants_invested_in_tick(self.reps.current_tick)
-
-                    # for pp_name  in new_power_plants_in_tick:
-                    #     pp = self.reps.get_power_plant_by_id(pp_name)
-                    #     self.reps.dbrw.stage_loans(pp)
-                    #     self.reps.dbrw.stage_downpayments(pp)
                     #self.reps.dbrw.stage_cash_agent(self.agent) # there was a payment from energy producer to manufacturer
                 # self.agent.readytoInvest = False # TOdo
             else:

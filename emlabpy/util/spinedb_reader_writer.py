@@ -334,10 +334,10 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.investment_decisions_classname)
         self.stage_object_parameters(self.investment_decisions_classname, [year_iteration])
 
-    def stage_investment_decisions(self, powerplant, power_plant_id, iteration, futureYear, tick):
+    def stage_investment_decisions(self, Candidatenumber, power_plant_id, iteration, futureYear, tick):
         year_iteration = str(futureYear) + "-" + str(iteration)
-        self.stage_object(self.investment_decisions_classname, powerplant)
-        self.stage_object_parameter_values(self.investment_decisions_classname, powerplant,
+        self.stage_object(self.investment_decisions_classname, Candidatenumber)
+        self.stage_object_parameter_values(self.investment_decisions_classname, Candidatenumber,
                                            [(year_iteration, power_plant_id)], str(tick))
 
     def stage_init_future_operational_profits(self):
