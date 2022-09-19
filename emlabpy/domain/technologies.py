@@ -77,6 +77,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
+            # self.fixed_operating_cost_time_series = GeometricTrend("geometrictrend" + self.name)
+            # self.fixed_operating_cost_time_series.growth_rate = 0.0
             self.fixed_operating_cost_time_series = reps.trends[self.name + "FixedOperatingCostTimeSeries"]
             self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         elif parameter_name == 'vom_cost':

@@ -188,9 +188,9 @@ class PowerPlant(EMLabAgent):
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts()
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
-        self.setDismantleTime(1000)
+        #self.setDismantleTime(1000) # put very high so that its not considered to be dismantled?
         self.setExpectedEndOfLife(
-            tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+            tick + self.getTechnology().getExpectedLifetime() - self.age)
         self.status = globalNames.power_plant_status_inPipeline
 
     def set_loans_installed_pp(self, reps):
@@ -215,13 +215,9 @@ class PowerPlant(EMLabAgent):
            self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         if self.actualFixedOperatingCost == 'NOTSET': # old power plants have set their fixed costs
             self.calculateAndSetActualFixedOperatingCosts()
-        self.setDismantleTime(1000)  # TODO set this first to 1000 and then it changes in later stage?
         # as a default the expected end of life is assigned by the technology expected lifetime
-        if self.dismantleTime < 1000:
-            self.setExpectedEndOfLife = self.dismantleTime
-        else:
-            self.setExpectedEndOfLife(  # set in terms of tick
-                tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+        self.setExpectedEndOfLife( # set in terms of tick
+            tick + self.getTechnology().getExpectedLifetime() - self.age)
         self.setPowerPlantsStatusforInstalledPowerPlants()
         return self
 
@@ -229,47 +225,51 @@ class PowerPlant(EMLabAgent):
         # todo if the plant is in strategic reserve. Then the status shouldnt change? this is better kept through the list of power plants
         # and self.status != globalNames.power_plant_status_strategic_reserve
         if self.age is not None:
-            if self.age >= self.technology.expected_lifetime:
+            if self.status == globalNames.power_plant_status_decommissioned:
+                pass
+            elif self.age >= self.technology.expected_lifetime:
                 self.status = globalNames.power_plant_status_to_be_decommissioned
             elif self.age < 0:
                 self.status = globalNames.power_plant_status_inPipeline
+
             else:
                 self.status = globalNames.power_plant_status_operational
         else:
             print("power plant dont have an age ", self.name)
 
-    def isOperational(self, currentTick):
-        finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
-        if finishedConstruction <= currentTick:
-            # finished construction
-            if self.getDismantleTime() == 1000:
-                # No dismantletime set, therefore must be not yet dismantled.
-                return True
-            elif self.getDismantleTime() > currentTick:
-                # Dismantle time set, but not yet reached
-                return True
-            elif self.getDismantleTime() <= currentTick:
-                # Dismantle time passed so not operational
-                return False
-        # Construction not yet finished.
-        return False
+    # def isOperational(self, currentTick):
+    #     finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
+    #     if finishedConstruction <= currentTick:
+    #         # finished construction
+    #         if self.getDismantleTime() == 1000:
+    #             # No dismantletime set, therefore must be not yet dismantled.
+    #             return True
+    #         elif self.getDismantleTime() > currentTick:
+    #             # Dismantle time set, but not yet reached
+    #             return True
+    #         elif self.getDismantleTime() <= currentTick:
+    #             # Dismantle time passed so not operational
+    #             return False
+    #     # Construction not yet finished.
+    #     return False
 
     def isExpectedToBeOperational(self, futuretick, futureyear):
-        # if the plants commissioned year is less than the future tick, then passes from in pipeline to operational
+        # if the plants commissioned year is less than the future tick,
+        # then passes from in pipeline to operational
         if self.commissionedYear <= futureyear:
             # also plants that are not having a
             if self.getExpectedEndOfLife() > futuretick:
                 # Powerplant is not expected to be dismantled
                 return True
-        else:
+        else: # plant is expected to be dismantled
             return False
 
 
-    def getAvailableCapacity(self, currentTick):
-        if self.isOperational(currentTick):
-            return self.getActualNominalCapacity()
-        else:
-            return 0
+    # def getAvailableCapacity(self, currentTick):
+    #     if self.isOperational(currentTick):
+    #         return self.getActualNominalCapacity()
+    #     else:
+    #         return 0
 
     def calculateActualLeadtime(self):
         actual = None
@@ -393,12 +393,6 @@ class PowerPlant(EMLabAgent):
     def getActualPermittime(self):
         return self.actualPermittime
 
-    def getDismantleTime(self):
-        return self.dismantleTime
-
-    def setDismantleTime(self, dismantleTime):
-        self.dismantleTime = dismantleTime
-
     def getActualEfficiency(self):
         return self.actualEfficiency
 
@@ -411,8 +405,8 @@ class PowerPlant(EMLabAgent):
     def setActualInvestedCapital(self, actualInvestedCapital):
         self.actualInvestedCapital = actualInvestedCapital
 
-    def dismantlePowerPlant(self, time):
-        self.setDismantleTime(time)
+    def dismantlePowerPlant(self, dismantleTime):
+        self.dismantleTime = dismantleTime
 
     def getExpectedEndOfLife(self):
         return self.expectedEndOfLife

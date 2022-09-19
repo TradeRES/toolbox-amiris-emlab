@@ -654,8 +654,15 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
     elif object_class_name == 'Decommissioned':  # this decommissioned is to avoid reading the decommissioned plants
         add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
+    # Ignore decommissioned power plants # todo: this anyways shouldnt be imported
+    # reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in }
     elif object_class_name == 'PowerPlantsInstalled':
-        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+        if reps.runningModule == "plotting":
+            add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+        else:
+            if object_name not in (reps.decommissioned["Decommissioned"]).Decommissioned:
+                add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
+
     elif object_class_name in "CandidatePowerPlants":
         add_parameter_value_to_repository(reps, db_line, reps.candidatePowerPlants, CandidatePowerPlant)
     elif object_class_name == 'NewTechnologies':

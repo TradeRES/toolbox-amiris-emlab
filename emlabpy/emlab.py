@@ -99,12 +99,9 @@ else:
 
 try:  # Try statement to always close DB properly
     reps = spinedb_reader_writer.read_db_and_create_repository(sys.argv[3])  # Load repository
-    # Ignore decommissioned power plants # todo: this anyways shouldnt be imported
-    reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in (
-        reps.decommissioned["Decommissioned"]).Decommissioned}
+
     # for the first year, specify the power plants and add a unique id to the power plants.
     # AMIRIS needs a unique, numeric ID
-
     if run_initialize_power_plants:
         # adding id to candidate power plants. Add 9999 at the beginning, to distinguish from installed power plants
         pp_counter = 0
