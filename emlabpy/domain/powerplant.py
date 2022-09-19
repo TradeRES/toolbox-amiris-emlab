@@ -61,8 +61,6 @@ class PowerPlant(EMLabAgent):
             return
         elif parameter_name == 'Status':
             self.status = str(parameter_value)
-            if self.name =='0':
-                print(self.status)
         elif parameter_name == 'Efficiency':  # the efficiency stored in the DB is the actual one
             self.actualEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
@@ -174,7 +172,7 @@ class PowerPlant(EMLabAgent):
         self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
     # createPowerPlant from target investment or from investment algorithm chosen power plant
-    def specifyPowerPlant(self, tick, year, energyProducer, location, capacity, pgt):
+    def specifyPowerPlantforInvest(self, tick, year, energyProducer, location, capacity, pgt):
         self.dischargingEfficiency = 0
         self.setCapacity(capacity)
         self.setTechnology(pgt)
@@ -186,7 +184,7 @@ class PowerPlant(EMLabAgent):
         self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
         self.constructionStartTime = tick
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
-        self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
+        self.calculateAndSetActualFixedOperatingCosts()
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
         self.setDismantleTime(1000)
         self.setExpectedEndOfLife(
@@ -198,8 +196,6 @@ class PowerPlant(EMLabAgent):
             self.getActualInvestedCapital() * self.owner.getDebtRatioOfInvestments(),
             self.getTechnology().getDepreciationTime(), self.owner.getLoanInterestRate())
         # todo : check in emlab
-        #done_payments = -self.getConstructionStartTime()
-        # startpayments = self.getConstructionStartTime()
         done_payments = self.age
         startpayments = - self.age
         reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment, self.getTechnology().getDepreciationTime(),
@@ -210,11 +206,12 @@ class PowerPlant(EMLabAgent):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
-        self.setConstructionStartTime()  # minus years, considering the age, permit and lead time
+        self.setConstructionStartTime()  # minus age, permit and lead time
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
+
         if self.actualEfficiency == 0: # if there is not initial efficiency, then assign the efficiency by the technology
            self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
-        self.calculateAndSetActualFixedOperatingCosts(self.getConstructionStartTime())
+        self.calculateAndSetActualFixedOperatingCosts()
         self.setDismantleTime(1000)  # TODO set this first to 1000 and then it changes in later stage?
         # as a default the expected end of life is assigned by the technology expected lifetime
         if self.dismantleTime < 1000:
@@ -322,9 +319,8 @@ class PowerPlant(EMLabAgent):
             timeOfPermitorBuildingStart + self.getActualPermittime() + self.getActualLeadtime()) * self.get_actual_nominal_capacity())
 
     # the growth trend
-    def calculateAndSetActualFixedOperatingCosts(self, timesinceBuildingStart):  # tick = timesinceBuildingStart
-        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_cost_trend(timesinceBuildingStart \
-                                                                                             + self.getActualLeadtime() + self.getActualPermittime()) \
+    def calculateAndSetActualFixedOperatingCosts(self): # get fixed costs according to age
+        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_cost_trend(self.age)\
                                          * self.getActualNominalCapacity())
 
     def calculateAndSetActualEfficiency(self, timeOfPermitorBuildingStart):
@@ -439,12 +435,6 @@ class PowerPlant(EMLabAgent):
         if actualNominalCapacity < 0:
             raise ValueError("ERROR: " + self.name + " power plant is being set with a negative capacity!")
         self.actualNominalCapacity = actualNominalCapacity
-
-    def getActualFixedOperatingCost(self):
-        return self.actualFixedOperatingCost
-
-    def setActualFixedOperatingCost(self, actualFixedOperatingCost):
-        self.actualFixedOperatingCost = actualFixedOperatingCost
 
     def getAwardedPowerinMWh(self):
         return self.AwardedPowerinMWh

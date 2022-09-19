@@ -1102,6 +1102,7 @@
             "ElectricitySpotMarkets",
             "EnergyConsumers",
             "EnergyProducers",
+            "GeometricTrends",
             "StepTrends",
             "TargetInvestorTargets",
             "FuelPriceTrends",
@@ -1125,7 +1126,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "GeometricTrends": {},
+            "GeometricTrends": {
+                "read_until_row": true,
+                "read_until_col": true
+            },
             "Governments": {},
             "IntermittentResourceProfiles": {},
             "MarketStabilityReserve": {},
@@ -1209,20 +1213,7 @@
             },
             "GeometricTrends": {
                 "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float",
-                "10": "string",
-                "11": "string",
-                "12": "string",
-                "13": "string",
-                "14": "string"
+                "1": "float"
             },
             "Governments": {
                 "0": "string",

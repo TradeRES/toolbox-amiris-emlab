@@ -638,7 +638,9 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     """
     object_class_name = db_line[0]
     object_name = db_line[1]
-    if object_class_name == 'FuelPriceTrends':
+    if object_class_name == 'GeometricTrends':
+        add_parameter_value_to_repository(reps, db_line, reps.trends, GeometricTrend)
+    elif object_class_name == 'FuelPriceTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, TriangularTrend)
     elif object_class_name == 'StepTrends':
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)

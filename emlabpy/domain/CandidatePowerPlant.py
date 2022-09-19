@@ -45,18 +45,16 @@ class CandidatePowerPlant(PowerPlant):
         pass
 
     def specifyTemporaryPowerPlant(self, tick, energyProducer, location):
-
         self.setOwner(energyProducer)
         self.setLocation(location)
         self.setConstructionStartTime()
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
-        self.setDismantleTime(1000) # TODO
+        #self.setDismantleTime(1000) # this info is not needed to invest. Will be specified once invested.
         #self.calculateAndSetActualInvestedCapital(tick)
-        self.calculateAndSetActualFixedOperatingCosts(tick)
+        #self.calculateAndSetActualFixedOperatingCosts(tick)
         self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
-
         return self
 
     def setConstructionStartTime(self):

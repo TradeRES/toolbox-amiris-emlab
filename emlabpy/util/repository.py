@@ -36,7 +36,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_SR_small_limitedInvestments_fixprices"
+        self.simulation_name = "groupedDE_EOM_small_Investments_fixprices"
         self.country = ""
         self.dbrw = None
         self.agent = ""      # TODO if there would be more agents, the future capacity should be analyzed per agent

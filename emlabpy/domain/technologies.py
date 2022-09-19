@@ -77,7 +77,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
-            self.initializeFixedCostsTrend()
+            self.fixed_operating_cost_time_series = reps.trends[self.name + "FixedOperatingCostTimeSeries"]
+            self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
@@ -111,19 +112,6 @@ class PowerGeneratingTechnology(ImportObject):
         self.investment_cost_time_series.start = self.investment_cost_eur_MW
         self.investment_cost_time_series.growth_rate = 0.00
 
-    def initializeFixedCostsTrend(self):
-        self.fixed_operating_cost_time_series = GeometricTrend("geometrictrend" + self.name)
-        self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
-        self.fixed_operating_cost_time_series.growth_rate = 0.05
-
-    # --------------------------------------------------------------------------------------------------------------------------------------------------------
-    # def getFixedOperatingCostTimeSeries(self, time):
-    #     return self.fixedOperatingCostTimeSeries.getvalue(time, value)
-    #
-    # def setFixedOperatingCostTimeSeries(self, time):
-    #     fixedOperatingCostTimeSeries = TimeSeriesImpl()
-    #     fixedOperatingCostTimeSeries.setValue(time, value)
-    #     self.fixedOperatingCostTimeSeries = fixedOperatingCostTrend
 
     def get_fixed_operating_cost_trend(self, time):
         return self.fixed_operating_cost_time_series.get_value(time)

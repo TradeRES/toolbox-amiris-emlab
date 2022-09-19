@@ -29,7 +29,7 @@ class TargetInvestmentRole(DefaultModule):
                 milli_sec = int(round(time.time() * 1000))
                 newplant = PowerPlant(milli_sec)
                                                     #(self, tick, year, energyProducer, location, capacity, pgt)
-                plant = PowerPlant.specifyPowerPlant(self.reps.current_tick, self.reps.current_year , targetInvestor, "DE", installedCapacityDeviation, pgt)
+                plant = PowerPlant.specifyPowerPlantforInvest(self.reps.current_tick, self.reps.current_year, targetInvestor, "DE", installedCapacityDeviation, pgt)
                 #investmentCostPayedByEquity = plant.getActualInvestedCapital() * (1 - targetInvestor.getDebtRatioOfInvestments()) * powerPlantCapacityRatio
                 #investmentCostPayedByDebt = plant.getActualInvestedCapital() * targetInvestor.getDebtRatioOfInvestments() * powerPlantCapacityRatio
                 #downPayment = investmentCostPayedByEquity
