@@ -30,6 +30,7 @@ class PrepareMarket(DefaultModule):
                                                                         globalNames.power_plant_status_to_be_decommissioned,
                                                                         globalNames.power_plant_status_strategic_reserve,
                                                                         ])
+        self.sort_power_plants_by_age()
         self.setTimeHorizon()
         self.setExpectations()
         self.openwriter()
@@ -42,6 +43,11 @@ class PrepareMarket(DefaultModule):
         self.writer.save()
         self.writer.close()
         print("saved to ", self.path)
+
+    def sort_power_plants_by_age(self):
+        ##print(self.power_plants_list[0].age)
+        self.power_plants_list.sort(key=lambda x:x.age)
+        ##print(self.power_plants_list[0].age)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick

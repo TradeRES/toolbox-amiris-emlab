@@ -35,6 +35,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.setTimeHorizon()
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
+        self.sort_power_plants_by_age()
         # functions to save the power plants
         self.openwriter()
         self.write_scenario_data_emlab("futurePrice")
