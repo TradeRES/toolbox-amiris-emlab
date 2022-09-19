@@ -225,8 +225,6 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     fig27 = axs27.get_figure()
     fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight', dpi=300)
 
-
-
     if ran_capacity_market == True:
         axs28 = CM_clearing_price.plot()
         axs28.set_axisbelow(True)
@@ -362,6 +360,15 @@ def plot_shortages(shortages, path_to_plots):
     fig20 = axs20.get_figure()
     fig20.savefig(path_to_plots + '/' + 'Shortages.png', bbox_inches='tight', dpi=300)
 
+def plot_costs_to_society(total_electricity_price, path_to_plots):
+    axs30 = total_electricity_price.plot()
+    axs30.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Total price', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs30.set_title('Total costs to society')
+    fig30 = axs30.get_figure()
+    fig30.savefig(path_to_plots + '/' + 'Costs to society.png', bbox_inches='tight', dpi=300)
 
 def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_unique_techs):
     # these market values only include plants if they have been dispatched
@@ -795,7 +802,7 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, ye
     all_techs_generation = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     all_techs_market_value = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     all_techs_capacity_factor = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
-    electricity_price = pd.DataFrame(index=years_to_generate).fillna(0)
+    average_electricity_price = pd.DataFrame(index=years_to_generate).fillna(0)
     production_per_year = pd.DataFrame(index=years_to_generate).fillna(0)
     for year in years_to_generate:
         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
@@ -828,9 +835,9 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, ye
             all_techs_capacity.loc[technology_name, year] = capacity_per_tech
             all_techs_generation.loc[technology_name, year] = generation_per_tech
 
-        electricity_price.loc[year, 1] = totalrevenues / totalproduction
+        average_electricity_price.loc[year, 1] = totalrevenues / totalproduction
         production_per_year.loc[year, 1] = totalproduction
-    return all_techs_capacity, all_techs_generation, all_techs_market_value, all_techs_capacity_factor, electricity_price, production_per_year
+    return all_techs_capacity, all_techs_generation, all_techs_market_value, all_techs_capacity_factor, average_electricity_price, production_per_year
 
 
 def reading_electricity_prices(raw_results_url):
@@ -922,22 +929,21 @@ def generate_plots(reps, scenario_name, electricity_prices):
 
     # # section -----------------------------------------------------------------------------------------------Capacity Markets
     #
-    # CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM,  ran_capacity_market = prepare_accepted_CapacityMechanism(
-    #     reps, unique_technologies,
-    #     ticks_to_generate)
+    CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM,  ran_capacity_market = prepare_accepted_CapacityMechanism(
+        reps, unique_technologies,
+        ticks_to_generate)
     # plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-    #                  CM_clearing_price, total_costs_CM,  ran_capacity_market , path_to_plots, colors_unique_techs)
-    #
+    #                  CM_clearing_price, total_costs_CM,  ran_capacity_market ,electricity_prices, path_to_plots, colors_unique_techs)
     #
     # # section -----------------------------------------------------------------------------------------------capacities
     # #
-    all_techs_capacity, all_techs_generation, all_techs_market_price, all_techs_capacity_factor, electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
+    all_techs_capacity, all_techs_generation, all_techs_market_price, all_techs_capacity_factor, average_electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
         reps, unique_technologies,
         years_to_generate)
 
     plot_installed_capacity(all_techs_capacity.T, path_to_plots, colors_unique_techs)
     plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
-    plot_yearly_average_electricity_prices(electricity_price, path_to_plots)
+    plot_yearly_average_electricity_prices(average_electricity_price, path_to_plots)
     plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
     plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
 
@@ -947,8 +953,14 @@ def generate_plots(reps, scenario_name, electricity_prices):
         shortages, supply_ratio = get_shortage_hours_and_power_ratio(reps, years_to_generate, electricity_prices, all_techs_capacity)
         plot_supply_ratio(supply_ratio, path_to_plots)
         plot_shortages(shortages, path_to_plots)
-    #section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+        # plotting costs to society
+        annual_generation = all_techs_generation.sum().values
+        CM_price =  total_costs_CM/annual_generation
+        average_electricity_price['CM price'] = CM_price.values
+        plot_costs_to_society(electricity_prices, path_to_plots)
 
+    # #section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+    #
     average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
         reps, unique_technologies, ticks_to_generate  ,test_tech)
     plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
@@ -1046,7 +1058,7 @@ try:
     #     name = "NL2051_LA4_SD4_PH3_MI20000extendedNL_SR_newAmiris_Bart"
     #quick:     name = "DE2030_LA4_SD4_PH3_MI600groupedDE_EOM_small_Investments_fixprices"
     name = ""
-    electricity_prices = False # write False if not wished to graph electricity prices"
+    electricity_prices = True # write False if not wished to graph electricity prices"
 
     if electricity_prices == False:
         electricity_prices = None # dont read if not necessary
