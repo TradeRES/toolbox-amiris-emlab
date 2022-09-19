@@ -21,7 +21,7 @@ class PowerPlant(EMLabAgent):
         self.owner = None # change if there are more energyproducers
         self.capacity = 0
         self.efficiency = 0
-        # TODO: Implement GetActualEfficiency
+        # TODO: Implement GetActualEfficiency -> for now the fixed costs are the ones incrementing with the year
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.fictional_status = globalNames.power_plant_status_not_set
@@ -38,7 +38,7 @@ class PowerPlant(EMLabAgent):
         self.commissionedYear = 0
         self.label = ""
         self.actualInvestedCapital = 0
-        self.actualFixedOperatingCost = 0
+        self.actualFixedOperatingCost = 'NOTSET'
         self.actualEfficiency = 0
         self.actualNominalCapacity = 0
         self.historicalCvarDummyPlant = 0
@@ -76,6 +76,8 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'Age':
             self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
             self.commissionedYear = reps.current_year - int(parameter_value)
+        elif parameter_name == 'actualFixedOperatingCost':
+            self.actualFixedOperatingCost =  float(parameter_value)
         elif parameter_name == 'dismantleTime':
             self.dismantleTime = int(parameter_value)
         elif parameter_name == 'AwardedPowerInMWH':
@@ -211,7 +213,8 @@ class PowerPlant(EMLabAgent):
 
         if self.actualEfficiency == 0: # if there is not initial efficiency, then assign the efficiency by the technology
            self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
-        self.calculateAndSetActualFixedOperatingCosts()
+        if self.actualFixedOperatingCost != 'NOTSET': # old power plants have set their fixed costs
+            self.calculateAndSetActualFixedOperatingCosts()
         self.setDismantleTime(1000)  # TODO set this first to 1000 and then it changes in later stage?
         # as a default the expected end of life is assigned by the technology expected lifetime
         if self.dismantleTime < 1000:
@@ -261,22 +264,6 @@ class PowerPlant(EMLabAgent):
         else:
             return False
 
-    def isInPipeline(self, currentTick): # Todo, if this is not used, then erase
-        finishedConstruction = self.constructionStartTime + self.actualPermittime + self.actualLeadtime
-        if finishedConstruction <= currentTick:
-            return False
-        else:
-            # finished construction
-            if self.getDismantleTime() == 1000:
-                # No dismantletime set, therefore must be not yet dismantled.
-                return True
-            elif self.getDismantleTime() > currentTick:
-                # Dismantle time set, but not yet reached
-                return True
-            elif self.getDismantleTime() <= currentTick:
-                # Dismantle time passed so not operational
-                return False
-        # Construction finished
 
     def getAvailableCapacity(self, currentTick):
         if self.isOperational(currentTick):

@@ -61,7 +61,6 @@ class Investmentdecision(DefaultModule):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
         self.read_csv_results_and_filter_candidate_plants()
-
         pp_numbers = []
         pp_profits = []
         cp_numbers =[]
@@ -131,8 +130,8 @@ class Investmentdecision(DefaultModule):
                     self.stop_iteration()
                     # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)
-                    #self.reps.dbrw.stage_cash_agent(self.agent) # there was a payment from energy producer to manufacturer
-                # self.agent.readytoInvest = False # TOdo
+
+                # self.agent.readytoInvest = False # Todo
             else:
                 print("all technologies are unprofitable")
 

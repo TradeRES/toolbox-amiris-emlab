@@ -14,6 +14,7 @@ class Dismantle(DefaultModule):
         super().__init__('Dismantle decisions', reps)
         self.decommissioned_list = (self.reps.decommissioned["Decommissioned"]).Decommissioned
         reps.dbrw.stage_init_power_plants_status()
+        reps.dbrw.stage_init_power_plants_fixed_costs()
 
     def act(self):
         self.add_one_year_to_age() # add one year to the age of power plants
@@ -63,14 +64,16 @@ class Dismantle(DefaultModule):
                         plant.status = globalNames.power_plant_status_decommissioned
                         self.decommissioned_list.append(plant.name)
                     else:
-                        logging.info("dont dismantle but increase OPEX of %s ".format(plant.name))
+                        logging.info("dont dismantle ( enough profits) but increase fixed OPEX of %s ".format(plant.name))
                         ModifiedOM = plant.getActualFixedOperatingCost() * (
                                 1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
                                              float(plant.age) - (
                                          (float(plant.getTechnology().getExpectedLifetime()))))
                         plant.setActualFixedOperatingCost(ModifiedOM)
+                        # saving
+                        self.reps.dbrw.stage_fixed_operating_costs(plant)
                 else:
-                    logging.info("dont dismantle but increase fixed operating costs of %s ".format(plant.name))
+                    logging.info("dont dismantle (initialization) but increase fixed OPEXof %s ".format(plant.name))
                     if plant.age < plant.technology.getExpectedLifetime():
                         print("Age is less than expected life time")
                     else:
@@ -78,7 +81,8 @@ class Dismantle(DefaultModule):
                                 1 + (plant.technology.getFixedOperatingCostModifierAfterLifetime())) ** (
                                 plant.age - plant.technology.getExpectedLifetime() )
                         plant.setActualFixedOperatingCost(ModifiedOM)
-                        # TODO save the new fixed operating costs in DB!!!!!!!!!!!!!!!
+                        self.reps.dbrw.stage_fixed_operating_costs(plant)
+
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():

@@ -113,15 +113,11 @@ class CapacityMarketClearing(MarketModule):
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
-            # saving yearly CM revenues to the power plants # todo: the bids could be erased later on
+            # saving yearly CM revenues to the power plants # todo: the bids could be erased later on if all the values can be read from clearing point
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick)
             # saving capacity market accepted bids amount and status
             self.reps.dbrw.stage_bids_status(accepted)
 
-        # todo: save list of power plants in the strategic reserve
-        # self.reps.create_or_update_StrategicReserveOperator(CMO_name, self.operator.getZone(),
-        #                                                     0, 0, 0, 0,
-        #                                                     self.operator.getPlants())
 
         # logging.WARN("market uncleared at price %s at volume %s ",  str(clearing_price), str(total_supply))
 

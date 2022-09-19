@@ -66,34 +66,9 @@ class EnergyProducer(EMLabAgent):
             pd_series = pd.Series(float(i[1]) for i in array["data"])
             setattr(self, parameter_name, pd_series)
 
-    def predictFuelPrices(self, agent, futureTimePoint):
-        # Fuel Prices
-        expectedFuelPrices = {}
-
-        # for substance in self.reps.substances:
-        #     cps = reps.findAllClearingPointsForSubstanceTradedOnCommodityMarkesAndTimeRange(substance, getCurrentTick() - (agent.getNumberOfYearsBacklookingForForecasting() - 1), getCurrentTick(), False)
-        #     gtr = GeometricTrendRegression()
-        #     for clearingPoint in cps:
-        #         gtr.addData(clearingPoint.getTime(), clearingPoint.getPrice())
-        #     expectedFuelPrices.update({substance: gtr.predict(futureTick)})
-        return expectedFuelPrices
-
-    #    @RelatedTo(type = "PRODUCER_INVESTMENTROLE", elementClass = GenericInvestmentRole.class, direction = Direction.OUTGOING)
-    #    @RelatedTo(type = "INVESTOR_MARKET", elementClass = ElectricitySpotMarket.class, direction = Direction.OUTGOING)
-    #    @SimulationParameter(label = "Price Mark-Up for spotmarket (as multiplier)", from = 1, to = 2)
-    #    @SimulationParameter(label = "Long-term contract margin", from = 0, to = 1)
-    #    @SimulationParameter(label = "Long-term contract horizon", from = 0, to = 10)
-    # Investment
-    #    @SimulationParameter(label = "Investment horizon", from = 0, to = 15)
-    #    @SimulationParameter(label = "Equity Interest Rate", from = 0, to = 1)
-    #    @SimulationParameter(label = "Debt ratio in investments", from = 0, to = 1)
-    # Loan
-    #    @SimulationParameter(label = "Loan Interest Rate", from = 0, to = 1)
-
     def calculateAveragePastOperatingProfit(self, pp, horizon):
         averagePastOperatingProfit = 0
         for i in range(-horizon, 1):
-            # JAVA TO PYTHON CONVERTER TODO TASK: Java to Python Converter cannot determine whether both operands of this division are integer types - if they are then you should change 'lhs / rhs' to 'math.trunc(lhs / float(rhs))':
             averagePastOperatingProfit += calculatePastOperatingProfitInclFixedOMCost(pp,
                                                                                       getCurrentTick() + i) / horizon
         logging.INFO(" %s has had an average operating profits of %s", pp, averagePastOperatingProfit)
