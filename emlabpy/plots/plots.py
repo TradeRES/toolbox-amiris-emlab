@@ -128,7 +128,7 @@ def plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, tech
     plt.xlabel('Iterations', fontsize='medium')
     plt.ylabel('Revenues - Operational Costs [Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs11.set_title('Expected future operational profits in year' + str(test_tick) + ' and technology' + tech_name)
+    axs11.set_title('Expected future operational profits in year' + str(test_tick) + ' and technology ' + tech_name)
     fig11 = axs11.get_figure()
     fig11.savefig(
         path_to_plots + '/' + ' Expected future operational profit per iteration in tick ' + str(
@@ -245,6 +245,19 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     axs29.set_title('Capacity Mechanism total costs')
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'Capacity Mechanism total costs.png', bbox_inches='tight', dpi=300)
+
+
+def plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots):
+    print('candidate profits')
+    axs7 = candidate_plants_profits_per_iteration.plot.line()
+    axs7.set_axisbelow(True)
+    plt.xlabel('Iterations', fontsize='medium')
+    plt.ylabel('Project value [Eur]', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs7.set_title('NPV Candidate power plants for tick '+ str(test_tick))
+    fig7 = axs7.get_figure()
+    fig7.savefig(path_to_plots + '/' + 'Candidate plants profits per iteration ' + str(test_tick) + '.png',
+                 bbox_inches='tight', dpi=300)
 
 
 def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_year, path_to_plots, colors):
@@ -547,15 +560,12 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
 
 def prepare_profits_candidates_per_iteration(reps, tick):
     profits = reps.get_profits_per_tick(tick)
-    profits_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names_candidates[str(0)],
-                                         columns=["zero"]).fillna(0)
+    profits_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names_candidates[tick]).fillna(0)
 
     for iteration, profit_per_iteration in list(profits.profits_per_iteration_candidates.items()):
         temporal = pd.DataFrame(profit_per_iteration, index=profits.profits_per_iteration_names_candidates[iteration],
                                 columns=[int(iteration)])
-        profits_per_iteration = profits_per_iteration.join(temporal)
-
-    profits_per_iteration.drop("zero", axis=1, inplace=True)
+        profits_per_iteration[iteration] = temporal
     tech = []
     for pp in profits_per_iteration.index.values:
         tech.append(reps.power_plants[pp].technology.name)
@@ -571,16 +581,11 @@ def prepare_profits_candidates_per_iteration(reps, tick):
 def prepare_revenues_per_iteration(reps, tick):
     profits = reps.get_profits_per_tick(tick)
     # index of installed power plants
-    future_operational_profit_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names[str(tick)],
-                                                           columns=["zero"]).fillna(0)
-    # take only 10 iterations, otherwise there are memory problems add [2:11]
+    future_operational_profit_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names[tick]).fillna(0)
 
     for iteration, profit_per_iteration in list(profits.profits_per_iteration.items()):
-        temporal = pd.DataFrame(profit_per_iteration, index=profits.profits_per_iteration_names[iteration],
-                                columns=[int(iteration)])
-        future_operational_profit_per_iteration = future_operational_profit_per_iteration.join(temporal)
-    future_operational_profit_per_iteration.drop("zero", axis=1, inplace=True)
-
+        future_operational_profit_per_iteration[iteration] = profit_per_iteration
+    # adding technology name
     tech = []
     for pp in future_operational_profit_per_iteration.index.values:
         tech.append(reps.power_plants[pp].technology.name)
@@ -588,7 +593,6 @@ def prepare_revenues_per_iteration(reps, tick):
     future_operational_profit_per_iteration["tech"] = tech
     grouped_revenues = future_operational_profit_per_iteration.groupby('tech').mean()
     sorted_average_revenues_per_iteration_test_tick = grouped_revenues.T.sort_index()
-
     all_future_operational_profit = future_operational_profit_per_iteration.set_index('tech').T.sort_index(level=0)
     return sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit
 
@@ -963,12 +967,15 @@ def generate_plots(reps, scenario_name, electricity_prices):
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
     '''
+    candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
+        reps, test_tick)
+    plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)
     sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit = prepare_revenues_per_iteration(
         reps,
         test_tick)
     plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, test_tech, path_to_plots, test_tick)
-    plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_test_tick, path_to_plots, first_year,
-                                        colors_unique_techs)
+    # plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_test_tick, path_to_plots, first_year,
+    #                                     colors_unique_techs)
     #
     # initial_power_plants, annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     # last_year_in_pipeline, last_year_decommissioned, \
@@ -1108,24 +1115,10 @@ print('===== End Generating Plots =====')
 # object_parameter_values = db_amirisdata['object_parameter_values']
 # plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors_unique_techs)
 
-# candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
-#     reps, test_tick)    candidate_plants_profits_per_iteration = prepare_profits_candidates_per_iteration(
-#     reps, test_tick)
-# plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots)
-# def plot_candidate_profits(candidate_plants_profits_per_iteration, test_tick, path_to_plots):
-#     print('candidate profits')
-#     axs7 = candidate_plants_profits_per_iteration.plot.line()
-#     axs7.set_axisbelow(True)
-#     plt.xlabel('Iterations', fontsize='medium')
-#     plt.ylabel('Project value [Eur]', fontsize='medium')
-#     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-#     axs7.set_title('NPV Candidate power plants for tick '+ str(test_tick))
-#     fig7 = axs7.get_figure()
-#     fig7.savefig(path_to_plots + '/' + 'Candidate plants profits per iteration ' + str(test_tick) + '.png',
-#                  bbox_inches='tight', dpi=300)
 # plot_annual_operational_capacity(last_year_operational_capacity, path_to_plots, colors_unique_techs)
 # plot_annual_to_be_decommissioned_capacity(last_year_to_be_decommissioned_capacity, years_to_generate, path_to_plots,
 #                                           colors_unique_techs)
+
 #
 # def plot_annual_to_be_decommissioned_capacity(plot_annual_to_be_decommissioned_capacity, years_to_generate,
 #                                               path_to_plots, colors):

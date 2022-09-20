@@ -731,10 +731,11 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
     elif object_class_name == "Profits" and reps.runningModule == "plotting":
+        #db investment with the object name "tick - iteration"
         object_name = db_line[1]
-        year, iteration = object_name.split('-')
+        tick, iteration = object_name.split('-')
         new_db_line = list(db_line)
-        new_db_line[1] = year  # object name
+        new_db_line[1] = tick  # object name
         new_db_line[4] = iteration  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.profits, Profits)
     else:
