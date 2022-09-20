@@ -27,24 +27,32 @@ class CapacityMarketSubmitBids(MarketModule):
 
     def act(self):
         # in the future : do for every EnergyProducer
+        # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
                 self.agent.name):
-            # Retrieve vars
+            # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             market = self.reps.get_capacity_market_for_plant(powerplant)
             fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
             capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
             powerplant_load_factor = 1  # TODO: Power Plant Load Factor
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
+
+            # Bid price is zero, unless net revenues are negative
             price_to_bid = 0
+
+            # if power plant is not dispatched, the net revenues are minus the fixed operating costs
             if dispatch is None:
                 #print("no dispatch found for " + str(powerplant.id)+  " with name "+str(powerplant.name))
-                net_revenues =  - fixed_on_m_cost
+                net_revenues = - fixed_on_m_cost
+            # if power plant is dispatched, the net revenues are the revenues minus the total costs
             else:
                 # todo: should add loans to fixed costs?
                 net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
-            # all power plants should bid
+            # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
+
+            # all power plants place a bid pair of price and capacity on the market
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, \
                                                                        capacity * powerplant.technology.peak_segment_dependent_availability,\
                                                                        price_to_bid, self.reps.current_tick)
@@ -62,19 +70,27 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         print("capacity market clearing")
+
+        # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1]) 
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
+        # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
+
+        # Retrieve the sloping demand curve for the expected peak load volume
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
+
+        # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
         clearing_price = 0
         total_supply = 0
         # Set the clearing price through the merit order
         for ppdp in sorted_ppdp:
+            # As long as the market is not cleared
             if self.isTheMarketCleared == False:
                 if ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
                     # print(ppdp.name , " ACCEPTED ", ppdp.price, "", sdc.get_price_at_volume(total_supply + ppdp.amount))
@@ -82,7 +98,6 @@ class CapacityMarketClearing(MarketModule):
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
-                   # self.operator.setPlants(ppdp.plant)
 
                 elif ppdp.price < sdc.get_price_at_volume(total_supply):
                     # print(ppdp.name , " partly ACCEPTED ")
@@ -90,14 +105,16 @@ class CapacityMarketClearing(MarketModule):
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                     ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
                     total_supply += sdc.get_volume_at_price(clearing_price)
-                   # self.operator.setPlants(ppdp.plant)
                     self.isTheMarketCleared = True
+            # When the market is cleared
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
                 ppdp.accepted_amount = 0
+
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(market, clearing_price)
-        # saving clearing point
+
+        # saving market clearing point
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
