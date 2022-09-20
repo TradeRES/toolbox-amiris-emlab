@@ -8,9 +8,9 @@ Plants smaller than X MW are grouped with the power plants of the nearest age
 Sanchez 15-06-22
 """
 country = "DE"
-file = "data/dutchGermanPlants2022_from_emla.xlsx"
-dataframe = pd.read_excel(file)
-dataframe.loc[dataframe['Location'] == country]
+file = "../data/dutchGermanPlants2022_from_emla.xlsx"
+dataframeoriginal = pd.read_excel(file)
+dataframe = dataframeoriginal.loc[dataframeoriginal['Location'] == country]
 min_capacity_to_group = 50
 
 # Group power plants by age and efficiency
@@ -53,4 +53,4 @@ boxplot_capacity = final.boxplot(column=['Capacity'], by="Technology", rot=90, f
 boxplot.plot()
 boxplot_capacity.plot()
 plt.show()
-final.to_excel( "data/" + country  +  "_datapower_plants.xlsx")
+final.to_excel( "../data/" + country  +  "_datapower_plants.xlsx")
