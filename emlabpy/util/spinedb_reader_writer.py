@@ -394,7 +394,6 @@ class SpineDBReaderWriter:
         for fr in financialreports:
             object_name = fr.name
             self.stage_object(self.financial_reports_object_classname, object_name)
-            print(type(fr.spotMarketRevenue))
             self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
                                                [('PowerPlant', fr.powerPlant),
                                                 ('latestTick', (fr.tick)),
@@ -501,7 +500,8 @@ class SpineDBReaderWriter:
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
             self.financial_reports_object_classname, powerplant.name, value, 0)
         if not financialresults:
-            return
+            print("NO financial results of plant "+ powerplant.name )
+            return None
         return financialresults[0]['parameter_value'].to_dict()
 
     def stage_init_capacitymechanisms_structure(self):
@@ -715,14 +715,17 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
     elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting",
                                                                                    "run_investment_module"]:
-        object_name = db_line[1]
-        parameter_name = db_line[2]
-        parameter_value = db_line[3]
-        pp = reps.power_plants[object_name]
-        if object_class_name == "Loans":
-            setattr(pp.loan, parameter_name, parameter_value)
+        if db_line[1] in (reps.decommissioned["Decommissioned"]).Decommissioned and reps.runningModule != "plotting":
+            pass
         else:
-            setattr(pp.downpayment, parameter_name, parameter_value)
+            object_name = db_line[1]
+            parameter_name = db_line[2]
+            parameter_value = db_line[3]
+            pp = reps.power_plants[object_name]
+            if object_class_name == "Loans":
+                setattr(pp.loan, parameter_name, parameter_value)
+            else:
+                setattr(pp.downpayment, parameter_name, parameter_value)
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":

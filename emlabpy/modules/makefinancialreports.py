@@ -1,6 +1,5 @@
 import numpy_financial as npf
 import pandas as pd
-
 from domain.powerplantDispatchPlan import PowerPlantDispatchPlan
 from modules.defaultmodule import DefaultModule
 from domain.financialReports import FinancialPowerPlantReport
@@ -13,7 +12,6 @@ class CreatingFinancialReports(DefaultModule):
     def __init__(self, reps):
         super().__init__("Creating Financial Reports", reps)
         reps.dbrw.stage_init_financial_results_structure()
-       # reps.dbrw.stage_init_cash_agent()
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
