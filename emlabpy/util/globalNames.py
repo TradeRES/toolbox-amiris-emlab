@@ -36,7 +36,7 @@ simulated_prices = "simulatedPrice"
 modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "run_strategic_reserve" ,
                        "run_strategic_reserve_swe" , "run_strategic_reserve_ger" , "run_forward_market",
                        "run_financial_results", "plotting"]
-modules_need_bids = ["run_capacity_market" , "run_strategic_reserve" , "run_strategic_reserve_swe" ,
+modules_need_bids = [ "run_financial_results", "run_capacity_market" , "run_strategic_reserve" , "run_strategic_reserve_swe" ,
                      "run_strategic_reserve_ger" , "run_forward_market" , "run_create_results", "plotting"]
 
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
