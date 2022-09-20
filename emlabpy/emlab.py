@@ -117,7 +117,7 @@ try:  # Try statement to always close DB properly
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
         # adding id to power plants
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick )
+            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
             power_plant.set_loans_installed_pp(reps)
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
@@ -170,45 +170,45 @@ try:  # Try statement to always close DB properly
         logging.info('Start creating future power plants')
 
     if run_capacity_market:
-        logging.info('Start Run Capacity Market')
+        print('Start Run Capacity Market')
         capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
         capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
         capacity_market_submit_bids.act_and_commit()
         capacity_market_clear.act_and_commit()
-        logging.info('End Run Capacity Market')
+        print('End Run Capacity Market')
 
     if run_forward_market:
-        logging.info('Start Run Capacity Market')
+        print('Start Run Capacity Market')
         capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
         capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
         capacity_market_clear = ForwardCapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
         capacity_market_submit_bids.act_and_commit()
         capacity_market_clear.act_and_commit()
-        logging.info('End Run Capacity Market')
+        print('End Run Capacity Market')
 
     if run_strategic_reserve:
-        logging.info('Start strategic reserve')
+        print('Start strategic reserve')
         strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
         strategic_reserve = StrategicReserveAssignment(reps)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
-        logging.info('End strategic reserve')
+        print('End strategic reserve')
 
     if run_strategic_reserve_swe:
-        logging.info('Start strategic reserve')
+        print('Start strategic reserve')
         strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
         strategic_reserve = StrategicReserveAssignment_swe(reps)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
-        logging.info('End strategic reserve')
+        print('End strategic reserve')
 
     if run_strategic_reserve_ger:
-        logging.info('Start strategic reserve')
+        print('Start strategic reserve')
         strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
         strategic_reserve = StrategicReserveAssignment_ger(reps)
         strategic_reserve_submit_bids.act_and_commit()
         strategic_reserve.act_and_commit()
-        logging.info('End strategic reserve')
+        print('End strategic reserve')
 
     if run_co2_market:
         logging.info('Start Run CO2 Market')

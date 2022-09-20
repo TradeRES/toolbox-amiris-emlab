@@ -329,17 +329,6 @@
                 ]
             },
             {
-                "name": "from EmlabDB2 to Capacity Mechanism",
-                "from": [
-                    "EmlabDB2",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "bottom"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to short investments",
                 "from": [
                     "EmlabDB2",
@@ -391,17 +380,6 @@
                 ],
                 "to": [
                     "AMIRIS DB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to Capacity Mechanism",
-                "from": [
-                    "AMIRIS DB",
-                    "bottom"
-                ],
-                "to": [
-                    "Capacity Mechanism",
                     "left"
                 ]
             },
@@ -574,17 +552,6 @@
                 ],
                 "to": [
                     "specify year",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Capacity Mechanism to createresults",
-                "from": [
-                    "Capacity Mechanism",
-                    "right"
-                ],
-                "to": [
-                    "createresults",
                     "left"
                 ]
             },
@@ -1056,11 +1023,11 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
-                    false
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    true
                 ],
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
                     true
                 ]
             ]
@@ -1102,7 +1069,7 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1364.626137110474,
+            "x": -1362.253306299942,
             "y": -276.0160068233636,
             "specification": "grouped power plants",
             "cancel_on_error": false,
@@ -1273,12 +1240,12 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
-                    true
-                ],
-                [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     false
+                ],
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
+                    true
                 ]
             ]
         },
