@@ -66,9 +66,7 @@ class Dismantle(DefaultModule):
                     else:
                         logging.info("dont dismantle ( enough profits) but increase fixed OPEX of %s ".format(plant.name))
                         ModifiedOM = plant.getActualFixedOperatingCost() * (
-                                1 + (plant.getTechnology().getFixedOperatingCostModifierAfterLifetime())) ** (
-                                             float(plant.age) - (
-                                         (float(plant.getTechnology().getExpectedLifetime()))))
+                                1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
                         plant.setActualFixedOperatingCost(ModifiedOM)
                         # saving
                         self.reps.dbrw.stage_fixed_operating_costs(plant)
@@ -78,8 +76,7 @@ class Dismantle(DefaultModule):
                         print("Age is less than expected life time")
                     else:
                         ModifiedOM = plant.getActualFixedOperatingCost() * (
-                                1 + (plant.technology.getFixedOperatingCostModifierAfterLifetime())) ** (
-                                plant.age - plant.technology.getExpectedLifetime() )
+                                1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
                         plant.setActualFixedOperatingCost(ModifiedOM)
                         self.reps.dbrw.stage_fixed_operating_costs(plant)
 
