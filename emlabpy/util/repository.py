@@ -37,7 +37,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "test"
+        self.simulation_name = "extendedDE_smallFixedCosts_Candidates1MW"
         self.country = ""
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -59,6 +59,7 @@ class Repository:
         self.runningModule = ""
         self.fix_prices_to_2020 = False
         self.realistic_candidate_capacities = False
+        self.realistic_candidate_capacities_for_future = False
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()
@@ -570,9 +571,12 @@ class Repository:
 
     def update_installed_pp_results(self, installed_pp_results):
         try:
+            ids = []
             for index, result in installed_pp_results.iterrows():
+                ids.append(result.identifier)
                 installed_pp = next(i for i in self.power_plants.values() if i.id == result.identifier)
                 installed_pp.add_values_from_df(result)
+            return ids
         except StopIteration:
             logging.warning('power plant technology not found' + str(result.identifier))
         return None

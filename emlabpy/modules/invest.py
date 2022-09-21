@@ -60,13 +60,15 @@ class Investmentdecision(DefaultModule):
     def act(self):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
-        self.read_csv_results_and_filter_candidate_plants()
+        ids_of_future_installed_pp = self.read_csv_results_and_filter_candidate_plants()
         pp_numbers = []
         pp_profits = []
         cp_numbers =[]
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
-        for pp in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(self.reps.agent):
+        # todo: this could be removel once the model is validated
+        for pp_id in ids_of_future_installed_pp:
+            pp = self.reps.get_power_plant_by_id(pp_id)
             pp_numbers.append(pp.name)
             pp_profits.append(pp.operationalProfit)
         self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_numbers, pp_profits)
@@ -187,14 +189,14 @@ class Investmentdecision(DefaultModule):
     def getProjectCashFlow(self, candidatepowerplant, agent):
         # technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
         technology = candidatepowerplant.technology
-        totalInvestment = self.getActualInvestedCapitalperMW(technology) # candidate power plants only have 1MW installed
+        totalInvestment = self.getActualInvestedCapitalperMW(technology)* candidatepowerplant.capacity # candidate power plants only have 1MW installed
         # candidatepowerplant.InvestedCapital = totalInvestment
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         interestRate = technology.interest_rate
         buildingTime = technology.expected_leadtime
         operatingProfit = candidatepowerplant.get_Profit()
-        fixed_costs = technology.fixed_operating_costs
+        fixed_costs = technology.fixed_operating_costs * candidatepowerplant.capacity
         equity = (1 - agent.debtRatioOfInvestments)
         equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
         restPayment = (totalInvestment *  agent.debtRatioOfInvestments)/ depreciationTime
@@ -293,8 +295,8 @@ class Investmentdecision(DefaultModule):
         candidate_pp_results = df[df['commissionyear'] == str(9999)]
         installed_pp_results = df[df['commissionyear'] != str(9999)]
         self.reps.update_candidate_plant_results(candidate_pp_results)
-        self.reps.update_installed_pp_results(installed_pp_results)
-        return
+        ids_of_future_installed_pp = self.reps.update_installed_pp_results(installed_pp_results)
+        return ids_of_future_installed_pp
 
     def continue_iteration(self):
         file = globalNames.continue_path
