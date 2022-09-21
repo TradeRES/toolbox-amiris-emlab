@@ -556,39 +556,6 @@
                 ]
             },
             {
-                "name": "from createresults to Financial Results",
-                "from": [
-                    "createresults",
-                    "right"
-                ],
-                "to": [
-                    "Financial Results",
-                    "left"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to createresults",
-                "from": [
-                    "AMIRIS DB",
-                    "right"
-                ],
-                "to": [
-                    "createresults",
-                    "left"
-                ]
-            },
-            {
-                "name": "from EmlabDB2 to createresults",
-                "from": [
-                    "EmlabDB2",
-                    "right"
-                ],
-                "to": [
-                    "createresults",
-                    "left"
-                ]
-            },
-            {
                 "name": "from importing EnergyExchange to energy exchange",
                 "from": [
                     "importing EnergyExchange",
@@ -990,28 +957,6 @@
                 }
             }
         },
-        "Capacity Mechanism": {
-            "type": "Tool",
-            "description": "",
-            "x": -877.0773535113801,
-            "y": -174.2909447262879,
-            "specification": "Capacity Mechanism",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB2"
-                },
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "literal",
-                    "arg": "run_capacity_market"
-                }
-            ]
-        },
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
@@ -1204,28 +1149,6 @@
                 {
                     "type": "literal",
                     "arg": "run_financial_results"
-                }
-            ]
-        },
-        "createresults": {
-            "type": "Tool",
-            "description": "",
-            "x": -590.1166601315231,
-            "y": -173.56372356809504,
-            "specification": "create results",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB2"
-                },
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "literal",
-                    "arg": "run_create_results"
                 }
             ]
         },
