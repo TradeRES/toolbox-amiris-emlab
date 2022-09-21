@@ -39,7 +39,7 @@ class FinancialPowerPlantReport(ImportObject):
         # -----------------------------CM revenues from financial Reports classname
         if reps.runningModule == "plotting" and  parameter_name in ['irr','npv',  'totalProfitswLoans', 'totalProfits', 'capacityMechanismRevenues']:
             array = parameter_value.to_dict()
-            values = [i[1] for i in array["data"]]
+            values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             pd_series = pd.Series(values, index = index)
             if parameter_name == 'irr':
