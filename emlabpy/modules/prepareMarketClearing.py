@@ -159,6 +159,7 @@ class PrepareMarket(DefaultModule):
                 pp.technology.name] != "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
+                # todo: remove this for forward Capacity market
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:

@@ -29,7 +29,8 @@ class ForwardCapacityMarketSubmitBids(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        # todo: Bart shouldnt the plants to be decommissioned also should participate? No, since they are not operational 4 years from now
+        # todo: if this is only for long term, should only in piepline power plants shold participate?
+        # dont consider the to be decommmissinoed because 4 years agead they should be decommsiioned.
         for powerplant in self.reps.get_operational_and_in_pipeline_conventional_power_plants_by_owner(
                 self.agent.name):
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
@@ -96,7 +97,7 @@ class ForwardCapacityMarketClearing(MarketModule):
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
         # Retrieve power plants with longterm contract
-        list_of_plants = self.operator.list_of_plants
+        list_of_plants_long_term_contracts = self.operator.list_of_plants
 
         clearing_price = 0
         total_supply = 0
@@ -105,8 +106,8 @@ class ForwardCapacityMarketClearing(MarketModule):
             # As long as the market is not cleared
             if self.isTheMarketCleared == False:
                 plant = self.reps.power_plants[ppdp.plant]
-                # Firstly accept bids from plants with longterm contracts
-                if ppdp.plant in list_of_plants and plant.age < 15:
+                # Firstly accept bids from plants with long term contracts
+                if ppdp.plant in list_of_plants_long_term_contracts and plant.age < 15:
                     total_supply += ppdp.amount
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
@@ -117,8 +118,10 @@ class ForwardCapacityMarketClearing(MarketModule):
                     clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
+
+                    # short term are only for one year. no need to add them to the list, next year should be reset
                     if plant.status == globalNames.power_plant_status_inPipeline:
-                        list_of_plants.append(ppdp.plant)
+                        list_of_plants_long_term_contracts.append(ppdp.plant)
 
                 elif ppdp.price < sdc.get_price_at_volume(total_supply):
                     clearing_price = ppdp.price
@@ -127,7 +130,7 @@ class ForwardCapacityMarketClearing(MarketModule):
                     total_supply += sdc.get_volume_at_price(clearing_price)
                     self.isTheMarketCleared = True
                     if plant.status == globalNames.power_plant_status_inPipeline:
-                        list_of_plants.append(ppdp.plant)
+                        list_of_plants_long_term_contracts.append(ppdp.plant)
 
                 elif ppdp.price > sdc.get_price_at_volume(total_supply):
                     self.isTheMarketCleared = True
@@ -137,7 +140,8 @@ class ForwardCapacityMarketClearing(MarketModule):
                 ppdp.accepted_amount = 0
 
         # Save plants with longterm contracts
-        self.operator.setPlants(list_of_plants)
+        self.operator.setPlants(list_of_plants_long_term_contracts)
+
 
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(market, clearing_price)

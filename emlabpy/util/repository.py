@@ -498,7 +498,7 @@ class Repository:
         for i in self.power_plants.values():
             if i.name == plant.name:
                 i.status = new_status
-                # todo: Bart, were you using the variable costs for something? no need to change the owner
+                # todo: Bart, no need to change the owner?
                 i.technology.variable_operating_costs = new_price
                 self.dbrw.stage_power_plant_status(i)
 
@@ -709,7 +709,7 @@ class Repository:
         self.dbrw.stage_sr_operator_results(SRO, self.current_tick)
         return SRO
 
-
+        # todo: better to force them to be dismantled after the 4th year because their life can be extednde if thery profitable
     def update_power_plant_status_ger_first_year(self, plant: PowerPlant, price):
         new_status = globalNames.power_plant_status_strategic_reserve
         new_owner = 'StrategicReserveOperator'
@@ -719,22 +719,18 @@ class Repository:
                 new_age = i.technology.expected_lifetime - 4
                 i.age = new_age
                 i.status = new_status
-                i.owner = new_owner
                 i.technology.variable_operating_costs = new_price
                 self.dbrw.stage_power_plant_status(i)
 
 
     def update_power_plant_status(self, plant: PowerPlant, price):
         new_status = globalNames.power_plant_status_strategic_reserve
-        # todo: Bart: why change the owner?
         new_owner = 'StrategicReserveOperator'
         new_price = price
         for i in self.power_plants.values():
             if i.name == plant:
                 i.status = new_status
-                i.owner = new_owner
                 i.technology.variable_operating_costs = new_price
-                # todo: Bart: ?
                 self.power_plants[i.name] = i
                 self.dbrw.stage_power_plant_status(i)
 

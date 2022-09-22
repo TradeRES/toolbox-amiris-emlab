@@ -99,7 +99,7 @@ class StrategicReserveAssignment_ger(MarketModule):
                 contracted_strategic_reserve_capacity += ppdp.amount
                 ppdp.status = globalNames.power_plant_status_strategic_reserve
                 ppdp.accepted_amount = ppdp.amount
-                # Add plant to the list of the StrategicReserveOperator
+                # Add plant to the list of the StrategicReserveOperator so that next year they are also accepted
                 list_of_plants.append(ppdp.plant)
                 # Change plant status and increase age
                 self.reps.update_power_plant_status_ger_first_year(ppdp.plant, SR_price)
