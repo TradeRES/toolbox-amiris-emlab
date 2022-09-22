@@ -53,14 +53,26 @@ from matplotlib.offsetbox import AnchoredText
 # merged_df = reduce(lambda df, other: pd.merge(df, other, on='date', how='inner'), dfs)
 #
 #
-record1 = {'Math': list(range(100))}
 
-record2 = {'Math': [0, 0, 0, 0, 0],
-           'Science': [0, 0, 0, 0, 0],
-           'English': [0, 0, 0, 0, 100000]}
-def plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+def plot_investments_per_iteration(
                                    ):
-    print('project values')
+    record1 = {'Math': list(range(100))}
+    record0 = {'Math': [0, 0, 0, 0, 0],
+               'Science': [0, 0, 0, 0, 0],
+               'English': [0, 0, 0, 0, 0]}
+    record2 = {'Math': [2, 0, 2, 0, 2],
+               'Science': [0, 0, 1, 0, 0],
+               'English': [0, 0, 1, 0, 1]}
+
+    two = pd.DataFrame(record2)
+    zero = pd.DataFrame(record0)
+    print(two)
+    c = np.cumsum(two.values,axis=0)
+
+    #two = two.cumsum(axis=1)
+    print(c)
+    do = zero.sub(c)
+    four = pd.DataFrame(do)
     fig8, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     ax1.annotate('figure fraction',
@@ -68,19 +80,15 @@ def plot_investments_per_iteration(candidate_plants_project_value, installed_cap
                  horizontalalignment='left', verticalalignment='top',
                  fontsize='medium')
 
-    ax1.plot(candidate_plants_project_value)
-    ax2.plot(installed_capacity_per_iteration, 'o')
+    four.plot.area()
+    ax2.plot(two, 'o')
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('Project value', fontsize='medium')
     ax2.set_ylabel('Investments', fontsize='medium')
     ax2.set_title('Expected future operational (wholesale market) profits \n in year')
-    ax1.legend(candidate_plants_project_value.columns.values.tolist(), fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
-    print(candidate_plants_project_value.columns)
+    ax1.legend( fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
 
-
-candidate_plants_project_value = pd.DataFrame(record1)
-installed_capacity_per_iteration = pd.DataFrame(record2)
-plot_investments_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration)
+plot_investments_per_iteration()
 print('Showing plots...')
 plt.show()
 

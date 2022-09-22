@@ -963,37 +963,37 @@ def generate_plots(reps, scenario_name, electricity_prices, test_tick,test_tech 
     # plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
     #                  CM_clearing_price, total_costs_CM,  ran_capacity_market ,  path_to_plots, colors_unique_techs)
     # section -----------------------------------------------------------------------------------------------Cash energy producer
-
-    cash_flows_energy_producer = prepare_cash_per_agent(reps, ticks_to_generate)
-    plot_cash_flows(cash_flows_energy_producer, path_to_plots)
-    # # section -----------------------------------------------------------------------------------------------capacities
-
-    all_techs_generation, all_techs_market_price, all_techs_capacity_factor,\
-    average_electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
-        reps, unique_technologies,
-        years_to_generate)
-    plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
-    plot_yearly_average_electricity_prices(average_electricity_price, path_to_plots)
-    plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
-    plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
     #
-    #section -----------------------------------------------------------------------------------------------NPV and investments per iteration
-
-    average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
-        reps, unique_technologies, ticks_to_generate  ,test_tech)
-
-    plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
-    plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
-    irrs_per_tech_per_year, npvs_per_tech_per_year, npvs_per_year_new_plants_all = \
-        prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
-    plot_npv_new_plants(npvs_per_year_new_plants_all, test_tech, path_to_plots)
-    plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year,npvs_per_tech_per_year, path_to_plots, colors_unique_techs)
-
-    installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
-        future_year, reps, unique_candidate_power_plants)
-
-    plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
-                                           test_year, path_to_plots, colors_unique_candidates)
+    # cash_flows_energy_producer = prepare_cash_per_agent(reps, ticks_to_generate)
+    # plot_cash_flows(cash_flows_energy_producer, path_to_plots)
+    # # # section -----------------------------------------------------------------------------------------------capacities
+    #
+    # all_techs_generation, all_techs_market_price, all_techs_capacity_factor,\
+    # average_electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
+    #     reps, unique_technologies,
+    #     years_to_generate)
+    # plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
+    # plot_yearly_average_electricity_prices(average_electricity_price, path_to_plots)
+    # plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
+    # plot_market_values_generation(all_techs_market_price.T, path_to_plots, colors_unique_techs)
+    # #
+    # #section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+    #
+    # average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
+    #     reps, unique_technologies, ticks_to_generate  ,test_tech)
+    #
+    # plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
+    # plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
+    # irrs_per_tech_per_year, npvs_per_tech_per_year, npvs_per_year_new_plants_all = \
+    #     prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
+    # plot_npv_new_plants(npvs_per_year_new_plants_all, test_tech, path_to_plots)
+    # plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year,npvs_per_tech_per_year, path_to_plots, colors_unique_techs)
+    #
+    # installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
+    #     future_year, reps, unique_candidate_power_plants)
+    #
+    # plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+    #                                        test_year, path_to_plots, colors_unique_candidates)
     ##section -----------------------------------------------------------------------------------------------revenues per iteration
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
@@ -1015,7 +1015,8 @@ def generate_plots(reps, scenario_name, electricity_prices, test_tick,test_tech 
                      years_to_generate, path_to_plots,
                      colors_unique_techs)
 
-    all_techs_capacity = annual_commissioned.sub(annual_decommissioned_capacity )
+    c = np.cumsum(annual_decommissioned_capacity.values,axis=0)
+    all_techs_capacity = annual_commissioned.sub(c)
     all_techs_capacity = all_techs_capacity.add(initial_power_plants, axis=0 )
     plot_installed_capacity(all_techs_capacity ,path_to_plots, colors_unique_techs)
 
@@ -1034,13 +1035,13 @@ def generate_plots(reps, scenario_name, electricity_prices, test_tick,test_tech 
         # plot_costs_to_society(average_electricity_price, path_to_plots)
 
     # # # section -----------------------------------------------------------------------------------------------revenues per iteration
-    yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
-    yearly_costs = prepare_screening_curves(reps, test_year)
-    plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, first_year + reps.lookAhead,
-                                    colors_unique_candidates)
-    plot_screening_curve(yearly_costs, path_to_plots, test_year, colors_unique_techs)
-    future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
-    plot_future_fuel_prices(future_fuel_prices, path_to_plots)
+    # yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
+    # yearly_costs = prepare_screening_curves(reps, test_year)
+    # plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, first_year + reps.lookAhead,
+    #                                 colors_unique_candidates)
+    # plot_screening_curve(yearly_costs, path_to_plots, test_year, colors_unique_techs)
+    # future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
+    # plot_future_fuel_prices(future_fuel_prices, path_to_plots)
 
     # section -----------------------------------------------------------------------------------------------todos
     residual_load_curves = pd.DataFrame()
@@ -1128,7 +1129,7 @@ try:
         power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
 
-    test_tick = 6
+    test_tick = 0
     test_tech = "PV_utility_systems"
     #test_tech = "CCGT"
     generate_plots(reps, name, electricity_prices, test_tick, test_tech)
