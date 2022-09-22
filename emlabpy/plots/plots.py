@@ -428,17 +428,28 @@ def plot_cash_flows(cash_flows, path_to_plots):
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'Cash Flows.png', bbox_inches='tight', dpi=300)
 
-def plot_npv_new_plants(npvs_per_year_new_plants_all, path_to_plots):
+def plot_npv_new_plants(npvs_per_year_new_plants_all, test_tech, path_to_plots):
     fig31, axs31 = plt.subplots()
     # key gives the group name (i.e. category), data gives the actual values
     for key, data in npvs_per_year_new_plants_all.items():
         if data.size >0:
             data.plot(ax=axs31, label=key, color = technology_colors[key])
+        if key == test_tech:
+            test_npvs = data
+
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('[Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs31.set_title('NPV new plants')
+    axs31.set_title('NPV new plants (name, capacity, age)')
     fig31.savefig(path_to_plots + '/' + 'NPV new plants.png', bbox_inches='tight', dpi=300)
+
+    axs32 = test_npvs.plot()
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('[Eur]', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs32.set_title('NPV new plants for tech ' + test_tech +  '(name, capacity, age)')
+    fig32 = axs32.get_figure()
+    fig32.savefig(path_to_plots + '/' + 'NPV new plants of tech '+ test_tech + ' .png', bbox_inches='tight', dpi=300)
 
 
 # section -----------------------------------------------------------------------------------------------data preparation
@@ -695,7 +706,9 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
                 irrs_per_year[plant.name] = irr_per_plant
                 npvs_per_year[plant.name] = npv_per_plant
                 if int(plant.name) >1000:
-                    npvs_per_year_new_plants[plant.name] = npv_per_plant
+                    info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
+                    npvs_per_year_new_plants[info] = npv_per_plant
+
         npvs_per_year_new_plants_all[technology_name] = npvs_per_year_new_plants
         irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
         npvs_per_tech_per_year[technology_name] = np.nanmean(npvs_per_year, axis=1)
@@ -911,7 +924,8 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     return shortage_hours, supply_ratio
 
 
-def generate_plots(reps, scenario_name, electricity_prices):
+def generate_plots(reps, scenario_name, electricity_prices, test_tick,test_tech ):
+
     print("Databases read")
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", scenario_name)
 
@@ -936,16 +950,11 @@ def generate_plots(reps, scenario_name, electricity_prices):
 
     # section -----------------------------------------------------------------------------------------------data preparation
     first_year = years_to_generate[0]
-    future_year = first_year + reps.lookAhead
+    test_year = test_tick + reps.start_simulation_year
+    future_year = test_year + reps.lookAhead
     last_year = years_to_generate[-1]
-    test_tick = 0
-    #test_tech = "PV_utility_systems"
-    test_tech = "CCGT"
-
     # #check extension of power plants.
     # extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
-
-
     # # section -----------------------------------------------------------------------------------------------Capacity Markets
     #
     # CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM,  ran_capacity_market = prepare_accepted_CapacityMechanism(
@@ -975,15 +984,16 @@ def generate_plots(reps, scenario_name, electricity_prices):
 
     plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
     plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
-    irrs_per_tech_per_year, npvs_per_tech_per_year, npvs_per_year_new_plants_all = prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
-    plot_npv_new_plants(npvs_per_year_new_plants_all, path_to_plots)
+    irrs_per_tech_per_year, npvs_per_tech_per_year, npvs_per_year_new_plants_all = \
+        prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
+    plot_npv_new_plants(npvs_per_year_new_plants_all, test_tech, path_to_plots)
     plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year,npvs_per_tech_per_year, path_to_plots, colors_unique_techs)
 
     installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
         future_year, reps, unique_candidate_power_plants)
 
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
-                                           first_year, path_to_plots, colors_unique_candidates)
+                                           test_year, path_to_plots, colors_unique_candidates)
     ##section -----------------------------------------------------------------------------------------------revenues per iteration
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
@@ -1025,10 +1035,10 @@ def generate_plots(reps, scenario_name, electricity_prices):
 
     # # # section -----------------------------------------------------------------------------------------------revenues per iteration
     yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
-    yearly_costs = prepare_screening_curves(reps, first_year)
+    yearly_costs = prepare_screening_curves(reps, test_year)
     plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, first_year + reps.lookAhead,
                                     colors_unique_candidates)
-    plot_screening_curve(yearly_costs, path_to_plots, first_year, colors_unique_techs)
+    plot_screening_curve(yearly_costs, path_to_plots, test_year, colors_unique_techs)
     future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
 
@@ -1116,7 +1126,12 @@ try:
 
     for p, power_plant in reps.power_plants.items():
         power_plant.specifyPowerPlantsInstalled(reps.current_tick)
-    generate_plots(reps, name, electricity_prices)
+
+
+    test_tick = 6
+    test_tech = "PV_utility_systems"
+    #test_tech = "CCGT"
+    generate_plots(reps, name, electricity_prices, test_tick, test_tech)
 
 except Exception as e:
     logging.error('Exception occurred: ' + str(e))

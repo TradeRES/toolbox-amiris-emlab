@@ -37,7 +37,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_smallFixedCosts_Candidates1MW"
+        self.simulation_name = "extendedDE_CORRECT_FixedCosts_CandidatesREALCAPACITIES"
         self.country = ""
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent
