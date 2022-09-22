@@ -34,11 +34,12 @@ class CandidatePowerPlant(PowerPlant):
             self.efficiency = self.technology.efficiency
         elif reps.realistic_candidate_capacities == True and parameter_name == "Realistic_capacity":
             self.capacityTobeInstalled = int(parameter_value)
-            #self.capacity = int(parameter_value)
-        elif reps.realistic_candidate_capacities_for_future == True and parameter_name == "Realistic_capacity":
-            self.capacity = int(parameter_value)
+            if reps.realistic_candidate_capacities_for_future == True:
+                self.capacity = int(parameter_value)
         elif reps.realistic_candidate_capacities == False and parameter_name == 'Capacity':
             self.capacityTobeInstalled = int(parameter_value)
+            if reps.realistic_candidate_capacities_for_future == False:
+                self.capacity = int(parameter_value)
         elif parameter_name == 'Owner':
             self.owner = parameter_value
         elif parameter_name == 'ViableInvestment':
