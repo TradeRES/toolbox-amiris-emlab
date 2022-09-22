@@ -21,10 +21,10 @@ class StrategicReserveSubmitBids(MarketModule):
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
-        # For every PowerPlant owned by energyProducer
+        # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
                 self.reps.agent):
-            # Retrieve vars
+            # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
@@ -36,14 +36,9 @@ class StrategicReserveSubmitBids(MarketModule):
             normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
 
             # Place bids on market (full capacity at cost price per MW)
-            # Remove this if statement when everything works
-            if market != None:
-                # self.reps.create_or_update_power_plant_StrategicReserve_plan(powerplant, energy_producer,
-                #                                                              market, power_plant_capacity,
-                #                                                              normalised_costs, self.reps.current_tick)
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
-                                                                           market, power_plant_capacity,
-                                                                           normalised_costs, self.reps.current_tick)
+            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
+                                                                       market, power_plant_capacity,
+                                                                       normalised_costs, self.reps.current_tick)
 
 class StrategicReserveAssignment(MarketModule):
     """
@@ -57,16 +52,18 @@ class StrategicReserveAssignment(MarketModule):
 
 
     def act(self):
-        # Assign plants to Strategic Reserve per region
+        # Retrieve the active capacity market
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         
-        # Set the strategic reserve zone to the same as the market
+        # Retrieve the active strategic reserve operator in the country
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+
         # Retrieve peak load volume of market
         peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
+        # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
 
         # Calculate needed strategic reserve capacity
@@ -75,7 +72,7 @@ class StrategicReserveAssignment(MarketModule):
         # Retrieve SR price
         SR_price = self.operator.getReservePriceSR()
 
-        # Sort the bids in descending order
+        # Retrieve the bids on the capacity market, sorted in descending order on price
         sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
 
         # Contract plants to Strategic Reserve Operator
@@ -96,16 +93,16 @@ class StrategicReserveAssignment(MarketModule):
                 # When strategic reserve is full nothing actually changes for the power plant
                 ppdp.accepted_amount = 0
 
-        # setting the plants to be saved in the strategic reserve
+        # Pass the contracted plants to the strategic reserve operator
         self.operator.setPlants(list_of_plants)
+
         # Pass the total contracted volume to the strategic reserve operator
         self.operator.setReserveVolume(contracted_strategic_reserve_capacity)
 
-        #saving the revenues to the power plants
-        # Pay the contracted plants in the strategic reserve
-        self.createCashFlowforSR( market)
+        # Pay the contracted plants in the strategic reserve and save the revenues to the power plants
+        self.createCashFlowforSR(market)
 
-        #saving the cash to the operator and the volume and list of power plants to SRResults
+        # Save the SR operator variables to the SR operator of the country
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),
                                                             self.operator.getReserveVolume(),
@@ -129,9 +126,7 @@ class StrategicReserveAssignment(MarketModule):
             else:
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues
-            #
-            # # saving the bids status # todo: the bids could be erased later on
-            # self.reps.dbrw.stage_bids_status(accepted)
+
             # Payment (fixed costs and variable costs ) from operator to plant
             self.reps.createCashFlow(self.operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
