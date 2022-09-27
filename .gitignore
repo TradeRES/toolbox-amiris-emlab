@@ -38,7 +38,7 @@ emlabpy/plots/Scenarios/
 emlabpy/logs
 data/competes/
 data/sources/other/
-
+data/powerplants/
 test.py
 test2.py
 scripts/amiris-jar-with-dependencies2.jar
