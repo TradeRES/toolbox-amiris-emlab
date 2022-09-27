@@ -37,7 +37,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_CORRECT_FixedCosts_only_PV"
+        self.simulation_name = "extendedDE_realCapac_dismantling_year0_SOLAR"
         self.country = ""
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent

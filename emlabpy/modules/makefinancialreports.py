@@ -70,28 +70,30 @@ class CreatingFinancialReports(DefaultModule):
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
-            irr, npv = self.getProjectIRR(powerplant, operational_profit_with_loans, self.agent)
+            irr, npv = self.getProjectIRR(powerplant, operational_profit ,loans, self.agent)
             financialPowerPlantReport.irr = irr
             financialPowerPlantReport.npv = npv
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
 
-    def getProjectIRR(self, pp, operational_profit_with_loans, agent):
+    def getProjectIRR(self, pp, operational_profit ,loans , agent):
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
-        technical_lifetime = pp.technology.expected_lifetime
         buildingTime = pp.technology.expected_leadtime
         # get average profits per technology
-        equalTotalDownPaymentInstallment = (totalInvestment * (1 -agent.debtRatioOfInvestments)) / buildingTime
-        # the rest payment is considered in the loans
-        # restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime
+        equity = (1 -agent.debtRatioOfInvestments)
+        equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
+        # the rest payment was considered in the loans
+        restPayment = totalInvestment * (agent.debtRatioOfInvestments) / depreciationTime
 
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallment * (1 + agent.equityInterestRate)
+            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
         for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow[i] = operational_profit_with_loans
+            investmentCashFlow[i] = operational_profit - restPayment
+            # attention: cost recovery could not be as planned because in reality power plants dont payback the rest payment but they pay an annuity.
+            # nevertheless that could double count the debt interest, as it is calculated already in the wacc
         IRR = npf.irr(investmentCashFlow)
         wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         npv = npf.npv(wacc, investmentCashFlow)

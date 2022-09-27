@@ -351,17 +351,6 @@
                 ]
             },
             {
-                "name": "from AMIRIS future to Invest",
-                "from": [
-                    "AMIRIS future",
-                    "bottom"
-                ],
-                "to": [
-                    "Invest",
-                    "right"
-                ]
-            },
-            {
                 "name": "from Invest to Next year",
                 "from": [
                     "Invest",
@@ -620,6 +609,17 @@
                     "prepare future market",
                     "left"
                 ]
+            },
+            {
+                "name": "from AMIRIS future to Invest",
+                "from": [
+                    "AMIRIS future",
+                    "bottom"
+                ],
+                "to": [
+                    "Invest",
+                    "right"
+                ]
             }
         ],
         "jumps": [
@@ -791,8 +791,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1133.266084753555,
-            "y": -574.4886023431899,
+            "x": -1133.2660847535547,
+            "y": -579.6479194665004,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -817,8 +817,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -734.8943426021269,
-            "y": -450.4678700875147,
+            "x": -726.9375721042633,
+            "y": -453.120126920136,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -869,8 +869,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -962.9587980466715,
-            "y": -360.3114225317747,
+            "x": -955.0020275488075,
+            "y": -362.963679364396,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -891,8 +891,8 @@
         "short investments": {
             "type": "Tool",
             "description": "",
-            "x": -99.03880622889878,
-            "y": -177.7001732546803,
+            "x": -96.38654939627756,
+            "y": -180.35243008730157,
             "specification": "Short investments",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -913,8 +913,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 164.07499528018184,
-            "y": -198.87458842754853,
+            "x": 166.72725211280306,
+            "y": -201.5268452601698,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -944,7 +944,7 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -477.5526033677846,
+            "x": -474.9003465351634,
             "y": 64.8283365980148,
             "url": {
                 "dialect": "sqlite",
@@ -960,19 +960,19 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -237.81546324090985,
-            "y": -450.819861210024,
+            "x": -235.16320640828857,
+            "y": -453.47211804264526,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
                     true
                 ],
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
                 ]
             ]
@@ -1058,8 +1058,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -454.4458916764615,
-            "y": -449.3193771594929,
+            "x": -451.79363484384027,
+            "y": -451.97163399211416,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1102,8 +1102,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -580.3331570504442,
-            "y": -450.6930436870515,
+            "x": -577.680900217823,
+            "y": -453.3453005196728,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1133,8 +1133,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -344.41931537937853,
-            "y": -177.8848559654315,
+            "x": -341.7670585467573,
+            "y": -180.53711279805276,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1155,28 +1155,28 @@
         "importing EnergyExchange": {
             "type": "Importer",
             "description": "",
-            "x": -352.02596492755873,
-            "y": -621.3289006534071,
+            "x": -349.3737080949375,
+            "y": -623.9811574860285,
             "specification": "Import Energy Exchange",
             "cancel_on_error": false,
             "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    false
-                ],
-                [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
                     true
+                ],
+                [
+                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    false
                 ]
             ]
         },
         "energy exchange": {
             "type": "Data Store",
             "description": "",
-            "x": -30.281976914273628,
-            "y": -615.4319668534642,
+            "x": -27.77491662358419,
+            "y": -615.4319668534641,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

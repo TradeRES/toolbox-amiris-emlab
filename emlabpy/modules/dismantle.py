@@ -71,7 +71,7 @@ class Dismantle(DefaultModule):
                         # saving
                         self.reps.dbrw.stage_fixed_operating_costs(plant)
                 else:
-                    logging.info("dont dismantle (initialization) but increase fixed OPEXof %s ".format(plant.name))
+                    logging.info(" for the first years dont dismantle (initialization) but increase fixed OPEXof %s ".format(plant.name))
                     if plant.age < plant.technology.getExpectedLifetime():
                         print("Age is less than expected life time")
                     else:

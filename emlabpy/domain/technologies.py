@@ -16,7 +16,7 @@ class PowerGeneratingTechnology(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.capacity = 0
-        self.annuity = 0
+        # self.annuity = 0
         self.investment_cost_eur_MW = None
         self.fixed_operating_costs = None
         self.variable_operating_costs = 0.0
@@ -65,8 +65,8 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'type':
             self.type = parameter_value
         # From here are the inputs from emlab electricity = traderes
-        elif parameter_name == 'annuity':
-            self.annuity = float(parameter_value)
+        # elif parameter_name == 'annuity':
+        #     self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':
             self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'lifetime_economic':
