@@ -35,7 +35,6 @@ class CreatingFinancialReports(DefaultModule):
 
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
             if dispatch == None:
-                print("no dispatch found for ", powerplant.id)
                 dispatch = PowerPlantDispatchPlan(powerplant.id)
                 dispatch.variable_costs = 0
                 dispatch.accepted_amount = 0
@@ -78,6 +77,7 @@ class CreatingFinancialReports(DefaultModule):
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
 
     def getProjectIRR(self, pp, operational_profit ,loans , agent):
+
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
         buildingTime = pp.technology.expected_leadtime
@@ -91,14 +91,19 @@ class CreatingFinancialReports(DefaultModule):
         for i in range(0, buildingTime):
             investmentCashFlow[i] = - equalTotalDownPaymentInstallment
         for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow[i] = operational_profit - restPayment
-            # attention: cost recovery could not be as planned because in reality power plants dont payback the rest payment but they pay an annuity.
-            # nevertheless that could double count the debt interest, as it is calculated already in the wacc
-        IRR = npf.irr(investmentCashFlow)
+            investmentCashFlow[i] = operational_profit - restPayment         # operational_profit considers already fixed costs
         wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         npv = npf.npv(wacc, investmentCashFlow)
 
+        investmentCashFlow_with_loans = [0 for i in range(depreciationTime + buildingTime)]
+        for i in range(0, buildingTime):
+            investmentCashFlow_with_loans[i] = - equalTotalDownPaymentInstallment
+        for i in range(buildingTime, depreciationTime + buildingTime):
+            investmentCashFlow_with_loans[i] = operational_profit - loans
+
+        IRR = npf.irr(investmentCashFlow_with_loans)
         if pd.isna(IRR):
+            print("no IRR for ", pp.name)
             return -100, npv
         else:
             return round(IRR, 4), npv
