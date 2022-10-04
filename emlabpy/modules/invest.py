@@ -205,7 +205,7 @@ class Investmentdecision(DefaultModule):
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
 
         # print("total investment cost in MIll", totalInvestment / 1000000)
-        if reps.npv_with_annuity == True:
+        if self.reps.npv_with_annuity == True:
             for i in range(0, buildingTime):
                 investmentCashFlow[i] = - equalTotalDownPaymentInstallment
             for i in range(buildingTime, depreciationTime + buildingTime):
