@@ -63,7 +63,9 @@ class EnergyProducer(EMLabAgent):
         elif parameter_name in ["CF_ELECTRICITY_SPOT", "CF_LOAN", "CF_DOWNPAYMENT", "CF_STRRESPAYMENT",
                                 "CF_CAPMARKETPAYMENT", "CF_FIXEDOMCOST", "CF_COMMODITY"] and reps.runningModule == "plotting":
             array = parameter_value.to_dict()
-            pd_series = pd.Series(float(i[1]) for i in array["data"])
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
             setattr(self, parameter_name, pd_series)
 
     def calculateAveragePastOperatingProfit(self, pp, horizon):

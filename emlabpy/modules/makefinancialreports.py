@@ -47,7 +47,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
             self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
 
-            loans = powerplant.loan_payments_in_year
+            loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
 
             yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
 

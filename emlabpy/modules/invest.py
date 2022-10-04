@@ -91,7 +91,7 @@ class Investmentdecision(DefaultModule):
                     investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
-                        logging.info("dont invest in this technology%s",candidatepowerplant.technology)
+                        logging.info("to much in pipeline of this technology%s",candidatepowerplant.technology)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         break
@@ -253,7 +253,7 @@ class Investmentdecision(DefaultModule):
     def check(self, technology, candidatepowerplant):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
             # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
-        if  self.capacityOfTechnologyInPipeline > self.reps.maximum_investment_capacity_per_year:
+        if  self.capacityOfTechnologyInPipeline >= self.reps.maximum_investment_capacity_per_year:
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
