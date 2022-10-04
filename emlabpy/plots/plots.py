@@ -692,6 +692,8 @@ def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simu
                         int(actualFixedOperatingCost / 1000000)))
                 # chosen.append(str(age) + ' ' + str(capacity) + ' ' + str(pp)  + ' ' + str(int(actualFixedOperatingCost/1000000)))
             profits_for_test_tech_per_year = pd.DataFrame(numeric, columns=info, index=simulation_years)
+            if len(chosen) ==0:
+                raise "choose other technology"
             new_pp_profits_for_tech = profits_for_test_tech_per_year[chosen]
     return average_profits_per_tech_per_year, new_pp_profits_for_tech
 
