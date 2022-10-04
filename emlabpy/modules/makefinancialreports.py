@@ -85,15 +85,32 @@ class CreatingFinancialReports(DefaultModule):
         equity = (1 -agent.debtRatioOfInvestments)
         equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
         # the rest payment was considered in the loans
-        restPayment = totalInvestment * (agent.debtRatioOfInvestments) / depreciationTime
+        debt= totalInvestment * (agent.debtRatioOfInvestments)
+        restPayment =debt / depreciationTime
 
-        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
-        for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
-        for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow[i] = operational_profit - restPayment         # operational_profit considers already fixed costs
+        # operational_profit considers already fixed costs
         wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         npv = npf.npv(wacc, investmentCashFlow)
+
+        restPayment = debt/ depreciationTime
+        annuity =- npf.pmt(self.agent.loanInterestRate, depreciationTime, debt, fv=1, when='end')
+        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
+
+        # print("total investment cost in MIll", totalInvestment / 1000000)
+        if reps.npv_with_annuity == True:
+            for i in range(0, buildingTime):
+                investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+            for i in range(buildingTime, depreciationTime + buildingTime):
+                investmentCashFlow[i] = operational_profit - fixed_costs - annuity
+        else:
+            for i in range(0, buildingTime):
+                investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+            for i in range(buildingTime, depreciationTime + buildingTime):
+                investmentCashFlow[i] = operational_profit - fixed_costs - restPayment
+        return investmentCashFlow
+
+
+
 
         investmentCashFlow_with_loans = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime):

@@ -60,6 +60,7 @@ class Repository:
         self.fix_prices_to_2020 = False
         self.realistic_candidate_capacities = False
         self.realistic_candidate_capacities_for_future = False
+        self.npv_with_annuity = False
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()

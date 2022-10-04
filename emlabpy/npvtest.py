@@ -72,5 +72,5 @@ npv_with_loan = npf.npv(wacc, investmentCashFlow)
 #
 # print("restPayment / loan")
 # print(restPayment / loan)
-# print("npvwith restpayment / npv_with_loan ")
-# print(npv_withrestpayment / npv_with_loan)
+print("npvwith restpayment / npv_with_loan ")
+print(npv_withrestpayment / npv_with_loan)

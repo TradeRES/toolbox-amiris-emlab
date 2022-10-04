@@ -102,6 +102,8 @@ class SpineDBReaderWriter:
                 reps.realistic_candidate_capacities = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_for_future':
                 reps.realistic_candidate_capacities_for_future = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'npv_with_annuity':
+                reps.npv_with_annuity = bool(row['parameter_value'])
 
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in

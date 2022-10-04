@@ -8,7 +8,7 @@ sklearn~=0.0
 scikit-learn
 pandas~=1.4.1
 matplotlib~=3.5.1
-
+seaborn
 ioproc
 requests~=2.27.1
 pyodbc~=4.0.32

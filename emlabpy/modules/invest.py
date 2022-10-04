@@ -199,13 +199,22 @@ class Investmentdecision(DefaultModule):
         fixed_costs = technology.fixed_operating_costs * candidatepowerplant.capacity
         equity = (1 - agent.debtRatioOfInvestments)
         equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
-        restPayment = (totalInvestment *  agent.debtRatioOfInvestments)/ depreciationTime
+        debt = totalInvestment *  agent.debtRatioOfInvestments
+        restPayment = debt/ depreciationTime
+        annuity =- npf.pmt(self.agent.loanInterestRate, depreciationTime, debt, fv=1, when='end')
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
+
         # print("total investment cost in MIll", totalInvestment / 1000000)
-        for i in range(0, buildingTime):
-            investmentCashFlow[i] = - equalTotalDownPaymentInstallment
-        for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow[i] = operatingProfit - restPayment - fixed_costs
+        if reps.npv_with_annuity == True:
+            for i in range(0, buildingTime):
+                investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+            for i in range(buildingTime, depreciationTime + buildingTime):
+                investmentCashFlow[i] = operatingProfit - fixed_costs - annuity
+        else:
+            for i in range(0, buildingTime):
+                investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+            for i in range(buildingTime, depreciationTime + buildingTime):
+                investmentCashFlow[i] = operatingProfit - fixed_costs - restPayment
         return investmentCashFlow
 
     def npv(self, investmentCashFlow):
