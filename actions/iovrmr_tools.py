@@ -336,3 +336,31 @@ def get_all_csv_files_in_folder_except(folder: str, exceptions: List[str] = None
         for file in os.listdir(folder)
         if file.endswith(OUTPUT_FILE_ENDING) and file not in exceptions
     ]
+
+
+def calculate_residual_load(
+    residual_load_results: Dict[str, pd.DataFrame], award_offset: int = 5, exchange_offset: int = 3
+) -> pd.Series:
+    """Calculate the residual load based on RES infeed and net load after storage"""
+    res_generation_to_aggregate = []
+    overall_demand = None
+    for key, val in residual_load_results.items():
+        if key in OPERATOR_AGENTS:
+            value = val.loc[val["AwardedPowerInMWH"].notna()]
+            value["TimeStep"] = value["TimeStep"].copy() - award_offset
+            res_generation_to_aggregate.append(value.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+        elif key in EXCHANGE:
+            value = val.copy()
+            value["TimeStep"] = value["TimeStep"].copy() - exchange_offset
+            overall_demand = value.set_index("TimeStep")["TotalAwardedPowerInMW"]
+        else:
+            raise ValueError("Received invalid key for residual_load_results!")
+
+    overall_res_generation = pd.Series(index=res_generation_to_aggregate[0].index, data=0)
+    for res_generation in res_generation_to_aggregate:
+        overall_res_generation += res_generation
+
+    residual_load = overall_demand - overall_res_generation
+    residual_load = residual_load.round(4)
+
+    return residual_load
