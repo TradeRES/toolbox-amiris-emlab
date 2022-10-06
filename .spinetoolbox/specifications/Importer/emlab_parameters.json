@@ -547,8 +547,8 @@
                                 "position": "hidden",
                                 "value": "Fuels",
                                 "skip_columns": [
-                                    3,
-                                    4
+                                    4,
+                                    5
                                 ]
                             },
                             {
@@ -622,26 +622,6 @@
                 }
             ],
             "not chosen technologies": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "COMPETESfuelPrices": [
                 {
                     "Mapping 1": {
                         "mapping": [
@@ -1148,7 +1128,6 @@
             "Fuels": {},
             "NewTechnologies": {},
             "not chosen technologies": {},
-            "COMPETESfuelPrices": {},
             "dutchGermanPlants2015_from_emla": {},
             "dictTech": {},
             "dictFuel": {},
@@ -1293,7 +1272,8 @@
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float"
+                "4": "float",
+                "5": "string"
             },
             "explanation": {
                 "0": "string",
@@ -1339,9 +1319,6 @@
                 "6": "float",
                 "7": "float",
                 "8": "string"
-            },
-            "COMPETESfuelPrices": {
-                "0": "string"
             },
             "TechnologiesEmlabTemporal": {
                 "0": "string",

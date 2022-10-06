@@ -8,7 +8,7 @@ class InvestmentDecisions(ImportObject):
 #   def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
     def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
         """"
-        This function is being read for the plotting. The investment decisions  are saved in the invest module
+        This function is being read for the plotting. The investment decisions are saved in the invest module
         """
         future_year, iteration = parameter_name.split('-')
         decision_year = alternative

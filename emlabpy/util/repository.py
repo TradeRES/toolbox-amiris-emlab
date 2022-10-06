@@ -37,7 +37,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "extendedDE_realCapac_dismantling_year0_SOLAR"
+        self.simulation_name = "grouped_new_pv"
         self.country = ""
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -143,7 +143,7 @@ class Repository:
         plant.setDownpayment(loan)
         return loan
 
-    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):  # TODO check which one is correct
+    def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):  # same results see npvtest.py
         annuity = npf.pmt(interestRate, payBackTime, totalLoan, fv=0, when='end')
         #        annuity_like_emlab = (totalLoan * interestRate) / (1 - ((1+interestRate)**(-interestRate)))
         # annuitybyhand = (totalLoan * interestRate) / (1 - ((1 + interestRate) ** (-interestRate)))

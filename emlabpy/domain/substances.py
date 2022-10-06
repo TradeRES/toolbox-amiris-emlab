@@ -26,7 +26,7 @@ class Substance(ImportObject):
         self.newFuturePrice = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'co2Density':
+        if parameter_name == 'AmirisFuelSpecificCo2EmissionsInTperMWH': # todo: AMIRIS add this as an input parameter 'co2Density'
             self.co2_density = float(parameter_value)
         elif parameter_name == 'energyDensity':
             self.energy_density = float(parameter_value)
