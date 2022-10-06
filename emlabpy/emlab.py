@@ -155,6 +155,8 @@ try:  # Try statement to always close DB properly
         paying_loans.act_and_commit()
         financial_report = CreatingFinancialReports(reps)
         financial_report.act_and_commit()
+        # short_investing = ShortInvestmentdecision(reps)
+        # short_investing.act_and_commit()
         logging.info('End saving Financial Results')
 
     if run_prepare_next_year_market_clearing:
@@ -228,11 +230,11 @@ try:  # Try statement to always close DB properly
         investing.act_and_commit()
         logging.info('End Run Investment')
 
-    if run_short_investment_module:
-        short_investing = ShortInvestmentdecision(reps)
-        logging.info('Start Run short term Investments')
-        short_investing.act_and_commit()
-        logging.info('End Run short term Investment')
+    # if run_short_investment_module:
+    #     short_investing = ShortInvestmentdecision(reps)
+    #     logging.info('Start Run short term Investments')
+    #     short_investing.act_and_commit()
+    #     logging.info('End Run short term Investment')
 
     if run_create_results:
         logging.info('Start logging results')

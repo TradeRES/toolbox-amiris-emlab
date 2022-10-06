@@ -24,7 +24,13 @@ class PayForLoansRole(DefaultModule):
                         if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                             payment = loan.getAmountPerPayment()
                             loan.setNumberOfPaymentsDone(loan.getNumberOfPaymentsDone() + 1)
-                            self.agent.CF_LOAN -= payment
+
+                            if int(plant.name) > 100000:
+                                self.agent.CF_LOAN_NEW_PLANTS -= payment
+                            else:
+
+                                self.agent.CF_LOAN -= payment
+
                             plant.loan_payments_in_year += payment
                             self.reps.dbrw.set_number_loan_payments(plant)
                             # print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
@@ -34,11 +40,21 @@ class PayForLoansRole(DefaultModule):
                     if downpayment is not None:
                         if downpayment.getNumberOfPaymentsDone() < downpayment.getTotalNumberOfPayments():
                             # downpayment are made after the permit time
+                            # print("--------------------------" + plant.name + " "+ plant.technology.name)
+                            # print(plant.age)
+                            # print(plant.technology.expected_permittime)
+                            # print(plant.technology.expected_leadtime)
+
                             if - plant.getActualLeadtime() <= plant.age:
-                                print("pay downpayment ", plant.name)
                                 payment = downpayment.getAmountPerPayment()
                                 downpayment.setNumberOfPaymentsDone(downpayment.getNumberOfPaymentsDone() + 1)
-                                self.agent.CF_DOWNPAYMENT -= payment
+
+                                if int(plant.name) > 100000:
+                                    self.agent.CF_DOWNPAYMENT_NEW_PLANTS -= payment
+
+
+                                else:
+                                    self.agent.CF_DOWNPAYMENT -= payment
                                 self.reps.dbrw.set_number_downpayments(plant)
                                 plant.downpayment_in_year += payment
                             # print( "Paying {0} (euro) for downpayment {1}".format(payment, plant.name))

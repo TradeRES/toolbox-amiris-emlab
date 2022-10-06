@@ -30,6 +30,8 @@ class EnergyProducer(EMLabAgent):
         self.CF_CAPMARKETPAYMENT = 0
         self.CF_FIXEDOMCOST = 0
         self.CF_COMMODITY = 0
+        self.CF_DOWNPAYMENT_NEW_PLANTS = 0
+        self.CF_LOAN_NEW_PLANTS = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value: object, alternative):
         # according to the scenario.yaml, if is has energy carrier then it is intermittent
@@ -60,7 +62,8 @@ class EnergyProducer(EMLabAgent):
             self.priceMarkUp = float(parameter_value)
         elif parameter_name == 'willingToInvest':
             self.willingToInvest = parameter_value
-        elif parameter_name in ["CF_ELECTRICITY_SPOT", "CF_LOAN", "CF_DOWNPAYMENT", "CF_STRRESPAYMENT",
+        elif parameter_name in ["CF_ELECTRICITY_SPOT", "CF_LOAN", "CF_LOAN_NEW_PLANTS", "CF_DOWNPAYMENT",
+                                "CF_DOWNPAYMENT_NEW_PLANTS", "CF_STRRESPAYMENT",
                                 "CF_CAPMARKETPAYMENT", "CF_FIXEDOMCOST", "CF_COMMODITY"] and reps.runningModule == "plotting":
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]

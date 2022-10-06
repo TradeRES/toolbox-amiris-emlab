@@ -196,7 +196,7 @@ class SpineDBReaderWriter:
         self.stage_object(self.powerplant_installed_classname, power_plant.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, power_plant.name,
                                            [
-                                            ('Status', power_plant.status)], '0')
+                                               ('Status', power_plant.status)], '0')
 
     """
     Power plants
@@ -277,7 +277,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.powerplant_installed_classname, ['actualFixedOperatingCost'])
 
     def stage_fixed_operating_costs(self, pp):
-        self.stage_object(self.powerplant_installed_classname, pp.name )
+        self.stage_object(self.powerplant_installed_classname, pp.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
                                            [('actualFixedOperatingCost', pp.actualFixedOperatingCost)], "0")
 
@@ -401,7 +401,8 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(self.financial_reports_object_classname, object_name,
                                                [('PowerPlant', fr.powerPlant),
                                                 ('latestTick', (fr.tick)),
-                                                ('spotMarketRevenue', Map([str(fr.tick)], [float(fr.spotMarketRevenue)])),
+                                                ('spotMarketRevenue',
+                                                 Map([str(fr.tick)], [float(fr.spotMarketRevenue)])),
                                                 ('overallRevenue', Map([str(fr.tick)], [float(fr.overallRevenue)])),
                                                 ('production', Map([str(fr.tick)], [float(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
@@ -469,32 +470,43 @@ class SpineDBReaderWriter:
                                             ],
                                            '0')
 
-    # def stage_init_cash_agent(self):
-    #     self.stage_object_class(self.energyProducer_classname)
-    #     self.stage_object_parameters(self.energyProducer_classname, ['cash',
-    #                                                                  'CF_ELECTRICITY_SPOT',
-    #                                                                  'CF_LOAN',
-    #                                                                  'CF_DOWNPAYMENT',
-    #                                                                  'CF_STRRESPAYMENT',
-    #                                                                  'CF_CAPMARKETPAYMENT',
-    #                                                                  'CF_FIXEDOMCOST',
-    #                                                                  'CF_COMMODITY'])
+    def stage_init_cash_agent(self):
+        self.stage_object_class(self.energyProducer_classname)
+        self.stage_object_parameters(self.energyProducer_classname, ['cash',
+                                                                     'CF_ELECTRICITY_SPOT',
+                                                                     'CF_LOAN',
+                                                                     'CF_DOWNPAYMENT',
+                                                                     'CF_LOAN_NEW_PLANTS',
+                                                                     'CF_DOWNPAYMENT_NEW_PLANTS',
+                                                                     'CF_STRRESPAYMENT',
+                                                                     'CF_CAPMARKETPAYMENT',
+                                                                     'CF_FIXEDOMCOST',
+                                                                     'CF_COMMODITY'])
 
     def stage_cash_agent(self, agent, current_tick):
         self.stage_object(self.energyProducer_classname, agent.name)
         self.stage_object_parameter_values(self.energyProducer_classname, agent.name,
-                                           [  # ('cash', Map([str(current_tick)], [agent.cash])),
+                                           [
                                                ('CF_ELECTRICITY_SPOT',
                                                 Map([str(current_tick)], [float(agent.CF_ELECTRICITY_SPOT)])),
                                                ('CF_LOAN', Map([str(current_tick)], [float(agent.CF_LOAN)])),
                                                (
-                                               'CF_DOWNPAYMENT', Map([str(current_tick)], [float(agent.CF_DOWNPAYMENT)])),
+                                                   'CF_LOAN_NEW_PLANTS',
+                                                   Map([str(current_tick)], [float(agent.CF_LOAN_NEW_PLANTS)])),
+                                               (
+                                                   'CF_DOWNPAYMENT',
+                                                   Map([str(current_tick)], [float(agent.CF_DOWNPAYMENT)])),
+                                               (
+                                                   'CF_DOWNPAYMENT_NEW_PLANTS',
+                                                   Map([str(current_tick)], [float(agent.CF_DOWNPAYMENT_NEW_PLANTS)])),
+
                                                ('CF_STRRESPAYMENT',
                                                 Map([str(current_tick)], [float(agent.CF_STRRESPAYMENT)])),
                                                ('CF_CAPMARKETPAYMENT',
                                                 Map([str(current_tick)], [float(agent.CF_CAPMARKETPAYMENT)])),
                                                (
-                                               'CF_FIXEDOMCOST', Map([str(current_tick)], [float(agent.CF_FIXEDOMCOST)])),
+                                                   'CF_FIXEDOMCOST',
+                                                   Map([str(current_tick)], [float(agent.CF_FIXEDOMCOST)])),
                                                ('CF_COMMODITY', Map([str(current_tick)], [float(agent.CF_COMMODITY)]))
                                            ],
                                            '0')
@@ -504,7 +516,7 @@ class SpineDBReaderWriter:
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
             self.financial_reports_object_classname, powerplant.name, value, 0)
         if not financialresults:
-            print("NO financial results of plant "+ powerplant.name )
+            print("NO financial results of plant " + powerplant.name)
             return None
         return financialresults[0]['parameter_value'].to_dict()
 
@@ -712,8 +724,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'StrategicReserveResults':
         new_db_line = list(db_line)
-        new_db_line[1] = "SRO_" + reps.country   # object name
-        new_db_line[4] =  int(db_line[1])  # alternative
+        new_db_line[1] = "SRO_" + reps.country  # object name
+        new_db_line[4] = int(db_line[1])  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions':  # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
@@ -735,7 +747,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
     elif object_class_name == "Profits" and reps.runningModule == "plotting":
-        #db investment with the object name "tick - iteration"
+        # db investment with the object name "tick - iteration"
         object_name = db_line[1]
         tick, iteration = object_name.split('-')
         new_db_line = list(db_line)

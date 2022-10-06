@@ -11,8 +11,10 @@ class CreatingFinancialReports(DefaultModule):
 
     def __init__(self, reps):
         super().__init__("Creating Financial Reports", reps)
-        reps.dbrw.stage_init_financial_results_structure()
         self.agent = reps.energy_producers[reps.agent]
+        if reps.current_tick == 0:
+            reps.dbrw.stage_init_financial_results_structure()
+            reps.dbrw.stage_init_cash_agent()
 
     def act(self):
         # TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)

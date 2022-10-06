@@ -987,57 +987,6 @@
                     }
                 }
             ],
-            "cash": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "EnergyProducers"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueType",
-                                "position": "hidden",
-                                "value": "map"
-                            },
-                            {
-                                "map_type": "IndexName",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ParameterValueIndex",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "ExpandedValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "Dismantled": [
                 {
                     "Mapping 1": {
@@ -1075,6 +1024,26 @@
                         ]
                     }
                 }
+            ],
+            "old": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1094,7 +1063,6 @@
             "CO2",
             "CandidatePowerPlants",
             "StrategicReserveOperator",
-            "cash",
             "Dismantled"
         ],
         "table_options": {
@@ -1138,8 +1106,8 @@
             "CO2": {},
             "CandidatePowerPlants": {},
             "StrategicReserveOperator": {},
-            "cash": {},
-            "Dismantled": {}
+            "Dismantled": {},
+            "old": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1380,21 +1348,21 @@
                 "2": "string",
                 "3": "string"
             },
-            "cash": {
-                "0": "string",
-                "1": "string",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
-            },
             "Dismantled": {
                 "0": "string",
                 "1": "float"
+            },
+            "old": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string"
             }
         },
         "table_row_types": {
