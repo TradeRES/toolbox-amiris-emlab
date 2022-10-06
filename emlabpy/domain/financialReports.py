@@ -64,62 +64,29 @@ class FinancialPowerPlantReport(ImportObject):
             else:
                 self.capacityMarketRevenues_in_year = 0
 
-    def getTime(self):
-        return self.tick
-
-    def getIteration(self):
-        return self.iteration
-
     def setTime(self, tick):
         self.tick = tick
-
-    def setIteration(self, iteration):
-        self.iteration = iteration
-
-    def getPowerPlant(self):
-        return self.powerPlant
 
     def setPowerPlant(self, powerPlant):
         self.powerPlant = powerPlant
 
-    def getSpotMarketRevenue(self, tick):
-        return self.spotMarketRevenue[tick]
-
     def setSpotMarketRevenue(self, spotMarketRevenue):
         self.spotMarketRevenue = spotMarketRevenue
-
-    def getOverallRevenue(self, tick):
-        return self.overallRevenue[tick]
 
     def setOverallRevenue(self, overallRevenue):
         self.overallRevenue = overallRevenue
 
-    def getProduction(self, tick):
-        return self.production[tick]
-
     def setProduction(self, production):
         self.production = production
-
-    def getPowerPlantStatus(self, tick):
-        return self.powerPlantStatus[tick]
 
     def setPowerPlantStatus(self, powerPlantStatus):
         self.powerPlantStatus= powerPlantStatus
 
-    def getTotalYearlyProfit(self, tick):
-        return self.totalProfits
-
     def setTotalYearlyProfit(self, profit):
         self.totalProfits= profit
 
-    def getCommodityCosts(self):
-        return self.commodityCosts
-
     def setCommodityCosts(self, commodityCosts):
         self.commodityCosts = commodityCosts
-
-    def getCo2Costs(self):
-        return self.co2Costs
 
     def setCo2Costs(self, co2Costs):
         self.co2Costs = co2Costs
@@ -127,51 +94,8 @@ class FinancialPowerPlantReport(ImportObject):
     def setTotalCosts(self, totalCosts):
         self.totalCosts = totalCosts
 
-
-    def getFullLoadHours(self):
-        return self.fullLoadHours
-
-    def setFullLoadHours(self, fullLoadHours):
-        self.fullLoadHours = fullLoadHours
-
-    def getVariableCosts(self):
-        return self.variableCosts
-
     def setVariableCosts(self, variableCosts):
         self.variableCosts = variableCosts
 
-    def getFixedCosts(self):
-        return self.fixedCosts
-
     def setFixedCosts(self, fixedCosts):
         self.fixedCosts = fixedCosts
-
-    def getFixedOMCosts(self):
-        return self.fixedOMCosts
-
-    def setFixedOMCosts(self, fixedOMCosts):
-        self.fixedOMCosts = fixedOMCosts
-
-    def getLongTermMarketRevenue(self):
-        return self.longTermMarketRevenue
-
-    def setLongTermMarketRevenue(self, longTermMarketRevenue):
-        self.longTermMarketRevenue = longTermMarketRevenue
-
-    # def getCapacityMarketRevenue(self):
-    #     return self.capacityMarketRevenues
-
-    # def setCapacityMarketRevenue(self, capacityMarketRevenue):
-    #     self.capacityMarketRevenues = capacityMarketRevenue
-
-    def getStrategicReserveRevenue(self):
-        return self.strategicReserveRevenue
-
-    def setStrategicReserveRevenue(self, strategicReserveRevenue):
-        self.strategicReserveRevenue = strategicReserveRevenue
-
-    def getCo2HedgingRevenue(self):
-        return self.co2HedgingRevenue
-
-    def setCo2HedgingRevenue(self, co2HedgingRevenue):
-        self.co2HedgingRevenue = co2HedgingRevenue

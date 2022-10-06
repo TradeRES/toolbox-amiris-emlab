@@ -14,32 +14,7 @@ class EMLabAgent(ImportObject):
         self.co2Allowances = 0
         self.lastYearsCo2Allowances = 0
 
-    def getName(self):
-        return self.name
 
-    def setName(self, name):
-        self.name = name
-
-    def getCash(self):
-        return self.cash
-
-    def setCash(self, cash):
-        self.cash = cash
-
-    def toString(self):
-        return self.getName()
-
-    # def getCo2Allowances(self):
-    #     return self.__co2Allowances
-    #
-    # def setCo2Allowances(self, co2Allowances):
-    #     self.__co2Allowances = co2Allowances
-    #
-    # def getLastYearsCo2Allowances(self):
-    #     return self.__lastYearsCo2Allowances
-    #
-    # def setLastYearsCo2Allowances(self, lastYearsCo2Allowances):
-    #     self.__lastYearsCo2Allowances = lastYearsCo2Allowances
 
 class BigBank(EMLabAgent):
 

@@ -27,42 +27,19 @@ class CashFlow:
         self.CAPMARKETPAYMENT = "CAPMARKETPAYMENT"
         self.CO2HEDGING = "CO2HEDGING"
 
-    def getTime(self):
-        return self.time
 
     def setTime(self, time):
         self.time = time
 
-    def getFrom(self):
-        return self.from_agent
-
     def setFrom(self, from_agent):
         self.from_agent = from_agent
-
-    def getTo(self):
-        return self.to
 
     def setTo(self, to):
         self.to = to
 
-    def getMoney(self):
-        return self.money
-
     def setMoney(self, money):
         self.money = money
 
-    def getType(self):
-        return self.type
-
     def setType(self, type):
         self.type = type
-
-    def toString(self):
-        return "from " + self.getFrom() + " to " + self.getTo() + " type " + str(self.getType()) + " amount " + str(self.getMoney())
-
-    def getRegardingPowerPlant(self):
-        return self.regardingPowerPlant
-
-    def setRegardingPowerPlant(self, regardingPowerPlant):
-        self.regardingPowerPlant = regardingPowerPlant
 

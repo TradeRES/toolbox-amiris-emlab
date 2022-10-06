@@ -5,10 +5,6 @@ Jim Hommes - 13-5-2021
 """
 from domain.import_object import *
 
-
 class Zone(ImportObject):
     pass
 
-
-class PowerGridNode(ImportObject):
-    pass

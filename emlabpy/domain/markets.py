@@ -43,36 +43,6 @@ class ElectricitySpotMarket(Market):
             self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
 
 
-    def getValueOfLostLoad(self):
-        return self.valueOfLostLoad
-
-    def setValueOfLostLoad(self, valueOfLostLoad):
-        self.valueOfLostLoad = valueOfLostLoad
-
-    def getDemandGrowthTrend(self):
-        return self.demandGrowthTrend
-
-    def setDemandGrowthTrend(self, demandGrowthTrend):
-        self.demandGrowthTrend = demandGrowthTrend
-
-    def getHourlyDemand(self):
-        return self.hourlyDemand
-
-    def setHourlyDemand(self, hourlydemand):
-        self.hourlyDemand = hourlydemand
-
-    def getZone(self):
-        return self.zone
-
-    def setZone(self, zone):
-        self.zone = zone
-
-
-
-    def peakLoadbyZoneMarket(self):
-        return max(self.hourlyDemand)
-
-
 class CapacityMarket(Market):
     """"""
     def __init__(self, name: str):

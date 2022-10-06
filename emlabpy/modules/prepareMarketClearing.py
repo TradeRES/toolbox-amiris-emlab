@@ -78,7 +78,7 @@ class PrepareMarket(DefaultModule):
 
         #demand = ["./timeseries/demand/load.csv"] * len(self.Years)
         wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-        demand = wholesale_market.getHourlyDemand()
+        demand = wholesale_market.hourlyDemand
         path_demand = 'amiris_workflow\\amiris-config\\data\\load.csv'
         write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
         demand_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), path_demand )

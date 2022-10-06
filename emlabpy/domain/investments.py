@@ -5,7 +5,7 @@ class InvestmentDecisions(ImportObject):
         super().__init__(name)
         self.invested_in_iteration = dict()
         self.invested_in_tick = dict()
-#   def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+
     def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
         """"
         This function is being read for the plotting. The investment decisions are saved in the invest module

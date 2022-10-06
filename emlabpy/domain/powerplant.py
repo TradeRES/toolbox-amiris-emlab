@@ -265,13 +265,6 @@ class PowerPlant(EMLabAgent):
         else: # plant is expected to be dismantled
             return False
 
-
-    # def getAvailableCapacity(self, currentTick):
-    #     if self.isOperational(currentTick):
-    #         return self.getActualNominalCapacity()
-    #     else:
-    #         return 0
-
     def calculateActualLeadtime(self):
         actual = None
         actual = self.actualLeadtime
@@ -340,11 +333,6 @@ class PowerPlant(EMLabAgent):
         return self.reps.findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(self.getLocation(),
                                                                                       self.getTechnology())
 
-    # general
-    def setName(self, label):
-        self.name = label
-        self.label = label
-
     def getTechnology(self):
         return self.technology
 
@@ -360,17 +348,12 @@ class PowerPlant(EMLabAgent):
     def setOwner(self, owner):
         self.owner = owner
 
-    def getOwner(self):
-        return self.owner
-
     def getCapacity(self):
         return self.capacity
 
     def setCapacity(self, capacity):
         self.capacity = capacity
 
-
-    # times
     def setConstructionStartTime(self):  # in terms of tick
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
@@ -394,9 +377,6 @@ class PowerPlant(EMLabAgent):
     def getActualPermittime(self):
         return self.actualPermittime
 
-    def getActualEfficiency(self):
-        return self.actualEfficiency
-
     def setActualEfficiency(self, actualEfficiency):
         self.actualEfficiency = actualEfficiency
 
@@ -418,31 +398,8 @@ class PowerPlant(EMLabAgent):
             raise ValueError("ERROR: " + self.name + " power plant is being set with a negative capacity!")
         self.actualNominalCapacity = actualNominalCapacity
 
-    def getAwardedPowerinMWh(self):
-        return self.AwardedPowerinMWh
-
-    def getCostsinEUR(self):
-        return self.CostsinEUR
-
-    def getOfferedPowerinMWH(self):
-        return self.OfferedPowerinMWH
-
-    def getReceivedMoneyinEUR(self):
-        return self.ReceivedMoneyinEUR
-
-    def getProfit(self):
-        return self.operationalProfit
-
     def getFuelMix(self):
         return self.fuelMix
-
-    def setFuelMix(self, fuelMix):
-        self.fuelMix = fuelMix
-
-    def updateFuelMix(self, fuelMix):
-        self.setFuelMix(fuelMix)
-
-    # loans
 
     def getLoan(self):
         return self.loan
@@ -450,18 +407,8 @@ class PowerPlant(EMLabAgent):
     def setLoan(self, loan):
         self.loan = loan
 
-    def getDownpayment(self):
-        return self.downpayment
-
     def setDownpayment(self, downpayment):
         self.downpayment = downpayment
-
-    def createOrUpdateLoan(self, loan):
-        self.setLoan(loan)
-
-    def createOrUpdateDownPayment(self, downpayment):
-        self.setDownpayment(downpayment)
-
 
 
 class Decommissioned(ImportObject):

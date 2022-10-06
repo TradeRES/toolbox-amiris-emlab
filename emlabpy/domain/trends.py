@@ -134,18 +134,6 @@ class TimeSeriesImpl():
     def setValue(self, time, value):
         self.timeSeries[int(time) - int(self.startingYear)] = value
 
-    def getTimeSeries(self):
-        return self.timeSeries
-
-    def setTimeSeries(self, timeSeries):
-        self.timeSeries = timeSeries
-
-    def getStartingYear(self):
-        return self.startingYear
-
-    def setStartingYear(self, startingYear):
-        self.startingYear = startingYear
-
 
 class GeometricTrendRegression(Trend):
     def __init__(self, name):

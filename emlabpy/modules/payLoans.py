@@ -36,7 +36,7 @@ class PayForLoansRole(DefaultModule):
                             # print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
                             # print("Number of payments done {0}, total needed: {1}".format( loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()))
                 else:
-                    downpayment = plant.getDownpayment()
+                    downpayment = plant.downpayment
                     if downpayment is not None:
                         if downpayment.getNumberOfPaymentsDone() < downpayment.getTotalNumberOfPayments():
                             # downpayment are made after the permit time

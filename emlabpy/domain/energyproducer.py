@@ -71,101 +71,12 @@ class EnergyProducer(EMLabAgent):
             pd_series = pd.Series(values, index = index)
             setattr(self, parameter_name, pd_series)
 
-    def calculateAveragePastOperatingProfit(self, pp, horizon):
-        averagePastOperatingProfit = 0
-        for i in range(-horizon, 1):
-            averagePastOperatingProfit += calculatePastOperatingProfitInclFixedOMCost(pp,
-                                                                                      getCurrentTick() + i) / horizon
-        logging.INFO(" %s has had an average operating profits of %s", pp, averagePastOperatingProfit)
-        return averagePastOperatingProfit
-
-    def calculatePastOperatingProfitInclFixedOMCost(self, plant, clearingTick):
-        rep = self.reps.findFinancialPowerPlantReportsForPlantForTime(plant, clearingTick)
-        if rep is not None:
-            logging.INFO(
-                " %s report: tick %s , revenue: %s  + rep.getOverallRevenue()  var cost: rep.getVariableCosts()  fixed om cost: rep.getFixedOMCosts()",
-                plant, clearingTick)
-            return rep.getOverallRevenue() - rep.getVariableCosts() - rep.getFixedOMCosts()
-        logging.INFO("No financial report for %s for tick %s, so returning 0", plant, clearingTick)
-        return Double.MAX_VALUE  # TODO avoid dismantling simply becuase you have no data for the full horizon?
-
-    def isWillingToInvest(self):
-        return self.willingToInvest
-
-    def setWillingToInvest(self, willingToInvest):
-        self.willingToInvest = willingToInvest
-
-    def getDownpaymentFractionOfCash(self):
-        return self.downpaymentFractionOfCash
-
-    def setDownpaymentFractionOfCash(self, downpaymentFractionOfCash):
-        self.downpaymentFractionOfCash = downpaymentFractionOfCash
-
     def getLoanInterestRate(self):
         return self.loanInterestRate
-
-    def setLoanInterestRate(self, loanInterestRate):
-        self.loanInterestRate = loanInterestRate
-
-    def getNumberOfYearsBacklookingForForecasting(self):
-        return self.numberOfYearsBacklookingForForecasting
-
-    def setNumberOfYearsBacklookingForForecasting(self, numberOfYearsBacklookingForForecasting):
-        self.numberOfYearsBacklookingForForecasting = numberOfYearsBacklookingForForecasting
-
-    def getDismantlingProlongingYearsAfterTechnicalLifetime(self):
-        return self.dismantlingProlongingYearsAfterTechnicalLifetime
-
-    def setDismantlingProlongingYearsAfterTechnicalLifetime(self, dismantlingProlongingYearsAfterTechnicalLifetime):
-        self.dismantlingProlongingYearsAfterTechnicalLifetime = dismantlingProlongingYearsAfterTechnicalLifetime
 
     def getDismantlingRequiredOperatingProfit(self):
         return self.dismantlingRequiredOperatingProfit
 
-    def setDismantlingRequiredOperatingProfit(self, dismantlingRequiredOperatingProfit):
-        self.dismantlingRequiredOperatingProfit = dismantlingRequiredOperatingProfit
-
-    def getEquityInterestRate(self):
-        return self.equityInterestRate
-
-    def setEquityInterestRate(self, investmentDiscountRate):
-        self.equityInterestRate = investmentDiscountRate
-
-    def getLongTermContractMargin(self):
-        return self.longTermContractMargin
-
-    def setLongTermContractMargin(self, longTermContractMargin):
-        self.longTermContractMargin = longTermContractMargin
-
-    def getLongTermContractPastTimeHorizon(self):
-        return self.longTermContractPastTimeHorizon
-
-    def setLongTermContractPastTimeHorizon(self, longTermContractPastTimeHorizon):
-        self.longTermContractPastTimeHorizon = longTermContractPastTimeHorizon
-
     def getDebtRatioOfInvestments(self):
         return self.debtRatioOfInvestments
 
-    def setDebtRatioOfInvestments(self, debtRatioOfInvestments):
-        self.debtRatioOfInvestments = debtRatioOfInvestments
-
-    def getPriceMarkUp(self):
-        return self.priceMarkUp
-
-    def setPriceMarkUp(self, priceMarkUp):
-        self.priceMarkUp = priceMarkUp
-
-    def getInvestmentRole(self):
-        return self.investmentRole
-
-    def setInvestmentRole(self, investmentRole):
-        self.investmentRole = investmentRole
-
-    def getInvestorMarket(self):
-        return self.investorMarket
-
-    def setInvestorMarket(self, investorMarket):
-        self.investorMarket = investorMarket
-
-    def getNumberOfYearsBacklookingForForecasting(self):
-        return self.numberOfYearsBacklookingForForecasting

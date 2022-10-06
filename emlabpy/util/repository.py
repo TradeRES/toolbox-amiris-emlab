@@ -16,7 +16,7 @@ from domain.substances import *
 from domain.CandidatePowerPlant import *
 from domain.trends import *
 from domain.zones import *
-from domain.contract import *
+
 from domain.loans import Loan
 from util import globalNames
 from domain.bids import Bid

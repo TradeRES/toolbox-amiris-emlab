@@ -123,29 +123,11 @@ class PowerGeneratingTechnology(ImportObject):
 
     # --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def getMaximumInstalledCapacityFractionInCountry(self):
-        return self.maximumInstalledCapacityFractionInCountry
-
-    def setMaximumInstalledCapacityFractionInCountry(self, maximumInstalledCapacityFractionInCountry):
-        self.maximumInstalledCapacityFractionInCountry = maximumInstalledCapacityFractionInCountry
-
-    # def getMaximumInstalledCapacityFractionPerAgent(self):
-    #     return self.maximumInstalledCapacityFractionPerAgent
-    #
-    # def setMaximumInstalledCapacityFractionPerAgent(self, maximumInstalledCapacityFractionPerAgent):
-    #     self.maximumInstalledCapacityFractionPerAgent = maximumInstalledCapacityFractionPerAgent
-
     def getDepreciationTime(self):
         return self.depreciation_time
 
     def setDepreciationTime(self, depreciation_time):
         self.depreciation_time = depreciation_time
-
-    def getName(self):
-        return self.name
-
-    def setName(self, label):
-        self.name = label
 
     #     * assumption: the first is the main fuel
     def getMainFuel(self):
@@ -154,100 +136,34 @@ class PowerGeneratingTechnology(ImportObject):
         else:
             return None
 
-    #
-    # def getCoCombustionFuels(self):
-    #     coFuels = HashSet(self.getFuels())
-    #     coFuels.remove(self.getMainFuel())
-    #     return coFuels
-
     def getCapacity(self):
         return self.capacity
 
-    def setCapacity(self, capacity):
-        self.capacity = capacity
-
     def getEfficiency(self, time):
-        #  print(help(self.efficiency_time_series))
         return self.efficiency_time_series.get_value(time)
-
-    def getInvestmentCostTimeSeries(self):
-        return self.investmentCostTimeSeries
-
-    def setInvestmentCostTimeSeries(self, investmentCostTrend):
-        self.investmentCostTimeSeries = investmentCostTrend
-
-    def getEfficiencyTimeSeries(self):
-        return self.efficiency_time_series
-
-    def setEfficiencyTimeSeries(self, efficiencyTrend):
-        self.efficiency_time_series = efficiencyTrend
 
     def getCo2CaptureEffciency(self):
         return self.co2CaptureEffciency
 
-    def setCo2CaptureEffciency(self, co2CaptureEffciency):
-        self.co2CaptureEffciency = co2CaptureEffciency
-
     def getFixedOperatingCostModifierAfterLifetime(self):
         return self.fixed_operating_cost_modifier_after_lifetime
-
-    def setFixedOperatingCostModifierAfterLifetime(self, fixedOperatingCostModifierAfterLifetime):
-        self.fixed_operating_cost_modifier_after_lifetime = fixedOperatingCostModifierAfterLifetime
 
     def getExpectedLifetime(self):
         return self.expected_lifetime
 
-    def setExpectedLifetime(self, expected_lifetime):
-        self.expected_lifetime = expected_lifetime
-
     def getExpectedLeadtime(self):
         return self.expected_leadtime
-
-    def setExpectedLeadtime(self, expected_leadtime):
-        self.expected_leadtime = expected_leadtime
 
     def getExpectedPermittime(self):
         return self.expected_permittime
 
-    def setExpectedPermittime(self, expected_permittime):
-        self.expected_permittime = expected_permittime
-
-    def getMinimumFuelQuality(self):
-        return self.minimum_fuel_quality
-
-    def setMinimumFuelQuality(self, minimum_fuel_quality):
-        self.minimum_fuel_quality = minimum_fuel_quality
-
     def getFuels(self):
         return self.fuels
-
-    def setFuels(self, fuels):
-        self.fuels = fuels
-
-    def toString(self):
-        return self.getName()
-
-    def isApplicableForLongTermContract(self):
-        return self.applicable_for_long_term_contract
-
-    def setApplicableForLongTermContract(self, applicableForLongTermContract):
-        self.applicable_for_long_term_contract = applicableForLongTermContract
 
     def getInvestmentCost(self, time):
         #   print(help(self.investment_cost_time_series))
         return self.investment_cost_time_series.get_value(time)
 
-    def isIntermittent(self):
-        return self.intermittent
-
-    def setIntermittent(self, intermittent):
-        self.intermittent = intermittent
-
     def getMaximumCapacityinCountry(self):
         return self.maximum_installed_capacity_in_country
 
-    # def getMinimumRunningHours(self):
-    #     return self.minimumRunningHours
-    #
-    # def setMinimumRunningHours(self, minimumRunningHours):
-    #     self.minimumRunningHours = minimumRunningHours

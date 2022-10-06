@@ -173,13 +173,13 @@ class Investmentdecision(DefaultModule):
         downpayment = self.reps.createDownpayment(self.agent.name, manufacturer.name, totalDownPayment / buildingTime, buildingTime ,
                                            self.reps.current_tick, 0 , newplant)
         # the rest of downpayments are scheduled. Are saved to the power plant
-        newplant.createOrUpdateDownPayment(downpayment)
+        newplant.setDownpayment(downpayment)
         #--------------------------------------------------------------------------------------creating loans
         amount = self.reps.determineLoanAnnuities(investmentCostPayedByDebt, newplant.getTechnology().getDepreciationTime(),
                                              self.agent.getLoanInterestRate())
         loan = self.reps.createLoan(self.agent.name, bigbank.name, amount, newplant.getTechnology().getDepreciationTime(),
                                     (newplant.commissionedYear - self.reps.start_simulation_year), 0 ,newplant)
-        newplant.createOrUpdateLoan(loan)
+        newplant.setLoan(loan)
         return newplant
 
     def setTimeHorizon(self):

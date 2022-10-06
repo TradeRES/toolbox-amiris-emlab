@@ -45,9 +45,6 @@ class CandidatePowerPlant(PowerPlant):
         elif parameter_name == 'ViableInvestment':
             self.viableInvestment = bool(parameter_value)
 
-    def setInvestedCapital(self):
-        pass
-
     def specifyTemporaryPowerPlant(self, tick, energyProducer, location):
         self.setOwner(energyProducer)
         self.setLocation(location)
@@ -63,16 +60,10 @@ class CandidatePowerPlant(PowerPlant):
                                         self.technology.expected_permittime +
                                         round(random() * self.technology.expected_lifetime)) + 2
 
-    # candidate power plants can be invested_in_iteration or not
-    def isViableInvestment(self):
-        return self.viableInvestment
 
     def setViableInvestment(self, viableInvestment):
         self.viableInvestment = viableInvestment
 
-    def get_candidate_power_plant_capacity_by_id(self, id):
-        return [i.capacity for i in self.candidatePowerPlants.values()
-                if i.id == id]
 
 class FutureStorageTrader(ImportObject):
     def __init__(self, name):

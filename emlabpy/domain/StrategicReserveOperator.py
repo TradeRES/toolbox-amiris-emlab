@@ -44,26 +44,14 @@ class StrategicReserveOperator(ImportObject):
     def getZone(self):
         return self.zone
 
-    def setZone(self, zone):
-        self.zone = zone
-
     def getReservePriceSR(self):
         return self.reservePriceSR
-
-    def setReservePriceSR(self, reservePriceSR):
-        self.reservePriceSR = reservePriceSR
 
     def getReserveVolumePercentSR(self):
         return self.reserveVolumePercentSR
 
-    def setReserveVolumePercentSR(self, reserveVolumePercentSR):
-        self.reserveVolumePercentSR = reserveVolumePercentSR
-
     def getCash(self):
         return self.cash
-
-    def setCash(self, cash):
-        self.cash = cash
 
     def getPlants(self):
         return self.list_of_plants

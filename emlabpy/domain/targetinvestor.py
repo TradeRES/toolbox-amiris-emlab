@@ -15,12 +15,3 @@ class TargetInvestor(EnergyProducer):
 
     def getPowerGenerationTechnologyTargets(self):
         return self.targetTechnology
-
-    def setPowerGenerationTechnologyTargets(self, targetTechnology):
-        self.targetTechnology = targetTechnology
-
-    def getSpecificPowerGridNode(self):
-        return self.targetNode
-
-    def setSpecificPowerGridNode(self, targetNode):
-        self.targetNode = targetNode
