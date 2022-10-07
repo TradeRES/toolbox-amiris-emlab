@@ -30,8 +30,9 @@ from iovrmr_tools import (
     sum_per_agent,
     CONVENTIONAL_AGENT_RESULTS,
     sum_per_plant,
-    clear_folder
-
+    clear_folder,
+    EXCHANGE,
+    calculate_residual_load,
 )
 
 
@@ -240,6 +241,7 @@ def aggregate_results(data_manager, config, params):
     files = get_all_csv_files_in_folder(folder=folder_name)
     to_concat = []
     conventional_series = []
+    residual_load_results = {}
     for file in files:
         file_name = file.rsplit("/", 1)[1].rsplit(".", 1)[0]
         if file_name in OPERATOR_AGENTS:
@@ -252,7 +254,11 @@ def aggregate_results(data_manager, config, params):
             outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
             outputs_per_agent.rename(columns=column_names, inplace=True)
             to_concat.append(outputs_per_agent)
-        elif file_name in CONVENTIONAL_AGENT_RESULTS.keys():
+
+            if file_name != "StorageTrader":
+                residual_load_results[file_name] = type_df
+
+        elif file_name in CONVENTIONAL_AGENT_RESULTS:
             conventional_df = pd.read_csv(file, sep=";")
             column_names = {
                 "VariableCostsInEURperPlant": AmirisOutputs.VARIABLE_COSTS_IN_EURO.name,
@@ -262,6 +268,12 @@ def aggregate_results(data_manager, config, params):
             column = CONVENTIONAL_AGENT_RESULTS[file_name]
             column_per_plant = sum_per_plant(conventional_df, column, column_names[column])
             conventional_series.append(column_per_plant)
+
+        elif file_name in EXCHANGE:
+            type_df = pd.read_csv(file, sep=";")
+            residual_load_results[file_name] = type_df
+
+    residual_load = calculate_residual_load(residual_load_results)
 
     if conventional_series:
         to_concat.append(pd.concat(conventional_series, axis=1))
@@ -276,7 +288,10 @@ def aggregate_results(data_manager, config, params):
 
     if params["args"]["write"]:
         all_outputs_per_agent.to_csv(
-            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name"]
+            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_aggregated_results"]
+        )
+        residual_load.to_csv(
+            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_residual_load"]
         )
 
     with data_manager.overwrite:

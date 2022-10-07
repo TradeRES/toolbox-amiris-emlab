@@ -141,4 +141,5 @@ workflow:
         write_to_dmgr: all_outputs_per_agent
       args:
         write: True
-        file_name: amiris_results.csv
+        file_name_aggregated_results: amiris_results.csv
+        file_name_residual_load: residual_load.csv
