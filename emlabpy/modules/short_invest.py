@@ -75,7 +75,7 @@ class ShortInvestmentdecision(Investmentdecision):
         if (
                 self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) or self.capacityOfTechnologyInPipeline > 9000:
             logging.info(" will not invest in '%s  technology because there's too much capacity in the pipeline",
-                         self.technology)
+                         technology.name)
             self.quickInvestabletechnologies.remove(technology.name)
             return False
         elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:

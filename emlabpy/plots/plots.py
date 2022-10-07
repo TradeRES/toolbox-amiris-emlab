@@ -738,11 +738,6 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     #cost_recovery.sort_index()
     cr = cost_recovery.sort_index()
 
-    # invested_power_plants = []
-    # for name, investment in reps.investmentDecisions.items():
-    #     print("here")
-    #     if len(investment.invested_in_tick) > 0:
-    #         invested_power_plants.append(name)
 
     return cash_per_agent, total_costs, cr, new_plants_loans
 
@@ -775,7 +770,8 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
         for plant in powerplants_per_tech:
             irr_per_plant = reps.get_irrs_for_plant(plant.name)
             if irr_per_plant is None:
-                print("power plant in pipeline", plant.name, plant.id)
+                pass
+                #print("power plant in pipeline", plant.name, plant.id)
             else:
                 npv_per_plant = reps.get_npvs_for_plant(plant.name)/plant.capacity
                 irrs_per_year[plant.name] = irr_per_plant
@@ -818,21 +814,25 @@ def prepare_screening_curves(reps, year):
     co2prices = pd.Series(values, index = index)
     co2price = co2prices[year]
     for tech_name, tech in reps.power_generating_technologies.items():
-        annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -tech.investment_cost_eur_MW)
-        if tech.fuel == "":
-            fuel_price = np.int64(0)
-            fuel_perMWh= np.int64(0)
-        else:
-            calculatedPrices = tech.fuel.simulatedPrice.to_dict()
-            df = pd.DataFrame(calculatedPrices['data'])
-            df.set_index(0, inplace=True)
-            fuel_price = df.at[str(year), 1]
-            # Co2EmissionsInTperMWH / efficiency = CO2 emissions per MWh
-            fuel_perMWh = tech.fuel.co2_density
+        if tech.intermittent== False:
+            annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -tech.investment_cost_eur_MW)
+            if tech.fuel == "":
+                fuel_price = np.int64(0)
+                fuel_perMWh= np.int64(0)
+            else:
+                calculatedPrices = tech.fuel.simulatedPrice.to_dict()
+                df = pd.DataFrame(calculatedPrices['data'])
+                df.set_index(0, inplace=True)
+                fuel_price = df.at[str(year), 1]
+                # Co2EmissionsInTperMWH / efficiency = CO2 emissions per MWh
+                fuel_perMWh = tech.fuel.co2_density
 
-        opex =( tech.variable_operating_costs + fuel_price  + co2price  * fuel_perMWh ) * hours/ tech.efficiency
-        total = annual_cost_capital + opex  + tech.fixed_operating_costs
-        yearly_costs[tech_name] = total
+            opex =( tech.variable_operating_costs + fuel_price  + co2price  * fuel_perMWh ) * hours/ tech.efficiency
+            total = annual_cost_capital + opex  + tech.fixed_operating_costs
+            yearly_costs[tech_name] = total
+        else:
+            pass
+            #print("dont graph renewables", tech_name)
     return yearly_costs
 
 
@@ -1001,8 +1001,6 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
         peak_load_without_trend = max(load)
         peak_load_volume = peak_load_without_trend * trend
         count = 0
-        # from Bart van Nobelen
-        # some blocks of energy actually cannot be dispatched,
         for i in load:
             x = i * trend
             if x > total_capacity.loc[year]:
@@ -1048,8 +1046,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, test_tick, test_tech
         ticks_to_generate)
     plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                      CM_clearing_price, total_costs_CM,  ran_capacity_market ,  path_to_plots, colors_unique_techs)
-    # section ----------------------
-    -------------------------------------------------------------------------Cash energy producer
+    # section ---------------------------------------------------------------Cash energy producer
 
     cash_flows_energy_producer,  total_costs, cost_recovery, new_plants_loans = prepare_cash_per_agent(reps, ticks_to_generate)
     plot_cost_recovery( cost_recovery, path_to_plots)
@@ -1132,8 +1129,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, test_tick, test_tech
     yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
     #candidates = reps.get_unique_candidate_technologies_names()
     # yearly_costs_candidates_for_test_year = yearly_costs[candidates]
-
-
     plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, first_year + reps.lookAhead,
                                     colors_unique_candidates)
     plot_screening_curve(yearly_costs, path_to_plots, test_year, colors_unique_techs)
@@ -1182,7 +1177,7 @@ technology_colors = {
 
 try:
     # "DE2050_SD4_PH3_MI10000_totalProfits_extendedDE_10GWreal_MW_future"
-    name = "DE2050_SD4_PH3_MI15000_totalProfits_RES_extended_15GWreal_MW_future"
+    name = ""
     electricity_prices = False  # write False if not wished to graph electricity prices"
 
     if electricity_prices == False:

@@ -50,3 +50,6 @@ scripts/amiris-jar-with-dependencies.jar
 .spinetoolbox/items/energy_exchange/energy exchange.sqlite
 emlabpy/testEMLABPY.py
 
+emlabpy/plots/plots.ipynb
+emlabpy/years.txt
+emlabpy/years.txt
