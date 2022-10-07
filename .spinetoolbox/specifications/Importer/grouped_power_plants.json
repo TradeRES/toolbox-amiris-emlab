@@ -212,68 +212,10 @@
                         ]
                     }
                 }
-            ],
-            "extendedDE_fossils": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "powerplants_grouped_nogas": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
             ]
         },
         "selected_tables": [
-            "powerplants_grouped"
+            "extendedDE"
         ],
         "table_options": {
             "germany2019": {
@@ -285,9 +227,7 @@
             "extendedDE": {},
             "extendedNL": {},
             "groupedDE_RES": {},
-            "Sheet1": {},
-            "extendedDE_fossils": {},
-            "powerplants_grouped_nogas": {}
+            "Sheet1": {}
         },
         "table_types": {
             "germany2019": {
@@ -350,29 +290,6 @@
                 "1": "string",
                 "2": "string",
                 "3": "string"
-            },
-            "extendedDE_fossils": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string"
-            },
-            "powerplants_grouped_nogas": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float"
             }
         },
         "table_row_types": {},

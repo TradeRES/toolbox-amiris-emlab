@@ -7,38 +7,16 @@ from functools import reduce
 import pandas as pd
 import seaborn as sns
 sns.set_theme(style="white")
-pfad = r""
-df = pd.read_excel(pfad,
-                   sheet_name='extendedDE')
-sns.relplot(x="Age", y="Efficiency", hue="Technology", size="Capacity",
-            sizes=(40, 400), alpha=.5, palette="muted",
-            height=6, data=df)
-plt.show()
-technology_colors = {
-    'Biomass_CHP_wood_pellets_DH': "green",
-    'Coal PSC': "black",
-    "Fuel oil PGT": "gray",
-    'Lignite PSC': "darkgoldenrod",
-    'CCGT': "indianred",
-    'OCGT': "darkred",
-    'Hydropower_reservoir_medium': "darkcyan",
-    'PV_utility_systems': "gold",
-    'WTG_onshore': "cornflowerblue",
-    "WTG_offshore": "navy",
-    "Nuclear": "mediumorchid",
-    "Hydropower_ROR": "aquamarine",
-    "Lithium_ion_battery": "hotpink",
-    "Pumped_hydro": "darkcyan"
-}
-colors = []
-for i in df["Technology"]:
-    colors.append(technology_colors[i])
-plt.scatter(df["Age"], df["Efficiency"], df["Capacity"],  colors, alpha=0.5)
-plt.title('Initial capacities')
-plt.xlabel('Age', fontsize='medium')
-plt.ylabel('Efficiency', fontsize='medium')
-plt.show()
-print("here")
+
+a=pd.Series([1, 2, 3])
+a.rename("my_name")
+
+a.to_csv("a.csv")
+print("h")
+pfad = r"C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\amiris_workflow\output\residual_load.csv"
+df = pd.read_csv(pfad)
+
+
 
 
 

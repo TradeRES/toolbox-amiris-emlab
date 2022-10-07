@@ -8,7 +8,6 @@
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [
-        "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
         "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
     ],
     "cmdline_args": [],

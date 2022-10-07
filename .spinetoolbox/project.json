@@ -512,39 +512,6 @@
                 ]
             },
             {
-                "name": "from importing EnergyExchange to energy exchange",
-                "from": [
-                    "importing EnergyExchange",
-                    "right"
-                ],
-                "to": [
-                    "energy exchange",
-                    "left"
-                ]
-            },
-            {
-                "name": "from specify year to importing EnergyExchange",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "importing EnergyExchange",
-                    "left"
-                ]
-            },
-            {
-                "name": "from importing EnergyExchange to import AMIRIS",
-                "from": [
-                    "importing EnergyExchange",
-                    "right"
-                ],
-                "to": [
-                    "import AMIRIS",
-                    "left"
-                ]
-            },
-            {
                 "name": "from specify year to import AMIRIS",
                 "from": [
                     "specify year",
@@ -665,7 +632,7 @@
             "type": "Importer",
             "description": "",
             "x": -1376.434968875306,
-            "y": -465.12694287403167,
+            "y": -467.79464974645464,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -913,10 +880,6 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
-                    true
-                ],
-                [
                     "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
                 ]
@@ -943,8 +906,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -11.667438987430153,
-            "y": -453.96958297645295,
+            "x": -8.999732115007212,
+            "y": -464.64041046614466,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1019,6 +982,10 @@
                 {
                     "type": "resource",
                     "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv"
                 }
             ]
         },
@@ -1047,8 +1014,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -574.5006478120412,
-            "y": -453.34530051967283,
+            "x": -577.168354684464,
+            "y": -453.3453005196728,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1097,30 +1064,10 @@
                 }
             ]
         },
-        "importing EnergyExchange": {
-            "type": "Importer",
-            "description": "",
-            "x": -346.19345568915554,
-            "y": -623.9811574860285,
-            "specification": "Import Energy Exchange",
-            "cancel_on_error": false,
-            "purge_before_writing": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
-                    true
-                ],
-                [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    false
-                ]
-            ]
-        },
         "energy exchange": {
             "type": "Data Store",
             "description": "",
-            "x": -20.210946261066276,
+            "x": -22.878653133489216,
             "y": -686.2738230203005,
             "url": {
                 "dialect": "sqlite",
