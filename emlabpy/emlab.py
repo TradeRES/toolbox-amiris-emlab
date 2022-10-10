@@ -125,7 +125,6 @@ try:  # Try statement to always close DB properly
                                   str("{:05d}".format(pp_counter))
                                   ))
         # saving ids in the DB
-        # todo assign id to installed power plants to unifor id and name
         spinedb_reader_writer.stage_power_plant_id_and_loans(reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
 
@@ -143,8 +142,6 @@ try:  # Try statement to always close DB properly
     # From here on modules will be run according to the previously set booleans
     if run_decommission_module:
         logging.info('Start Run dismantle')
-        payingLoans = PayForLoansRole(reps)
-        payingLoans.act_and_commit()
         dismantling = Dismantle(reps)
         dismantling.act_and_commit()
         logging.info('End Run dismantle')
