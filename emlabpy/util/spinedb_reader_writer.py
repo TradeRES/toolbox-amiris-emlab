@@ -102,6 +102,8 @@ class SpineDBReaderWriter:
                 reps.realistic_candidate_capacities_tobe_installed = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_for_future':
                 reps.realistic_candidate_capacities_for_future = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'dummy_capacity':
+                reps.dummy_capacity = int(row['parameter_value'])
             elif row['parameter_name'] == 'npv_with_annuity':
                 reps.npv_with_annuity = bool(row['parameter_value'])
 

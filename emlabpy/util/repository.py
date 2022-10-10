@@ -37,7 +37,7 @@ class Repository:
         """
 
         # section --------------------------------------------------------------------------------------configuration
-        self.simulation_name = "grouped_old_npv_candidatecapacity1_future0"
+        self.simulation_name = "grouped_old_npv_future0_installed0"
         self.country = ""
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent
@@ -60,6 +60,8 @@ class Repository:
         self.fix_prices_to_2020 = False
         self.realistic_candidate_capacities_tobe_installed = False
         self.realistic_candidate_capacities_for_future = False
+        self.dummy_capacity = 1
+
         self.npv_with_annuity = False
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

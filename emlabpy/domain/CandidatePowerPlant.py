@@ -38,12 +38,14 @@ class CandidatePowerPlant(PowerPlant):
             if reps.realistic_candidate_capacities_for_future == True:
                 # this is the capacity that will be tested
                 self.capacity = int(parameter_value)
-        elif reps.realistic_candidate_capacities_tobe_installed == False and parameter_name == 'Capacity':
+            else:
+                self.capacity = reps.dummy_capacity
+        elif reps.realistic_candidate_capacities_tobe_installed == False:
             # this is the capacity that will be in reality installed
-            self.capacityTobeInstalled = int(parameter_value)
-            if reps.realistic_candidate_capacities_for_future == False:
-                # this is the capacity that will be tested
-                self.capacity = int(parameter_value)
+            self.capacityTobeInstalled = reps.dummy_capacity
+            # if reps.realistic_candidate_capacities_for_future == False:
+            #     # this is the capacity that will be tested
+            #     self.capacity = int(parameter_value)
         elif parameter_name == 'Owner':
             self.owner = parameter_value
         elif parameter_name == 'ViableInvestment':
