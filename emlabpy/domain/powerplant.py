@@ -76,7 +76,11 @@ class PowerPlant(EMLabAgent):
             self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
             self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
-            self.commissionedYear = reps.current_year - int(parameter_value)
+            #self.commissionedYear = reps.current_year - int(parameter_value)
+            # if int(self.name) > 10000:
+            #     self.commissionedYear = int(self.name[0:4])
+            # else:
+            #     self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'actualFixedOperatingCost':
             self.actualFixedOperatingCost =  float(parameter_value)
         elif parameter_name == 'dismantleTime':

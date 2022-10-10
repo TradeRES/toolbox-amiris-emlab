@@ -98,8 +98,8 @@ class SpineDBReaderWriter:
                 reps.max_permit_build_time = int(row['parameter_value'])
             elif row['parameter_name'] == 'fix_prices_to_2020':
                 reps.fix_prices_to_2020 = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'realistic_candidate_capacities':
-                reps.realistic_candidate_capacities = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'realistic_candidate_capacities_tobe_installed':
+                reps.realistic_candidate_capacities_tobe_installed = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_for_future':
                 reps.realistic_candidate_capacities_for_future = bool(row['parameter_value'])
             elif row['parameter_name'] == 'npv_with_annuity':
