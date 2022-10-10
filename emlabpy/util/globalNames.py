@@ -52,5 +52,6 @@ amiris_data_path =  os.path.join(  parentpath, 'amiris_workflow\\amiris_data_str
 load_path_DE = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
 load_path_NL = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_NL.csv')
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')
+amiris_ouput_path =  os.path.join(parentpath,'amiris_workflow\\output\\')
 amiris_RAWresults_path = os.path.join(parentpath,'amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv')
 power_plants_path = os.path.join(parentpath,'data\\Power_plants.xlsx')

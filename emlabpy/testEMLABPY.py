@@ -8,13 +8,19 @@ import pandas as pd
 import seaborn as sns
 sns.set_theme(style="white")
 
-a=pd.Series([1, 2, 3])
-a.rename("my_name")
+years = [2020, 2021]
+pfad = r"C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\amiris_workflow\output"
+yearly_electricity_prices = pd.DataFrame()
+residualLoad = pd.DataFrame()
+for year in years:
+    year_excel = pfad + "\\" + str(year) + ".xlsx"
+    df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load"])
+    yearly_electricity_prices.at[:, year] = df['energy_exchange'].ElectricityPriceInEURperMWH
+    residualLoad.at[:, year] = df['residual_load']["0"]
+    print("s")
 
-a.to_csv("a.csv")
-print("h")
-pfad = r"C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\amiris_workflow\output\residual_load.csv"
-df = pd.read_csv(pfad)
+
+
 
 
 
