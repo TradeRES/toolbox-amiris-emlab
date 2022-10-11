@@ -92,6 +92,7 @@ class Investmentdecision(DefaultModule):
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
                         logging.info("to much in pipeline of this technology%s",candidatepowerplant.technology)
+                        print("to much in pipeline of this technology%s",candidatepowerplant.technology)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         break
@@ -104,14 +105,16 @@ class Investmentdecision(DefaultModule):
                                                                       self.reps.investmentIteration,
                                                                       self.futureInvestmentyear,
                                                                       )
-                    if projectvalue > 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
+                    if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
                         highestValue = projectvalue / candidatepowerplant.capacity # capacity is anyways 1
                         bestCandidatePowerPlant = candidatepowerplant
-                    else:
-                        candidatepowerplant.setViableInvestment(False)
-                        logging.info("dont invest in this technology%s",candidatepowerplant.technology)
+                    elif projectvalue < 0:
+                        # the power plant should not be investable in next rounds
                         # saving if the candidate power plant remains or not as investable
+                        candidatepowerplant.setViableInvestment(False)
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+                    else:
+                        logging.info("dont invest in this technology%s",candidatepowerplant.technology)
 
                 # saving: operational profits from candidate plants
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
@@ -266,11 +269,13 @@ class Investmentdecision(DefaultModule):
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
+            print(" will not invest in {} technology because there's too much capacity in the pipeline %s")
             candidatepowerplant.setViableInvestment(False)
             return False
         elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
             logging.info(" will not invest in {} technology because the capacity limits are achieved %s",
                          technology.name)
+            print(" will not invest in {} technology because the capacity limits are achieved %s")
             candidatepowerplant.setViableInvestment(False)
             return False
             # TODO: add if the agent dont have enough cash then change the agent.readytoInvest = False
