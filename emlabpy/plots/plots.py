@@ -42,6 +42,19 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value, insta
         future_year) + '.png', bbox_inches='tight', dpi=300)
 
 
+def plot_profits_per_iteration(profits_per_iteration,  path_to_plots, test_tick, colors_unique_candidates):
+    print('profits per iteration')
+    axs13 = profits_per_iteration.plot(color=colors_unique_candidates)
+    axs13.set_axisbelow(True)
+    plt.xlabel('iterations', fontsize='medium')
+    plt.ylabel('Profits Eur', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.grid()
+    axs13.set_title('Profits candidates in ' + str(test_tick))
+    fig13 = axs13.get_figure()
+    fig13.savefig(path_to_plots + '/' + 'Profits Candidates in ' + str(test_tick) + '.png', bbox_inches='tight',
+                  dpi=300)
+
 def plot_decommissions(annual_decommissioned_capacity, years_to_generate, path_to_plots, colors):
     print('Create decommissioning plot')
     fig5, axs5 = plt.subplots()
@@ -474,7 +487,7 @@ def plot_cost_recovery(cost_recovery, path_to_plots):
 
 
 def plot_npv_new_plants(npvs_per_year_new_plants_all, candidate_plants_project_value, test_tech, test_year, test_tick,
-                        path_to_plots):
+                        future_year, path_to_plots):
     fig31, axs31 = plt.subplots()
     # key gives the group name (i.e. category), data gives the actual values
     for key, data in npvs_per_year_new_plants_all.items():
@@ -508,8 +521,8 @@ def plot_npv_new_plants(npvs_per_year_new_plants_all, candidate_plants_project_v
             pp_installed_in_test_year.append(i)
 
     fig33, axs33 = plt.subplots()
-    candidate_plants_project_value[test_tech].plot(ax=axs33, label="Expected")
-    test_npvs[pp_installed_in_test_year].iloc[installed_tick].plot(ax=axs33, label="Reality")
+    candidate_plants_project_value[test_tech].plot(ax=axs33, label="Expected in year " + str(future_year))
+    test_npvs[pp_installed_in_test_year].iloc[installed_tick].plot(ax=axs33, label="Reality in year " + str(installed_year))
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('[Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -648,17 +661,16 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     return installed_capacity_per_iteration, candidate_plants_project_value
 
 
-def prepare_profits_candidates_per_iteration(reps, tick):
+def plot_candidates_profits_per_iteration(reps, tick):
     profits = reps.get_profits_per_tick(tick)
     profits_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names_candidates[tick]).fillna(0)
-
     for iteration, profit_per_iteration in list(profits.profits_per_iteration_candidates.items()):
         temporal = pd.DataFrame(profit_per_iteration, index=profits.profits_per_iteration_names_candidates[iteration],
                                 columns=[int(iteration)])
         profits_per_iteration[iteration] = temporal
     tech = []
     for pp in profits_per_iteration.index.values:
-        tech.append(reps.power_plants[pp].technology.name)
+        tech.append(reps.candidatePowerPlants[pp].technology.name)
     profits_per_iteration["tech"] = tech
     profits_per_iteration = np.transpose(profits_per_iteration)
     profits_per_iteration.columns = profits_per_iteration.iloc[-1]
@@ -721,7 +733,6 @@ def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simu
         if technology_name == test_tech:
             info = []
             chosen = []
-            all_names = []
             for pp in profits_per_year.columns:
                 age = reps.power_plants[pp].age
                 capacity = reps.power_plants[pp].capacity
@@ -734,6 +745,7 @@ def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simu
                 # chosen.append(str(age) + ' ' + str(capacity) + ' ' + str(pp)  + ' ' + str(int(actualFixedOperatingCost/1000000)))
             profits_for_test_tech_per_year = pd.DataFrame(numeric, columns=info, index=simulation_years)
             if len(chosen) == 0:
+                print("choose other test technology")
                 raise "choose other test technology"
             new_pp_profits_for_tech = profits_for_test_tech_per_year[chosen]
     return average_profits_per_tech_per_year, new_pp_profits_for_tech
@@ -1013,7 +1025,6 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
         trend = reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity", globalNames.simulated_prices,
                                                                        year)
         load = reps.get_hourly_demand_by_country(reps.country)[1]
-
         peak_load_without_trend = max(load)
         peak_load_volume = peak_load_without_trend * trend
         # load_volume = residual_load[year]
@@ -1081,6 +1092,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
 
     # # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+
+    profits_per_iteration = prepare_profits_candidates_per_iteration(reps, test_tick)
+    plot_candidates_profits_per_iteration(profits_per_iteration, path_to_plots, test_tick, colors_unique_candidates)
+
+
     irrs_per_tech_per_year, npvs_per_tech_per_MW, npvs_per_year_new_plants_all = \
         prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
 
@@ -1092,14 +1108,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
 
     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                            future_year, path_to_plots, colors_unique_candidates)
-    ATTENTION: FOR TEST TECH
+    #ATTENTION: FOR TEST TECH
     average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
         reps, unique_technologies, ticks_to_generate, test_tech)
 
     plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
     plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
     #reality vs expectation
-    plot_npv_new_plants(npvs_per_year_new_plants_all, candidate_plants_project_value,  test_tech, test_year, test_tick,  path_to_plots)
+    plot_npv_new_plants(npvs_per_year_new_plants_all, candidate_plants_project_value,  test_tech, test_year, test_tick, future_year,  path_to_plots)
 
     ##section -----------------------------------------------------------------------------------------------revenues per iteration
     # '''
@@ -1194,11 +1210,12 @@ technology_colors = {
 
 try:
     # ""
-    name = ""
-    electricity_prices = True  # write False if not wished to graph electricity prices"
+    name = "DE2050_SD4_PH3_MI10000_totalProfits_grouped_old_npv_10kperyearreal_MW_future"
+    electricity_prices = False  # write False if not wished to graph electricity prices"
 
     if electricity_prices == False:
         electricity_prices = None  # dont read if not necessary
+        residual_load = None
 
     if name == "":
         # if the energy exchange DB with electricity prices
@@ -1213,10 +1230,9 @@ try:
                + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                + "_" + reps.typeofProfitforPastHorizon + "_"
         if reps.realistic_candidate_capacities_for_future == True:
-            name = name + "RMW_F"
+            name = name + "future1"
         if reps.realistic_candidate_capacities_tobe_installed == True:
-            name = name + "RMW_F"
-            name = name + "RMW_TBI"
+            name = name + "installed1"
         name = name + reps.simulation_name
 
         if electricity_prices == True:
@@ -1238,7 +1254,7 @@ try:
     for p, power_plant in reps.power_plants.items():
         power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
-    test_tick = 0
+    test_tick = 10
     # test_tech = "OCGT"
     test_tech = "CCGT"
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", name)
