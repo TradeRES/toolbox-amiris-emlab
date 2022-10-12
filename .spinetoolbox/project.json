@@ -631,8 +631,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1376.434968875306,
-            "y": -467.79464974645464,
+            "x": -1373.4670591121949,
+            "y": -473.73046927267643,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -661,7 +661,7 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1339.27276207857,
+            "x": -1342.240671841681,
             "y": -642.4247797037858,
             "specification": "import traderes db",
             "cancel_on_error": false,
@@ -725,8 +725,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1133.3394571713834,
-            "y": -601.4762701064487,
+            "x": -1135.9286216514197,
+            "y": -611.8329280265951,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -787,8 +787,8 @@
         "traderesExcel to DB": {
             "type": "Importer",
             "description": "",
-            "x": -1359.5353680752419,
-            "y": -557.0549107468293,
+            "x": -1368.4390973645748,
+            "y": -562.9907302730512,
             "specification": "technology potential and capacities",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -907,7 +907,7 @@
             "type": "Data Store",
             "description": "",
             "x": -16.767225555116905,
-            "y": -480.17539734636404,
+            "y": -477.20748758325317,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

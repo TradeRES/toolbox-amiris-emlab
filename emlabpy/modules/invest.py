@@ -92,7 +92,6 @@ class Investmentdecision(DefaultModule):
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
                         logging.info("to much in pipeline of this technology%s",candidatepowerplant.technology)
-                        print("to much in pipeline of this technology%s",candidatepowerplant.technology)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         break
@@ -269,13 +268,11 @@ class Investmentdecision(DefaultModule):
             logging.info(
                 " will not invest in {} technology because there's too much capacity in the pipeline %s",
                 technology.name)
-            print(" will not invest in {} technology because there's too much capacity in the pipeline %s")
             candidatepowerplant.setViableInvestment(False)
             return False
         elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
             logging.info(" will not invest in {} technology because the capacity limits are achieved %s",
                          technology.name)
-            print(" will not invest in {} technology because the capacity limits are achieved %s")
             candidatepowerplant.setViableInvestment(False)
             return False
             # TODO: add if the agent dont have enough cash then change the agent.readytoInvest = False
