@@ -125,7 +125,7 @@ try:  # Try statement to always close DB properly
                                   str("{:05d}".format(pp_counter))
                                   ))
         # saving ids in the DB
-        spinedb_reader_writer.stage_power_plant_id_and_loans(reps.power_plants)
+        spinedb_reader_writer.stage_power_plant_id_and_loans(reps , reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
 
         print('Staged IDs')

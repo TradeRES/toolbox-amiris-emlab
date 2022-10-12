@@ -204,9 +204,9 @@ class SpineDBReaderWriter:
     Power plants
     """
 
-    def stage_power_plant_id_and_loans(self, power_plants):
+    def stage_power_plant_id_and_loans(self, reps, power_plants):
         print("staging id and loans")
-        if self.reps.module !=  "run_initialize_power_plants" :
+        if reps.runningModule !=  "run_initialize_power_plants" :
             raise Exception("not initializing power plants")
 
         self.stage_object_class(self.powerplant_installed_classname)
