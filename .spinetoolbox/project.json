@@ -880,7 +880,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
                 ]
             ]
@@ -973,7 +973,7 @@
             "cmd_line_args": [
                 {
                     "type": "resource",
-                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
                 },
                 {
                     "type": "resource",
@@ -981,11 +981,11 @@
                 },
                 {
                     "type": "resource",
-                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv"
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv"
                 },
                 {
                     "type": "resource",
-                    "arg": "C:\\Users\\isanchezjimene\\Documents\\TraderesCode\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv"
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv"
                 }
             ]
         },
