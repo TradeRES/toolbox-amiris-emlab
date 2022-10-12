@@ -5,25 +5,6 @@ import os
 import sys
 from functools import reduce
 import pandas as pd
-import seaborn as sns
-sns.set_theme(style="white")
-
-years = [2020, 2021]
-pfad = r"C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab\amiris_workflow\output"
-yearly_electricity_prices = pd.DataFrame()
-residualLoad = pd.DataFrame()
-for year in years:
-    year_excel = pfad + "\\" + str(year) + ".xlsx"
-    df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load"])
-    yearly_electricity_prices.at[:, year] = df['energy_exchange'].ElectricityPriceInEURperMWH
-    residualLoad.at[:, year] = df['residual_load']["0"]
-    print("s")
-
-
-
-
-
-
 
 
 # start = 117000 *256
@@ -52,10 +33,15 @@ for year in years:
 #
 #
 # df.index.name = "key"
-# df = pd.DataFrame({"A": [5, 3, None, 4],
-#                    "B": [None, 2, 4, 3],
-#                    "C": [4, 3, 8, 5],
-#                    "D": [5, 4, 2, None]})
+df = pd.DataFrame({"A": [5, 3, None, 4],
+                   "B": [None, 2, 4, 3],
+                   "C": [4, 3, 8, 5],
+                   "D": [5, 4, 2, None]})
+
+i = [1,2]
+j = ["C", "C"]
+print("h")
+df.loc[i,j] = 0
 # aaa = pd.Series([3,4], index=[3 ,4 ])
 # df["E" ] = aaa
 # print(df)

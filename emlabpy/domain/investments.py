@@ -8,6 +8,7 @@ class InvestmentDecisions(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
         """"
+        In the DB objectname = str(futureYear) + "-" + str(iteration)
         This function is being read for the plotting. The investment decisions are saved in the invest module
         """
         future_year, iteration = parameter_name.split('-')
@@ -28,7 +29,9 @@ class Investments(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         """"
-        This function is being read for the plotting. The investment decisions  are saved in the invest module
+        This function is being read for the plotting from object name CandidatePlantsNPV
+        name = cnadidate power plants
+        The investment decisions  are saved in the invest module
         """
         future_year, iteration = parameter_name.split('-')
         # information from the  CandidatePlantsNPV class

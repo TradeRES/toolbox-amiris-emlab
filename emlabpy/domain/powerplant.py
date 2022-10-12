@@ -68,6 +68,9 @@ class PowerPlant(EMLabAgent):
             self.location = parameter_value
         elif parameter_name == 'Id':
             self.id = int(parameter_value)
+            if int(self.name) > 1000 and self.id != self.name:
+                raise ("there is something wrong here")
+
         if parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'Capacity':
@@ -77,10 +80,11 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'Age':
             self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
             self.commissionedYear = reps.current_year - int(parameter_value)
-            # if int(self.name) > 10000:
-            #     self.commissionedYear = int(self.name[0:4])
-            # else:
-            #     self.commissionedYear = reps.current_year - int(parameter_value)
+           #  if int(self.name) > 10000:
+           #      a = str(self.id)[0:4]
+           #      self.commissionedYear = int(a)
+           #  else:
+           #      self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'actualFixedOperatingCost':
             self.actualFixedOperatingCost =  float(parameter_value)
         elif parameter_name == 'dismantleTime':
