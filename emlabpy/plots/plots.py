@@ -1087,7 +1087,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
                      CM_clearing_price, total_costs_CM,  ran_capacity_market ,  path_to_plots, colors_unique_techs)
     # section -----------------------------------------------------------------------------------------------Capacity Markets
 
-    section ---------------------------------------------------------------Cash energy producer
+    #section ---------------------------------------------------------------Cash energy producer
 
     cash_flows_energy_producer, total_costs, cost_recovery, new_plants_loans = prepare_cash_per_agent(reps,
                                                                                                       ticks_to_generate)
