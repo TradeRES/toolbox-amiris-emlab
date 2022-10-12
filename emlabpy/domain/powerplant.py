@@ -69,7 +69,7 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'Id':
             self.id = int(parameter_value)
             if int(self.name) > 1000:
-                if self.id != self.name:
+                if self.id != int(self.name):
                     raise Exception("there is something wrong here Id " + str(self.id) +" Name " + str(self.name))
         if parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
@@ -80,7 +80,7 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'Age':
             self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
             if int(self.name) > 1000:
-                if self.age >  self.reps.current_tick:
+                if self.age >  reps.current_tick:
                     raise Exception("age is higher than it should be " + str(self.id) +" Name " + str(self.name))
 
             self.commissionedYear = reps.current_year - int(parameter_value)

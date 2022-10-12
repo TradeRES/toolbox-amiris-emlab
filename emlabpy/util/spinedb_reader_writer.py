@@ -106,7 +106,7 @@ class SpineDBReaderWriter:
                 reps.dummy_capacity = int(row['parameter_value'])
             elif row['parameter_name'] == 'npv_with_annuity':
                 reps.npv_with_annuity = bool(row['parameter_value'])
-
+        print("-----------------------------------------------------------" + str(reps.current_tick))
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
                                     self.db.query_object_parameter_values_by_object_class_and_object_name("Dictionary",
