@@ -31,7 +31,7 @@ from iovrmr_tools import (
     CONVENTIONAL_AGENT_RESULTS,
     sum_per_plant,
     clear_folder,
-    EXCHANGE,
+    DEMAND,
     calculate_residual_load,
 )
 
@@ -255,7 +255,7 @@ def aggregate_results(data_manager, config, params):
             outputs_per_agent.rename(columns=column_names, inplace=True)
             to_concat.append(outputs_per_agent)
 
-            if file_name != "StorageTrader":
+            if file_name not in ["StorageTrader", "Biogas"]:
                 residual_load_results[file_name] = type_df
 
         elif file_name in CONVENTIONAL_AGENT_RESULTS:
@@ -269,7 +269,7 @@ def aggregate_results(data_manager, config, params):
             column_per_plant = sum_per_plant(conventional_df, column, column_names[column])
             conventional_series.append(column_per_plant)
 
-        elif file_name in EXCHANGE:
+        elif file_name in DEMAND:
             type_df = pd.read_csv(file, sep=";")
             residual_load_results[file_name] = type_df
 

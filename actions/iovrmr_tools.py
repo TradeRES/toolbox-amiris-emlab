@@ -20,6 +20,7 @@ OPERATOR_AGENTS = [
 ]
 SUPPORTED_AGENTS = ["RenewableTrader", "SystemOperatorTrader"]
 EXCHANGE = ["EnergyExchangeMulti"]
+DEMAND = ["DemandTrader"]
 CONVENTIONAL_AGENT_RESULTS = {
     "ConventionalPlantOperator_VariableCostsInEURperPlant": "VariableCostsInEURperPlant",
     "ConventionalPlantOperator_ReceivedMoneyInEURperPlant": "ReceivedMoneyInEURperPlant",
@@ -339,7 +340,7 @@ def get_all_csv_files_in_folder_except(folder: str, exceptions: List[str] = None
 
 
 def calculate_residual_load(
-    residual_load_results: Dict[str, pd.DataFrame], award_offset: int = 5, exchange_offset: int = 3
+    residual_load_results: Dict[str, pd.DataFrame], operators_offset: int = 5, demand_offset: int = 4
 ) -> pd.Series:
     """Calculate the residual load based on RES infeed and net load after storage"""
     res_generation_to_aggregate = []
@@ -347,12 +348,13 @@ def calculate_residual_load(
     for key, val in residual_load_results.items():
         if key in OPERATOR_AGENTS:
             value = val.loc[val["AwardedPowerInMWH"].notna()]
-            value["TimeStep"] = value["TimeStep"].copy() - award_offset
+            value["TimeStep"] = value["TimeStep"].copy() - operators_offset
             res_generation_to_aggregate.append(value.groupby("TimeStep").sum()["AwardedPowerInMWH"])
-        elif key in EXCHANGE:
+        elif key in DEMAND:
             value = val.copy()
-            value["TimeStep"] = value["TimeStep"].copy() - exchange_offset
-            overall_demand = value.set_index("TimeStep")["TotalAwardedPowerInMW"]
+            value["TimeStep"] = value["TimeStep"].copy() - demand_offset
+            overall_demand = value.set_index("TimeStep")["AwardedEnergyInMWH"]
+            overall_demand = overall_demand.loc[overall_demand.notna()]
         else:
             raise ValueError("Received invalid key for residual_load_results!")
 
@@ -361,6 +363,7 @@ def calculate_residual_load(
         overall_res_generation += res_generation
 
     residual_load = overall_demand - overall_res_generation
+    residual_load.name = "residual_load"
     residual_load = residual_load.round(4)
 
     return residual_load
