@@ -212,10 +212,48 @@
                         ]
                     }
                 }
+            ],
+            "two_techs_DE": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "powerplants_grouped"
+            "two_techs_DE"
         ],
         "table_options": {
             "germany2019": {
@@ -227,7 +265,8 @@
             "extendedDE": {},
             "extendedNL": {},
             "groupedDE_RES": {},
-            "Sheet1": {}
+            "Sheet1": {},
+            "two_techs_DE": {}
         },
         "table_types": {
             "germany2019": {
@@ -290,6 +329,17 @@
                 "1": "string",
                 "2": "string",
                 "3": "string"
+            },
+            "two_techs_DE": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float"
             }
         },
         "table_row_types": {},
