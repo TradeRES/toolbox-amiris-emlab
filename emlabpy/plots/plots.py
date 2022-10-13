@@ -180,7 +180,7 @@ def plot_future_fuel_prices(future_fuel_prices, path_to_plots):
     plt.xlabel('Year', fontsize='medium')
     plt.ylabel('Prices', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs12.set_title('Expecetd future fuel prices per year (4 years ahead)')
+    axs12.set_title('Expected future fuel prices per year (4 years ahead)')
     fig12 = axs12.get_figure()
     fig12.savefig(path_to_plots + '/' + 'Future Fuel prices per year.png', bbox_inches='tight', dpi=300)
 
@@ -305,8 +305,8 @@ def plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs25.annotate('Annual profits = revenues + CM revenues - variable costs - fixed costs',
-                   xy=(0, 0), xycoords='figure fraction',
-                   horizontalalignment='left', verticalalignment='bottom',
+                   xy=(0.025, 1), xycoords='figure fraction',
+                   horizontalalignment='left', verticalalignment='top',
                    fontsize='medium')
     axs25.set_title('Average Profits per technology')
     fig25 = axs25.get_figure()
@@ -792,7 +792,9 @@ def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simu
             if profits_per_plant is None:
                 print("power plant in pipeline", plant.name, plant.id)
             else:
+                # todo: consider using  pd.concat(axis=1)
                 profits_per_year[plant.name] = profits_per_plant
+                # todo: id this really not numeric? if empty skip mean
         numeric = profits_per_year.values.astype('float64')
         average_profits_per_tech_per_year[technology_name] = np.nanmean(numeric, axis=1)
         if technology_name == test_tech:
@@ -873,6 +875,7 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
                 pass
                 # print("power plant in pipeline", plant.name, plant.id)
             else:
+                # todo: does it work with pd.concat(axis=1) 
                 npv_per_plant = reps.get_npvs_for_plant(plant.name) / plant.capacity
                 irrs_per_year[plant.name] = irr_per_plant
                 npvs_per_year[plant.name] = npv_per_plant
