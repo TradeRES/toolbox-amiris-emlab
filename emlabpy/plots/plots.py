@@ -875,7 +875,7 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
                 pass
                 # print("power plant in pipeline", plant.name, plant.id)
             else:
-                # todo: does it work with pd.concat(axis=1) 
+                # todo: does it work with pd.concat(axis=1)
                 npv_per_plant = reps.get_npvs_for_plant(plant.name) / plant.capacity
                 irrs_per_year[plant.name] = irr_per_plant
                 npvs_per_year[plant.name] = npv_per_plant
