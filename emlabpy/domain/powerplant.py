@@ -68,9 +68,6 @@ class PowerPlant(EMLabAgent):
             self.location = parameter_value
         elif parameter_name == 'Id':
             self.id = int(parameter_value)
-            if int(self.name) > 1000:
-                if self.id != int(self.name):
-                    raise Exception("there is something wrong here Id " + str(self.id) +" Name " + str(self.name))
         if parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'Capacity':

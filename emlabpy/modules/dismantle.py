@@ -15,6 +15,7 @@ class Dismantle(DefaultModule):
         self.decommissioned_list = (self.reps.decommissioned["Decommissioned"]).Decommissioned
         reps.dbrw.stage_init_power_plants_status()
         reps.dbrw.stage_init_power_plants_fixed_costs()
+        self.check_ids(reps)
 
     def act(self):
         self.add_one_year_to_age() # add one year to the age of power plants
@@ -23,7 +24,12 @@ class Dismantle(DefaultModule):
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
 
-       # self.erase_bids_class()
+    def check_ids(self, reps):
+        # this was added for debugging. The ids were different possibly because of not cleaning the DB at start
+        for pp in reps.power_plants:
+            if int(pp.name) > 1000:
+                if pp.id != int(pp.name):
+                    raise Exception("there is something wrong here Id " + str(pp.id) +" Name " + str(pp.name))
 
     def erase_bids_class(self):
         # todo finish this if bids are being erased then the awarded capapcity of CM should also be saved.
@@ -117,4 +123,4 @@ class Dismantle(DefaultModule):
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
 
     def save_decommissioned_list(self):
-        self.reps.dbrw.stage_list_decommissioned_plants(self.decommissioned_list )
+        self.reps.dbrw.stage_list_decommissioned_plants(self.decommissioned_list)

@@ -104,6 +104,10 @@ try:  # Try statement to always close DB properly
     # AMIRIS needs a unique, numeric ID
     if run_initialize_power_plants:
         # adding id to candidate power plants. Add 9999 at the beginning, to distinguish from installed power plants
+
+        if len(reps.power_plants)  != 0:
+            raise Exception("there are power plants, clean DB")
+
         pp_counter = 0
         for p, power_plant in reps.candidatePowerPlants.items():
             pp_counter += 1
