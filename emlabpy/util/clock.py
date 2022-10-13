@@ -10,7 +10,7 @@ Jim Hommes - 7-4-2021
 import sys
 from util.spinedb import SpineDB
 from util import globalNames
-import csv
+import glob
 import os
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
@@ -69,6 +69,14 @@ try:
         print("reset power plants status")
 
         if sys.argv[2] == 'initialize_clock':
+            print('delete excels in output')
+            path = globalNames.amiris_ouput_path
+            try:
+                for f in glob.iglob(path+'/*.xlsx', recursive=True):
+                    os.remove(f)
+            except Exception as e:
+                print(e)
+
             print('Initializing clock (tick 0)')
             db_emlab.import_object_classes([class_name])
             db_emlab.import_objects([(class_name, object_name)])

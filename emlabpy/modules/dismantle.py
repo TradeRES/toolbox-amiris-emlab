@@ -26,7 +26,7 @@ class Dismantle(DefaultModule):
 
     def check_ids(self, reps):
         # this was added for debugging. The ids were different possibly because of not cleaning the DB at start
-        for pp in reps.power_plants:
+        for pp in reps.power_plants.values():
             if int(pp.name) > 1000:
                 if pp.id != int(pp.name):
                     raise Exception("there is something wrong here Id " + str(pp.id) +" Name " + str(pp.name))
