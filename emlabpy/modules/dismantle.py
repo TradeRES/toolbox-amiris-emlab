@@ -55,36 +55,37 @@ class Dismantle(DefaultModule):
         #     db_map.connection.close()
 
     def decommision_by_age_and_profit(self):
-        for producer, producer_specs in self.reps.energy_producers.items():
-            for plant in self.reps.get_power_plants_to_be_decommissioned(producer):
-                # TODO is the power plant subsidized ? then dismantle
-                horizon = self.reps.pastTimeHorizon
-                requiredProfit = producer_specs.getDismantlingRequiredOperatingProfit()
-                if self.reps.current_tick >= self.reps.start_year_dismantling:
-                    profit = self.calculateAveragePastOperatingProfit(plant, horizon)
-                    if profit <= requiredProfit:
-                        logging.info("Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
-                                .format(horizon, plant.name, profit, requiredProfit))
-                        plant.dismantlePowerPlant(self.reps.current_tick)
-                        self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
-                        plant.status = globalNames.power_plant_status_decommissioned
-                        self.decommissioned_list.append(plant.name)
-                    else:
-                        logging.info("dont dismantle ( enough profits) but increase fixed OPEX of %s ".format(plant.name))
-                        ModifiedOM = plant.getActualFixedOperatingCost() * (
-                                1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
-                        plant.setActualFixedOperatingCost(ModifiedOM)
-                        # saving
-                        self.reps.dbrw.stage_fixed_operating_costs(plant)
+        producer = self.reps.energy_producers[self.reps.agent]
+        for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
+            # TODO is the power plant subsidized ? then dismantle
+            horizon = self.reps.pastTimeHorizon
+            requiredProfit = producer.getDismantlingRequiredOperatingProfit()
+            if self.reps.current_tick >= self.reps.start_year_dismantling:
+                profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+                if profit <= requiredProfit:
+                    #print(plant.name + " " + str(profit))
+                    logging.info("Dismantling power plant because it has an operating loss (incl O&M cost) on average in the last %s years: %s was %s which is less than required: "
+                            .format(horizon, plant.name, profit, requiredProfit))
+                    plant.dismantlePowerPlant(self.reps.current_tick)
+                    self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
+                    plant.status = globalNames.power_plant_status_decommissioned
+                    self.decommissioned_list.append(plant.name)
                 else:
-                    logging.info(" for the first years dont dismantle (initialization) but increase fixed OPEXof %s ".format(plant.name))
-                    if plant.age < plant.technology.getExpectedLifetime():
-                        print("Age is less than expected life time")
-                    else:
-                        ModifiedOM = plant.getActualFixedOperatingCost() * (
-                                1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
-                        plant.setActualFixedOperatingCost(ModifiedOM)
-                        self.reps.dbrw.stage_fixed_operating_costs(plant)
+                    logging.info("dont dismantle ( enough profits) but increase fixed OPEX of %s ".format(plant.name))
+                    ModifiedOM = plant.getActualFixedOperatingCost() * (
+                            1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
+                    plant.setActualFixedOperatingCost(ModifiedOM)
+                    # saving
+                    self.reps.dbrw.stage_fixed_operating_costs(plant)
+            else:
+                logging.info(" for the first years dont dismantle (initialization) but increase fixed OPEXof %s ".format(plant.name))
+                if plant.age < plant.technology.getExpectedLifetime():
+                    print("Age is less than expected life time")
+                else:
+                    ModifiedOM = plant.getActualFixedOperatingCost() * (
+                            1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
+                    plant.setActualFixedOperatingCost(ModifiedOM)
+                    self.reps.dbrw.stage_fixed_operating_costs(plant)
 
 
     def add_one_year_to_age(self):

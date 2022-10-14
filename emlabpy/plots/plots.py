@@ -147,8 +147,8 @@ def plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, tech
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     axs11.set_title('Expected future operational (wholesale market) profits in tick '
                     + str(test_tick) + ' \n and technology ' + tech_name )
-    axs11.annotate('legend = age, capacity, efficiency',
-                   xy=(1, 1), xycoords='figure fraction',
+    axs11.annotate('legend =  capacity, efficiency, age',
+                   xy=(1.1, 1.1), xycoords='figure fraction',
                    horizontalalignment='right', verticalalignment='top',
                    fontsize='small')
     fig11 = axs11.get_figure()
@@ -321,7 +321,7 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_p
     plt.ylabel('operational profits [Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    axs26.set_title('Operational profits per year for ' + test_tech)
+    axs26.set_title('Operational profits per year \n for ' + test_tech)
     axs26.annotate('Annual profits = revenues + CM revenues - variable costs - fixed costs',
                    xy=(0, 1), xycoords='figure fraction',
                    horizontalalignment='left', verticalalignment='top',
@@ -527,9 +527,13 @@ def plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_a
 
     axs29 = test_irrs.plot()
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('[Eur]', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs29.set_title('IRR new plants for tech ' + test_tech + '(name, capacity, age)')
+    plt.ylabel('%', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
+    axs29.set_title('IRR new plants for tech ' + test_tech)
+    axs29.annotate('legend = name, capacity, age',
+                   xy=(0, 1), xycoords='figure fraction',
+                   horizontalalignment='left', verticalalignment='bottom',
+                   fontsize='small')
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'IRR new plants of tech ' + test_tech + ' .png', bbox_inches='tight', dpi=300)
 
@@ -537,6 +541,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_a
     # key gives the group name (i.e. category), data gives the actual values
     for key, data in npvs_per_year_new_plants_all.items():
         if data.size > 0:
+
             data.plot(ax=axs31, label=key, color=technology_colors[key])
         if key == test_tech:
             test_npvs = data
@@ -550,7 +555,11 @@ def plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_a
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('[Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs32.set_title('NPV new plants for tech ' + test_tech + '(name, capacity, age)')
+    axs32.set_title('NPV new plants \n for tech ' + test_tech )
+    axs32.annotate('legend = name, capacity, age',
+                   xy=(0, 1), xycoords='figure fraction',
+                   horizontalalignment='left', verticalalignment='bottom',
+                   fontsize='small')
     fig32 = axs32.get_figure()
     fig32.savefig(path_to_plots + '/' + 'NPV new plants of tech ' + test_tech + ' .png', bbox_inches='tight', dpi=300)
 
@@ -567,9 +576,11 @@ def plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_a
             pp_installed_in_test_year.append(i)
 
     fig33, axs33 = plt.subplots()
-    candidate_plants_project_value[test_tech].plot(ax=axs33, label="Expected in year " + str(future_year))
-    test_npvs[pp_installed_in_test_year].iloc[installed_tick].plot(ax=axs33,
-                                                                   label="Reality in year " + str(installed_year))
+    candidate_plants_project_value[test_tech].plot(ax=axs33, style='.', label="Expected to be installed in " + str(future_year))
+    # todo this is not graphing properly
+    npvs_testTech = test_npvs[pp_installed_in_test_year].iloc[installed_tick]
+    npvs_testTech.reset_index(inplace=True, drop=True)
+    npvs_testTech.plot(ax=axs33, style='.', label="Installed in " + str(installed_year))
 
     plt.ylabel('[Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -577,11 +588,11 @@ def plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_a
         label.set(rotation=30, horizontalalignment='right')
 
     axs33.annotate('ticks = name, capacity, age',
-                   xy=(0.1, 0), xycoords='figure fraction',
-                   horizontalalignment='right', verticalalignment='bottom',
+                   xy=(1, 0), xycoords='figure fraction',
+                   horizontalalignment='center', verticalalignment='top',
                    fontsize='medium')
     axs33.set_title('NPV new plants for tech ' + test_tech)
-    fig33.savefig(path_to_plots + '/' + 'NPV expected vs reality ' + test_tech + ' .png', bbox_inches='tight', dpi=300)
+    fig33.savefig(path_to_plots + '/' + 'NPV expected vs reality ' + test_tech + '-'+ str(test_year) + ' .png', bbox_inches='tight', dpi=300)
 
 
 def plot_initial_power_plants(path_to_plots, sheetname):
@@ -757,26 +768,23 @@ def prepare_revenues_per_iteration(reps, tick, test_tech):
             temporal, how='right')
     # adding technology name
     tech = []
-    age = []
-    capacity = []
-    efficiency = []
+    capacity_efficiency_age = []
     for pp in future_operational_profit_per_iteration.index.values:
+        capacity_efficiency_age.append(str(reps.power_plants[pp].capacity) +  "MW " + str(reps.power_plants[pp].actualEfficiency)
+                                       + "% " + str(reps.power_plants[pp].age ))
         tech.append(reps.power_plants[pp].technology.name)
-        age.append(reps.power_plants[pp].age)
-        capacity.append(reps.power_plants[pp].capacity)
-        efficiency.append(reps.power_plants[pp].actualEfficiency)
     future_operational_profit_per_iteration["tech"] = tech
     grouped_revenues = future_operational_profit_per_iteration.groupby('tech').mean()
-    sorted_average_revenues_per_iteration_test_tick = grouped_revenues.T.sort_index()
+    sorted_average_revenues_per_tech_test_tick = grouped_revenues.T.sort_index()
 
-    tech_age = list(zip(age, capacity, efficiency))
+    #tech_age = list(zip(age, capacity, efficiency))
     future_operational_profit_per_iteration_with_age["tech"] = tech
-    future_operational_profit_per_iteration_with_age["tech-age"] = tech_age
+    future_operational_profit_per_iteration_with_age["tech-age"] = capacity_efficiency_age
     expected_future_operational_profit = future_operational_profit_per_iteration_with_age.loc[
         future_operational_profit_per_iteration_with_age.tech == test_tech]
     expected_future_operational_profit.drop(["tech"], axis=1, inplace=True)
     all_future_operational_profit = expected_future_operational_profit.set_index('tech-age').T.sort_index(level=0)
-    return sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit
+    return sorted_average_revenues_per_tech_test_tick, all_future_operational_profit
 
 
 def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simulation_years, test_tech):
@@ -788,6 +796,8 @@ def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simu
         profits_per_year = pd.DataFrame(index=simulation_years).fillna(0)
         # for the plants of that technology
         for plant in powerplants_per_tech:
+
+
             profits_per_plant = reps.get_total_profits_for_plant(plant.name)
             if profits_per_plant is None:
                 print("power plant in pipeline", plant.name, plant.id)
@@ -830,7 +840,6 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     cash_per_agent["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     cash_per_agent["Downpayments"] = all_info.CF_DOWNPAYMENT
     cash_per_agent["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
-
     new_plants_loans["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
     new_plants_loans["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     total_costs = cash_per_agent.sum(axis=1)
@@ -838,6 +847,7 @@ def prepare_cash_per_agent(reps, simulation_ticks):
             all_info.CF_COMMODITY + all_info.CF_LOAN + all_info.CF_FIXEDOMCOST + all_info.CF_DOWNPAYMENT +
             all_info.CF_CAPMARKETPAYMENT + all_info.CF_DOWNPAYMENT_NEW_PLANTS + all_info.CF_LOAN_NEW_PLANTS
     )
+    cost_recovery = cost_recovery*100 # making to percent
     cr = cost_recovery.sort_index()
     return cash_per_agent, total_costs, cr, new_plants_loans
 
@@ -875,7 +885,6 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
                 pass
                 # print("power plant in pipeline", plant.name, plant.id)
             else:
-                # todo: does it work with pd.concat(axis=1)
                 npv_per_plant = reps.get_npvs_for_plant(plant.name) / plant.capacity
                 irrs_per_year[plant.name] = irr_per_plant
                 npvs_per_year[plant.name] = npv_per_plant
@@ -889,11 +898,6 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
         irrs_per_year_new_plants_all[technology_name] = irrs_per_year_new_plants
         irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
         npvs_per_tech_per_MW[technology_name] = np.nanmean(npvs_per_year, axis=1)
-
-
-
-
-
     return irrs_per_tech_per_year,  npvs_per_tech_per_MW, npvs_per_year_new_plants_all, irrs_per_year_new_plants_all
 
 
@@ -1149,15 +1153,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     last_year = years_to_generate[-1]
     # # #check extension of power plants.
     # # extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
-    # CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM,  ran_capacity_market = prepare_accepted_CapacityMechanism(
-    #     reps, unique_technologies,
-    #     ticks_to_generate)
-    # plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-    #                  CM_clearing_price, total_costs_CM,  ran_capacity_market ,  path_to_plots, colors_unique_techs)
-    # section -----------------------------------------------------------------------------------------------Capacity Markets
-
+    CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM,  ran_capacity_market = prepare_accepted_CapacityMechanism(
+        reps, unique_technologies,
+        ticks_to_generate)
+    plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
+                     CM_clearing_price, total_costs_CM,  ran_capacity_market ,  path_to_plots, colors_unique_techs)
+    #section -----------------------------------------------------------------------------------------------Capacity Markets
     # section ---------------------------------------------------------------Cash energy producer
-    #
+
     cash_flows_energy_producer, total_costs, cost_recovery, new_plants_loans = prepare_cash_per_agent(reps,
                                                                                                       ticks_to_generate)
     plot_cost_recovery(cost_recovery, path_to_plots)
@@ -1172,9 +1175,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
     plot_yearly_average_electricity_prices(average_electricity_price, path_to_plots)
     plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
-
-    # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
-
+    #
+    # # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+    #
     profits_per_iteration = prepare_profits_candidates_per_iteration(reps, test_tick)
     plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, test_tick, colors_unique_candidates)
 
@@ -1183,7 +1186,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
 
     plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, path_to_plots,
                                         colors_unique_techs)
-
+    #
     installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
         future_year, reps, unique_candidate_power_plants)
     if candidate_plants_project_value.shape[0] == 0:
@@ -1191,7 +1194,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     else:
         plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
                                                future_year, path_to_plots, colors_unique_candidates)
-    # ATTENTION: FOR TEST TECH
+    #ATTENTION: FOR TEST TECH
     average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
         reps, unique_technologies, ticks_to_generate, test_tech)
 
@@ -1294,9 +1297,10 @@ technology_colors = {
 
 try:
     # write the name of the exiisting scenario or the new scenario
-    name = "grouped_unlimited"
+    name = ""
+    name = "limited_1candidate_100MW"
     existing_scenario = False
-    electricity_prices = True  # write False if not wished to graph electricity prices"
+    electricity_prices = False  # write False if not wished to graph electricity prices"
 
     if name == "":
         raise Exception("Name needed")
@@ -1330,13 +1334,13 @@ try:
 
     elif existing_scenario == True:
         print("Plots for existing scenario " + name)
-
-        first = globalNames.scenarios_path
+        first = "sqlite:///" + globalNames.scenarios_path
         emlab_sql = "\\EmlabDB.sqlite"
         amiris_sql = "\\AMIRIS db.sqlite"
         energy_exchange_url_sql = "\\energy exchange.sqlite"
         emlab_url = first + name + emlab_sql
         amiris_url = first + name + amiris_sql
+
         spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
         reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
         folder_name = first + name
@@ -1347,8 +1351,8 @@ try:
         power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
     test_tick = 4
-    # test_tech = "OCGT"
-    test_tech = "CCGT"
+    test_tech = "Biomass_CHP_wood_pellets_DH"
+    #test_tech = "CCGT"
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", name)
 
     if not os.path.exists(path_to_plots):

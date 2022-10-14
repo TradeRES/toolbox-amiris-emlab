@@ -14,9 +14,20 @@ import pandas as pd
 # after_life_growth_rate = 0.05
 # after_life = pow(1 + growth_rate, lifetime) * start
 # print(after_life)
-# data = [(1,'sravan'),(2,'ojaswi'),
-#         (3,'bobby'),(4,'rohith'),
-#         (5,'gnanesh')]
+
+s1 = pd.Series([1, 2], index=[1, 2], name='s1')
+s2 = pd.Series([3, 4], index=[2, 3], name='s2')
+mydict =  {'s1': s1, 's2': s2}
+a = pd.DataFrame.from_dict(mydict)
+
+#a = pd.concat([s1, s2], axis=1)
+print(a)
+
+# data = [1,2,5,4]
+# data2 = ["A","B", "C", "D"]
+# ser = pd.Series(data2, index=data)
+# ser.sort_index(inplace = True)
+# print(ser)
 #
 # years_to_generate = list(range(1,10))
 # hours = np.array(list(range(1,10)))
