@@ -69,7 +69,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.lookAhead
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
-                if self.reps.current_tick >= self.reps.start_year_dismantling - 1 : # already in the year before the dismantling power plants should be aware
+                if self.reps.current_tick >= self.reps.start_year_dismantling :
                     # calculate the past operating profit
                     profit = self.calculateAveragePastOperatingProfit(powerplant, horizon)
 
