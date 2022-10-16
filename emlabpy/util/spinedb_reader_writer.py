@@ -679,6 +679,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     # Ignore decommissioned power plants # todo: this anyways shouldnt be imported
     # reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in }
     elif object_class_name == 'PowerPlantsInstalled':
+
         if reps.runningModule == "plotting":
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
         else:

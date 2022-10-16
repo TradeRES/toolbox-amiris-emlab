@@ -56,7 +56,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)
             self.agent.CF_COMMODITY -= dispatch.variable_costs
 
-            financialPowerPlantReport.setTotalCosts( yearly_costs)
+            financialPowerPlantReport.totalCosts =  yearly_costs
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
 
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
@@ -70,7 +70,7 @@ class CreatingFinancialReports(DefaultModule):
             operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  yearly_costs
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
-            financialPowerPlantReport.setTotalYearlyProfit(operational_profit)
+            financialPowerPlantReport.totalProfits= operational_profit
             irr, npv = self.getProjectIRR(powerplant, operational_profit ,loans, self.agent)
             financialPowerPlantReport.irr = irr
             financialPowerPlantReport.npv = npv

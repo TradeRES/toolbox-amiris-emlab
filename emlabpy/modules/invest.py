@@ -89,6 +89,7 @@ class Investmentdecision(DefaultModule):
                     candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
                                                                    self.reps.country)
                     investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
+                    #investable = True
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
                         logging.info("to much in pipeline of this technology%s",candidatepowerplant.technology)
@@ -116,6 +117,7 @@ class Investmentdecision(DefaultModule):
                         logging.info("dont invest in this technology%s",candidatepowerplant.technology)
 
                 # saving: operational profits from candidate plants
+                #todo?
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
                 # if the power plant is correctly saved
                 if bestCandidatePowerPlant is not None:
@@ -307,6 +309,7 @@ class Investmentdecision(DefaultModule):
         installed_pp_results = df[df['commissionyear'] != str(9999)]
         self.reps.update_candidate_plant_results(candidate_pp_results)
         ids_of_future_installed_pp = self.reps.update_installed_pp_results(installed_pp_results)
+        print("updated results")
         return ids_of_future_installed_pp
 
     def continue_iteration(self):

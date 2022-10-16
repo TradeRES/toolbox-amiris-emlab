@@ -82,17 +82,11 @@ class FinancialPowerPlantReport(ImportObject):
     def setPowerPlantStatus(self, powerPlantStatus):
         self.powerPlantStatus= powerPlantStatus
 
-    def setTotalYearlyProfit(self, profit):
-        self.totalProfits= profit
-
     def setCommodityCosts(self, commodityCosts):
         self.commodityCosts = commodityCosts
 
     def setCo2Costs(self, co2Costs):
         self.co2Costs = co2Costs
-
-    def setTotalCosts(self, totalCosts):
-        self.totalCosts = totalCosts
 
     def setVariableCosts(self, variableCosts):
         self.variableCosts = variableCosts

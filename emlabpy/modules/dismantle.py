@@ -56,10 +56,12 @@ class Dismantle(DefaultModule):
 
     def decommision_by_age_and_profit(self):
         producer = self.reps.energy_producers[self.reps.agent]
+        horizon = self.reps.pastTimeHorizon
+        requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
-            horizon = self.reps.pastTimeHorizon
-            requiredProfit = producer.getDismantlingRequiredOperatingProfit()
+
+
             if self.reps.current_tick >= self.reps.start_year_dismantling:
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
                 if profit <= requiredProfit:
