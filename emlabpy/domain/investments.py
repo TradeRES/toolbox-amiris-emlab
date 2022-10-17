@@ -8,6 +8,7 @@ class InvestmentDecisions(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
         """"
+        object name = candidate technology
         In the DB objectname = str(futureYear) + "-" + str(iteration)
         This function is being read for the plotting. The investment decisions are saved in the invest module
         """
@@ -15,10 +16,11 @@ class InvestmentDecisions(ImportObject):
         decision_year = alternative
         if future_year not in self.invested_in_iteration.keys():
             self.invested_in_iteration[future_year] = [iteration]
-            self.invested_in_tick[decision_year] = [id]
+            # todo: better save this as strings
+            self.invested_in_tick[decision_year] = [str(int(id))]
         else:
             self.invested_in_iteration[future_year].append(iteration)
-            self.invested_in_tick[decision_year].append(id)
+            self.invested_in_tick[decision_year].append( str(int(id)))
 
 
 class Investments(ImportObject):

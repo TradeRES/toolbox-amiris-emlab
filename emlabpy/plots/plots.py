@@ -59,7 +59,7 @@ def plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, t
                    fontsize='small')
     axs13.set_title('Expected future operational profits\n candidates in ' + str(test_tick))
     fig13 = axs13.get_figure()
-    fig13.savefig(path_to_plots + '/' + 'Profits Candidates in tick' + str(test_tick) + '.png', bbox_inches='tight',
+    fig13.savefig(path_to_plots + '/' + 'Expected profits Candidates in tick' + str(test_tick) + '.png', bbox_inches='tight',
                   dpi=300)
 
 
@@ -602,28 +602,29 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
     fig33, axs33 = plt.subplots()
     candidate_PV_perMW = candidate_plants_project_value[test_tech] / reps.get_candidate_capacity(test_tech)
     candidate_PV_perMW.plot(ax=axs33, style='.', label="Expected to be installed in " + str(future_year))
-    # ONLY WHEN THERE IS NO DISMANTLING, AND ONLY ONE PLANT IS INSTALLED PER YEAR, COULD THE EXPECTED AND THE REAL npv BE THE SAME
-    # if installed_tick <= reps.current_tick:
-    #     npvs_testTech = test_npvs[pp_installed_in_test_year].iloc[installed_tick]
-    #     npvs_testTech.reset_index(inplace=True, drop=True)
-    #     npvs_testTech.plot(ax=axs33, style='.', label="Installed in " + str(installed_year))
-    #     # print("EXPECTED")
-    #     # print("{:.2f}".format(candidate_PV_perMW[0]))
-    #     # print("real")
-    #     # print("{:.2f}".format(npvs_testTech[0]))
-    #     plt.ylabel('[Eur]/MW', fontsize='medium')
-    #     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    #     for label in axs33.get_xticklabels(which='major'):
-    #         label.set(rotation=30, horizontalalignment='right')
-    #
-    #     axs33.annotate('ticks = name, capacity, age',
-    #                    xy=(1, 0), xycoords='figure fraction',
-    #                    horizontalalignment='center', verticalalignment='top',
-    #                    fontsize='medium')
-    #     axs33.set_title('NPV per MW \n for new plants of tech \n' + test_tech)
-    #     fig33.savefig(path_to_plots + '/' + 'NPV expected vs reality ' + test_tech + '-'+ str(test_year) + ' .png', bbox_inches='tight', dpi=300)
-    # else:
-    #     print("future NPV not evaluated yet for year " + str(installed_tick))
+    # Attention ONLY WHEN THERE IS NO DISMANTLING, there are no extra fixed costs along the years
+    # AND ONLY ONE PLANT IS INSTALLED PER YEAR, COULD THE EXPECTED AND THE REAL npv BE THE SAME
+    if installed_tick <= reps.current_tick:
+        npvs_testTech = test_npvs[pp_installed_in_test_year].iloc[installed_tick]
+        npvs_testTech.reset_index(inplace=True, drop=True)
+        npvs_testTech.plot(ax=axs33, style='.', label="Installed in " + str(installed_year))
+        # print("EXPECTED")
+        # print("{:.2f}".format(candidate_PV_perMW[0]))
+        # print("real")
+        # print("{:.2f}".format(npvs_testTech[0]))
+        plt.ylabel('[Eur]/MW', fontsize='medium')
+        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+        for label in axs33.get_xticklabels(which='major'):
+            label.set(rotation=30, horizontalalignment='right')
+
+        axs33.annotate('ticks = name, capacity, age',
+                       xy=(1, 0), xycoords='figure fraction',
+                       horizontalalignment='center', verticalalignment='top',
+                       fontsize='medium')
+        axs33.set_title('NPV per MW \n for new plants of tech \n' + test_tech)
+        fig33.savefig(path_to_plots + '/' + 'NPV expected vs reality ' + test_tech + '-'+ str(test_year) + ' .png', bbox_inches='tight', dpi=300)
+    else:
+        print("future NPV not evaluated yet for year " + str(installed_tick))
 
 
 def plot_initial_power_plants(path_to_plots, sheetname):
@@ -1199,47 +1200,47 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     if test_tech not in reps.get_unique_candidate_technologies_names():
         raise Exception("Test other technology, this is not installed " + str(years_to_generate[-1]))
     #section ---------------------------------------------------------------Cash energy producer
+
+    cash_flows_energy_producer, total_costs, cost_recovery, new_plants_loans = prepare_cash_per_agent(reps,
+                                                                                                      ticks_to_generate)
+    plot_cost_recovery(cost_recovery, path_to_plots)
+    plot_cash_flows(cash_flows_energy_producer, new_plants_loans, path_to_plots)
+    # #section -----------------------------------------------------------------------------------------------capacities
     #
-    # cash_flows_energy_producer, total_costs, cost_recovery, new_plants_loans = prepare_cash_per_agent(reps,
-    #                                                                                                   ticks_to_generate)
-    # plot_cost_recovery(cost_recovery, path_to_plots)
-    # plot_cash_flows(cash_flows_energy_producer, new_plants_loans, path_to_plots)
-    # # #section -----------------------------------------------------------------------------------------------capacities
-    # #
-    # all_techs_generation, all_techs_market_value, all_techs_capacity_factor, \
-    # average_electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
-    #     reps, unique_technologies,
-    #     years_to_generate)
-    # plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
-    # plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
-    # plot_yearly_average_electricity_prices(average_electricity_price, path_to_plots)
-    # plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
-    #
-    # # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
-    #
-    # irrs_per_tech_per_year, npvs_per_tech_per_MW, npvs_per_year_new_plants_all, irrs_per_year_new_plants_all = \
-    #     prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
-    #
-    # plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, path_to_plots,
-    #                                     colors_unique_techs)
-    #
-    # installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
-    #     future_year, reps, unique_candidate_power_plants)
-    # if candidate_plants_project_value.shape[0] == 0:
-    #     print("----------------------------------------------------no installable capacity in this test year")
-    # else:
-    #     plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
-    #                                            future_year, path_to_plots, colors_unique_candidates)
-    # #ATTENTION: FOR TEST TECH
-    # average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
-    #     reps, unique_technologies, ticks_to_generate, test_tech)
-    #
-    # plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
-    # plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
-    # # reality vs expectation
-    #
-    # plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_all, candidate_plants_project_value,   test_tech, test_year, test_tick,
-    #                     future_year, path_to_plots)
+    all_techs_generation, all_techs_market_value, all_techs_capacity_factor, \
+    average_electricity_price, production_per_year = prepare_capacity_and_generation_per_technology(
+        reps, unique_technologies,
+        years_to_generate)
+    plot_capacity_factor(all_techs_capacity_factor.T, path_to_plots, colors_unique_techs)
+    plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
+    plot_yearly_average_electricity_prices(average_electricity_price, path_to_plots)
+    plot_annual_generation(all_techs_generation.T, path_to_plots, colors_unique_techs)
+
+    # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
+
+    irrs_per_tech_per_year, npvs_per_tech_per_MW, npvs_per_year_new_plants_all, irrs_per_year_new_plants_all = \
+        prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
+
+    plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, path_to_plots,
+                                        colors_unique_techs)
+
+    installed_capacity_per_iteration, candidate_plants_project_value = prepare_capacity_per_iteration(
+        future_year, reps, unique_candidate_power_plants)
+    if candidate_plants_project_value.shape[0] == 0:
+        print("----------------------------------------------------no installable capacity in this test year")
+    else:
+        plot_investments_and_NPV_per_iteration(candidate_plants_project_value, installed_capacity_per_iteration,
+                                               future_year, path_to_plots, colors_unique_candidates)
+    #ATTENTION: FOR TEST TECH
+    average_profits_per_tech_per_year, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
+        reps, unique_technologies, ticks_to_generate, test_tech)
+
+    plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors_unique_techs)
+    plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
+    # reality vs expectation
+
+    plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_all, candidate_plants_project_value,   test_tech, test_year, test_tick,
+                        future_year, path_to_plots)
 
     # ##section -----------------------------------------------------------------------------------------------revenues per iteration
     # # '''
@@ -1346,10 +1347,10 @@ technology_colors = {
 
 try:
     # write the name of the exiisting scenario or the new scenario
-    name = "DE2050_SD4_PH3_MI1000000_totalProfits_twotechnologies"
+    #name = "DE2050_SD4_PH3_MI1000000_totalProfits_twotechnologies"
     #name = "DE2025_SD10_PH3_MI100_totalProfits_future1installed1two_techs_investBio"
-  #  name = "two_techs_investBio"
-    existing_scenario = True
+    name = "two_techs_unlimited"
+    existing_scenario = False
     electricity_prices = False  # write False if not wished to graph electricity prices"
     test_tick = 4
     test_tech = "CCGT"

@@ -175,7 +175,7 @@ class Repository:
         return cashFlow
 
     def get_profits_per_tick(self, tick):  # profits are being saved in the investment step
-        try:
+        try: # tick is the simulation tick, but the profits are for the future expected years.
             return next(i for i in self.profits.values() if i.name == str(tick))
         except StopIteration:
             return None
