@@ -320,7 +320,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     axs27.set_title('Average NPVs per capacity')
     fig27 = axs27.get_figure()
     fig27.savefig(path_to_plots + '/' + 'NPVs per capacity per technology.png', bbox_inches='tight', dpi=300)
-
+    plt.close('all')
 
 def plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path_to_plots, colors):
     # CM revenues + revenues - variable costs - fixed costs
@@ -338,6 +338,7 @@ def plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year, path
     fig25 = axs25.get_figure()
     fig25.savefig(path_to_plots + '/' + 'Operational profits, average per year per technology.png', bbox_inches='tight',
                   dpi=300)
+    plt.close('all')
 
 
 def plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors):
@@ -345,7 +346,7 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_p
     axs26.set_axisbelow(True)
     plt.xlabel('Simulation years', fontsize='medium')
     plt.ylabel('operational profits [Eur]', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1), ncol =5)
     plt.grid()
     axs26.set_title('Operational profits per year \n for ' + test_tech)
     axs26.annotate('Annual profits = revenues + CM revenues - variable costs - fixed costs',
@@ -355,7 +356,7 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_p
     fig26 = axs26.get_figure()
     fig26.savefig(path_to_plots + '/' + 'Operational profits per year for ' + test_tech + '.png', bbox_inches='tight',
                   dpi=300)
-
+    plt.close('all')
 
 def plot_installed_capacity(all_techs_capacity, path_to_plots, colors_unique_techs):
     print('plotting installed Capacity per technology ')
@@ -367,7 +368,7 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, colors_unique_tec
     axs17.set_title('Installed Capacity')
     fig17 = axs17.get_figure()
     fig17.savefig(path_to_plots + '/' + 'Annual installed Capacity per technology.png', bbox_inches='tight', dpi=300)
-
+    plt.close('all')
 
 def plot_capacity_factor(all_techs_capacity_factor, path_to_plots, colors_unique_techs):
     axs23 = all_techs_capacity_factor.plot(color=colors_unique_techs)
@@ -378,10 +379,11 @@ def plot_capacity_factor(all_techs_capacity_factor, path_to_plots, colors_unique
     axs23.set_title('Capacity factor (production/capacity*8760)')
     fig23 = axs23.get_figure()
     fig23.savefig(path_to_plots + '/' + 'All technologies capacity factor new.png', bbox_inches='tight', dpi=300)
-
+    plt.close('all')
 
 def plot_annual_generation(all_techs_generation, path_to_plots, colors_unique_techs):
-    axs18 = all_techs_generation.plot.area(color=colors_unique_techs)
+    all_techs_generation.replace(0, np.nan, inplace=True)
+    axs18 = all_techs_generation.plot.area()
     axs18.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Annual Generation [MWh]', fontsize='medium')
@@ -786,7 +788,7 @@ def prepare_profits_candidates_per_iteration(reps, test_tick):
     return profits_per_iteration
 
 
-def prepare_revenues_per_iteration(reps, test_tick,  future_tick, test_tech):
+def prepare_revenues_per_iteration(reps, test_tick,  future_tick, last_year, future_year, test_tech):
     # expected future operational profits
     profits = reps.get_profits_per_tick(test_tick)
     future_operational_profit_per_iteration = pd.DataFrame()
@@ -818,12 +820,17 @@ def prepare_revenues_per_iteration(reps, test_tick,  future_tick, test_tech):
     all_future_operational_profit = expected_future_operational_profit.set_index('tech-commissionedYear').T.sort_index(level=0)
 
     # real obtained operational profits
-    plants_commissioned_in_future_year = reps.get_power_plants_invested_in_tick(test_tick)
-    profits_plants_commissioned = pd.DataFrame()
-    for pp in plants_commissioned_in_future_year:
-        profits_plants_commissioned[pp] = reps.get_operational_profits_candidate_pp(pp, test_tech)
-    profits_plants_commissioned_in_future_year = profits_plants_commissioned.loc[future_tick]
-    profits_plants_commissioned_in_future_year.reset_index(drop=True)
+    if last_year>= future_year:
+        plants_commissioned_in_future_year = reps.get_power_plants_invested_in_tick(test_tick)
+        profits_plants_commissioned = pd.DataFrame()
+        for pp in plants_commissioned_in_future_year:
+            profits_plants_commissioned[pp] = reps.get_operational_profits_candidate_pp(pp, test_tech)
+
+        profits_plants_commissioned_in_future_year = profits_plants_commissioned.loc[future_tick]
+        profits_plants_commissioned_in_future_year.reset_index(drop=True)
+    else:
+        profits_plants_commissioned_in_future_year = False
+
 
     return sorted_average_revenues_per_tech_test_tick, all_future_operational_profit, profits_plants_commissioned_in_future_year
 
@@ -1195,6 +1202,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     future_year = test_year + reps.lookAhead
     future_tick = test_tick + reps.lookAhead
     last_year = years_to_generate[-1]
+
     if test_year > years_to_generate[-1]:
         raise Exception("Test tick is higher than simulated results, Max year " + str(years_to_generate[-1]))
     if test_tech not in reps.get_unique_candidate_technologies_names():
@@ -1246,13 +1254,16 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, test_
     # # '''
     # # decommissioning is plotted according to the year when it is decided to get decommissioned
     # # '''
+
     candidates_profits_per_iteration = prepare_profits_candidates_per_iteration(reps, test_tick)
     plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots, test_tick,
                                          colors_unique_candidates)
     sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit, profits_plants_commissioned_in_future_year = prepare_revenues_per_iteration(
-        reps, test_tick,  future_tick, test_tech)
+        reps, test_tick,  future_tick, last_year, future_year, test_tech)
     plot_revenues_per_iteration_for_one_tech(all_future_operational_profit,  test_tech, path_to_plots, future_year,
                                              test_tick)
+
+    #isinstance(profits_plants_commissioned_in_future_year, pd.Series):
     plot_expected_candidate_profits_real_profits(candidates_profits_per_iteration, profits_plants_commissioned_in_future_year, test_tech, path_to_plots, future_year,
                                              test_tick)
     plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_test_tick, path_to_plots, first_year,
@@ -1347,14 +1358,14 @@ technology_colors = {
 
 try:
     # write the name of the exiisting scenario or the new scenario
-    #name = "DE2050_SD4_PH3_MI1000000_totalProfits_twotechnologies"
-    #name = "DE2025_SD10_PH3_MI100_totalProfits_future1installed1two_techs_investBio"
-    name = "two_techs_unlimited"
-    existing_scenario = False
+    name = "DE2050_SD4_PH3_MI1000000_totalProfits_twotechnologies"
+    #name = "DE2050_SD4_PH3_MI1000000_totalProfits_installed1extended_unlimited"
+    name = "DE2025_SD10_PH3_MI100_totalProfits_future1installed1two_techs_investBio_nodismantle"
+    existing_scenario = True
     electricity_prices = False  # write False if not wished to graph electricity prices"
-    test_tick = 4
-    test_tech = "CCGT"
-    #test_tech = "Biomass_CHP_wood_pellets_DH"
+    test_tick = 0
+    #test_tech = "OCGT"
+    test_tech = "Biomass_CHP_wood_pellets_DH"
     print(" test_tick " + str(test_tick) + " " + test_tech)
 
     if name == "":
