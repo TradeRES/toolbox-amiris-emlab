@@ -23,18 +23,16 @@ from spinedb_api import DatabaseMapping, from_database
 grandparentpath =  dirname(dirname(realpath(os.getcwd())))
 parentpath =  os.path.dirname(os.getcwd())
 
-input_yearly_profiles_demand = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\NLVREprofilesandload2019-2050.xlsx')
+amiris_ouput_path =  os.path.join(grandparentpath,'amiris_workflow\\output\\')
 
 load_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
-load_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
 future_load_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_load.csv' )
 
+input_yearly_profiles_demand = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\NLVREprofilesandload2019-2050.xlsx')
 windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windon.csv')
 future_windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_windon.csv' )
-
 windoff_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windoff.csv')
 future_windoff_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_windoff.csv' )
-
 pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\pv.csv')
 future_pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_pv.csv' )
 
@@ -152,8 +150,8 @@ try:
 
         if sys.argv[2] == 'initialize_clock':
             print('delete excels in output')
-            path = globalNames.amiris_ouput_path
-            try:
+            path = amiris_ouput_path
+            try: # removing excels from previous rounds
                 for f in glob.iglob(path + '/*.xlsx', recursive=True):
                     os.remove(f)
             except Exception as e:
