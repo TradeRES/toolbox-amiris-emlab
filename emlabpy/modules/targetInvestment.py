@@ -30,22 +30,4 @@ class TargetInvestmentRole(DefaultModule):
                 newplant = PowerPlant(milli_sec)
                                                     #(self, tick, year, energyProducer, location, capacity, pgt)
                 plant = PowerPlant.specifyPowerPlantforInvest(self.reps.current_tick, self.reps.current_year, targetInvestor, "DE", installedCapacityDeviation, pgt)
-                #investmentCostPayedByEquity = plant.getActualInvestedCapital() * (1 - targetInvestor.getDebtRatioOfInvestments()) * powerPlantCapacityRatio
-                #investmentCostPayedByDebt = plant.getActualInvestedCapital() * targetInvestor.getDebtRatioOfInvestments() * powerPlantCapacityRatio
-                #downPayment = investmentCostPayedByEquity
-                #self.__createSpreadOutDownPayments(targetInvestor, manufacturer, downPayment, plant)
-                #amount = self.determineLoanAnnuities(investmentCostPayedByDebt, plant.getTechnology().getDepreciationTime(), targetInvestor.getLoanInterestRate())
-                #loan = getReps().createLoan(targetInvestor, bigbank, amount, plant.getTechnology().getDepreciationTime(), getCurrentTick(), plant)
-                #plant.createOrUpdateLoan(loan)
 
-
-    #
-    # def __createSpreadOutDownPayments(self, agent, manufacturer, totalDownPayment, plant):
-    #     buildingTime = int(plant.getActualLeadtime())
-    #     for i in range(0, buildingTime):
-    #         getReps().createCashFlow(agent, manufacturer, totalDownPayment / buildingTime, emlab.gen.domain.contract.CashFlow.DOWNPAYMENT, getCurrentTick() + i, plant)
-    #
-    # def determineLoanAnnuities(self, totalLoan, payBackTime, interestRate):
-    #     q = 1 + interestRate
-    #     annuity = totalLoan * (q ** payBackTime * (q - 1)) / (q ** payBackTime - 1)
-    #     return annuity

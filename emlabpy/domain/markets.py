@@ -38,9 +38,16 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
-            load_path = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_' + reps.country +'.csv')
-            self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
+            load_path =globalNames.load_file_for_amiris
+            if reps.country =="DE":
+                self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
+                # no dynamic load for other cases yet
+                self.future_demand = self.hourlyDemand
+            elif reps.country =="NL":
+                self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
+                self.future_demand = self.hourlyDemand
+
+
 
 
 class CapacityMarket(Market):

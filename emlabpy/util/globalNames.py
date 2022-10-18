@@ -40,7 +40,7 @@ modules_need_bids = [ "run_financial_results", "run_capacity_market" , "run_stra
                      "run_strategic_reserve_ger" , "run_forward_market" , "run_create_results", "plotting"]
 
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
-# grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)
 
 years_file = "years.txt"
@@ -49,23 +49,10 @@ continue_path = 'continue.txt'
 parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
 #amiris_data_path =  os.path.join(parentpath, 'amiris_data_structure.xlsx')
 #amiris_data_path =  os.path.join(  parentpath, 'amiris_workflow\\amiris_data_structure.xlsx' )
-load_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\load.csv')
-future_load_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\future_load.csv' )
-
-windon_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\windon.csv')
-future_windon_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\future_windon.csv' )
-windoff_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\windoff.csv')
-future_windoff_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\future_windoff.csv' )
-pv_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\pv.csv')
-future_pv_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\future_pv.csv' )
 
 
-load_path_DE = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
-load_path_NL = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_NL.csv')
-input_yearly_profiles_demand = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\NLVREprofilesandload2019-2050.xlsx')
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')
 amiris_ouput_path =  os.path.join(parentpath,'amiris_workflow\\output\\')
 amiris_RAWresults_path = os.path.join(parentpath,'amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv')
 power_plants_path = os.path.join(parentpath,'data\\Power_plants.xlsx')
 scenarios_path = os.path.join(parentpath,'emlabpy\\plots\\Scenarios\\')
-
