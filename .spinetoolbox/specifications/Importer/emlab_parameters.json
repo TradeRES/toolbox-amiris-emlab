@@ -1025,7 +1025,48 @@
                     }
                 }
             ],
-            "old": [
+            "Potentials": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "technologyPotentials",
+                                "skip_columns": [
+                                    4,
+                                    5
+                                ]
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "backup": [
                 {
                     "Mapping 1": {
                         "mapping": [
@@ -1063,7 +1104,9 @@
             "CO2",
             "CandidatePowerPlants",
             "StrategicReserveOperator",
-            "Dismantled"
+            "Dismantled",
+            "Potentials",
+            "backup"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1107,7 +1150,8 @@
             "CandidatePowerPlants": {},
             "StrategicReserveOperator": {},
             "Dismantled": {},
-            "old": {}
+            "Potentials": {},
+            "backup": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1352,17 +1396,13 @@
                 "0": "string",
                 "1": "float"
             },
-            "old": {
+            "Potentials": {
                 "0": "string",
                 "1": "string",
                 "2": "string",
                 "3": "string",
                 "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string"
+                "5": "string"
             }
         },
         "table_row_types": {

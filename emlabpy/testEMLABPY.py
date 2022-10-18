@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from util import globalNames
 import pandas as pd
 import os
 import sys
 from functools import reduce
 import pandas as pd
-
 
 # start = 117000 *256
 # age = 26
@@ -14,14 +14,14 @@ import pandas as pd
 # after_life_growth_rate = 0.05
 # after_life = pow(1 + growth_rate, lifetime) * start
 # print(after_life)
-
-s1 = pd.Series([1, 2], index=[1, 2], name='s1')
-s2 = pd.Series([3, 4], index=[2, 3], name='s2')
-mydict =  {'s1': s1, 's2': s2}
-a = pd.DataFrame.from_dict(mydict)
-
-#a = pd.concat([s1, s2], axis=1)
-print(a)
+#
+# s1 = pd.Series([1, 2], index=[1, 2], name='s1')
+# s2 = pd.Series([3, 4], index=[2, 3], name='s2')
+# mydict =  {'s1': s1, 's2': s2}
+# a = pd.DataFrame.from_dict(mydict)
+#
+# #a = pd.concat([s1, s2], axis=1)
+# print(a)
 
 # data = [1,2,5,4]
 # data2 = ["A","B", "C", "D"]
@@ -105,9 +105,9 @@ def plot_investments_per_iteration(
     ax2.set_title('Expected future operational (wholesale market) profits \n in year')
     ax1.legend( fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
 
-plot_investments_per_iteration()
-print('Showing plots...')
-plt.show()
+# plot_investments_per_iteration()
+# print('Showing plots...')
+# plt.show()
 
 # from domain.import_object import *
 # from twine.repository import Repository

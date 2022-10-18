@@ -43,7 +43,7 @@ conda activate emlabpy
 python setup.py install -> if changes are done to the code
 python -m pip install .
 pip install -r requirements.txt
-pip install git+https://github.com/Spine-project/spinetoolbox-dev
+
 ```
 ### spinetoolbox-dev
 download spinetoolbox and install all requirements

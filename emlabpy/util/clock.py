@@ -12,25 +12,31 @@ from util.spinedb import SpineDB
 from util import globalNames
 import glob
 import os
+import pandas as pd
+
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 from spinedb_api import DatabaseMapping, from_database
+
 
 def reset_candidate_investable_status():
     class_name = "CandidatePowerPlants"
     candidate_powerplants = [i for i in db_emlab.query_object_parameter_values_by_object_class(class_name)]
     for candidate in candidate_powerplants:
-        db_emlab.import_object_parameter_values([(class_name, candidate["object_name"] , "ViableInvestment",  bool(1) , '0')])
+        db_emlab.import_object_parameter_values(
+            [(class_name, candidate["object_name"], "ViableInvestment", bool(1), '0')])
+
 
 def update_years_file(current_year, initial, final_year, lookAhead):
     print("updated years file")
-    #once the spine bug is fixed. then it can be exported to the output folder.
+    # once the spine bug is fixed. then it can be exported to the output folder.
     # the clock is executed in the util folder. So save the results in the parent folder: emlabpy
-    complete_path = os.path.join(os.path.dirname(os.getcwd()),  globalNames.years_file)
+    complete_path = os.path.join(os.path.dirname(os.getcwd()), globalNames.years_file)
     f = open(complete_path, "w")
-    years_str = str(current_year)+"/" + str(initial)+"/"+ str(final_year) + "/"+ str(current_year + lookAhead)
+    years_str = str(current_year) + "/" + str(initial) + "/" + str(final_year) + "/" + str(current_year + lookAhead)
     f.write(years_str)
     f.close()
+
 
 def erase_not_accepted_bids(db_url):
     print("removing awaiting bids")
@@ -38,7 +44,8 @@ def erase_not_accepted_bids(db_url):
 
     try:
         subquery = db_map.object_parameter_value_sq
-        statuses = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+        statuses = {row.object_id: from_database(row.value, row.type) for row in
+                    db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
         removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
         db_map.cascade_remove_items(object=removable_object_ids)
         print("removed awaiting bids")
@@ -47,9 +54,40 @@ def erase_not_accepted_bids(db_url):
         db_map.connection.close()
 
 
-
 # erase not Accepted bids from capacity mechanisms
 # erase_not_accepted_bids(db_url)
+def prepare_AMIRIS_data(year, future_year):
+    print("preparing data for years " + str(year) + " and " + str(future_year))
+    try:
+        excel_NL = pd.read_excel(globalNames.input_yearly_profiles_demand, index_col=0,
+                                 sheet_name=["NL Wind Onshore profiles",
+                                             "NL Wind Offshore profiles",
+                                             "NL Sun PV profiles",
+                                             "Load Profile"])
+
+        print("finish reading  excel")
+        demand = excel_NL['Load Profile'][year]
+        demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
+        future_demand = excel_NL['Load Profile'][future_year]
+        future_demand.to_csv(globalNames.future_load_file_for_amiris, header=False, sep=';', index=True)
+
+        wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
+        future_wind_onshore = excel_NL['NL Wind Onshore profiles'][future_year]
+        wind_onshore.to_csv(globalNames.windon_file_for_amiris, header=False, sep=';', index=True)
+        future_wind_onshore.to_csv(globalNames.future_windon_file_for_amiris, header=False, sep=';', index=True)
+
+        wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
+        future_wind_offshore = excel_NL['NL Wind Offshore profiles'][future_year]
+        wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
+        future_wind_offshore.to_csv(globalNames.future_windoff_file_for_amiris, header=False, sep=';', index=True)
+
+        pv = excel_NL['NL Sun PV profiles'][year]
+        future_pv = excel_NL['NL Sun PV profiles'][future_year]
+        pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
+        future_pv.to_csv(globalNames.future_pv_file_for_amiris, header=False, sep=';', index=True)
+    except:
+        print("failed updating AMIRIS data")
+    return 0
 
 try:
     class_name = "Configuration"
@@ -57,13 +95,20 @@ try:
     object_parameter_value_name = 'SimulationTick'
     if len(sys.argv) >= 2:
         lookAhead = next(int(i['parameter_value']) for i
-                         in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
+                         in
+                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                          if i['parameter_name'] == "Look Ahead")
         final_year = next(int(i['parameter_value']) for i
-                          in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name ) \
+                          in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
+                                                                                                    object_name) \
                           if i['parameter_name'] == "End Year")
-        StartYear = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+        StartYear = next(int(i['parameter_value']) for i in
+                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                          if i['parameter_name'] == 'Start Year')
+
+        Country = next(int(i['parameter_value']) for i in
+                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                         if i['parameter_name'] == 'Country')
 
         reset_candidate_investable_status()
         print("reset power plants status")
@@ -72,7 +117,7 @@ try:
             print('delete excels in output')
             path = globalNames.amiris_ouput_path
             try:
-                for f in glob.iglob(path+'/*.xlsx', recursive=True):
+                for f in glob.iglob(path + '/*.xlsx', recursive=True):
                     os.remove(f)
             except Exception as e:
                 print(e)
@@ -86,38 +131,50 @@ try:
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
 
-            update_years_file(StartYear,StartYear , final_year, lookAhead)
+            update_years_file(StartYear, StartYear, final_year, lookAhead)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
         if sys.argv[2] == 'increment_clock':
             step = next(int(i['parameter_value']) for i
-                        in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                        in
+                        db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                         if i['parameter_name'] == 'Time Step')
 
             previous_tick = next(int(i['parameter_value']) for i
-                                 in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                                 in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
+                                                                                                           object_name) \
                                  if i['parameter_name'] == object_parameter_value_name)
 
             new_tick = step + previous_tick
             print('Incrementing Clock to ' + str(new_tick))
 
-
-            Current_year = next(int(i['parameter_value']) for i in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+            Current_year = next(int(i['parameter_value']) for i in
+                                db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
+                                                                                                       object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
-                update_years_file(updated_year , StartYear, final_year, lookAhead) # need to update the file to make the loop stop
+                update_years_file(updated_year, StartYear, final_year,
+                                  lookAhead)  # need to update the file to make the loop stop
             else:
-                db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, new_tick, '0')])
+                db_emlab.import_object_parameter_values(
+                    [(class_name, object_name, object_parameter_value_name, new_tick, '0')])
                 db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
-                update_years_file(updated_year , StartYear, final_year, lookAhead)
+                update_years_file(updated_year, StartYear, final_year, lookAhead)
                 db_emlab.commit('Clock increment')
                 print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
 
     else:
         print('No mode specified.')
+
+    if Country == "NL":
+        future_year = updated_year + lookAhead
+        prepare_AMIRIS_data(updated_year, future_year)
+    else: # no dynamic data for other cases 
+        pass
+
 except Exception:
     raise
 finally:

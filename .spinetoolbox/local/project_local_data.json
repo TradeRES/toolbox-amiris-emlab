@@ -21,9 +21,6 @@
                 "password": ""
             }
         },
-        "Traderes Excel": {
-            "db_credentials": {}
-        },
         "EmlabDB2": {
             "url": {
                 "username": "",

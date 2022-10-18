@@ -256,28 +256,6 @@
                 ]
             },
             {
-                "name": "from Traderes Excel to traderesExcel to DB",
-                "from": [
-                    "Traderes Excel",
-                    "right"
-                ],
-                "to": [
-                    "traderesExcel to DB",
-                    "left"
-                ]
-            },
-            {
-                "name": "from traderesExcel to DB to EmlabDB",
-                "from": [
-                    "traderesExcel to DB",
-                    "right"
-                ],
-                "to": [
-                    "EmlabDB",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB to Prepare Data Amiris",
                 "from": [
                     "EmlabDB",
@@ -631,8 +609,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1373.4670591121949,
-            "y": -473.73046927267643,
+            "x": -1387.2786212495039,
+            "y": -503.8963229933901,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -647,8 +625,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1557.091482366659,
-            "y": -744.3347266904444,
+            "x": -1570.5642306334125,
+            "y": -221.1430023315154,
             "file_references": [
                 {
                     "type": "path",
@@ -661,8 +639,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1342.240671841681,
-            "y": -642.4247797037858,
+            "x": -1364.6952522862698,
+            "y": -227.0150414788851,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -677,8 +655,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1574.2700297038093,
-            "y": -375.6928392188674,
+            "x": -1572.0245716593504,
+            "y": -611.4659338870542,
             "file_references": [
                 {
                     "type": "path",
@@ -691,8 +669,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -1354.7928365067814,
-            "y": -373.1009581254448,
+            "x": -1427.8717304456584,
+            "y": -610.3743722101216,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -751,8 +729,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -729.009021076382,
-            "y": -453.120126920136,
+            "x": -722.2726469430054,
+            "y": -453.12012692013604,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -770,41 +748,11 @@
                 }
             ]
         },
-        "Traderes Excel": {
-            "type": "Data Connection",
-            "description": "",
-            "x": -1579.581542269506,
-            "y": -624.6289890299092,
-            "file_references": [
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": "data/TradeRES_D2_1_Scenario_data_Corrected.xlsx"
-                }
-            ],
-            "db_references": []
-        },
-        "traderesExcel to DB": {
-            "type": "Importer",
-            "description": "",
-            "x": -1368.4390973645748,
-            "y": -562.9907302730512,
-            "specification": "technology potential and capacities",
-            "cancel_on_error": false,
-            "purge_before_writing": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "<project>/data/TradeRES_D2_1_Scenario_data_Corrected.xlsx",
-                    true
-                ]
-            ]
-        },
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -829.6198045449294,
-            "y": -752.0561707762132,
+            "x": -822.8834304115527,
+            "y": -752.0561707762133,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -825,8 +773,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 217.92622822219795,
-            "y": -212.19767274986154,
+            "x": 215.68077017773905,
+            "y": -212.1976727498615,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -872,8 +820,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -231.9829540025066,
-            "y": -453.4721180426453,
+            "x": -229.7374959580477,
+            "y": -455.71757608710436,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -906,7 +854,7 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -16.767225555116905,
+            "x": -16.767225555116912,
             "y": -477.20748758325317,
             "url": {
                 "dialect": "sqlite",
@@ -922,8 +870,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1362.253306299942,
-            "y": -276.0160068233636,
+            "x": -1366.7442223888602,
+            "y": -361.34341251280256,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -938,8 +886,8 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1570.5984961642346,
-            "y": -259.01990394048806,
+            "x": -1575.0894122531527,
+            "y": -353.3291418077629,
             "file_references": [
                 {
                     "type": "path",
@@ -966,8 +914,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -448.6133824380583,
-            "y": -451.9716339921141,
+            "x": -444.1224663491404,
+            "y": -454.21709203657315,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -992,7 +940,7 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -212.59454900880587,
+            "x": -208.10363291988804,
             "y": 108.7107771032203,
             "specification": "Invest",
             "execute_in_work": false,
@@ -1014,8 +962,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -574.5791902044273,
-            "y": -458.52362947974586,
+            "x": -570.0882741155094,
+            "y": -460.7690875242049,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1045,8 +993,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": 184.20519846153437,
-            "y": -463.1569564901116,
+            "x": 181.95974041707544,
+            "y": -463.15695649011155,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [
