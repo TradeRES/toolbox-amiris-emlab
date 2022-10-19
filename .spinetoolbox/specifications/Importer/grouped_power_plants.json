@@ -86,7 +86,12 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "PowerPlantsInstalled"
+                                "value": "PowerPlantsInstalled",
+                                "skip_columns": [
+                                    10,
+                                    11,
+                                    12
+                                ]
                             },
                             {
                                 "map_type": "Object",
@@ -308,7 +313,10 @@
             },
             "powerplants_grouped": {},
             "extendedDE": {},
-            "extendedNL": {},
+            "extendedNL": {
+                "read_until_col": false,
+                "read_until_row": true
+            },
             "groupedDE_RES": {},
             "Sheet1": {},
             "two_techs_DE": {},
@@ -347,7 +355,10 @@
                 "6": "string",
                 "7": "string",
                 "8": "string",
-                "9": "string"
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string"
             },
             "extendedNL": {
                 "0": "string",

@@ -120,43 +120,6 @@
                     }
                 }
             ],
-            "unit": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "table_name",
-                                "value": "unit"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": 2
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": 3
-                            }
-                        ]
-                    }
-                }
-            ],
             "flow__unit": [
                 {
                     "Mapping 1": {
@@ -271,12 +234,176 @@
                         ]
                     }
                 }
+            ],
+            "unit2020": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "unit",
+                                "skip_columns": [
+                                    12,
+                                    13,
+                                    14,
+                                    15,
+                                    16
+                                ],
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "2020"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2030-none": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "unit"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "2030"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2040-2050": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2030-none_traderes": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "pivot1_2030": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "pivot2030": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "node",
-            "unit",
-            "grid__node__unit__io"
+            "unit2020",
+            "unit2030-none"
         ],
         "table_options": {
             "grid": {},
@@ -284,11 +411,20 @@
             "reserve_type": {},
             "unittype": {},
             "node": {},
-            "unit": {},
             "flow__unit": {},
             "grid__node__unit__io": {},
             "explanation": {},
-            "node2020": {}
+            "node2020": {},
+            "unit2020": {
+                "read_until_col": false,
+                "read_until_row": true,
+                "row": 0
+            },
+            "unit2030-none": {},
+            "unit2040-2050": {},
+            "unit2030-none_traderes": {},
+            "pivot1_2030": {},
+            "pivot2030": {}
         },
         "table_types": {
             "flow": {
@@ -298,7 +434,10 @@
                 "0": "string",
                 "1": "string",
                 "2": "string",
-                "3": "float"
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "string"
             },
             "grid__node__unit__io": {
                 "0": "string",
@@ -307,16 +446,6 @@
                 "3": "string",
                 "4": "string",
                 "5": "float"
-            },
-            "unit": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "float",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string"
             },
             "node2020": {
                 "0": "string",
@@ -327,6 +456,66 @@
             "flow__unit": {
                 "0": "string",
                 "1": "string"
+            },
+            "unit2020": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string",
+                "15": "string",
+                "16": "string"
+            },
+            "unit2030-none": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string",
+                "15": "string",
+                "16": "string",
+                "17": "string",
+                "18": "string"
+            },
+            "unit2040-2050": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string"
+            },
+            "pivot1_2030": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string"
             }
         },
         "table_row_types": {},

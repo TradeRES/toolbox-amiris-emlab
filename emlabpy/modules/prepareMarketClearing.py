@@ -79,9 +79,8 @@ class PrepareMarket(DefaultModule):
         #demand = ["./timeseries/demand/load.csv"] * len(self.Years)
         wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
         demand = wholesale_market.hourlyDemand
-        path_demand = 'amiris_workflow\\amiris-config\\data\\load.csv'
         write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
-        demand_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), path_demand )
+        demand_file_for_amiris = globalNames.load_file_for_amiris
 
         for k, substance in self.reps.substances.items():
             if calculatedprices == "next_year_price":
@@ -101,10 +100,18 @@ class PrepareMarket(DefaultModule):
             elif substance.name == "CO2":
                 Co2Prices.append(fuel_price)
             elif substance.name == "electricity":
-                new_demand = demand.copy()
-                print(fuel_price)
-                new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
-                new_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                if self.reps.country == "DE": # for germany the load is calculated with a trend.
+                    new_demand = demand.copy()
+                    new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
+                    new_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                else: # for now, only have dynamic data for NL case
+                    if self.reps.runningModule == "run_prepare_next_year_market_clearing":
+                        # the load was already updated in the clock step
+                        pass
+                    elif self.reps.runningModule == "run_future_market":
+                        wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                        # the write_demand_path continue being the same, as this is overwritten.
+
 
         d = {'Co2Prices': Co2Prices,
              'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,

@@ -14,6 +14,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def __init__(self, reps):
         super().__init__(reps)
+
         self.newPowerPlant = None
         self.newTechnologies = None
         self.lastrenewableId = 0
@@ -35,6 +36,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.setTimeHorizon()
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
+        # from here functions are from prepare market clearing
+
         self.sort_power_plants_by_age()
         # functions to save the power plants
         self.openwriter()
@@ -103,7 +106,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 print("--------------------- in pipeline", powerplant.name)
             else:
                 print("status not set", powerplant.name)
-
 
     def setTimeHorizon(self):
         """

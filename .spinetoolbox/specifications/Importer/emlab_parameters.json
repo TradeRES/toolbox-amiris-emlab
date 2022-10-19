@@ -641,47 +641,6 @@
                     }
                 }
             ],
-            "dutchGermanPlants2015_from_emla": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled",
-                                "skip_columns": [
-                                    1
-                                ]
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "dictTech": [
                 {
                     "Mapping 1": {
@@ -803,44 +762,6 @@
                             {
                                 "map_type": "ParameterValue",
                                 "position": 2
-                            }
-                        ]
-                    }
-                }
-            ],
-            "TechnologiesEmlabTemporal": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "unit"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "emlab-temporal"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
                             }
                         ]
                     }
@@ -1085,6 +1006,26 @@
                         ]
                     }
                 }
+            ],
+            "yearly targets": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1100,13 +1041,11 @@
             "Fuels",
             "dictTech",
             "dictFuel",
-            "TechnologiesEmlabTemporal",
             "CO2",
             "CandidatePowerPlants",
             "StrategicReserveOperator",
             "Dismantled",
-            "Potentials",
-            "backup"
+            "Potentials"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1139,19 +1078,16 @@
             "Fuels": {},
             "NewTechnologies": {},
             "not chosen technologies": {},
-            "dutchGermanPlants2015_from_emla": {},
             "dictTech": {},
             "dictFuel": {},
-            "TechnologiesEmlabTemporal": {
-                "read_until_col": true
-            },
             "dictvariables": {},
             "CO2": {},
             "CandidatePowerPlants": {},
             "StrategicReserveOperator": {},
             "Dismantled": {},
             "Potentials": {},
-            "backup": {}
+            "backup": {},
+            "yearly targets": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1285,20 +1221,17 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "string"
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string"
             },
             "explanation": {
                 "0": "string",
                 "1": "string",
                 "2": "string",
                 "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string"
+                "4": "string"
             },
             "NewTechnologies": {
                 "0": "string",
@@ -1321,36 +1254,12 @@
                 "6": "string",
                 "7": "string"
             },
-            "dutchGermanPlants2015_from_emla": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "string"
-            },
-            "TechnologiesEmlabTemporal": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string"
-            },
             "dictFuel": {
                 "0": "string",
                 "1": "float",
                 "2": "float",
-                "3": "string"
+                "3": "string",
+                "4": "string"
             },
             "dictvariables": {
                 "0": "string",
@@ -1364,7 +1273,11 @@
                 "4": "float",
                 "5": "float",
                 "6": "float",
-                "7": "string"
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string"
             },
             "CO2": {
                 "0": "string",
@@ -1381,16 +1294,16 @@
                 "5": "string",
                 "6": "string",
                 "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string"
+                "8": "string"
             },
             "StrategicReserveOperator": {
                 "0": "float",
                 "1": "float",
                 "2": "string",
-                "3": "string"
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string"
             },
             "Dismantled": {
                 "0": "string",
@@ -1403,6 +1316,28 @@
                 "3": "string",
                 "4": "string",
                 "5": "string"
+            },
+            "yearly targets": {
+                "0": "string",
+                "1": "string",
+                "2": "string"
+            },
+            "backup": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string"
             }
         },
         "table_row_types": {

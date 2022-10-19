@@ -595,8 +595,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1577.376102153959,
-            "y": -494.6656595567656,
+            "x": -1630.2052297561686,
+            "y": -490.26323225658143,
             "file_references": [
                 {
                     "type": "path",
@@ -609,8 +609,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1387.2786212495039,
-            "y": -503.8963229933901,
+            "x": -1341.0531345975708,
+            "y": -490.6890410928376,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -625,8 +625,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1570.5642306334125,
-            "y": -221.1430023315154,
+            "x": -1610.1860763350699,
+            "y": -216.74057503133125,
             "file_references": [
                 {
                     "type": "path",
@@ -639,8 +639,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1364.6952522862698,
-            "y": -227.0150414788851,
+            "x": -1322.8721929345204,
+            "y": -218.21018687851685,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -655,8 +655,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1572.0245716593504,
-            "y": -611.4659338870542,
+            "x": -1657.871904012941,
+            "y": -618.0695748373303,
             "file_references": [
                 {
                     "type": "path",
@@ -669,8 +669,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -1427.8717304456584,
-            "y": -610.3743722101216,
+            "x": -1361.835320942896,
+            "y": -623.581654110674,
             "specification": "Config Import",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -870,8 +870,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1366.7442223888602,
-            "y": -361.34341251280256,
+            "x": -1331.5690483817543,
+            "y": -359.1421988627106,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -886,8 +886,8 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1575.0894122531527,
-            "y": -353.3291418077629,
+            "x": -1625.7173262052706,
+            "y": -357.73156910794705,
             "file_references": [
                 {
                     "type": "path",

@@ -102,10 +102,10 @@ def prepare_AMIRIS_data(year, future_year):
         future_pv = excel_NL['NL Sun PV profiles'][future_year]
         pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
         future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
+
     except Exception as e:
         print("failed updating AMIRIS data")
         print(e)
-
     return 0
 
 def prepare_AMIRIS_data_fromDE():

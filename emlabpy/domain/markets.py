@@ -22,6 +22,7 @@ class ElectricitySpotMarket(Market):
         super().__init__(name)
         self.valueOfLostLoad = 0
         self.hourlyDemand = None
+        self.future_demand = None
         self.demandGrowthTrend = 0.0
         self.country = ""
     #    self.substance = ""
@@ -44,10 +45,9 @@ class ElectricitySpotMarket(Market):
                 # no dynamic load for other cases yet
                 self.future_demand = self.hourlyDemand
             elif reps.country =="NL":
+                future_load_path =globalNames.future_load_file_for_amiris
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
-                self.future_demand = self.hourlyDemand
-
-
+                self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None)
 
 
 class CapacityMarket(Market):
