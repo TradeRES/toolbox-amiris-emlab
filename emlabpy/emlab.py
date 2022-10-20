@@ -129,10 +129,15 @@ try:  # Try statement to always close DB properly
                                   str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
                                   ))
-        # saving ids in the DB
-        spinedb_reader_writer.stage_power_plant_id_and_loans(reps , reps.power_plants)
-        spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
 
+        # saving ids in the DB
+        start_capacity = reps.calculateCapacityOfOperationalPlantsforallTechnologies()
+        targets = reps.findTargetInvestorByCountry(reps.country)
+        for target in targets:
+            target.set_start_capacity(start_capacity[target.targetTechnology])
+        spinedb_reader_writer.stage_start_target_capacities(targets)
+        spinedb_reader_writer.stage_power_plant_id_and_loans(reps, reps.power_plants)
+        spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
     else:
         # if the id initialization was done, it is not needed to store it again.

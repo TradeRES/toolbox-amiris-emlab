@@ -229,7 +229,7 @@ class PowerPlant(EMLabAgent):
         self.setExpectedEndOfLife( # set in terms of tick
             tick + self.getTechnology().getExpectedLifetime() - self.age)
         self.setPowerPlantsStatusforInstalledPowerPlants()
-        return self
+        return
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
         # todo if the plant is in strategic reserve. Then the status shouldnt change? this is better kept through the list of power plants
@@ -377,9 +377,6 @@ class PowerPlant(EMLabAgent):
     def getActualLeadtime(self):
         return self.actualLeadtime
 
-    def setExpectedEndOfLife(self, expectedEndOfLife):
-        self.expectedEndOfLife = expectedEndOfLife
-
     def setActualPermittime(self, actualPermittime):
         self.actualPermittime = actualPermittime
 
@@ -397,6 +394,9 @@ class PowerPlant(EMLabAgent):
 
     def dismantlePowerPlant(self, dismantleTime):
         self.dismantleTime = dismantleTime
+
+    def setExpectedEndOfLife(self, expectedEndOfLife):
+        self.expectedEndOfLife = expectedEndOfLife
 
     def getExpectedEndOfLife(self):
         return self.expectedEndOfLife

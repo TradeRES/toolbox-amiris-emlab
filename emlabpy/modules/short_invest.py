@@ -64,6 +64,7 @@ class ShortInvestmentdecision(Investmentdecision):
     def calculateandCheckFutureCapacityExpectation(self, technology):
         technologyCapacityLimit = self.findLimitsByTechnology(technology)
         # in contrast to long term investment decision, this is calculated for the current year
+        # todo check this as it has been changes
         self.expectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(
             technology,
             self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)

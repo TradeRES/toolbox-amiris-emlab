@@ -61,7 +61,7 @@ class Repository:
         self.realistic_candidate_capacities_tobe_installed = False
         self.realistic_candidate_capacities_for_future = False
         self.dummy_capacity = 1
-
+        self.targetinvestment_per_year = True
         self.npv_with_annuity = False
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -84,7 +84,8 @@ class Repository:
         self.power_generating_technologies = dict()
         self.used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", "Nuclear", "WTG_onshore",
                                   "WTG_offshore", "PV_utility_systems", "Lignite PSC", "Fuel oil PGT", "Pumped_hydro",
-                                  "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH", "CCGT_CHP_backpressure_DH"]
+                                  "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH",
+                                  "CCGT_CHP_backpressure_DH"]
         self.market_clearing_points = dict()
         self.power_grid_nodes = dict()
         self.trends = dict()
@@ -175,7 +176,7 @@ class Repository:
         return cashFlow
 
     def get_profits_per_tick(self, tick):  # profits are being saved in the investment step
-        try: # tick is the simulation tick, but the profits are for the future expected years.
+        try:  # tick is the simulation tick, but the profits are for the future expected years.
             return next(i for i in self.profits.values() if i.name == str(tick))
         except StopIteration:
             return None
@@ -188,9 +189,11 @@ class Repository:
             return None
 
     def get_operational_profits_candidate_pp(self, plant_name, test_tech):
-        try: # this is only to compare with expected value In reality fixed costs are increased each year by eg .001
+        try:  # this is only to compare with expected value In reality fixed costs are increased each year by eg .001
             return next(
-                i.totalProfits + (self.power_generating_technologies[test_tech].fixed_operating_costs  *  self.power_plants[plant_name].capacity) for i in
+                i.totalProfits + (
+                            self.power_generating_technologies[test_tech].fixed_operating_costs * self.power_plants[
+                        plant_name].capacity) for i in
                 self.financialPowerPlantReports.values() if i.name == plant_name)
         except StopIteration:
             return None
@@ -311,6 +314,11 @@ class Repository:
     def get_candidate_capacity(self, tech):
         return next(i.capacityTobeInstalled for i in self.candidatePowerPlants.values() if i.technology.name == tech)
 
+    def get_candidate_name_by_technology(self, tech):
+        return next(i.name for i in self.candidatePowerPlants.values() if i.technology.name == tech)
+
+
+
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
@@ -339,7 +347,8 @@ class Repository:
 
     def get_id_last_power_plant(self) -> int:
         # the last 5 numbers are the power plant list
-        return sorted([str(i.id)[-4:] for i in self.power_plants.values()])[-1]
+        sorted_ids =  sorted([str(i.id)[-4:] for i in self.power_plants.values()])
+        return sorted_ids[-1]
 
     def get_power_plant_by_id(self, id):
         try:
@@ -350,18 +359,39 @@ class Repository:
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 
-    def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, tick):
-        expectedOperationalcapacity = 0
-        plantsoftechnology = [i for i in self.power_plants.values() if i.technology.name == technology.name]
-        for plant in plantsoftechnology:
-            if PowerPlant.isExpectedToBeOperational(plant, tick, (self.current_year + tick)):
-                expectedOperationalcapacity += plant.capacity
+    def calculateCapacityExpectedofListofPlants(self, ids_of_future_installed_pp, investable_candidate_plants):
+        investable_technologies = [i.technology.name for i in investable_candidate_plants]
+        expectedOperationalcapacity = dict()
+        for tech in investable_technologies:
+            capacity = 0
+            for plant in self.power_plants.values():
+                if plant.id in ids_of_future_installed_pp:
+                    if plant.technology.name == tech:
+                        capacity += plant.capacity
+            expectedOperationalcapacity[tech] = capacity
         return expectedOperationalcapacity
+
+    # def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, ids_of_future_installed_pp):
+    #     expectedOperationalcapacity = 0
+    #     for plant in self.power_plants.values():
+    #         if plant.id in ids_of_future_installed_pp:
+    #             if plant.technology.name == technology.name:
+    #                 expectedOperationalcapacity += plant.capacity
+    #     return expectedOperationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
         plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology.name == technology.name
                               and i.status == globalNames.power_plant_status_operational]
         return sum(plantsoftechnology)
+
+    def calculateCapacityOfOperationalPlantsforallTechnologies(self):
+        uniquetechnologies = self.get_unique_technologies_names()
+        start_capacity= dict.fromkeys(uniquetechnologies, 0)
+        for pp in self.power_plants.values():
+            if pp.status not in  [globalNames.power_plant_status_inPipeline,globalNames.power_plant_status_decommissioned ]:
+                start_capacity[pp.technology.name] += pp.capacity
+        return start_capacity
+
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
@@ -373,8 +403,21 @@ class Repository:
 
     def findPowerGeneratingTechnologyTargetByTechnology(self, technology):
         for i in self.target_investors.values():
-            if i.targetTechnology == technology.name and i.targetNode == self.country:
+            if i.targetTechnology == technology.name and i.targetCountry == self.country:
                 return i
+
+    def findPowerGeneratingTechnologyTargetByTechnologyandyear(self, technology, year):
+        try:
+            from_year = self.start_simulation_year
+            to_year = year
+            return next(i.get_cummulative_capacity(from_year, to_year) for i in self.target_investors.values() if
+                        i.targetTechnology == technology.name and i.targetCountry == self.country)
+        except StopIteration:
+            logging.warning('No yearly target for this year.' + str(year))
+        return None
+
+    def findTargetInvestorByCountry(self, country):
+        return [i for i in self.target_investors.values() if i.targetCountry == country]
 
     def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
         return [i for i in self.power_plants if i.getConstructionStartTime() == tick]

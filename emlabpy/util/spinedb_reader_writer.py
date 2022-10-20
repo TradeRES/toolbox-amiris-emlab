@@ -106,6 +106,9 @@ class SpineDBReaderWriter:
                 reps.dummy_capacity = int(row['parameter_value'])
             elif row['parameter_name'] == 'npv_with_annuity':
                 reps.npv_with_annuity = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'targetinvestment_per_year':
+                reps.targetinvestment_per_year = bool(row['parameter_value'])
+
         print("-----------------------------------------------------------" + str(reps.current_tick))
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
@@ -203,6 +206,15 @@ class SpineDBReaderWriter:
     """
     Power plants
     """
+
+    def stage_start_target_capacities(self,targets):
+        for target in targets:
+            classname = "Targets"
+            object_name = target.name
+            self.stage_object(classname, object_name)
+            self.stage_object_parameter_values(classname, object_name,
+                                               [('start_capacity', target.start_capacity)], "0")
+
 
     def stage_power_plant_id_and_loans(self, reps, power_plants):
         print("staging id and loans")

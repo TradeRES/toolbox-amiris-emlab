@@ -1007,20 +1007,38 @@
                     }
                 }
             ],
-            "yearly targets": [
+            "YearlyTargets": [
                 {
                     "Mapping 1": {
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "Targets"
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden"
+                                "position": -1
                             },
                             {
                                 "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
                                 "position": "hidden"
                             }
                         ]
@@ -1045,7 +1063,8 @@
             "CandidatePowerPlants",
             "StrategicReserveOperator",
             "Dismantled",
-            "Potentials"
+            "Potentials",
+            "YearlyTargets"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1064,9 +1083,14 @@
             "IntermittentResourceProfiles": {},
             "MarketStabilityReserve": {},
             "NationalGovernments": {},
-            "StepTrends": {},
+            "StepTrends": {
+                "read_until_row": true,
+                "read_until_col": true
+            },
             "TargetInvestors": {},
-            "TargetInvestorTargets": {},
+            "TargetInvestorTargets": {
+                "read_until_row": true
+            },
             "FuelPriceTrends": {},
             "explanation": {},
             "TechnologiesEmlab": {
@@ -1087,7 +1111,9 @@
             "Dismantled": {},
             "Potentials": {},
             "backup": {},
-            "yearly targets": {}
+            "YearlyTargets": {
+                "read_until_col": true
+            }
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1096,8 +1122,7 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float",
-                "6": "string"
+                "5": "float"
             },
             "CO2Auction": {
                 "0": "string",
@@ -1172,11 +1197,7 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string"
+                "5": "string"
             },
             "TargetInvestors": {
                 "0": "string",
@@ -1185,8 +1206,9 @@
             },
             "TargetInvestorTargets": {
                 "0": "string",
-                "1": "float",
-                "2": "string"
+                "1": "string",
+                "2": "string",
+                "3": "string"
             },
             "FuelPriceTrends": {
                 "0": "string",
@@ -1317,11 +1339,6 @@
                 "4": "string",
                 "5": "string"
             },
-            "yearly targets": {
-                "0": "string",
-                "1": "string",
-                "2": "string"
-            },
             "backup": {
                 "0": "string",
                 "1": "string",
@@ -1338,8 +1355,15 @@
                 "12": "string",
                 "13": "string",
                 "14": "string"
+            },
+            "YearlyTargets": {
+                "0": "float",
+                "1": "float",
+                "2": "float",
+                "3": "float"
             }
         },
+        "table_default_column_type": {},
         "table_row_types": {
             "TechnologiesEmlab": {
                 "1": "string",

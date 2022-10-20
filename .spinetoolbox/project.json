@@ -1,6 +1,6 @@
 {
     "project": {
-        "version": 7,
+        "version": 8,
         "name": "Spine-EMLab-Amiris",
         "description": "",
         "specifications": {
@@ -595,8 +595,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1630.2052297561686,
-            "y": -490.26323225658143,
+            "x": -1630.2052297561684,
+            "y": -492.85874269580387,
             "file_references": [
                 {
                     "type": "path",
@@ -609,8 +609,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1341.0531345975708,
-            "y": -490.6890410928376,
+            "x": -1338.4576241583486,
+            "y": -493.2845515320601,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "purge_before_writing": false,
@@ -631,7 +631,7 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/exported_toward_bb_2050.xlsx"
+                    "path": "data/exported_Traderes.xlsx"
                 }
             ],
             "db_references": []
@@ -647,7 +647,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/data/exported_toward_bb_2050.xlsx",
+                    "<project>/data/exported_Traderes.xlsx",
                     true
                 ]
             ]
