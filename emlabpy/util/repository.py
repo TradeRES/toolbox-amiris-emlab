@@ -409,8 +409,9 @@ class Repository:
     def findPowerGeneratingTechnologyTargetByTechnologyandyear(self, technology, year):
         try:
             from_year = self.start_simulation_year
+            last_year = self.end_simulation_year
             to_year = year
-            return next(i.get_cummulative_capacity(from_year, to_year) for i in self.target_investors.values() if
+            return next(i.get_cummulative_capacity(from_year, to_year, last_year) for i in self.target_investors.values() if
                         i.targetTechnology == technology.name and i.targetCountry == self.country)
         except StopIteration:
             logging.warning('No yearly target for this year.' + str(year))

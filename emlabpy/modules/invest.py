@@ -139,7 +139,6 @@ class Investmentdecision(DefaultModule):
                     self.continue_iteration()
                     return
                 else:
-
                     print("no more power plant to invest, saving loans, next iteration")
                     self.stop_iteration()
                     # saving iteration number back to zero for next year
@@ -152,9 +151,9 @@ class Investmentdecision(DefaultModule):
                             self.reps.dbrw.stage_new_power_plant(newplant)
                             self.reps.dbrw.stage_loans(newplant)
                             self.reps.dbrw.stage_downpayments(newplant)
-                            # self.reps.dbrw.stage_investment_decisions(100, newplant.name,
-                            #                                           self.reps.investmentIteration,
-                            #                                           self.futureInvestmentyear, self.reps.current_tick)
+                            self.reps.dbrw.stage_investment_decisions(  100 , newplant.name,
+                                                                      self.reps.investmentIteration,
+                                                                      self.futureInvestmentyear, self.reps.current_tick)
 
                     # self.agent.readytoInvest = False #
             else:
@@ -364,9 +363,13 @@ class Investmentdecision(DefaultModule):
                         bestCandidatePowerPlant = investable
 
                 number_new_powerplants = math.floor(installedCapacityDeviation / bestCandidatePowerPlant.capacity)
-
+                remainder = installedCapacityDeviation % bestCandidatePowerPlant.capacity
                 for i in range(number_new_powerplants):
                     print("investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity) )
+                    if i == number_new_powerplants -1 :
+                        bestCandidatePowerPlant.capacity += remainder
+                    else:
+                        pass
                     newplant = self.invest(bestCandidatePowerPlant)
                     new_target_power_plants.append(newplant)
         return new_target_power_plants

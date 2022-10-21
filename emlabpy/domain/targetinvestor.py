@@ -26,7 +26,9 @@ class TargetInvestor(EnergyProducer):
     def set_start_capacity(self, start_capacity):
         self.start_capacity = start_capacity
 
-    def get_cummulative_capacity(self, from_year, to_year):
+    def get_cummulative_capacity(self, from_year, to_year, last_year):
+        if to_year > last_year: # erase this if there are capacity targets after 2050
+            to_year = last_year
         list_years = list(range(from_year,to_year))
         increment_in_years  = self.yearly_increment[list_years]
         cummulative = increment_in_years.cumsum()
