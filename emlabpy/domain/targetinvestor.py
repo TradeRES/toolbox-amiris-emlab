@@ -7,7 +7,7 @@ class TargetInvestor(EnergyProducer):
         super().__init__(name)
         self.targetTechnology = None
         self.targetCountry = None
-        self.yearly_increment = pd.Series()
+        self.yearly_increment = pd.Series(dtype='float64')
         self.trend = None
         self.start_capacity = 0
 

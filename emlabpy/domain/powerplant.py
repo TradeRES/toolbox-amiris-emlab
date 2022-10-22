@@ -220,7 +220,6 @@ class PowerPlant(EMLabAgent):
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTime()  # minus age, permit and lead time
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
-
         if self.actualEfficiency == 0: # if there is not initial efficiency, then assign the efficiency by the technology
            self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         if self.actualFixedOperatingCost == 'NOTSET': # old power plants have set their fixed costs
