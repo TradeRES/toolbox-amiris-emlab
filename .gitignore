@@ -4,9 +4,7 @@
 **/__pycache__
 *.pyc
 *ipynb_checkpoints
-.spinetoolbox/items/amiris_future
-.spinetoolbox/items/next_year/output/*
-.spinetoolbox/items/invest/output/*
+
 
 # Packaging
 build
@@ -25,12 +23,7 @@ logs/
 amiris/
 *amiris-jar-with-dependencies*
 data/powerplantsGermany/
-amiris_workflow/amiris/
-amiris_workflow/amiris-config/scenario.yaml
-amiris_workflow/amiris-config/data/load.csv
-amiris_workflow/output/amiris_results.csv
-amiris_workflow/amiris_data_structure.xlsx
-amiris_workflow/output/*
+
 
 emlabpy/years.txt
 emlabpy/Yearly_results.xlsx
@@ -44,11 +37,21 @@ test2.py
 scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
 
+.spinetoolbox/items/amiris_future
+.spinetoolbox/items/next_year/output/*
+.spinetoolbox/items/invest/output/*
 .spinetoolbox/items/energy_exchange/energy exchange.sqlite
-emlabpy/testEMLABPY.py
+.spinetoolbox/local/specification_local_data.json
 
 emlabpy/plots/plots.ipynb
 emlabpy/years.txt
+
+amiris_workflow/amiris/
+amiris_workflow/amiris-config/scenario.yaml
+amiris_workflow/amiris-config/data/load.csv
+amiris_workflow/output/amiris_results.csv
+amiris_workflow/amiris_data_structure.xlsx
+amiris_workflow/output/*
 amiris_workflow/amiris_data_structure.xlsx
 amiris_workflow/output/amiris_results.csv
 amiris_workflow/amiris_data_structure.xlsx
@@ -56,7 +59,6 @@ amiris_workflow/amiris-config/data/load.csv
 amiris_workflow/amiris-config/data/pv.csv
 amiris_workflow/amiris-config/data/windoff.csv
 amiris_workflow/amiris-config/data/windon.csv
-
 amiris_workflow/amiris-config/data/future_load.csv
 amiris_workflow/amiris-config/data/future_windoff.csv
 amiris_workflow/amiris-config/data/future_windon.csv
