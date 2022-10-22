@@ -16,12 +16,5 @@
         "de.dlr.gitlab.fame.setup.FameRunner"
     ],
     "execute_in_work": false,
-    "includes_main_path": "../../../scripts",
-    "execution_settings": {
-        "env": "conda",
-        "kernel_spec_name": "conda-env-amirisspine-py",
-        "use_jupyter_console": true,
-        "executable": "",
-        "fail_on_stderror": false
-    }
+    "includes_main_path": "../../../scripts"
 }

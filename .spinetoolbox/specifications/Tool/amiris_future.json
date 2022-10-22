@@ -9,16 +9,10 @@
     "inputfiles_opt": [],
     "outputfiles": [
         "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-        "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv",
-        "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv"
+        "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
+        "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv"
     ],
     "cmdline_args": [],
     "execute_in_work": false,
-    "includes_main_path": "../../../amiris_workflow",
-    "execution_settings": {
-        "env": "",
-        "kernel_spec_name": "amiris",
-        "use_jupyter_console": false,
-        "executable": "C:/Programs/Anaconda3/envs/emlabEnv/python.exe"
-    }
+    "includes_main_path": "../../../amiris_workflow"
 }

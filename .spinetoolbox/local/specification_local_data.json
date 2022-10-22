@@ -1,0 +1,169 @@
+{
+    "Tool": {
+        "combined results": {
+            "execution_settings": {
+                "env": "conda",
+                "kernel_spec_name": "conda-env-spinetoolbox-py",
+                "use_jupyter_console": true,
+                "executable": "C:/Programs/Anaconda3/envs/amirisspine/python.exe",
+                "fail_on_stderror": false
+            }
+        },
+        "Run config": {
+            "execution_settings": {
+                "env": "conda",
+                "kernel_spec_name": "conda-env-amirisspine-py",
+                "use_jupyter_console": true,
+                "executable": "",
+                "fail_on_stderror": false
+            }
+        },
+        "AMIRIS": {
+            "execution_settings": {
+                "env": "conda",
+                "kernel_spec_name": "conda-env-amirisspine-py",
+                "use_jupyter_console": true,
+                "executable": "",
+                "fail_on_stderror": false
+            }
+        },
+        "Invest": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "Initialize clock": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\amiris\\python.exe"
+            }
+        },
+        "convert_from_common_db_to_bb_db": {
+            "execution_settings": {
+                "env": "conda",
+                "kernel_spec_name": "conda-env-spinetoolbox-py",
+                "use_jupyter_console": true,
+                "executable": "",
+                "fail_on_stderror": true
+            }
+        },
+        "Prepare market clearing": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "amiris",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
+        },
+        "test tool": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "amiris",
+                "use_jupyter_console": true,
+                "executable": "",
+                "fail_on_stderror": false
+            }
+        },
+        "increment clock": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "amiris",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
+        },
+        "Prepare market": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "Decommission": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "Short investments": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "Prepare future market": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "Amiris future": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "amiris",
+                "use_jupyter_console": false,
+                "executable": "C:/Programs/Anaconda3/envs/emlabEnv/python.exe"
+            }
+        },
+        "Capacity Mechanism": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "define AMIRIS results year": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "clock": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
+        "Initialize Power plants": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
+        },
+        "Financial Results": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
+        },
+        "create results": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
+        }
+    }
+}

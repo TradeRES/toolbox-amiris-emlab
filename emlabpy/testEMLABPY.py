@@ -6,6 +6,27 @@ import os
 import sys
 from functools import reduce
 import pandas as pd
+import math
+installedCapacityDeviation = 232
+capacity = 20
+
+number_new_powerplants = math.floor(installedCapacityDeviation / capacity)
+remainder = installedCapacityDeviation % capacity
+a = []
+for i in range(number_new_powerplants):
+    if i == number_new_powerplants -1 :
+        a.append(capacity+remainder )
+    else:
+        a.append(capacity)
+
+candidate_name = [1,2,3]
+newplant = ["1", "2", "3"]
+
+a = zip(newplant, candidate_name)
+
+for i,j in a:
+    print(i)
+
 
 # start = 117000 *256
 # age = 26
@@ -55,7 +76,7 @@ print("h")
 df.loc[i,j] = 0
 # aaa = pd.Series([3,4], index=[3 ,4 ])
 # df["E" ] = aaa
-# print(df)
+
 # other = pd.DataFrame({'key': [1, 2, 5],
 #                       'B': ['B0', 'B1', 'B2']})
 # ssd = pd.DataFrame({'key': [1, 2, 3],

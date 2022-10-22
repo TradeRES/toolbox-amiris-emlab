@@ -264,14 +264,7 @@
                 "to": [
                     "Prepare Data Amiris",
                     "left"
-                ],
-                "resource_filters": {
-                    "db_url@EmlabDB": {
-                        "scenario_filter": [
-                            1
-                        ]
-                    }
-                }
+                ]
             },
             {
                 "name": "from decommission to Prepare Data Amiris",
@@ -381,14 +374,7 @@
                 "to": [
                     "decommission",
                     "right"
-                ],
-                "resource_filters": {
-                    "db_url@EmlabDB": {
-                        "scenario_filter": [
-                            1
-                        ]
-                    }
-                }
+                ]
             },
             {
                 "name": "from EmlabDB to Initialize Clock",
@@ -610,10 +596,9 @@
             "type": "Importer",
             "description": "",
             "x": -1338.4576241583486,
-            "y": -493.2845515320601,
+            "y": -495.4305537189379,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
-            "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
@@ -625,8 +610,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1610.1860763350699,
-            "y": -216.74057503133125,
+            "x": -1621.7400642183454,
+            "y": -207.49738472471063,
             "file_references": [
                 {
                     "type": "path",
@@ -643,7 +628,6 @@
             "y": -218.21018687851685,
             "specification": "import traderes db",
             "cancel_on_error": false,
-            "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
@@ -673,7 +657,6 @@
             "y": -623.581654110674,
             "specification": "Config Import",
             "cancel_on_error": false,
-            "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
@@ -824,7 +807,6 @@
             "y": -455.71757608710436,
             "specification": "import amiris results",
             "cancel_on_error": false,
-            "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
@@ -870,11 +852,10 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1331.5690483817543,
-            "y": -359.1421988627106,
+            "x": -1326.9474532284441,
+            "y": -354.52060370940023,
             "specification": "grouped power plants",
             "cancel_on_error": false,
-            "purge_before_writing": false,
             "on_conflict": "merge",
             "file_selection": [
                 [
@@ -940,7 +921,7 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -208.10363291988804,
+            "x": -210.2496351067659,
             "y": 108.7107771032203,
             "specification": "Invest",
             "execute_in_work": false,

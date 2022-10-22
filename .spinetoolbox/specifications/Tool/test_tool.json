@@ -10,12 +10,5 @@
     "outputfiles": [],
     "cmdline_args": [],
     "execute_in_work": true,
-    "includes_main_path": "../../../emlabpy/modules",
-    "execution_settings": {
-        "env": "",
-        "kernel_spec_name": "amiris",
-        "use_jupyter_console": true,
-        "executable": "",
-        "fail_on_stderror": false
-    }
+    "includes_main_path": "../../../emlabpy/modules"
 }

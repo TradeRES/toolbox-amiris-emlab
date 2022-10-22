@@ -12,11 +12,5 @@
     ],
     "cmdline_args": [],
     "execute_in_work": true,
-    "includes_main_path": "../../../emlabpy",
-    "execution_settings": {
-        "env": "",
-        "kernel_spec_name": "amiris",
-        "use_jupyter_console": true,
-        "executable": ""
-    }
+    "includes_main_path": "../../../emlabpy"
 }
