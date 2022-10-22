@@ -44,24 +44,19 @@ test2.py
 scripts/amiris-jar-with-dependencies2.jar
 scripts/amiris-jar-with-dependencies.jar
 
-
-
-.spinetoolbox/items/energy_exchange/energy exchange.sqlite
 .spinetoolbox/items/energy_exchange/energy exchange.sqlite
 emlabpy/testEMLABPY.py
 
 emlabpy/plots/plots.ipynb
 emlabpy/years.txt
-emlabpy/years.txt
 amiris_workflow/amiris_data_structure.xlsx
-amiris_workflow/amiris_data_structure.xlsx
-amiris_workflow/output/amiris_results.csv
-amiris_workflow/output/amiris_results.csv
-amiris_workflow/output/amiris_results.csv
 amiris_workflow/output/amiris_results.csv
 amiris_workflow/amiris_data_structure.xlsx
 amiris_workflow/amiris-config/data/load.csv
 amiris_workflow/amiris-config/data/pv.csv
 amiris_workflow/amiris-config/data/windoff.csv
 amiris_workflow/amiris-config/data/windon.csv
-emlabpy/testEMLABPY.py
+
+amiris_workflow/amiris-config/data/future_load.csv
+amiris_workflow/amiris-config/data/future_windoff.csv
+amiris_workflow/amiris-config/data/future_windon.csv
