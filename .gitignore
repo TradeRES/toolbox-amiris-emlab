@@ -25,7 +25,7 @@ amiris/
 data/powerplantsGermany/
 
 
-emlabpy/years.txt
+
 emlabpy/Yearly_results.xlsx
 emlabpy/plots/Scenarios/
 emlabpy/logs
@@ -44,7 +44,7 @@ scripts/amiris-jar-with-dependencies.jar
 .spinetoolbox/local/specification_local_data.json
 
 emlabpy/plots/plots.ipynb
-emlabpy/years.txt
+
 
 amiris_workflow/amiris/
 amiris_workflow/amiris-config/scenario.yaml
