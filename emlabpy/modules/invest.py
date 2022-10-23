@@ -337,7 +337,11 @@ class Investmentdecision(DefaultModule):
         targetInvestors = self.reps.findTargetInvestorByCountry(self.reps.country)
         new_target_power_plants = []
         # adding the target candidate power plants
-        target_candidate_power_plants = self.reps.get_target_candidate_power_plants()
+        already_investable = []
+        for i in self.investable_candidate_plants:
+            already_investable.append(i.technology.name)
+        target_candidate_power_plants = self.reps.get_target_candidate_power_plants(already_investable)
+
         self.investable_candidate_plants =  self.investable_candidate_plants + target_candidate_power_plants
         expectedInstalledCapacityperTechnology = self.reps.calculateCapacityExpectedofListofPlants(
             self.ids_of_future_installed_pp, self.investable_candidate_plants)

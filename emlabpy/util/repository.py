@@ -324,9 +324,9 @@ class Repository:
     def get_target_technologies(self):
         return [i.targetTechnology for i in self.target_investors.values()]
 
-    def get_target_candidate_power_plants(self) -> List[CandidatePowerPlant]:
+    def get_target_candidate_power_plants(self, already_investable) -> List[CandidatePowerPlant]:
         target_technologies = self.get_target_technologies()
-        return [i for i in self.candidatePowerPlants.values() if i.technology.name == target_technologies]
+        return [i for i in self.candidatePowerPlants.values() if i.technology.name in target_technologies and i.technology.name not in already_investable]
 
     def update_candidate_plant_results(self, results):
         try:
