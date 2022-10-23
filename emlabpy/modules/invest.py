@@ -117,6 +117,7 @@ class Investmentdecision(DefaultModule):
                     elif projectvalue < 0:
                         # the power plant should not be investable in next rounds
                         # saving if the candidate power plant remains or not as investable
+
                         candidatepowerplant.setViableInvestment(False)
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
@@ -335,11 +336,17 @@ class Investmentdecision(DefaultModule):
     def investbyTargets(self):
         targetInvestors = self.reps.findTargetInvestorByCountry(self.reps.country)
         new_target_power_plants = []
+        # adding the target candidate power plants
+        target_candidate_power_plants = self.reps.get_target_candidate_power_plants()
+        self.investable_candidate_plants =  self.investable_candidate_plants + target_candidate_power_plants
+        expectedInstalledCapacityperTechnology = self.reps.calculateCapacityExpectedofListofPlants(
+            self.ids_of_future_installed_pp, self.investable_candidate_plants)
+
         for target in targetInvestors:
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
             # TODO: later the expected installed power plants can be calculated according to profits not only for lookahead but also fot future time:
             #futuretime =self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)
-            expectedInstalledCapacity = self.expectedInstalledCapacityPerTechnology[target_tech.name]
+            expectedInstalledCapacity = expectedInstalledCapacityperTechnology[target_tech.name]
             pgtNodeLimit = target_tech.getMaximumCapacityinCountry() # now is for all technologies the same.
             #futureTimePoint = self.reps.current_tick + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
             #targetCapacity = target_tech.getTrend().getValue(futureTimePoint)

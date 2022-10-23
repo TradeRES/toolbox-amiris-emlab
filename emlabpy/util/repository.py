@@ -318,9 +318,15 @@ class Repository:
         return next(i.name for i in self.candidatePowerPlants.values() if i.technology.name == tech)
 
 
-
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
+
+    def get_target_technologies(self):
+        return [i.targetTechnology for i in self.target_investors.values()]
+
+    def get_target_candidate_power_plants(self) -> List[CandidatePowerPlant]:
+        target_technologies = self.get_target_technologies()
+        return [i for i in self.candidatePowerPlants.values() if i.technology.name == target_technologies]
 
     def update_candidate_plant_results(self, results):
         try:
