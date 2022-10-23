@@ -41,7 +41,7 @@ scripts/amiris-jar-with-dependencies.jar
 .spinetoolbox/items/next_year/output/*
 .spinetoolbox/items/invest/output/*
 .spinetoolbox/items/energy_exchange/energy exchange.sqlite
-
+.spinetoolbox/local/specification_local_data.json
 
 emlabpy/plots/plots.ipynb
 emlabpy/years.txt
