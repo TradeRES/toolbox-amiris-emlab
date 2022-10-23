@@ -98,7 +98,7 @@ class Investmentdecision(DefaultModule):
                                                                                  )
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
-                        print("to much in pipeline of this technology" + candidatepowerplant.technology)
+                        print("set to non investable, too much in pipeline of this technology" + candidatepowerplant.technology.name)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         break
