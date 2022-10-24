@@ -49,7 +49,7 @@ class ShortInvestmentdecision(Investmentdecision):
         if len(technologies_highreturns) > 0:
             PowerPlantstoInvest = self.reps.get_candidate_power_plants_of_technologies(technologies_highreturns)
             for planttoInvest in PowerPlantstoInvest:
-                newplant = self.invest(planttoInvest)
+                newplant = self.invest(planttoInvest, False)
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)

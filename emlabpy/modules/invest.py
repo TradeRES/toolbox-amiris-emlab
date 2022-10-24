@@ -129,7 +129,7 @@ class Investmentdecision(DefaultModule):
 
                 if bestCandidatePowerPlant is not None:
                     # investing in best candidate power plant as it passed the checks.
-                    newplant = self.invest(bestCandidatePowerPlant)
+                    newplant = self.invest(bestCandidatePowerPlant, False)
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_loans(newplant)
                     self.reps.dbrw.stage_downpayments(newplant)
@@ -162,13 +162,21 @@ class Investmentdecision(DefaultModule):
         else:
             print("agent is not longer willing to invest")  # This is not enabled for not
 
-    def invest(self, bestCandidatePowerPlant):
+    def invest(self, bestCandidatePowerPlant, target_invest):
         commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
-        newid = (int(str(commissionedYear) +
-                     str("{:02d}".format(
-                         int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
-                     str("{:05d}".format(int(self.new_id)))
-                     ))
+        if target_invest == False:
+            newid = (int(str(commissionedYear) +
+                         str("{:02d}".format(
+                             int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
+                         str("{:05d}".format(int(self.new_id)))
+                         ))
+        else:
+            newid = (int(str(commissionedYear) +
+                         str("{:02d}".format(
+                             int(self.reps.dictionaryTechNumbers[bestCandidatePowerPlant.technology.name]))) +
+                         str("{:06d}".format(int(self.new_id)))
+                         ))
+
         self.new_id += 1
         newplant = PowerPlant(newid)
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
@@ -379,7 +387,7 @@ class Investmentdecision(DefaultModule):
                         bestCandidatePowerPlant.capacity += remainder
                     else:
                         pass
-                    newplant = self.invest(bestCandidatePowerPlant)
+                    newplant = self.invest(bestCandidatePowerPlant, True)
                     newplant.candidate_name = candidate_name
                    # a =zip(newplant, candidate_name)
                     new_target_power_plants.append(newplant)
