@@ -1048,11 +1048,12 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "yearlyCO2"
+                                "value": "node"
                             },
                             {
                                 "map_type": "Object",
-                                "position": -1
+                                "position": "hidden",
+                                "value": "CO2"
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -1064,8 +1065,7 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
+                                "position": -1
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -1098,7 +1098,6 @@
             "Dismantled",
             "Potentials",
             "YearlyTargets",
-            "CO2DE",
             "yearlyCO2"
         ],
         "table_options": {
