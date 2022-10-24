@@ -5,7 +5,7 @@ from_check_point: start
 debug:
   time_it: False
   enable_development_mode: False
-  log_level: INFO
+  log_level: ERROR
 
 global:
   pbDir: "amiris/result/"
@@ -143,3 +143,5 @@ workflow:
         write: True
         file_name_aggregated_results: amiris_results.csv
         file_name_residual_load: residual_load.csv
+        file_name_res_infeed: hourly_res_infeed.csv
+        file_name_generation: hourly_generation_per_agent.csv

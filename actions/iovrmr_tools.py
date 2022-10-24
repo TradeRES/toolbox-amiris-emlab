@@ -367,3 +367,48 @@ def calculate_residual_load(
     residual_load = residual_load.round(4)
 
     return residual_load
+
+
+def calculate_overall_res_infeed(
+    residual_load_results: Dict[str, pd.DataFrame], biogas_results: pd.DataFrame, operators_offset: int = 5
+) -> pd.Series:
+    """Calculate the overall RES infeed"""
+    res_generation = []
+    for key, val in residual_load_results.items():
+        if key in OPERATOR_AGENTS:
+            value = val.loc[val["AwardedPowerInMWH"].notna()]
+            value["TimeStep"] = value["TimeStep"].copy() - operators_offset
+            res_generation.append(value.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+
+    biogas_results = biogas_results.loc[biogas_results["AwardedPowerInMWH"].notna()]
+    biogas_results["TimeStep"] = biogas_results["TimeStep"].copy() - operators_offset
+    res_generation.append(biogas_results.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+
+    overall_res_generation = pd.Series(index=res_generation[0].index, data=0)
+    for generation in res_generation:
+        overall_res_generation += generation
+
+    return overall_res_generation
+
+
+def calculate_overall_generation_per_agent(operator_results, conventional_results, operators_offset=5) -> pd.DataFrame:
+    """Calculate the generation per AgentID"""
+    generation = pd.DataFrame()
+    for key, val in operator_results.items():
+        value = val.loc[val["AwardedPowerInMWH"].notna()]
+        value["TimeStep"] = value["TimeStep"].copy() - operators_offset
+        value = value.set_index("TimeStep")
+        if generation.empty:
+            # Properly define index if run for the first time
+            generation = pd.DataFrame(index=value.index)
+        for group in value.groupby("AgentId"):
+            generation[group[0]] = group[1]["AwardedPowerInMWH"]
+    conventional_dispatch = conventional_results["ConventionalPlantOperator_DispatchedPowerInMWHperPlant"]
+    conventional_dispatch["TimeStep"] = conventional_dispatch["TimeStep"].copy() - operators_offset
+    conventional_dispatch = conventional_dispatch.set_index("TimeStep")
+
+    for group in conventional_dispatch.groupby("ID"):
+        generation[group[0]] = group[1]["DispatchedPowerInMWHperPlant"]
+    generation.fillna(0, inplace=True)
+
+    return generation
