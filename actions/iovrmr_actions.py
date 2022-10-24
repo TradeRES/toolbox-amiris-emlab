@@ -32,7 +32,7 @@ from iovrmr_tools import (
     sum_per_plant,
     clear_folder,
     DEMAND,
-    calculate_residual_load,
+    calculate_residual_load, calculate_overall_res_infeed, calculate_overall_generation_per_agent,
 )
 
 
@@ -142,7 +142,7 @@ def create_amiris_protobuf(data_manager, config, params):
         output_path = os.path.abspath(output_path + DEFAULT_CONFIG[Options.OUTPUT])
 
     config = {
-        Options.LOG_LEVEL: "info",
+        Options.LOG_LEVEL: "error",
         Options.LOG_FILE: None,
         Options.OUTPUT: output_path,
     }
@@ -172,7 +172,7 @@ def convert_pb(data_manager, config, params):
             agents_to_extract = to_list(params["args"]["agentsToExtract"])
 
     run_config = {
-        Options.LOG_LEVEL: "info",
+        Options.LOG_LEVEL: "error",
         Options.LOG_FILE: None,
         Options.AGENT_LIST: agents_to_extract,
         Options.OUTPUT: config["user"]["global"]["output"]["pbOutputRaw"],
@@ -242,6 +242,8 @@ def aggregate_results(data_manager, config, params):
     to_concat = []
     conventional_series = []
     residual_load_results = {}
+    operator_results = {}
+    conventional_results = {}
     for file in files:
         file_name = file.rsplit("/", 1)[1].rsplit(".", 1)[0]
         if file_name in OPERATOR_AGENTS:
@@ -258,6 +260,10 @@ def aggregate_results(data_manager, config, params):
             if file_name not in ["StorageTrader", "Biogas"]:
                 residual_load_results[file_name] = type_df
 
+            if file_name == "Biogas":
+                biogas_results = type_df
+            operator_results[file_name] = type_df
+
         elif file_name in CONVENTIONAL_AGENT_RESULTS:
             conventional_df = pd.read_csv(file, sep=";")
             column_names = {
@@ -268,12 +274,15 @@ def aggregate_results(data_manager, config, params):
             column = CONVENTIONAL_AGENT_RESULTS[file_name]
             column_per_plant = sum_per_plant(conventional_df, column, column_names[column])
             conventional_series.append(column_per_plant)
+            conventional_results[file_name] = conventional_df
 
         elif file_name in DEMAND:
             type_df = pd.read_csv(file, sep=";")
             residual_load_results[file_name] = type_df
 
+    overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
+    generation_per_agent = calculate_overall_generation_per_agent(operator_results, conventional_results)
 
     if conventional_series:
         to_concat.append(pd.concat(conventional_series, axis=1))
@@ -292,6 +301,12 @@ def aggregate_results(data_manager, config, params):
         )
         residual_load.to_csv(
             config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_residual_load"]
+        )
+        overall_res_infeed.to_csv(
+            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_res_infeed"]
+        )
+        generation_per_agent.to_csv(
+            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_generation"]
         )
 
     with data_manager.overwrite:
