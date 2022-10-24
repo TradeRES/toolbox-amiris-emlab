@@ -29,7 +29,7 @@ Agents:
     Id: 3
     Attributes:
       OperationMode: FIXED
-      Co2Prices: 20.0
+      Co2Prices: 93.0
 
   - Type: FuelsMarket
     Id: 4
