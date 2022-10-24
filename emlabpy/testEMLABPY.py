@@ -10,22 +10,22 @@ import math
 installedCapacityDeviation = 232
 capacity = 20
 
-number_new_powerplants = math.floor(installedCapacityDeviation / capacity)
-remainder = installedCapacityDeviation % capacity
-a = []
-for i in range(number_new_powerplants):
-    if i == number_new_powerplants -1 :
-        a.append(capacity+remainder )
-    else:
-        a.append(capacity)
-
-candidate_name = [1,2,3]
-newplant = ["1", "2", "3"]
-
-a = zip(newplant, candidate_name)
-
-for i,j in a:
-    print(i)
+# number_new_powerplants = math.floor(installedCapacityDeviation / capacity)
+# remainder = installedCapacityDeviation % capacity
+# a = []
+# for i in range(number_new_powerplants):
+#     if i == number_new_powerplants -1 :
+#         a.append(capacity+remainder )
+#     else:
+#         a.append(capacity)
+#
+# candidate_name = [1,2,3]
+# newplant = ["1", "2", "3"]
+#
+# a = zip(newplant, candidate_name)
+#
+# for i,j in a:
+#     print(i)
 
 
 # start = 117000 *256
@@ -92,6 +92,9 @@ df.loc[i,j] = 0
 #
 #
 
+
+
+
 def plot_investments_per_iteration(
                                    ):
     record1 = {'Math': list(range(100))}
@@ -114,11 +117,12 @@ def plot_investments_per_iteration(
     fig8, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     ax1.annotate('figure fraction',
-                 xy=(.025, 1), xycoords='figure fraction',
+                 xy=(.025, 1),xycoords='figure fraction',
                  horizontalalignment='left', verticalalignment='top',
                  fontsize='medium')
-
-    four.plot.area()
+    n = len(four.columns)
+    colors = plt.cm.rainbow(np.linspace(0, 1, n))
+    four.plot.area(color = colors)
     ax2.plot(two, 'o')
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('Project value', fontsize='medium')
@@ -126,9 +130,9 @@ def plot_investments_per_iteration(
     ax2.set_title('Expected future operational (wholesale market) profits \n in year')
     ax1.legend( fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
 
-# plot_investments_per_iteration()
-# print('Showing plots...')
-# plt.show()
+plot_investments_per_iteration()
+print('Showing plots...')
+plt.show()
 
 # from domain.import_object import *
 # from twine.repository import Repository

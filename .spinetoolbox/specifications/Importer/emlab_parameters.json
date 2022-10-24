@@ -787,48 +787,6 @@
                     }
                 }
             ],
-            "CO2": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "node",
-                                "skip_columns": [
-                                    2,
-                                    3
-                                ]
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "table_name",
-                                "value": "CO2"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "CandidatePowerPlants": [
                 {
                     "Mapping 1": {
@@ -1044,6 +1002,82 @@
                         ]
                     }
                 }
+            ],
+            "CO2DE": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "node"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "table_name",
+                                "value": "CO2DE"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "yearlyCO2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "yearlyCO2"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1059,12 +1093,13 @@
             "Fuels",
             "dictTech",
             "dictFuel",
-            "CO2",
             "CandidatePowerPlants",
             "StrategicReserveOperator",
             "Dismantled",
             "Potentials",
-            "YearlyTargets"
+            "YearlyTargets",
+            "CO2DE",
+            "yearlyCO2"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1105,7 +1140,6 @@
             "dictTech": {},
             "dictFuel": {},
             "dictvariables": {},
-            "CO2": {},
             "CandidatePowerPlants": {},
             "StrategicReserveOperator": {},
             "Dismantled": {},
@@ -1113,6 +1147,14 @@
             "backup": {},
             "YearlyTargets": {
                 "read_until_col": true
+            },
+            "CO2DE": {
+                "read_until_row": true,
+                "read_until_col": true
+            },
+            "yearlyCO2": {
+                "read_until_col": true,
+                "read_until_row": true
             }
         },
         "table_types": {
@@ -1196,8 +1238,7 @@
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "float",
-                "5": "string"
+                "4": "float"
             },
             "TargetInvestors": {
                 "0": "string",
@@ -1301,12 +1342,6 @@
                 "10": "string",
                 "11": "string"
             },
-            "CO2": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string"
-            },
             "CandidatePowerPlants": {
                 "0": "string",
                 "1": "float",
@@ -1361,6 +1396,14 @@
                 "1": "float",
                 "2": "float",
                 "3": "float"
+            },
+            "CO2DE": {
+                "0": "string",
+                "1": "string"
+            },
+            "yearlyCO2": {
+                "0": "string",
+                "1": "float"
             }
         },
         "table_default_column_type": {},

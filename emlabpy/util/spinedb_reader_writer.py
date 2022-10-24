@@ -84,6 +84,7 @@ class SpineDBReaderWriter:
                 'parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = str(row['parameter_value'])
                 reps.agent = "Producer" + reps.country
+
             elif row['parameter_name'] == 'short_term_investment_minimal_irr':
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] == 'start_year_fuel_trends':
@@ -144,6 +145,7 @@ class SpineDBReaderWriter:
                                    if i[0] == object_class_name and i[1] == object_name and i[2] == parameter_name)
                     add_parameter_value_to_repository_based_on_object_class_name(reps, db_line)
                 except StopIteration:
+                    #logging.warning
                     logging.warning('No value found for class: ' + object_class_name +
                                     ', object: ' + object_name +
                                     ', parameter: ' + parameter_name)
@@ -731,7 +733,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
             pass
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
-    elif object_class_name == 'node':  # TODO complete this to the scenario
+    elif object_class_name == 'node':  # Substances and CO2 costs
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'ElectricitySpotMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.electricity_spot_markets, ElectricitySpotMarket)

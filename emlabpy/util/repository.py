@@ -57,12 +57,15 @@ class Repository:
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
         self.runningModule = ""
-        self.fix_prices_to_2020 = False
+        self.set_fix_prices = True
+        self.fix_price_year = 2030
         self.realistic_candidate_capacities_tobe_installed = False
         self.realistic_candidate_capacities_for_future = False
         self.dummy_capacity = 1
         self.targetinvestment_per_year = True
         self.npv_with_annuity = False
+        self.setCO2fix = True
+        # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()

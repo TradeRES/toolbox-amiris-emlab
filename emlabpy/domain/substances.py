@@ -11,8 +11,8 @@ class Substance(ImportObject):
         self.energy_density = 1
         self.quality = 0
         self.price = 0
-        self.co2_price = 1
         self.trend = None
+        self.all_years_price = dict()
         self.initialprice2020 = 0
         self.initialprice2050 = 0
         self.futurePrice = []
@@ -47,11 +47,26 @@ class Substance(ImportObject):
             self.futurePrice = parameter_value
         elif parameter_name == 'simulatedPrice':
             self.simulatedPrice = parameter_value
+        else: #
+            if alternative == reps.country:
+                year = int(parameter_name)
+                self.all_years_price[year] = float(parameter_value)
 
     def get_price_for_next_tick(self, reps, tick, year, substance):
-        if tick < reps.start_year_fuel_trends or substance.name == "CO2":
+        if reps.set_fix_prices == True: # attention this shouldnt be neede once all data is there
+            if  substance.name == "CO2":
+                self.newSimulatedPrice = self.all_years_price[self.fix_price_year]
+            else:
+                xp = [2020, 2050]
+                fp = [substance.initialprice2020, substance.initialprice2050]
+                self.newSimulatedPrice = np.interp(self.fix_price_year, xp, fp)
+
+        elif  substance.name == "CO2" and reps.country == "NL":
+            self.newSimulatedPrice = self.all_years_price[year]
+
+        elif tick < reps.start_year_fuel_trends:
             # electricity is also considered as a fuel. Input
-            xp = [2020, 2050] # TODO avoid this to be hardcoded
+            xp = [2020, 2050]
             fp = [substance.initialprice2020, substance.initialprice2050]
             self.newSimulatedPrice = np.interp(year, xp, fp)
             return self.newSimulatedPrice
@@ -65,8 +80,18 @@ class Substance(ImportObject):
         return self.newSimulatedPrice
 
     def get_price_for_future_tick(self, reps, futureYear, substance):
-        if substance.name == "CO2":
-            xp = [2020, 2050] # todo: dont hard coded
+        if reps.set_fix_prices == True: # attention this shouldnt be neede once all data is there
+            if  substance.name == "CO2":
+                self.newSimulatedPrice = self.all_years_price[self.fix_price_year]
+            else:
+                xp = [2020, 2050]
+                fp = [substance.initialprice2020, substance.initialprice2050]
+                self.newSimulatedPrice = np.interp(self.fix_price_year, xp, fp)
+
+        elif substance.name == "CO2" and reps.country == "NL":
+            self.newSimulatedPrice = self.all_years_price[futureYear]
+        elif substance.name == "CO2":
+            xp = [2020, 2050]
             fp = [substance.initialprice2020, substance.initialprice2050]
             self.newFuturePrice = np.interp(futureYear, xp, fp)
             return self.newFuturePrice

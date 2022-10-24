@@ -176,9 +176,7 @@ class PrepareMarket(DefaultModule):
                 FIT.append("-")
                 Premium.append("-")
                 Lcoe.append("-")
-            if self.reps.dictionaryTechSet[
-                pp.technology.name] == "Hydropower_reservoir_medium":
-                print("siiii")
+
         d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
              'OpexVarInEURperMWH': OpexVarInEURperMWH,
              'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}

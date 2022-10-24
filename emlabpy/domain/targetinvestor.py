@@ -14,11 +14,12 @@ class TargetInvestor(EnergyProducer):
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'targetTechnology':
             self.targetTechnology = parameter_value
-        elif parameter_name == 'targetCountry':
+        elif parameter_name == 'targetCountry' or parameter_name == 'targetNode':
             self.targetCountry = parameter_value
         elif parameter_name == 'start_capacity':
             self.start_capacity = parameter_value
         else:
+            #
             year = parameter_name[0:4]
             self.yearly_increment.at[int(year)] = parameter_value
             #self.yearly_increment.set_value(parameter_value)
