@@ -953,6 +953,14 @@
                 {
                     "type": "resource",
                     "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_res_infeed.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv"
                 }
             ]
         },

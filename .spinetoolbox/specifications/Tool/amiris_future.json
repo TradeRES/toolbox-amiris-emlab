@@ -9,6 +9,8 @@
     "inputfiles_opt": [],
     "outputfiles": [
         "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+        "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv",
+        "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_res_infeed.csv",
         "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv",
         "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\residual_load.csv"
     ],
