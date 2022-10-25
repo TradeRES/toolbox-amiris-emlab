@@ -264,8 +264,7 @@ def aggregate_results(data_manager, config, params):
 
             if file_name == "Biogas":
                 biogas_results = type_df
-            if file_name == "StorageTrader":
-                storage_results = type_df
+
             operator_results[file_name] = type_df
 
         elif file_name in CONVENTIONAL_AGENT_RESULTS:
@@ -288,7 +287,7 @@ def aggregate_results(data_manager, config, params):
 
     overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
-    generation_per_group = calculate_overall_generation_per_group(operator_results, conventional_results_grouped, storage_results)
+    generation_per_group = calculate_overall_generation_per_group(operator_results, conventional_results_grouped)
 
     if conventional_series:
         to_concat.append(pd.concat(conventional_series, axis=1))
