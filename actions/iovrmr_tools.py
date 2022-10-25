@@ -341,20 +341,20 @@ def get_all_csv_files_in_folder_except(folder: str, exceptions: List[str] = None
 
 
 def calculate_residual_load(
-    residual_load_results: Dict[str, pd.DataFrame], operators_offset: int = 5, demand_offset: int = 4
+    residual_load_results: Dict[str, pd.DataFrame], operators_offset: int = 5, demand_offset: int = 1
 ) -> pd.Series:
-    """Calculate the residual load based on RES infeed and net load after storage"""
+    """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
     res_generation_to_aggregate = []
     overall_demand = None
     for key, val in residual_load_results.items():
         if key in OPERATOR_AGENTS:
             value = val.loc[val["AwardedPowerInMWH"].notna()]
-            value["TimeStep"] = value["TimeStep"].copy() - operators_offset
-            res_generation_to_aggregate.append(value.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+            value["new_time_step"] = value["TimeStep"] - operators_offset
+            res_generation_to_aggregate.append(value.groupby("new_time_step").sum()["AwardedPowerInMWH"])
         elif key in DEMAND:
             value = val.copy()
-            value["TimeStep"] = value["TimeStep"].copy() - demand_offset
-            overall_demand = value.set_index("TimeStep")["AwardedEnergyInMWH"]
+            value["new_time_step"] = value["TimeStep"] + demand_offset
+            overall_demand = value.set_index("new_time_step")["RequestedEnergyInMWH"]
             overall_demand = overall_demand.loc[overall_demand.notna()]
         else:
             raise ValueError("Received invalid key for residual_load_results!")
@@ -366,7 +366,7 @@ def calculate_residual_load(
     residual_load = overall_demand - overall_res_generation
     residual_load.name = "residual_load"
     residual_load = residual_load.round(4)
-    residual_load = residual_load.reset_index().drop(columns="TimeStep")["residual_load"]
+    residual_load = residual_load.reset_index().drop(columns="new_time_step")["residual_load"]
 
     return residual_load
 
@@ -379,13 +379,13 @@ def calculate_overall_res_infeed(
     for key, val in residual_load_results.items():
         if key in OPERATOR_AGENTS:
             value = val.loc[val["AwardedPowerInMWH"].notna()]
-            value["TimeStep"] = value["TimeStep"].copy() - operators_offset
-            res_generation.append(value.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+            value["new_time_step"] = value["TimeStep"] - operators_offset
+            res_generation.append(value.groupby("new_time_step").sum()["AwardedPowerInMWH"])
 
     if not biogas_results.empty:
         biogas_results = biogas_results.loc[biogas_results["AwardedPowerInMWH"].notna()]
-        biogas_results["TimeStep"] = biogas_results["TimeStep"].copy() - operators_offset
-        res_generation.append(biogas_results.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+        biogas_results["new_time_step"] = biogas_results["TimeStep"] - operators_offset
+        res_generation.append(biogas_results.groupby("new_time_step").sum()["AwardedPowerInMWH"])
 
     overall_res_generation = pd.DataFrame(index=res_generation[0].index, columns=["values"], data=0)
     for generation in res_generation:
@@ -397,37 +397,38 @@ def calculate_overall_res_infeed(
 
 
 def calculate_overall_generation_per_group(
-    operator_results: Dict, conventional_results: pd.DataFrame, storage_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int=4
+    operator_results: Dict, conventional_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int=4
 ) -> pd.DataFrame:
-    """Calculate the generation per group (res, conventionals, storage)"""
+    """Calculate the generation per group (res, conventionals, storages)"""
     generation = pd.DataFrame()
     for key, val in operator_results.items():
-        value = val.loc[val["AwardedPowerInMWH"].notna()]
-        value["TimeStep"] = value["TimeStep"].copy() - operators_offset
-        value = value.set_index("TimeStep")
-        if generation.empty:
-            # Properly define index if run for the first time
-            generation = pd.DataFrame(
-                index=value.loc[value["AgentId"] == value["AgentId"].unique()[0]].index,
-                columns=["res", "conventionals", "storages"],
-                data=0,
-            )
-        for group in value.groupby("AgentId"):
-            generation["res"] += group[1]["AwardedPowerInMWH"]
+        if key in ["Biogas", "VariableRenewableOperator"]:
+            value = val.loc[val["AwardedPowerInMWH"].notna()]
+            value["new_time_step"] = value["TimeStep"] - operators_offset
+            value = value.set_index("new_time_step")
+            if generation.empty:
+                # Properly define index if run for the first time
+                generation = pd.DataFrame(
+                    index=value.loc[value["AgentId"] == value["AgentId"].unique()[0]].index,
+                    columns=["res", "conventionals", "storages"],
+                    data=0,
+                )
+            for group in value.groupby("AgentId"):
+                generation["res"] += group[1]["AwardedPowerInMWH"]
+        elif key == "StorageTrader":
+            storage_results = val[["TimeStep", "AgentId", "AwardedDischargePowerInMWH"]].dropna()
+            storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
+            storage_results = storage_results.set_index("new_time_step")
+
+            for group in storage_results.groupby("AgentId"):
+                generation["storages"] += group[1]["AwardedDischargePowerInMWH"]
+
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
-    conventional_generation["TimeStep"] = conventional_generation["TimeStep"].copy() - operators_offset
-    conventional_generation = conventional_generation.set_index("TimeStep")
+    conventional_generation["new_time_step"] = conventional_generation["TimeStep"] - operators_offset
+    conventional_generation = conventional_generation.set_index("new_time_step")
 
     for group in conventional_generation.groupby("AgentId"):
         generation["conventionals"] += group[1]["AwardedPowerInMWH"]
-
-    if not storage_results.empty:
-        storage_results = storage_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
-        storage_results["TimeStep"] = storage_results["TimeStep"].copy() - trader_offset
-        storage_results = storage_results.set_index("TimeStep")
-
-        for group in storage_results.groupby("AgentId"):
-            generation["storages"] += group[1]["AwardedDischargePowerInMWH"]
 
     generation.reset_index(drop=True, inplace=True)
 
