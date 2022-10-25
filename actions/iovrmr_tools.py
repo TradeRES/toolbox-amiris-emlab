@@ -26,6 +26,7 @@ CONVENTIONAL_AGENT_RESULTS = {
     "ConventionalPlantOperator_ReceivedMoneyInEURperPlant": "ReceivedMoneyInEURperPlant",
     "ConventionalPlantOperator_DispatchedPowerInMWHperPlant": "DispatchedPowerInMWHperPlant",
 }
+CONVENTIONAL_RESULTS_GROUPED = ["ConventionalPlantOperator"]
 
 
 class FilterType(Enum):
@@ -365,6 +366,7 @@ def calculate_residual_load(
     residual_load = overall_demand - overall_res_generation
     residual_load.name = "residual_load"
     residual_load = residual_load.round(4)
+    residual_load = residual_load.reset_index().drop(columns="TimeStep")["residual_load"]
 
     return residual_load
 
@@ -380,19 +382,24 @@ def calculate_overall_res_infeed(
             value["TimeStep"] = value["TimeStep"].copy() - operators_offset
             res_generation.append(value.groupby("TimeStep").sum()["AwardedPowerInMWH"])
 
-    biogas_results = biogas_results.loc[biogas_results["AwardedPowerInMWH"].notna()]
-    biogas_results["TimeStep"] = biogas_results["TimeStep"].copy() - operators_offset
-    res_generation.append(biogas_results.groupby("TimeStep").sum()["AwardedPowerInMWH"])
+    if not biogas_results.empty:
+        biogas_results = biogas_results.loc[biogas_results["AwardedPowerInMWH"].notna()]
+        biogas_results["TimeStep"] = biogas_results["TimeStep"].copy() - operators_offset
+        res_generation.append(biogas_results.groupby("TimeStep").sum()["AwardedPowerInMWH"])
 
-    overall_res_generation = pd.Series(index=res_generation[0].index, data=0)
+    overall_res_generation = pd.DataFrame(index=res_generation[0].index, columns=["values"], data=0)
     for generation in res_generation:
-        overall_res_generation += generation
+        overall_res_generation["values"] += generation
+
+    overall_res_generation = overall_res_generation["values"].reset_index(drop=True)
 
     return overall_res_generation
 
 
-def calculate_overall_generation_per_agent(operator_results, conventional_results, operators_offset=5) -> pd.DataFrame:
-    """Calculate the generation per AgentID"""
+def calculate_overall_generation_per_group(
+    operator_results: Dict, conventional_results: pd.DataFrame, storage_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int=4
+) -> pd.DataFrame:
+    """Calculate the generation per group (res, conventionals, storage)"""
     generation = pd.DataFrame()
     for key, val in operator_results.items():
         value = val.loc[val["AwardedPowerInMWH"].notna()]
@@ -400,15 +407,28 @@ def calculate_overall_generation_per_agent(operator_results, conventional_result
         value = value.set_index("TimeStep")
         if generation.empty:
             # Properly define index if run for the first time
-            generation = pd.DataFrame(index=value.index)
+            generation = pd.DataFrame(
+                index=value.loc[value["AgentId"] == value["AgentId"].unique()[0]].index,
+                columns=["res", "conventionals", "storages"],
+                data=0,
+            )
         for group in value.groupby("AgentId"):
-            generation[group[0]] = group[1]["AwardedPowerInMWH"]
-    conventional_dispatch = conventional_results["ConventionalPlantOperator_DispatchedPowerInMWHperPlant"]
-    conventional_dispatch["TimeStep"] = conventional_dispatch["TimeStep"].copy() - operators_offset
-    conventional_dispatch = conventional_dispatch.set_index("TimeStep")
+            generation["res"] += group[1]["AwardedPowerInMWH"]
+    conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
+    conventional_generation["TimeStep"] = conventional_generation["TimeStep"].copy() - operators_offset
+    conventional_generation = conventional_generation.set_index("TimeStep")
 
-    for group in conventional_dispatch.groupby("ID"):
-        generation[group[0]] = group[1]["DispatchedPowerInMWHperPlant"]
-    generation.fillna(0, inplace=True)
+    for group in conventional_generation.groupby("AgentId"):
+        generation["conventionals"] += group[1]["AwardedPowerInMWH"]
+
+    if not storage_results.empty:
+        storage_results = storage_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
+        storage_results["TimeStep"] = storage_results["TimeStep"].copy() - trader_offset
+        storage_results = storage_results.set_index("TimeStep")
+
+        for group in storage_results.groupby("AgentId"):
+            generation["storages"] += group[1]["AwardedDischargePowerInMWH"]
+
+    generation.reset_index(drop=True, inplace=True)
 
     return generation
