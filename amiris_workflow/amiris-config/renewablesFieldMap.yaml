@@ -18,7 +18,7 @@ Agents:
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
-        value: "amiris-config/data/pv_DE.csv"
+        value: "amiris-config/data/pv.csv"
 
   # OtherPV
   - column: Set
@@ -39,7 +39,7 @@ Agents:
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
-        value: "amiris-config/data/pv_DE.csv"
+        value: "amiris-config/data/pv.csv"
 
   # WindOn
   - column: Set
@@ -60,7 +60,7 @@ Agents:
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
-        value: "amiris-config/data/windon_DE.csv"
+        value: "amiris-config/data/windon.csv"
 
   # WindOff
   - column: Set
@@ -81,7 +81,7 @@ Agents:
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
-        value: "amiris-config/data/windoff_DE.csv"
+        value: "amiris-config/data/windoff.csv"
 
   # RunOfRiver
   - column: Set
