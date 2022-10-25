@@ -99,6 +99,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/create_results.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/capacity_mechanisms.json"
                 }
             ],
             "Importer": [
@@ -518,6 +523,39 @@
                     "Financial Results",
                     "left"
                 ]
+            },
+            {
+                "name": "from AMIRIS DB to Capacity Mechanism",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Capacity Mechanism to Financial Results",
+                "from": [
+                    "Capacity Mechanism",
+                    "right"
+                ],
+                "to": [
+                    "Financial Results",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to Capacity Mechanism",
+                "from": [
+                    "EmlabDB2",
+                    "right"
+                ],
+                "to": [
+                    "Capacity Mechanism",
+                    "bottom"
+                ]
             }
         ],
         "jumps": [
@@ -669,7 +707,7 @@
             "type": "Tool",
             "description": "",
             "x": -1261.8478467601906,
-            "y": -835.3650906373837,
+            "y": -837.8039336361326,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -787,8 +825,8 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -325.5087616794788,
-            "y": -135.24967883370564,
+            "x": -322.02495884886804,
+            "y": -135.24967883370567,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -836,8 +874,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -16.767225555116912,
-            "y": -477.20748758325317,
+            "x": -171.7964515172951,
+            "y": -674.0423475127602,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -996,8 +1034,8 @@
         "energy exchange": {
             "type": "Data Store",
             "description": "",
-            "x": -22.878653133489216,
-            "y": -686.2738230203005,
+            "x": -228.42302013952323,
+            "y": -897.0438942722507,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1008,6 +1046,28 @@
                     "path": ".spinetoolbox/items/energy_exchange/energy exchange.sqlite"
                 }
             }
+        },
+        "Capacity Mechanism": {
+            "type": "Tool",
+            "description": "",
+            "x": -40.06373255202357,
+            "y": -447.66866373348086,
+            "specification": "Capacity Mechanisms",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_capacity_market"
+                }
+            ]
         }
     }
 }

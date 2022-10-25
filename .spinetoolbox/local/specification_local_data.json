@@ -164,6 +164,14 @@
                 "use_jupyter_console": true,
                 "executable": ""
             }
+        },
+        "Capacity Mechanisms": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
         }
     }
 }

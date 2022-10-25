@@ -1,10 +1,10 @@
 {
-    "name": "Capacity Mechanism",
+    "name": "Capacity Mechanisms",
     "tooltype": "python",
     "includes": [
         "emlab.py"
     ],
-    "description": "Give in the argument which type of mechanism should be executed",
+    "description": "the thid argument should be one of these \"run_capacity_market\"",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [],
