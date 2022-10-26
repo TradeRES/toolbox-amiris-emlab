@@ -476,10 +476,10 @@ class SpineDBReaderWriter:
                                             ],
                                            '0')
 
-    def set_number_downpayments(self, pp):
-        self.stage_object(self.loans_object_classname, pp.name)
-        self.stage_object_parameter_values(self.loans_object_classname, pp.name,
-                                           [('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone)
+    def set_number_downpayments_done(self, pp):
+        self.stage_object(self.downpayments_object_classname, pp.name)
+        self.stage_object_parameter_values(self.downpayments_object_classname, pp.name,
+                                           [('numberOfPaymentsDone', pp.downpayment.numberOfPaymentsDone)
                                             ],
                                            '0')
 
