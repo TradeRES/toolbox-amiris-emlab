@@ -70,9 +70,6 @@ def erase_not_accepted_bids(db_url):
     finally:
         db_map.connection.close()
 
-
-# erase not Accepted bids from capacity mechanisms
-# erase_not_accepted_bids(db_url)
 def prepare_AMIRIS_data(year, future_year):
     print("preparing data for years " + str(year) + " and " + str(future_year) + " for NL")
     try:
@@ -226,3 +223,30 @@ except Exception:
 finally:
     print('Closing DB Connections...')
     db_emlab.close_connection()
+
+
+print('removing awaiting bids...')
+db_map = DatabaseMapping(db_url)
+
+if sys.argv[2] == 'increment_clock':
+    try:
+        subquery = db_map.object_parameter_value_sq
+        statuses = {row.object_id: from_database(row.value, row.type) for row in
+                    db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+        removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
+        db_map.cascade_remove_items(object=removable_object_ids)
+        print("removed awaiting bids")
+        db_map.commit_session("Removed unacceptable objects.")
+    finally:
+        db_map.connection.close()
+
+        # todo finish this if bids are being erased then the awarded capapcity of CM should also be saved.
+        #
+        # def class_id_for_name(name):
+        #     return db_map.query(db_map.entity_class_sq).filter(db_map.entity_class_sq.c.name == name).first().id
+        # try:
+        #     id_to_remove = class_id_for_name("Bids")
+        #     db_map.cascade_remove_items(**{"object_class": {id_to_remove}})
+        #     db_map.commit_session("Removed ")
+        # finally:
+        #     db_map.connection.close()
