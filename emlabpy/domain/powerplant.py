@@ -253,10 +253,11 @@ class PowerPlant(EMLabAgent):
             return False
 
     def is_invested_by_target_investor(self):
-        if int(self.name) > 100000:
+        if len(str(self.id)) == 12:
             return True
         else:
             return False
+
     # def isOperational(self, currentTick):
     #     finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
     #     if finishedConstruction <= currentTick:
