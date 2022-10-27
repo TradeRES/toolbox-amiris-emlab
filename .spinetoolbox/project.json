@@ -724,8 +724,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1135.9286216514197,
-            "y": -611.8329280265951,
+            "x": -1135.92862165142,
+            "y": -614.1437256032502,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -750,8 +750,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -722.2726469430054,
-            "y": -453.12012692013604,
+            "x": -715.3402542130398,
+            "y": -480.8496978399979,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -772,8 +772,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -822.8834304115527,
-            "y": -752.0561707762133,
+            "x": -818.2618352582422,
+            "y": -779.7857416960749,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -794,8 +794,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 215.68077017773905,
-            "y": -212.1976727498615,
+            "x": 213.36997260108393,
+            "y": -209.88687517320648,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -816,8 +816,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 288.76993374670377,
-            "y": 55.65798872320893,
+            "x": 286.4591361700487,
+            "y": 57.968786299864064,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -933,8 +933,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -444.1224663491404,
-            "y": -454.21709203657315,
+            "x": -441.81166877248523,
+            "y": -465.7710799198488,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -967,8 +967,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -210.2496351067659,
-            "y": 108.7107771032203,
+            "x": -212.56043268342106,
+            "y": 108.71077710322027,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -989,8 +989,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -570.0882741155094,
-            "y": -460.7690875242049,
+            "x": -567.7774765388542,
+            "y": -472.32307540748053,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1020,8 +1020,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": 181.95974041707544,
-            "y": -463.15695649011155,
+            "x": 179.64894284042026,
+            "y": -460.8461589134564,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1058,8 +1058,8 @@
         "Capacity Mechanism": {
             "type": "Tool",
             "description": "",
-            "x": -40.06373255202357,
-            "y": -447.66866373348086,
+            "x": -42.374530128678714,
+            "y": -445.3578661568257,
             "specification": "Capacity Mechanisms",
             "execute_in_work": false,
             "cmd_line_args": [

@@ -246,6 +246,17 @@ class PowerPlant(EMLabAgent):
         else:
             print("power plant dont have an age ", self.name)
 
+    def is_new_installed(self):
+        if int(self.name) > 100000:
+            return True
+        else:
+            return False
+
+    def is_invested_by_target_investor(self):
+        if int(self.name) > 100000:
+            return True
+        else:
+            return False
     # def isOperational(self, currentTick):
     #     finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
     #     if finishedConstruction <= currentTick:

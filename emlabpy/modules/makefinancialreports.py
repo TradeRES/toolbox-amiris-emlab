@@ -46,37 +46,45 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
-            financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)
+            financialPowerPlantReport.setFixedCosts(fixed_on_m_cost) # saved as fixedCosts
+
             self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
 
             loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
-
+            # # attention: this is only to check
+            # if powerplant.downpayment_in_year> 0:
+            #     print("downpayment is paid during construction. why is it paid here")
             yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
 
-            financialPowerPlantReport.setVariableCosts(dispatch.variable_costs)
+            financialPowerPlantReport.setVariableCosts(dispatch.variable_costs) # saved as variableCosts
             self.agent.CF_COMMODITY -= dispatch.variable_costs
 
-            financialPowerPlantReport.totalCosts =  yearly_costs
+
+            financialPowerPlantReport.totalCosts =  yearly_costs # saved as totalCosts
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
 
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
             self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
 
-            financialPowerPlantReport.setOverallRevenue(
+            financialPowerPlantReport.setOverallRevenue( # saved as overallRevenue
                 financialPowerPlantReport.capacityMarketRevenues_in_year +  dispatch.revenues)
 
             self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
-
+            # total profits are used to decide for decommissioning saved as totalProfits
             operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  yearly_costs
+            financialPowerPlantReport.totalProfits= operational_profit
+
+            # total profits with loans are to calculate RES support. saved as totalProfitswLoans
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
-            financialPowerPlantReport.totalProfits= operational_profit
+
             irr, npv = self.getProjectIRR(powerplant, operational_profit ,loans, self.agent)
             financialPowerPlantReport.irr = irr
             financialPowerPlantReport.npv = npv
             financialPowerPlantReports.append(financialPowerPlantReport)
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
+
 
     def getProjectIRR(self, pp, operational_profit_withFixedCosts ,loans , agent):
         totalInvestment = pp.getActualInvestedCapital()
@@ -120,6 +128,7 @@ class CreatingFinancialReports(DefaultModule):
             return round(IRR, 4), npv
 
     def addingMarketClearingIncome(self):
+        print("adding again dispatch revenues????")
         all_dispatch = self.reps.power_plant_dispatch_plans_in_year
         SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
         all_revenues = 0

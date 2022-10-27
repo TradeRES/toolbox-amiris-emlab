@@ -28,8 +28,7 @@ class CapacityMarketSubmitBids(MarketModule):
     def act(self):
         # in the future : do for every EnergyProducer
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
-                self.agent.name):
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_but_no_RES_support():
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             market = self.reps.get_capacity_market_for_plant(powerplant)
             fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
@@ -73,13 +72,13 @@ class CapacityMarketClearing(MarketModule):
 
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         market = self.reps.get_capacity_market_in_country(self.reps.country)
-        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1]) 
+        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
-
+        print("peak load" + str(peakExpectedDemand))
         # Retrieve the sloping demand curve for the expected peak load volume
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
 
@@ -118,11 +117,11 @@ class CapacityMarketClearing(MarketModule):
         if self.isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
-            print("Cleared market", market.name)
+            print("Cleared market", market.name, "at " , str(clearing_price))
         else:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply,
                                                              self.reps.current_tick)
-            print("Market is not cleared", market.name)
+            print("Market is not cleared", market.name, "at " , str(clearing_price))
 
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")

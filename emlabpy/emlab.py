@@ -237,6 +237,10 @@ try:  # Try statement to always close DB properly
         investing.act_and_commit()
         logging.info('End Run Investment')
 
+    if run_pay_loans:
+        paying_loans = PayForLoansRole(reps)
+        paying_loans.act_and_commit()
+
     # if run_short_investment_module:
     #     short_investing = ShortInvestmentdecision(reps)
     #     logging.info('Start Run short term Investments')

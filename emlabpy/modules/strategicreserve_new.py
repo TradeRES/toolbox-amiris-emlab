@@ -22,8 +22,7 @@ class StrategicReserveSubmitBids(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_power_plants_by_owner(
-                self.reps.agent):
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_but_no_RES_support():
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()

@@ -439,14 +439,20 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == globalNames.power_plant_status_operational]
 
-    def get_operational_and_to_be_decommissioned_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
+    def get_operational_and_to_be_decommissioned_but_no_RES_support(self) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.owner.name == owner and (
+                if len(str(i.id))  == 12 and (
                         i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.status in list_of_status]
+
+    def get_power_plants_if_target_invested(self) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if len(str(i.id)) == 12]
+
+
 
     def get_operational_power_plants_by_owner_and_technologies(self, owner: EnergyProducer, listofTechnologies) -> List[
         PowerPlant]:

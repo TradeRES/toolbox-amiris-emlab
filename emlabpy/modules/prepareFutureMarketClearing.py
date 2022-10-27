@@ -132,12 +132,17 @@ class PrepareFutureMarketClearing(PrepareMarket):
     def calculateAveragePastOperatingProfit(self, plant, horizon ):
         # "totalProfits" or "irr"
         averagePastOperatingProfit = 0
+        # typeofProfitforPastHorizon are the total Profits which exclude the loans
         rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
             if self.reps.current_tick >= horizon:
                 past_operating_profit_all_years = pd.Series(dict(rep["data"]))
-                indices = list(range(self.reps.current_tick-horizon, self.reps.current_tick))
+                # before year 4 there is no dismantling considered.
+                # in year 4 it looks for profits from tick  1 to tick 4
+                # but the dismantling in tick 8 (when the plants should be installed) there are more plants installed
+                # also it looks for the profits from tick 5 to tick 8. So the profits are different
+                indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
                 past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
                 averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
             else:  # Attention for now, for the first years the availble past data is taken
