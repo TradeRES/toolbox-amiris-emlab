@@ -63,7 +63,7 @@ class Repository:
         self.targetinvestment_per_year = True
         self.npv_with_annuity = False
         self.fix_prices_to_2020 = False
-        self.fix_prices_to_2030 = True
+        self.fix_prices_to_2030 = False
         self.fix_price_year = 2030
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
