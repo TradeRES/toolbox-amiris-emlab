@@ -101,6 +101,8 @@ class SpineDBReaderWriter:
                 reps.fix_prices_to_2020 = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_prices_to_2030':
                 reps.fix_prices_to_2030 = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'yearly_CO2_prices':
+                reps.yearly_CO2_prices = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_tobe_installed':
                 reps.realistic_candidate_capacities_tobe_installed = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_for_future':
