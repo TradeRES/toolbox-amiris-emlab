@@ -78,11 +78,12 @@ class Investmentdecision(DefaultModule):
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
 
         # save the iteration
-        if self.agent.readytoInvest == True:  # todo this is also for now not active. Activate once the cash flow is not enough
+        if self.agent.readytoInvest == True:  # todo this is also for now not active. no cash flow is considered as an impedement to invest
             #  for now there is only one energyproducer
             bestCandidatePowerPlant = None
             highestValue = 0
             # power plants are investable when they havent passed the capacity limits
+
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if self.investable_candidate_plants:  # check if the are investable power plants
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
@@ -277,7 +278,6 @@ class Investmentdecision(DefaultModule):
     def calculateandCheckFutureCapacityExpectation(self, candidatepowerplant):
         # checking if the technology can be installed or not
         technology = candidatepowerplant.technology
-
         expectedInstalledCapacityOfTechnology = self.expectedInstalledCapacityPerTechnology[technology.name]
 
         # This calculation dont consider that some power plants might not be decommissioned because of positive profits
@@ -335,11 +335,12 @@ class Investmentdecision(DefaultModule):
             return True
 
     def findLimitsByTechnology(self, technology):
-        LimitinCountry = technology.getMaximumCapacityinCountry()
-        if LimitinCountry:
-            return LimitinCountry
-        else:
+        LimitinCountry = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
+        if math.isnan(LimitinCountry):
             return 100000000000  # if there is no declared limit, use a very high number
+        else:
+            return LimitinCountry
+
 
     def investbyTargets(self):
         targetInvestors = self.reps.findTargetInvestorByCountry(self.reps.country)
@@ -359,7 +360,7 @@ class Investmentdecision(DefaultModule):
             # TODO: later the expected installed power plants can be calculated according to profits not only for lookahead but also fot future time:
             #futuretime =self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)
             expectedInstalledCapacity = expectedInstalledCapacityperTechnology[target_tech.name]
-            pgtNodeLimit = target_tech.getMaximumCapacityinCountry() # now is for all technologies the same.
+            pgtNodeLimit = target_tech.getMaximumCapacityinCountry(self.futureInvestmentyear) # now is for all technologies the same.
             #futureTimePoint = self.reps.current_tick + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
             #targetCapacity = target_tech.getTrend().getValue(futureTimePoint)
             technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(target_tech,

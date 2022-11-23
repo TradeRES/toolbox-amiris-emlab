@@ -718,15 +718,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         if db_line[1] in reps.used_technologies:
             add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
                                               PowerGeneratingTechnology)
-        else:
-            pass
         # data from Traderes
     elif object_class_name == 'technologyPotentials':  # From traderes these potentials are the maximum that can be installed per country. The units are in GW
         if db_line[1] in reps.used_technologies:
-            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
-                                              PowerGeneratingTechnology)
-        else:
-            pass
+            PowerGeneratingTechnology.add_potentials(PowerGeneratingTechnology, reps, db_line)
             # From here are the inputs from TechnologyEmlab
     elif object_class_name == 'unit':
         # according to the scenario.yaml, if is has energy carrier then it is intermittent

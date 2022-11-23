@@ -8,7 +8,7 @@ from domain.energyproducer import EnergyProducer
 from domain.import_object import *
 from domain.trends import *
 import logging
-import random
+import pandas as pd
 import sys
 
 
@@ -27,7 +27,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
-        self.maximum_installed_capacity_in_country = sys.float_info.max
+        self.maximum_installed_capacity_in_country = pd.Series(dtype='float64')
         self.intermittent = False
         self.fuel = ''
         self.type = ''
@@ -68,11 +68,10 @@ class PowerGeneratingTechnology(ImportObject):
         # elif parameter_name == 'annuity':
         #     self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':
-            self.expected_lifetime = int(parameter_value)
+            pass
         elif parameter_name == 'lifetime_economic':
             self.depreciation_time = int(parameter_value)
-        elif parameter_name == reps.country:  # TODO: Implement Investment limit per node
-            self.maximum_installed_capacity_in_country = parameter_value * 1000  # capacities from GW to MW (emlab)
+            self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
@@ -103,6 +102,31 @@ class PowerGeneratingTechnology(ImportObject):
             self.chargingEfficiency = float(parameter_value)
         elif parameter_name == 'DischargingEfficiency':
             self.dischargingEfficiency = float(parameter_value)
+
+    def add_potentials(self, reps, db_line):
+        object_name = db_line[1]
+        parameter_name = db_line[2]
+        parameter_value = db_line[3]
+        if object_name not in reps.power_generating_technologies.keys():
+            reps.power_generating_technologies[object_name] = self(object_name)
+        if parameter_name[0:2] == reps.country:
+            year = parameter_name[2:6]
+            if isinstance(year, str): # if there is no yearly value, add it at year 0
+                reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[0] = parameter_value * 1000
+            else:
+                reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[int(year)] = parameter_value * 1000 # capacities from GW to MW (emlab)
+
+    def getMaximumCapacityinCountry(self, futureInvestmentyear):
+        if futureInvestmentyear in self.maximum_installed_capacity_in_country.index.values:  # value is present
+            return self.maximum_installed_capacity_in_country[futureInvestmentyear]
+        elif 0 in self.maximum_installed_capacity_in_country.index.values: # unique total value
+            return self.maximum_installed_capacity_in_country[0]
+        else: # interpolate years
+            self.maximum_installed_capacity_in_country.at[futureInvestmentyear] = np.nan
+            self.maximum_installed_capacity_in_country.sort_index(ascending=True, inplace=True)
+            self.maximum_installed_capacity_in_country.interpolate(method='linear',  inplace=True)
+            print(self.maximum_installed_capacity_in_country[futureInvestmentyear])
+            return self.maximum_installed_capacity_in_country[futureInvestmentyear]
 
     def initializeEfficiencytrend(self):
         self.efficiency_time_series = GeometricTrend("geometrictrend" + self.name)
@@ -164,6 +188,4 @@ class PowerGeneratingTechnology(ImportObject):
         #   print(help(self.investment_cost_time_series))
         return self.investment_cost_time_series.get_value(time)
 
-    def getMaximumCapacityinCountry(self):
-        return self.maximum_installed_capacity_in_country
 
