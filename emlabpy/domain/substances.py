@@ -8,7 +8,7 @@ class Substance(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.co2_density = 0
-        self.energy_density = 1
+     #   self.energy_density = 1
         self.quality = 0
         self.price = 0
         self.trend = None
@@ -28,8 +28,8 @@ class Substance(ImportObject):
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'AmirisFuelSpecificCo2EmissionsInTperMWH': # todo: AMIRIS add this as an input parameter 'co2Density'
             self.co2_density = float(parameter_value)
-        elif parameter_name == 'energyDensity':
-            self.energy_density = float(parameter_value)
+        # elif parameter_name == 'energyDensity': # this was from EMLab, not used here
+        #     self.energy_density = float(parameter_value)
         elif parameter_name == 'quality':
             self.quality = float(parameter_value)
         elif parameter_name == 'price2020': # TODO take out the hardcoded price

@@ -34,10 +34,15 @@ class PrepareMarket(DefaultModule):
         self.setTimeHorizon()
         self.setExpectations()
         self.openwriter()
-        self.write_conventionals()
         self.write_renewables()
         self.write_storage()
-        self.write_biogas()
+
+        if self.reps.writeALLcostsinOPEX ==True:
+            self.write_conventionals_and_biogas_with_prices("next_year_price")
+        else:
+            self.write_conventionals()
+            self.write_biogas()
+
         self.write_scenario_data_emlab("next_year_price")
         self.write_times()
         self.writer.save()
@@ -45,9 +50,7 @@ class PrepareMarket(DefaultModule):
         print("saved to ", self.path)
 
     def sort_power_plants_by_age(self):
-        ##print(self.power_plants_list[0].age)
         self.power_plants_list.sort(key=lambda x:x.age)
-        ##print(self.power_plants_list[0].age)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
@@ -130,7 +133,6 @@ class PrepareMarket(DefaultModule):
         BlockSizeInMW = []
         InstalledPowerInMW = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-
         for pp in self.power_plants_list:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
@@ -216,6 +218,86 @@ class PrepareMarket(DefaultModule):
 
         df = pd.DataFrame(data=d)
         df.to_excel(self.writer, sheet_name="biogas")
+
+
+
+    def write_conventionals_and_biogas_with_prices(self, calculatedprices):
+        identifier = []
+        FuelType = []
+        OpexVarInEURperMWH = []
+        Efficiency = []
+        BlockSizeInMW = []
+        InstalledPowerInMW = []
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+        for pp in self.power_plants_list:
+            if pp.technology.type == "ConventionalPlantOperator":
+                identifier.append(pp.id)
+                FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
+
+                if calculatedprices == "next_year_price":
+                    fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
+                    CO2_price = self.reps.substances["CO2"].simulatedPrice_inYear * pp.technology.fuel.co2_density
+                else:
+                    fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
+                    CO2_price = self.reps.substances["CO2"].futurePrice_inYear * pp.technology.fuel.co2_density
+
+
+                if pp.name in operator.list_of_plants:
+                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.technology.efficiency  )
+                else:
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.technology.efficiency )
+
+                Efficiency.append(pp.technology.efficiency)
+                BlockSizeInMW.append(pp.capacity)
+                InstalledPowerInMW.append(pp.capacity)
+
+        d = {'identifier': identifier, 'FuelType': FuelType, 'OpexVarInEURperMWH': OpexVarInEURperMWH,
+             'Efficiency': Efficiency, 'BlockSizeInMW': BlockSizeInMW,
+             'InstalledPowerInMW': InstalledPowerInMW}
+
+        df = pd.DataFrame(data=d)
+        df.to_excel(self.writer, sheet_name="conventionals")
+
+        identifier = []
+        InstalledPowerInMW = []
+        OpexVarInEURperMWH = []
+        Set = []
+        SupportInstrument = []
+        FIT = []
+        Premium = []
+        Lcoe = []
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+
+        for pp in self.power_plants_list:
+            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
+                pp.technology.name] == "Biogas":
+                identifier.append(pp.id)
+                InstalledPowerInMW.append(pp.capacity)
+
+                if calculatedprices == "next_year_price":
+                    fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
+                else:
+                    fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
+
+                if pp.name in operator.list_of_plants:
+                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price)/pp.technology.efficiency  )
+                else:
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price)/pp.technology.efficiency )
+
+                Set.append(self.reps.dictionaryTechSet[pp.technology.name])
+                SupportInstrument.append("-")
+                FIT.append("-")
+                Premium.append("-")
+                Lcoe.append("-")
+
+        d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
+             'OpexVarInEURperMWH': OpexVarInEURperMWH,
+             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
+
+        df = pd.DataFrame(data=d)
+        df.to_excel(self.writer, sheet_name="biogas")
+
+
 
     def write_storage(self):
         identifier = []

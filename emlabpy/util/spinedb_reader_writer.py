@@ -113,7 +113,8 @@ class SpineDBReaderWriter:
                 reps.npv_with_annuity = bool(row['parameter_value'])
             elif row['parameter_name'] == 'targetinvestment_per_year':
                 reps.targetinvestment_per_year = bool(row['parameter_value'])
-
+            elif row['parameter_name'] == 'writeALLcostsinOPEX':
+                reps.writeALLcostsinOPEX = bool(row['parameter_value'])
         print("-----------------------------------------------------------" + str(reps.current_tick))
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in

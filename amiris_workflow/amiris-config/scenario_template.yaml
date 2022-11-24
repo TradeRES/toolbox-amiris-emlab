@@ -29,26 +29,26 @@ Agents:
     Id: 3
     Attributes:
       OperationMode: FIXED
-      Co2Prices: 93.0
+      Co2Prices: 0
 
   - Type: FuelsMarket
     Id: 4
     Attributes:
       FuelPrices:
         - FuelType: NUCLEAR
-          Price: 2.00
+          Price: 0
           ConversionFactor: 1.0
         - FuelType: LIGNITE
-          Price: 5.00
+          Price: 0
           ConversionFactor: 1.0
         - FuelType: HARD_COAL
-          Price: 11
+          Price: 0
           ConversionFactor: 1.0
         - FuelType: NATURAL_GAS
-          Price: 17
+          Price: 0
           ConversionFactor: 1.0
         - FuelType: OIL
-          Price: 37
+          Price: 0
           ConversionFactor: 1.0
 
   - Type: DemandTrader
