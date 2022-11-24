@@ -523,39 +523,6 @@
                     "Financial Results",
                     "left"
                 ]
-            },
-            {
-                "name": "from AMIRIS DB to Capacity Mechanism",
-                "from": [
-                    "AMIRIS DB",
-                    "bottom"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Capacity Mechanism to Financial Results",
-                "from": [
-                    "Capacity Mechanism",
-                    "right"
-                ],
-                "to": [
-                    "Financial Results",
-                    "left"
-                ]
-            },
-            {
-                "name": "from EmlabDB2 to Capacity Mechanism",
-                "from": [
-                    "EmlabDB2",
-                    "right"
-                ],
-                "to": [
-                    "Capacity Mechanism",
-                    "bottom"
-                ]
             }
         ],
         "jumps": [
@@ -619,8 +586,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1630.2052297561684,
-            "y": -492.85874269580387,
+            "x": -1550.004319590132,
+            "y": -491.2861758298032,
             "file_references": [
                 {
                     "type": "path",
@@ -648,8 +615,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1621.7400642183454,
-            "y": -207.49738472471063,
+            "x": -1547.8294215163114,
+            "y": -223.2230533847178,
             "file_references": [
                 {
                     "type": "path",
@@ -662,8 +629,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1322.8721929345204,
-            "y": -218.21018687851685,
+            "x": -1322.8721929345206,
+            "y": -220.23455751071458,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -677,8 +644,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1657.871904012941,
-            "y": -618.0695748373303,
+            "x": -1554.0824908568936,
+            "y": -621.2147085693317,
             "file_references": [
                 {
                     "type": "path",
@@ -724,8 +691,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1135.92862165142,
-            "y": -614.1437256032502,
+            "x": -1135.9286216514201,
+            "y": -622.1933433356223,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -751,7 +718,7 @@
             "type": "Tool",
             "description": "",
             "x": -715.3402542130398,
-            "y": -480.8496978399979,
+            "y": -478.82498456294235,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -773,7 +740,7 @@
             "type": "Tool",
             "description": "",
             "x": -818.2618352582422,
-            "y": -779.7857416960749,
+            "y": -777.7610284190193,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -816,8 +783,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 286.4591361700487,
-            "y": 57.968786299864064,
+            "x": 344.6441102120753,
+            "y": 50.10595196986046,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -874,8 +841,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -171.7964515172951,
-            "y": -674.0423475127602,
+            "x": -123.04687867127282,
+            "y": -664.6069463167559,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -905,8 +872,8 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1625.7173262052706,
-            "y": -357.73156910794705,
+            "x": -1554.951817235238,
+            "y": -353.0138685099449,
             "file_references": [
                 {
                     "type": "path",
@@ -934,7 +901,7 @@
             "type": "Tool",
             "description": "",
             "x": -441.81166877248523,
-            "y": -465.7710799198488,
+            "y": -463.74636664279325,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -967,8 +934,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -212.56043268342106,
-            "y": 108.71077710322027,
+            "x": -214.1329995494218,
+            "y": 66.25147172120087,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -990,7 +957,7 @@
             "type": "Tool",
             "description": "",
             "x": -567.7774765388542,
-            "y": -472.32307540748053,
+            "y": -470.298362130425,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1042,8 +1009,8 @@
         "energy exchange": {
             "type": "Data Store",
             "description": "",
-            "x": -228.42302013952323,
-            "y": -897.0438942722507,
+            "x": -228.42302013952326,
+            "y": -1028.7593561415938,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1054,28 +1021,6 @@
                     "path": ".spinetoolbox/items/energy_exchange/energy exchange.sqlite"
                 }
             }
-        },
-        "Capacity Mechanism": {
-            "type": "Tool",
-            "description": "",
-            "x": -42.374530128678714,
-            "y": -445.3578661568257,
-            "specification": "Capacity Mechanisms",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB2"
-                },
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "literal",
-                    "arg": "run_capacity_market"
-                }
-            ]
         }
     }
 }

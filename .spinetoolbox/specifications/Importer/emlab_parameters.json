@@ -915,7 +915,8 @@
                                 "skip_columns": [
                                     4,
                                     5
-                                ]
+                                ],
+                                "read_start_row": 1
                             },
                             {
                                 "map_type": "Object",
@@ -927,11 +928,12 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": -1
+                                "position": 1
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -939,7 +941,7 @@
                             },
                             {
                                 "map_type": "ParameterValue",
-                                "position": "hidden"
+                                "position": 2
                             }
                         ]
                     }
@@ -1078,6 +1080,26 @@
                         ]
                     }
                 }
+            ],
+            "sources": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1098,7 +1120,8 @@
             "Dismantled",
             "Potentials",
             "YearlyTargets",
-            "yearlyCO2"
+            "yearlyCO2",
+            "sources"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1133,16 +1156,23 @@
                 "read_until_col": true,
                 "read_until_row": false
             },
-            "Fuels": {},
+            "Fuels": {
+                "read_until_col": true
+            },
             "NewTechnologies": {},
             "not chosen technologies": {},
             "dictTech": {},
-            "dictFuel": {},
+            "dictFuel": {
+                "read_until_col": true
+            },
             "dictvariables": {},
             "CandidatePowerPlants": {},
             "StrategicReserveOperator": {},
             "Dismantled": {},
-            "Potentials": {},
+            "Potentials": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
             "backup": {},
             "YearlyTargets": {
                 "read_until_col": true
@@ -1154,7 +1184,8 @@
             "yearlyCO2": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "sources": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1368,10 +1399,7 @@
             "Potentials": {
                 "0": "string",
                 "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string"
+                "2": "float"
             },
             "backup": {
                 "0": "string",
