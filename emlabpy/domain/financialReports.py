@@ -54,6 +54,15 @@ class FinancialPowerPlantReport(ImportObject):
                 # for plotting import all capacity mechanisms
                 self.capacityMarketRevenues = pd_series
 
+            # # todo: erase THESE are to test
+            # elif parameter_name == 'totalCosts' and self.name == "112":
+            #     self.totalCosts = pd_series
+            # elif  parameter_name == 'fixedCosts' and self.name == "112":
+            #     self.fixedCosts = pd_series
+            # elif parameter_name == 'overallRevenue' and self.name == "112":
+            #     self.overallRevenue = pd_series
+
+
         elif parameter_name == 'capacityMechanismRevenues':
             # to making financial results, only retrieve the CM of that year
             array = parameter_value.to_dict()
