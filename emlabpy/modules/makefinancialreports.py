@@ -42,25 +42,25 @@ class CreatingFinancialReports(DefaultModule):
                 dispatch.accepted_amount = 0
                 dispatch.revenues = 0
 
-            fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
+
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
             financialPowerPlantReport.setPowerPlantStatus(powerplant.status)
+            fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost) # saved as fixedCosts
 
             self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
+            self.agent.CF_COMMODITY -= dispatch.variable_costs
 
             loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
             # # attention: this is only to check
             # if powerplant.downpayment_in_year> 0:
             #     print("downpayment is paid during construction. why is it paid here")
-            yearly_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
+            fixed_and_variable_costs = - dispatch.variable_costs - fixed_on_m_cost  # without loans
 
             financialPowerPlantReport.setVariableCosts(dispatch.variable_costs) # saved as variableCosts
-            self.agent.CF_COMMODITY -= dispatch.variable_costs
 
-
-            financialPowerPlantReport.totalCosts =  yearly_costs # saved as totalCosts
+            financialPowerPlantReport.totalCosts =  fixed_and_variable_costs # saved as totalCosts
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
 
             financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
@@ -71,8 +71,8 @@ class CreatingFinancialReports(DefaultModule):
 
             self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
             # total profits are used to decide for decommissioning saved as totalProfits
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  yearly_costs
-            financialPowerPlantReport.totalProfits= operational_profit
+            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  fixed_and_variable_costs
+            financialPowerPlantReport.totalProfits= operational_profit  # saved as totalProfits
 
             # total profits with loans are to calculate RES support. saved as totalProfitswLoans
             operational_profit_with_loans = operational_profit - loans
