@@ -110,10 +110,11 @@ class PowerGeneratingTechnology(ImportObject):
             reps.power_generating_technologies[object_name] = self(object_name)
         if parameter_name[0:2] == reps.country:
             year = parameter_name[2:6]
-            if isinstance(year, str): # if there is no yearly value, add it at year 0
-                reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[0] = parameter_value * 1000
-            else:
+            try:
+                int(year)
                 reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[int(year)] = parameter_value * 1000 # capacities from GW to MW (emlab)
+            except ValueError:
+                reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[0] = parameter_value * 1000
 
     def getMaximumCapacityinCountry(self, futureInvestmentyear):
         if self.maximum_installed_capacity_in_country.size==0:
@@ -126,7 +127,6 @@ class PowerGeneratingTechnology(ImportObject):
             self.maximum_installed_capacity_in_country.at[futureInvestmentyear] = np.nan
             self.maximum_installed_capacity_in_country.sort_index(ascending=True, inplace=True)
             self.maximum_installed_capacity_in_country.interpolate(method='linear',  inplace=True)
-            print(self.name + "MAX capacity " + self.maximum_installed_capacity_in_country[futureInvestmentyear])
             return self.maximum_installed_capacity_in_country[futureInvestmentyear]
 
     def initializeEfficiencytrend(self):
