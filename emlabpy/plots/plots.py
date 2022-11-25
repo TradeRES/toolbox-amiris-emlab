@@ -21,6 +21,7 @@ from copy import deepcopy
 from matplotlib.offsetbox import AnchoredText
 import numpy as np
 
+
 logging.basicConfig(level=logging.ERROR)
 
 
@@ -1147,7 +1148,8 @@ def prepare_screening_curves(reps, year):
     co2price = co2prices[year]
     for tech_name, tech in reps.power_generating_technologies.items():
         if tech.intermittent == False:
-            annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -tech.investment_cost_eur_MW)
+            investment_cost = tech.get_investment_costs_by_year(year)
+            annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -investment_cost)
             if tech.fuel == "":
                 fuel_price = np.int64(0)
                 co2_TperMWh = np.int64(0)
@@ -1188,7 +1190,8 @@ def prepare_screening_curves_candidates(reps, year):
     co2price = co2prices[year]
 
     for tech in reps.get_unique_candidate_technologies():
-        annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -tech.investment_cost_eur_MW)
+        investment_cost = tech.get_investment_costs_by_year(year)
+        annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -investment_cost)
         if tech.fuel == "":
             # ton / MWh
             fuel_price = np.int64(0)
@@ -1456,7 +1459,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         raise Exception("Test other technology, this is not installed " + str(years_to_generate[-1]))
 
     yearly_load = reading_original_load(years_to_generate)
-    # #section -----------------------------------------------------------------------------------------------capacities
+    #section -----------------------------------------------------------------------------------------------capacities
     all_techs_generation, all_techs_market_value, all_techs_capacity_factor, \
     average_electricity_price, all_techs_full_load_hours, share_RES = prepare_capacity_and_generation_per_technology(
         reps, unique_technologies,renewable_technologies, yearly_load,
@@ -1709,16 +1712,16 @@ SpecificCo2EmissionsInTperMWH = {
 }
 try:
     # write the name of the existing scenario or the new scenario
-    name = "NL2050_SD4_PH3_MI10000000_totalProfits_future1installed1-EOM"
+    #name = "NL2050_SD4_PH3_MI10000000_totalProfits_future1installed1-EOM"
     #name = "NL2050_SD4_PH3_MI10000000_totalProfits_future1installed1-CM"
     #name = "NL2050_SD4_PH3_MI10000000_totalProfits_future1installed1-EOM_VRES"
     #name = "NL2050_SD4_PH3_MI10000000_totalProfits_future1installed1-VRES_CM"
     #name = "NL2030_SD4_PH3_MI4000_totalProfits_future1_2030prices_VRESsupport-CM_correct"
     #name = "NL2050_SD4_PH3_MI10000000_totalProfits_future1installed1-Grouped_2030_prices"
-    name = "NL2025_SD4_PH3_MI10000_totalProfits_-Grouped_2030_prices"
+    name = "AMIRIS_OPEX_no_imports"
 
-    existing_scenario = True
-    electricity_prices = False  # write False if not wished to graph electricity prices"
+    existing_scenario = False
+    electricity_prices = True  # write False if not wished to graph electricity prices"
     capacity_mechanisms = False
     calculate_vres_support = False
     save_excel = False

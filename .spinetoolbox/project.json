@@ -841,8 +841,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -123.04687867127282,
-            "y": -664.6069463167559,
+            "x": -9.13589928302261,
+            "y": -458.27762516068015,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -857,8 +857,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1326.9474532284441,
-            "y": -354.52060370940023,
+            "x": -1326.9474532284444,
+            "y": -351.86919346563707,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "on_conflict": "merge",

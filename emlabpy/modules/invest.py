@@ -43,7 +43,7 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.ids_of_future_installed_pp = []
-        self.setTimeHorizon()
+        self.setTimeHorizon(reps.lookAhead)
         self.wacc = (
                                 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
@@ -218,8 +218,8 @@ class Investmentdecision(DefaultModule):
         newplant.setLoan(loan)
         return newplant
 
-    def setTimeHorizon(self):
-        self.futureTick = self.reps.current_tick + self.reps.lookAhead  # self.agent.getInvestmentFutureTimeHorizon()
+    def setTimeHorizon(self, lookAhead):
+        self.futureTick = self.reps.current_tick + lookAhead  # self.agent.getInvestmentFutureTimeHorizon()
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTick
 
     def getProjectCashFlow(self, candidatepowerplant, agent):
@@ -227,7 +227,7 @@ class Investmentdecision(DefaultModule):
         technology = candidatepowerplant.technology
         totalInvestment = self.getActualInvestedCapitalperMW(
             technology) * candidatepowerplant.capacity  # candidate power plants only have 1MW installed
-        # candidatepowerplant.InvestedCapital = totalInvestment
+        #candidatepowerplant.InvestedCapital = totalInvestment
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         interestRate = technology.interest_rate
@@ -260,10 +260,8 @@ class Investmentdecision(DefaultModule):
         return discountedprojectvalue
 
     def getActualInvestedCapitalperMW(self, technology):
-        investmentCostperTechnology = technology.investment_cost_eur_MW
-        investmentCostperMW = self.getinvestmentcosts(investmentCostperTechnology,
-                                                      (technology.expected_permittime + technology.expected_leadtime))
-        return investmentCostperMW
+        investmentCostperTechnology = technology.get_investment_costs_by_year(self.futureInvestmentyear)
+        return investmentCostperTechnology
 
     def getinvestmentcosts(self, investmentCostperTechnology, time):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))

@@ -17,7 +17,7 @@ class PowerGeneratingTechnology(ImportObject):
         super().__init__(name)
         self.capacity = 0
         # self.annuity = 0
-        self.investment_cost_eur_MW = None
+        self.investment_cost_eur_MW = pd.Series(dtype='float64')
         self.fixed_operating_costs = None
         self.variable_operating_costs = 0.0
         self.efficiency = 0
@@ -76,14 +76,13 @@ class PowerGeneratingTechnology(ImportObject):
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
-            # self.fixed_operating_cost_time_series = GeometricTrend("geometrictrend" + self.name)
-            # self.fixed_operating_cost_time_series.growth_rate = 0.0
             self.fixed_operating_cost_time_series = reps.trends[self.name + "FixedOperatingCostTimeSeries"]
             self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
-            self.investment_cost_eur_MW = float(parameter_value)
+           # self.investment_cost_eur_MW = float(parameter_value)
+            self.investment_cost_eur_MW.at[int(alternative)] = parameter_value
             self.initializeInvestmenttrend()
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
@@ -117,15 +116,17 @@ class PowerGeneratingTechnology(ImportObject):
                 reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[int(year)] = parameter_value * 1000 # capacities from GW to MW (emlab)
 
     def getMaximumCapacityinCountry(self, futureInvestmentyear):
-        if futureInvestmentyear in self.maximum_installed_capacity_in_country.index.values:  # value is present
+        if self.maximum_installed_capacity_in_country.size==0:
+            return np.nan
+        elif futureInvestmentyear in self.maximum_installed_capacity_in_country.index.values:  # value is present
             return self.maximum_installed_capacity_in_country[futureInvestmentyear]
-        elif 0 in self.maximum_installed_capacity_in_country.index.values: # unique total value
+        elif 0 in self.maximum_installed_capacity_in_country.index.values: # unique value for all years
             return self.maximum_installed_capacity_in_country[0]
         else: # interpolate years
             self.maximum_installed_capacity_in_country.at[futureInvestmentyear] = np.nan
             self.maximum_installed_capacity_in_country.sort_index(ascending=True, inplace=True)
             self.maximum_installed_capacity_in_country.interpolate(method='linear',  inplace=True)
-            print(self.maximum_installed_capacity_in_country[futureInvestmentyear])
+            print(self.name + "MAX capacity " + self.maximum_installed_capacity_in_country[futureInvestmentyear])
             return self.maximum_installed_capacity_in_country[futureInvestmentyear]
 
     def initializeEfficiencytrend(self):
@@ -133,11 +134,22 @@ class PowerGeneratingTechnology(ImportObject):
         self.efficiency_time_series.start = self.efficiency
         self.efficiency_time_series.growth_rate = 0.00
 
+    def get_investment_costs_by_year(self, year):
+        if year in self.investment_cost_eur_MW.index.values:  # value is present
+            return self.investment_cost_eur_MW[year]
+        else: # interpolate years
+            self.investment_cost_eur_MW.at[year] = np.nan
+            self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
+            self.investment_cost_eur_MW.interpolate(method='linear',  inplace=True)
+            return self.investment_cost_eur_MW[year]
+
     def initializeInvestmenttrend(self):
         self.investment_cost_time_series = GeometricTrend("geometrictrend" + self.name)
-        self.investment_cost_time_series.start = self.investment_cost_eur_MW
-        self.investment_cost_time_series.growth_rate = 0.00
-
+        if 2020 in self.investment_cost_eur_MW.index.values: # Attention! there should be for all
+            self.investment_cost_time_series.start = self.investment_cost_eur_MW[2020]
+        else:
+            print("missing investemnt cost for " + self.name )
+        self.investment_cost_time_series.growth_rate = 0.00 # todo, this can be changed to actual data and interpolation
 
     def get_fixed_operating_cost_trend(self, time):
         return self.fixed_operating_cost_time_series.get_value(time)

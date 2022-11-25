@@ -13,6 +13,7 @@ class ShortInvestmentdecision(Investmentdecision):
 
     def __init__(self, reps: Repository):
         super().__init__(reps)
+        self.setTimeHorizon(1)
         self.quickInvestabletechnologies = ["PV_utility_systems",
                                             "Lithium_ion_battery"]  # later add  "PV_residential", "PV_commercial_systems",
         reps.dbrw.stage_init_power_plant_structure()
