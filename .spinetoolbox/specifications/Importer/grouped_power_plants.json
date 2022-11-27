@@ -378,10 +378,86 @@
                         ]
                     }
                 }
+            ],
+            "superGroupedNL": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "groupedNLprePP": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "groupedNL"
+            "superGroupedNL"
         ],
         "table_options": {
             "germany2019": {
@@ -402,7 +478,15 @@
             "dutchGermanPlants2015_from_emla": {},
             "extendedNL2020": {},
             "powerplants_grouped_DE": {},
-            "groupedNL": {}
+            "groupedNL": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "superGroupedNL": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "groupedNLprePP": {}
         },
         "table_types": {
             "germany2019": {
@@ -533,11 +617,7 @@
                 "7": "string",
                 "8": "string",
                 "9": "string",
-                "10": "string",
-                "11": "string",
-                "12": "string",
-                "13": "string",
-                "14": "string"
+                "10": "string"
             },
             "powerplants_grouped_DE": {
                 "0": "string",
@@ -549,10 +629,39 @@
                 "6": "string",
                 "7": "string",
                 "8": "string"
+            },
+            "superGroupedNL": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "string"
+            },
+            "groupedNLprePP": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float"
             }
         },
         "table_default_column_type": {},
-        "table_row_types": {},
+        "table_row_types": {
+            "groupedNLprePP": {
+                "0": "string"
+            }
+        },
         "source_type": "ExcelConnector"
     },
     "description": ""
