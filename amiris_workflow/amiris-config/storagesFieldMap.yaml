@@ -30,8 +30,8 @@ Agents:
         value: 0
       - attribute: Attributes/Strategy/SingleAgent/ModelledChargingSteps
         value: 50
-#       - attribute: Attributes/Strategy/MultiAgent/AssessmentFunctionPrefactors
-#         value: [0.0, 1.0, 2.0]
+#      - attribute: Attributes/Strategy/MultiAgent/AssessmentFunctionPrefactors
+#        value: [0.0, 1.0, 2.0]
 
 
 Contracts:
@@ -56,17 +56,17 @@ Contracts:
 ###############################
 ## use with MULTI strategy    #
 ###############################
-#   - SenderId: 6
-#     ReceiverType: StorageTrader
-#     ProductName: PriceForecast
-#     FirstDeliveryTime: -19
-#     DeliveryIntervalInSteps: 3600
+#  - SenderId: 6
+#    ReceiverType: StorageTrader
+#    ProductName: PriceForecast
+#    FirstDeliveryTime: -19
+#    DeliveryIntervalInSteps: 3600
 #
-#   - SenderType: StorageTrader
-#     ReceiverId: 6
-#     ProductName: PriceForecastRequest
-#     FirstDeliveryTime: -21
-#     DeliveryIntervalInSteps: 3600
+#  - SenderType: StorageTrader
+#    ReceiverId: 6
+#    ProductName: PriceForecastRequest
+#    FirstDeliveryTime: -21
+#    DeliveryIntervalInSteps: 3600
 ###############################
 ## required for all strategies#
 ###############################
