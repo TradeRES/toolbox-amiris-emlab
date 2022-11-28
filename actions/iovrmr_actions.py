@@ -279,6 +279,7 @@ def aggregate_results(data_manager, config, params):
             conventional_series.append(column_per_plant)
 
         elif file_name in CONVENTIONAL_RESULTS_GROUPED:
+            type_df = pd.read_csv(file, sep=";")
             conventional_results_grouped = type_df
 
         elif file_name in DEMAND:
