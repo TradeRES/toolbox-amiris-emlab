@@ -1166,7 +1166,10 @@
                 "read_until_col": true
             },
             "dictvariables": {},
-            "CandidatePowerPlants": {},
+            "CandidatePowerPlants": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
             "StrategicReserveOperator": {},
             "Dismantled": {},
             "Potentials": {
@@ -1377,11 +1380,7 @@
                 "1": "float",
                 "2": "float",
                 "3": "float",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string"
+                "4": "string"
             },
             "StrategicReserveOperator": {
                 "0": "float",
