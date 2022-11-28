@@ -42,6 +42,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         # functions to save the power plants
         self.openwriter()
         self.write_scenario_data_emlab("futurePrice")
+        self.write_renewables()
+        self.write_storage()
 
         if self.reps.writeALLcostsinOPEX ==True:
             self.write_conventionals_and_biogas_with_prices("futurePrice")
@@ -49,8 +51,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             self.write_conventionals()
             self.write_biogas()
 
-        self.write_storage()
-        self.write_biogas()
+
         self.write_times()
         self.writer.save()
         self.writer.close()

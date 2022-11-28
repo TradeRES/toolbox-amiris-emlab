@@ -691,7 +691,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1135.9286216514201,
+            "x": -1138.0799619968075,
             "y": -622.1933433356223,
             "url": {
                 "dialect": "sqlite",
@@ -823,8 +823,8 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1146.6525692746357,
-            "y": 17.689980538755517,
+            "x": -1146.6525692746354,
+            "y": 15.538640193368092,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [

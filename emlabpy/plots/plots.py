@@ -1461,7 +1461,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     if test_tech == None:
         pass
     elif test_tech not in reps.get_unique_candidate_technologies_names():
-        raise Exception("Test other technology, this is not installed " + str(years_to_generate[-1]))
+        raise Exception("Test other technology, this is not installed until year" + str(years_to_generate[-1]))
 
     yearly_load = reading_original_load(years_to_generate)
     #section -----------------------------------------------------------------------------------------------capacities
@@ -1721,9 +1721,10 @@ try:
 
     name = "NL2031_SD4_PH3_MI100000_totalProfits_future1installed1AMIRISOPEX_Imports_incCO2_stableFuels"
     name = "NL2025_SD4_PH3_MI10000_totalProfits_-Grouped_2030_prices"
-    name = "AMIRISOPEX_WIND_GAS"
+    name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1GroupedAMIRISOPEX_WIND_GAS"
 
-    name = "NL2041_SD4_PH3_MI10000_totalProfits_future1installed1AMIRISOPEX_noImports"
+    #name = "NL2041_SD4_PH3_MI10000_totalProfits_future1installed1AMIRISOPEX_noImports"
+    #name = "DE2050_SD4_PH3_MI10000000_totalProfits_-extended_fixPrices2020"
     existing_scenario = True
     electricity_prices = True  # write False if not wished to graph electricity prices"
     capacity_mechanisms = False
