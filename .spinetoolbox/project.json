@@ -592,7 +592,7 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": "data/Power_plants.xlsx"
+                    "path": "data/EMLABparameters.xlsx"
                 }
             ],
             "db_references": []
@@ -607,7 +607,7 @@
             "on_conflict": "merge",
             "file_selection": [
                 [
-                    "<project>/data/Power_plants.xlsx",
+                    "<project>/data/EMLABparameters.xlsx",
                     true
                 ]
             ]
