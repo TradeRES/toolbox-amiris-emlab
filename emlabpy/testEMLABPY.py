@@ -7,8 +7,26 @@ import sys
 from functools import reduce
 import pandas as pd
 import math
-installedCapacityDeviation = 232
-capacity = 20
+
+years = [2020,"test",2022]
+test = pd.Series(dtype='float64')
+
+#test.at[0]=132489
+test.at[2020]=0
+test.at[2022]=2
+# upsampled = test.resample('Y')
+# interpolated = upsampled.interpolate(method='linear')
+
+from pandas import datetime
+# def parser(x):
+#     return datetime.strptime('190'+x, '%Y-%m')
+#new = pd.to_datetime()
+# test.to_datetime( unit="A")
+#resample = new.resample('A')
+test.at[2021] = np.nan
+test.sort_index(ascending=True, inplace=True)
+test.interpolate(method='linear',  inplace=True)
+print(test[2021])
 
 # number_new_powerplants = math.floor(installedCapacityDeviation / capacity)
 # remainder = installedCapacityDeviation % capacity
@@ -49,11 +67,29 @@ capacity = 20
 # ser = pd.Series(data2, index=data)
 # ser.sort_index(inplace = True)
 # print(ser)
+# name = "asdasdn-asdasd"
+# splitname = name.split("-")
+# splitname[1]
+
+# path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", "Results.xlsx")
+# years_to_generate = list(range(2020,2030))
+# values = list(range(0,10))
 #
-# years_to_generate = list(range(1,10))
-# hours = np.array(list(range(1,10)))
+# new_scenario = "TEst4"
+# df = pd.DataFrame(values, index = years_to_generate)
 #
-# df = pd.DataFrame(index = hours)
+# overview_data = pd.read_excel(path_to_results, sheet_name='ENS', index_col=0)
+# overview_data[new_scenario] = df
+#
+# with pd.ExcelWriter(path_to_results,
+#                     mode="a",
+#                     engine="openpyxl",
+#                     if_sheet_exists="overlay") as writer:
+#     overview_data.to_excel(writer, sheet_name="ENS")
+#     writer.save()
+#
+# print("done")
+
 # df.loc[hours <= 4, 'equal_or_lower_than_4?'] = 'True'
 #
 # np.array(list(range(1,10)))
@@ -65,24 +101,18 @@ capacity = 20
 #
 #
 # df.index.name = "key"
-df = pd.DataFrame({"A": [5, 3, None, 4],
-                   "B": [None, 2, 4, 3],
-                   "C": [4, 3, 8, 5],
-                   "D": [5, 4, 2, None]})
 
-i = [1,2]
-j = ["C", "C"]
-print("h")
-df.loc[i,j] = 0
 # aaa = pd.Series([3,4], index=[3 ,4 ])
 # df["E" ] = aaa
 
-# other = pd.DataFrame({'key': [1, 2, 5],
-#                       'B': ['B0', 'B1', 'B2']})
-# ssd = pd.DataFrame({'key': [1, 2, 3],
-#                       'C': ['B0', 'B1', 'B2']})
+other = pd.DataFrame({'key': [1, 2, 5],
+                      'B': ['B0', 'B1', 'B2']})
+ssd = pd.DataFrame({'key': [1, 2, 3],
+                      'C': ['B0', 'B1', 'B2']})
+other["years"] = [2020,2021,2022]
+other.set_index('years', inplace=True)
+other.drop(['key'], axis=1, inplace=True)
 
-# other.set_index('key')
 # ssd.set_index('key')
 # df = pd.merge(df, other,   on='key', how='inner')
 # df = pd.merge(df, ssd,   on='key', how='inner')
