@@ -70,7 +70,7 @@ def erase_not_accepted_bids(db_url):
     finally:
         db_map.connection.close()
 
-def prepare_AMIRIS_data(year, future_year):
+def prepare_AMIRIS_data(year, future_year, fix_demand_to_initial_year, modality):
     print("preparing data for years " + str(year) + " and " + str(future_year) + " for NL")
     try:
         excel_NL = pd.read_excel(input_yearly_profiles_demand, index_col=0,
@@ -80,10 +80,18 @@ def prepare_AMIRIS_data(year, future_year):
                                              "Load Profile"])
 
         print("finish reading  excel")
-        demand = excel_NL['Load Profile'][year]
-        demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-        future_demand = excel_NL['Load Profile'][future_year]
-        future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
+        if fix_demand_to_initial_year == True and modality == "increment" :
+            pass
+        elif fix_demand_to_initial_year == True and modality == "initialize" :
+            demand = excel_NL['Load Profile'][year]
+            demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
+            future_demand = excel_NL['Load Profile'][year]
+            future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
+        else:
+            demand = excel_NL['Load Profile'][year]
+            demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
+            future_demand = excel_NL['Load Profile'][future_year]
+            future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
 
         wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
         future_wind_onshore = excel_NL['NL Wind Onshore profiles'][future_year]
@@ -141,6 +149,13 @@ try:
         Country = next(i['parameter_value'] for i in
                          db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                          if i['parameter_name'] == 'Country')
+
+        fix_demand_to_initial_year = False
+
+        fix_demand_to_initial_year = next(i['parameter_value'] for i in
+                       db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                       if i['parameter_name'] == 'fix_demand_to_initial_year')
+
 
         reset_candidate_investable_status()
         print("reset power plants status")
@@ -204,15 +219,15 @@ try:
     if sys.argv[2] == 'initialize_clock':
         future_year = StartYear + lookAhead
         if Country == "NL":
-            prepare_AMIRIS_data(StartYear, future_year)
+            prepare_AMIRIS_data(StartYear, future_year, fix_demand_to_initial_year, "initialize" )
         elif Country == "DE": # no dynamic data for other cases
             prepare_AMIRIS_data_fromDE()
         else:
             raise Exception("no data for this country " + Country)
-    else:
+    else:  # increment clock
         if Country == "NL":
             future_year = updated_year + lookAhead
-            prepare_AMIRIS_data(updated_year, future_year)
+            prepare_AMIRIS_data(updated_year, future_year, fix_demand_to_initial_year, "increment")
         elif Country == "DE": # no dynamic data for other cases
             print("no dynamic data for other DE")
         else:
