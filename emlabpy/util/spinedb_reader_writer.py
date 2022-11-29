@@ -115,6 +115,8 @@ class SpineDBReaderWriter:
                 reps.targetinvestment_per_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'writeALLcostsinOPEX':
                 reps.writeALLcostsinOPEX = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'fix_demand_to_initial_year':
+                reps.fix_demand_to_initial_year = bool(row['parameter_value'])
         print("-----------------------------------------------------------" + str(reps.current_tick))
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in

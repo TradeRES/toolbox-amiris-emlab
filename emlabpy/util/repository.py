@@ -66,6 +66,7 @@ class Repository:
         self.fix_prices_to_2030 = False
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = True
+        self.fix_demand_to_initial_year = False
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

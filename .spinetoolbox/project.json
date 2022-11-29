@@ -586,8 +586,8 @@
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
-            "x": -1550.004319590132,
-            "y": -491.2861758298032,
+            "x": -1374.0692170345221,
+            "y": -497.3529035041347,
             "file_references": [
                 {
                     "type": "path",
@@ -600,8 +600,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1338.4576241583486,
-            "y": -495.4305537189379,
+            "x": -1236.8399356132984,
+            "y": -496.94723563752075,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -615,8 +615,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1547.8294215163114,
-            "y": -223.2230533847178,
+            "x": -1368.860955123536,
+            "y": -282.37364820944856,
             "file_references": [
                 {
                     "type": "path",
@@ -629,8 +629,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1322.8721929345206,
-            "y": -220.23455751071458,
+            "x": -1221.2545043894702,
+            "y": -283.9351980911939,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -644,8 +644,8 @@
         "Config": {
             "type": "Data Connection",
             "description": "",
-            "x": -1554.0824908568936,
-            "y": -621.2147085693317,
+            "x": -1376.630706382701,
+            "y": -604.5312074649204,
             "file_references": [
                 {
                     "type": "path",
@@ -658,8 +658,8 @@
         "Config Importer": {
             "type": "Importer",
             "description": "",
-            "x": -1361.835320942896,
-            "y": -623.581654110674,
+            "x": -1229.8839940261887,
+            "y": -605.3814710876798,
             "specification": "Config Import",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -673,8 +673,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1261.8478467601906,
-            "y": -837.8039336361326,
+            "x": -1090.817051259103,
+            "y": -688.4795443402223,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -691,8 +691,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1138.0799619968075,
-            "y": -622.1933433356223,
+            "x": -1054.662456474751,
+            "y": -455.3583322915098,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -717,8 +717,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -715.3402542130398,
-            "y": -478.82498456294235,
+            "x": -699.9280205375002,
+            "y": -477.7646065446261,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -739,8 +739,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -818.2618352582422,
-            "y": -777.7610284190193,
+            "x": -774.9366531037729,
+            "y": -686.2769117552139,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -761,8 +761,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": 213.36997260108393,
-            "y": -209.88687517320648,
+            "x": -50.099408796610554,
+            "y": -303.9211541253427,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -783,8 +783,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": 344.6441102120753,
-            "y": 50.10595196986046,
+            "x": -44.71501211935622,
+            "y": -132.30858393035564,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -792,8 +792,8 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -322.02495884886804,
-            "y": -135.24967883370567,
+            "x": -541.94383704338,
+            "y": -220.18386627434478,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -808,8 +808,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -229.7374959580477,
-            "y": -455.71757608710436,
+            "x": -313.82943241161934,
+            "y": -478.9728403871571,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -823,8 +823,8 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1146.6525692746354,
-            "y": 15.538640193368092,
+            "x": -881.4010535781907,
+            "y": -235.04951648390576,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -841,8 +841,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -9.13589928302261,
-            "y": -458.27762516068015,
+            "x": -182.03763800146652,
+            "y": -479.51117202084,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -857,8 +857,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1326.9474532284444,
-            "y": -351.86919346563707,
+            "x": -1231.3964923577255,
+            "y": -388.26955951162535,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -872,8 +872,8 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1557.1031575806255,
-            "y": -350.8625281645575,
+            "x": -1372.0679635135189,
+            "y": -388.77957612912854,
             "file_references": [
                 {
                     "type": "path",
@@ -886,8 +886,8 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -609.8249634932392,
-            "y": -609.1861432551233,
+            "x": -544.2257854720692,
+            "y": -321.70739251528994,
             "file_references": [
                 {
                     "type": "path",
@@ -900,8 +900,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -441.81166877248523,
-            "y": -463.74636664279325,
+            "x": -438.38739838004005,
+            "y": -475.73131301635107,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -934,8 +934,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -214.1329995494218,
-            "y": 66.25147172120087,
+            "x": -297.381109661273,
+            "y": -132.93731977980877,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -956,8 +956,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -567.7774765388542,
-            "y": -470.298362130425,
+            "x": -568.4521007520846,
+            "y": -476.08652489699887,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -965,8 +965,8 @@
         "Initialize power plants": {
             "type": "Tool",
             "description": "run_initialize_power_plants",
-            "x": -1020.8720365377364,
-            "y": -830.6438731143244,
+            "x": -934.4211671785145,
+            "y": -688.0757727675372,
             "specification": "Initialize Power plants",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -987,8 +987,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": 179.64894284042026,
-            "y": -460.8461589134564,
+            "x": -47.853344947005965,
+            "y": -480.5630238550333,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [

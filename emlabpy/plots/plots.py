@@ -240,7 +240,7 @@ def plot_screening_curve(yearly_costs, path_to_plots, test_year):
     plt.grid()
     axs13.set_title('Screening curve in year ' + str(test_year))
     fig13 = axs13.get_figure()
-    fig13.savefig(path_to_plots + '/' + 'Screening curve (with CO2) AMIRIS ' + str(test_year) + '.png', bbox_inches='tight',
+    fig13.savefig(path_to_plots + '/' + 'Screening curve (with CO2)' + str(test_year) + '.png', bbox_inches='tight',
                   dpi=300)
 
 
@@ -255,7 +255,7 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
     axs14.set_title('Screening curve candidate technologies for year ' + str(future_year))
     fig14 = axs14.get_figure()
     fig14.savefig(
-        path_to_plots + '/' + 'Screening curve candidate technologies (with CO2) AMIRIS ' + str(future_year) + '.png',
+        path_to_plots + '/' + 'Screening curve candidate technologies (with CO2)' + str(future_year) + '.png',
         bbox_inches='tight', dpi=300)
 
 
@@ -400,7 +400,6 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_p
 
 def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors):
     print('plotting installed Capacity per technology ')
-
     installed_capacity = all_techs_capacity.loc[years_to_generate_and_build]
     all_techs_capacity_nozeroes = installed_capacity[installed_capacity>0]
     all_techs_capacity_nozeroes.dropna(how='all', axis =1 , inplace=True)
@@ -410,6 +409,7 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [MW]', fontsize='medium')
     #plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs17.set_title('Installed S'  )
     plt.legend(fontsize='large')
     plt.grid()
     fig17 = axs17.get_figure()
@@ -796,11 +796,11 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
-    if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
-        years_to_generate_and_build = list(
-        range(2013, reps.current_year + 1 + reps.max_permit_build_time))
-    else:
-        pass
+    # if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
+    #     years_to_generate_and_build = list(
+    #     range(2013, reps.current_year + 1 + reps.max_permit_build_time))
+    # else:
+    #     pass
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
@@ -1375,14 +1375,26 @@ def reading_electricity_prices(reps, existing_scenario, folder_name, name):
     return yearly_electricity_prices, residual_load, TotalAwardedPowerInMW
 
 def reading_original_load(years_to_generate):
-    if reps.country == "NL":
+    if reps.country == "NL" and reps.fix_demand_to_initial_year ==True:
         input_yearly_profiles_demand = globalNames.input_data_nl
-        yearly_load = pd.read_excel(input_yearly_profiles_demand, index_col = None, sheet_name="Load Profile")
-    else:
-        one_year_load = reps.get_hourly_demand_by_country(reps.country)[1]
+        allyears_load = pd.read_excel(input_yearly_profiles_demand, index_col = None, sheet_name="Load Profile")
+        print("start year ", str(years_to_generate[0]))
+        one_year_load = allyears_load[years_to_generate[0]]
         yearly_load = pd.DataFrame()
         for y in years_to_generate:
             yearly_load[y] = one_year_load
+    elif reps.country == "NL" :
+        input_yearly_profiles_demand = globalNames.input_data_nl
+        yearly_load = pd.read_excel(input_yearly_profiles_demand, index_col = None, sheet_name="Load Profile")
+
+    elif reps.country == "DE" :
+        input_yearly_profiles_demand = globalNames.input_load_de
+        one_year_load = pd.read_excel(input_yearly_profiles_demand, index_col = None, sheet_name="load_DE")
+        yearly_load = pd.DataFrame()
+        for y in years_to_generate:
+            yearly_load[y] = one_year_load
+    else:
+        print("which country?")
     print("finish reading  excel")
     return yearly_load
 
@@ -1517,8 +1529,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_plots, colors_unique_techs)
     # reality vs expectation
 
-    # plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_all, candidate_plants_project_value_per_MW,   test_tech, test_year, test_tick,
-    #                     future_year, path_to_plots)
+    plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_all, candidate_plants_project_value_per_MW,   test_tech, test_year, test_tick,
+                        future_year, path_to_plots)
 
     # #section -----------------------------------------------------------------------------------------------revenues per iteration
     '''
@@ -1718,11 +1730,7 @@ SpecificCo2EmissionsInTperMWH = {
 }
 try:
     # write the name of the existing scenario or the new scenario
-
-    name = "NL2031_SD4_PH3_MI100000_totalProfits_future1installed1AMIRISOPEX_Imports_incCO2_stableFuels"
-    name = "NL2025_SD4_PH3_MI10000_totalProfits_-Grouped_2030_prices"
-    name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1GroupedAMIRISOPEX_WIND_GAS"
-
+    name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1AMIRIS_WIND_GAS_stable_demand"
     #name = "NL2041_SD4_PH3_MI10000_totalProfits_future1installed1AMIRISOPEX_noImports"
     #name = "DE2050_SD4_PH3_MI10000000_totalProfits_-extended_fixPrices2020"
     existing_scenario = True
@@ -1730,10 +1738,10 @@ try:
     capacity_mechanisms = False
     calculate_vres_support = False
     save_excel = False
-    test_tick = 0
+    test_tick = 12
     #test_tech = "Fuel oil PGT"
-    test_tech = "CCGT"
-    #test_tech = "WTG_offshore"
+    test_tech = "OCGT"
+    test_tech = "WTG_offshore"
     #test_tech = "Biomass_CHP_wood_pellets_DH"
     #test_tech = None
     if name == "":
