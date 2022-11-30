@@ -40,9 +40,8 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     ax1.set_ylabel('NPV [Eur/MW] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per MW per iterations for future year ' + str(future_year))
-
-    #ax2.set_ylim(bottom=5)  # void showing zero investments
-
+    ax1.set_ylim(bottom=0)
+    ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
                bbox_to_anchor=(1.2, 1.1))
     ax2.legend(installed_capacity_per_iteration.columns.values.tolist(), fontsize='medium', loc='upper left',
@@ -86,7 +85,7 @@ def plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, t
 
 
 def plot_investments(annual_installed_capacity, annual_commissioned, annual_decommissioned_capacity,
-                     path_to_plots, colors):
+                     path_to_plots, colors, scenario_name):
     print('Capacity Investments plot')
     fig6, axs6 = plt.subplots(3, 1)
     fig6.tight_layout()
@@ -104,8 +103,8 @@ def plot_investments(annual_installed_capacity, annual_commissioned, annual_deco
     axs6[0].set_ylabel('In pipeline MW', fontsize='small')
     axs6[1].set_ylabel('Commissioned MW', fontsize='small')
     axs6[2].set_ylabel('Decommissioned MW', fontsize='small')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
-    axs6[0].set_title('Investments by decision year (up) and by commissioning year (down) Maximum ' +
+    #plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
+    axs6[0].set_title(scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
                       str(reps.maximum_investment_capacity_per_year / 1000) + 'GW')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
@@ -398,19 +397,19 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, test_tech, path_to_p
                   dpi=300)
     plt.close('all')
 
-def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors):
+def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors, scenario_name):
     print('plotting installed Capacity per technology ')
     installed_capacity = all_techs_capacity.loc[years_to_generate_and_build]
     all_techs_capacity_nozeroes = installed_capacity[installed_capacity>0]
     all_techs_capacity_nozeroes.dropna(how='all', axis =1 , inplace=True)
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
-    axs17 = all_techs_capacity_nozeroes.plot.area(color=colors)
+    axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None)
     axs17.set_axisbelow(True)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [MW]', fontsize='medium')
     #plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs17.set_title('Installed S'  )
-    plt.legend(fontsize='large')
+    axs17.set_title(scenario_name + "\n Installed Capacity " )
+    #plt.legend(fontsize='large')
     plt.grid()
     fig17 = axs17.get_figure()
     fig17.savefig(path_to_plots + '/' + 'Annual installed Capacity per technology.png', bbox_inches='tight', dpi=300)
@@ -438,7 +437,7 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
     fig24.savefig(path_to_plots + '/' + 'Full load hours.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
-def plot_annual_generation(all_techs_generation, path_to_plots, technology_colors):
+def plot_annual_generation(all_techs_generation, path_to_plots, technology_colors, scenario_name):
     all_techs_generation_nozeroes = all_techs_generation[all_techs_generation>0]
     all_techs_generation_nozeroes.dropna(how='all', axis =1, inplace=True)
     colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
@@ -448,7 +447,7 @@ def plot_annual_generation(all_techs_generation, path_to_plots, technology_color
     plt.ylabel('Annual Generation [MWh]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    #axs18.set_title('Annual Generation')
+    axs18.set_title(scenario_name +' \n Annual Generation')
     fig18 = axs18.get_figure()
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -918,6 +917,8 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
                     index_invested_iteration, reps.candidatePowerPlants[invest_name].technology.name] = \
                     reps.candidatePowerPlants[invest_name].capacityTobeInstalled
 
+
+    installed_capacity_per_iteration.replace(to_replace=0, value=np.nan, inplace=True)
     return installed_capacity_per_iteration, candidate_plants_project_value_perMW
 
 
@@ -1357,7 +1358,7 @@ def calculating_RES_support(reps, years_to_generate):
     yearly_vres_support.fillna(0, inplace= True)
     return yearly_vres_support
 
-def reading_electricity_prices(reps, existing_scenario, folder_name, name):
+def reading_electricity_prices(reps, existing_scenario, folder_name, scenario_name):
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))
     yearly_electricity_prices = pd.DataFrame()
     TotalAwardedPowerInMW = pd.DataFrame()
@@ -1365,7 +1366,7 @@ def reading_electricity_prices(reps, existing_scenario, folder_name, name):
     residual_load = pd.DataFrame()
     for year in years_to_generate:
         if existing_scenario == True:
-            year_excel =  globalNames.scenarios_path +  name + "\\"  +  str(year) + ".xlsx"
+            year_excel =  globalNames.scenarios_path +  scenario_name + "\\"  +  str(year) + ".xlsx"
         else:
             year_excel = folder_name + str(year) + ".xlsx"
         df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load"])
@@ -1438,7 +1439,8 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
 
     return shortage_hours, supply_ratio, ENS_in_simulated_years, simple_electricity_prices_average
 
-def generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW, test_tick, test_tech, calculate_capacity_mechanisms, calculate_vres_support, save_excel, name):
+def generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW, test_tick, test_tech,
+                   calculate_capacity_mechanisms, calculate_vres_support, save_excel, scenario_name):
     print("Databases read")
     unique_technologies = reps.get_unique_technologies_names()
     renewable_technologies = ["Biomass_CHP_wood_pellets_DH", "Hydropower_reservoir_medium", "PV_utility_systems",
@@ -1484,7 +1486,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor.T, all_techs_full_load_hours.T, path_to_plots, colors_unique_techs)
     plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
     plot_yearly_average_electricity_prices_and_RES_share(average_electricity_price, share_RES, path_to_plots)
-    plot_annual_generation(all_techs_generation.T, path_to_plots, technology_colors)
+    plot_annual_generation(all_techs_generation.T, path_to_plots, technology_colors, scenario_name)
 
     #section ---------------------------------------------------------------Cash energy producer
     cash_flows_energy_producer, cost_recovery, cumulative_cost_recovery, new_plants_loans = prepare_cash_per_agent(reps,
@@ -1500,9 +1502,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
 
     plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
-                     path_to_plots,
-                     colors_unique_techs)
-    plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors)
+                     path_to_plots, colors_unique_techs, scenario_name)
+    plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors, scenario_name)
     power_plants_status(number_per_status, path_to_plots)
     power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
@@ -1582,7 +1583,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 plot_costs_to_society(average_electricity_price,  path_to_plots)
                 plot_average_and_weighted(average_electricity_price, simple_electricity_prices_average,  path_to_plots)
 
-    # #  section -----------------------------------------------------------------------------------------------revenues per iteration
+    # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
     yearly_costs = prepare_screening_curves(reps, test_year)
     yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
@@ -1594,8 +1595,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     #plot_IEWT(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors)
     # section -----------------------------------------------------------------------------------------------Write Excel
     if save_excel == True:
-        splitname = name.split("-")
-        new_Scenario_name =splitname[1]
         path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", "ResultsNL-case-study.xlsx")
         CostRecovery_data = pd.read_excel(path_to_results, sheet_name='CostRecovery', index_col=0)
         LOL_data = pd.read_excel(path_to_results, sheet_name='LOL', index_col=0)
@@ -1609,17 +1608,17 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price', index_col=0)
         total_costs_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_total_costs', index_col=0)
 
-        CostRecovery_data[new_Scenario_name] = cost_recovery
-        LOL_data[new_Scenario_name] =shortages
-        SupplyRatio_data[new_Scenario_name] =supply_ratio
-        ElectricityPrices_data[new_Scenario_name] =average_electricity_price["wholesale price"]
-        ENS_data[new_Scenario_name] = ENS_in_simulated_years
-        ShareRES_data[new_Scenario_name] = share_RES
-        CM_data[new_Scenario_name] =  average_electricity_price['CapacityMarket']
-        VRES_data[new_Scenario_name] = average_electricity_price['VRES support']
-        last_year_operational_capacity_data[new_Scenario_name] = all_techs_capacity.loc[2049].T
-        clearing_price_capacity_market_data[new_Scenario_name] = CM_clearing_price
-        total_costs_capacity_market_data[new_Scenario_name] = total_costs_CM
+        CostRecovery_data[scenario_name] = cost_recovery
+        LOL_data[scenario_name] =shortages
+        SupplyRatio_data[scenario_name] =supply_ratio
+        ElectricityPrices_data[scenario_name] =average_electricity_price["wholesale price"]
+        ENS_data[scenario_name] = ENS_in_simulated_years
+        ShareRES_data[scenario_name] = share_RES
+        CM_data[scenario_name] =  average_electricity_price['CapacityMarket']
+        VRES_data[scenario_name] = average_electricity_price['VRES support']
+        last_year_operational_capacity_data[scenario_name] = all_techs_capacity.loc[2049].T
+        clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
+        total_costs_capacity_market_data[scenario_name] = total_costs_CM
 
         with pd.ExcelWriter(path_to_results,
                             mode="a",
@@ -1730,7 +1729,8 @@ SpecificCo2EmissionsInTperMWH = {
 }
 try:
     # write the name of the existing scenario or the new scenario
-    name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1AMIRIS_WIND_GAS_stable_demand"
+    scenario_name = "-newGrouped_WIND_GAS_BIO_stableCO2"
+    scenario_name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_WIND_GAS_BIO_CO2Increase"
     #name = "NL2041_SD4_PH3_MI10000_totalProfits_future1installed1AMIRISOPEX_noImports"
     #name = "DE2050_SD4_PH3_MI10000000_totalProfits_-extended_fixPrices2020"
     existing_scenario = True
@@ -1738,14 +1738,15 @@ try:
     capacity_mechanisms = False
     calculate_vres_support = False
     save_excel = False
-    test_tick = 12
+    test_tick = 19
     #test_tech = "Fuel oil PGT"
     test_tech = "OCGT"
     test_tech = "WTG_offshore"
     #test_tech = "Biomass_CHP_wood_pellets_DH"
     #test_tech = None
-    if name == "":
+    if scenario_name == "":
         raise Exception("Name needed")
+
 
     if electricity_prices == False:
         electricity_prices = None  # dont read if not necessary
@@ -1753,7 +1754,7 @@ try:
         TotalAwardedPowerInMW = None
 
     if existing_scenario == False:
-        print("Plots for NEW scenario  " + name)
+        print("Plots for NEW scenario  " + scenario_name)
         # if there is no scenario available
         emlab_url = sys.argv[1]
         amiris_url = sys.argv[2]
@@ -1761,41 +1762,45 @@ try:
         spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
         reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 
-        complete_name = reps.country + str(reps.end_simulation_year) \
+        pre_name = reps.country + str(reps.end_simulation_year) \
                         + "_SD" + str(reps.start_year_dismantling) \
                         + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                         + "_" + reps.typeofProfitforPastHorizon + "_"
         if reps.realistic_candidate_capacities_for_future == True:
-            complete_name = complete_name + "future1"
+            pre_name = pre_name + "future1"
         if reps.realistic_candidate_capacities_tobe_installed == True:
-            complete_name = complete_name + "installed1"
-        name = complete_name + name
+            pre_name = pre_name + "installed1"
+        complete_name = pre_name + scenario_name
 
         if electricity_prices == True:
             electricity_prices, residual_load, TotalAwardedPowerInMW = reading_electricity_prices(reps, existing_scenario,
                                                                            globalNames.amiris_ouput_path, "none")
 
     elif existing_scenario == True:
-        print("Plots for EXISTING scenario " + name)
+        print("Plots for EXISTING scenario " + scenario_name)
         first = "sqlite:///" + globalNames.scenarios_path
         emlab_sql = "\\EmlabDB.sqlite"
         amiris_sql = "\\AMIRIS db.sqlite"
         energy_exchange_url_sql = "\\energy exchange.sqlite"
-        emlab_url = first + name + emlab_sql
-        amiris_url = first + name + amiris_sql
+        emlab_url = first + scenario_name + emlab_sql
+        amiris_url = first + scenario_name + amiris_sql
 
         spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
         reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
-        folder_name = first + name
+        folder_name = first + scenario_name
         if electricity_prices == True:
-            electricity_prices, residual_load , TotalAwardedPowerInMW = reading_electricity_prices(reps, existing_scenario, "none", name)
+            electricity_prices, residual_load , TotalAwardedPowerInMW = reading_electricity_prices(reps, existing_scenario, "none", scenario_name)
+        complete_name = scenario_name
+        splitname = complete_name.split("-")
+        scenario_name =splitname[1]
 
     for p, power_plant in reps.power_plants.items():
         power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
     print(" test_tick " + str(test_tick) + " " + str(test_tech))
     print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_year_dismantling) +"_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
-    path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", name)
+    path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", complete_name)
+
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
     #plot_initial_power_plants(path_to_plots, "superGroupedNL") # other options are "extendedDE" extendedNL, groupedNL, groupedNLprePP
@@ -1809,7 +1814,8 @@ try:
     if reps.yearly_CO2_prices == True:
         print("yearly CO2 prices")
 
-    generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,  test_tick, test_tech, capacity_mechanisms, calculate_vres_support, save_excel, name)
+    generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,  test_tick, test_tech,
+                   capacity_mechanisms, calculate_vres_support, save_excel, scenario_name)
 
 except Exception as e:
     logging.error('Exception occurred: ' + str(e))
