@@ -795,11 +795,11 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
-    # if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
-    #     years_to_generate_and_build = list(
-    #     range(2013, reps.current_year + 1 + reps.max_permit_build_time))
-    # else:
-    #     pass
+    if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
+        years_to_generate_and_build = list(
+        range(2013, reps.current_year + 1 + reps.max_permit_build_time))
+    else:
+        pass
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
@@ -1446,7 +1446,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     renewable_technologies = ["Biomass_CHP_wood_pellets_DH", "Hydropower_reservoir_medium", "PV_utility_systems",
                               "WTG_onshore", "WTG_offshore", "Hydropower_ROR"]
     unique_candidate_power_plants = reps.get_unique_candidate_technologies_names()
-    # # attention: erase this
+    # attention: erase this
     # reps.start_simulation_year = 2023
     start_tick = 0
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
@@ -1595,7 +1595,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     #plot_IEWT(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors)
     # section -----------------------------------------------------------------------------------------------Write Excel
     if save_excel == True:
-        path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", "ResultsNL-case-study.xlsx")
+        path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", "ValidationNL.xlsx")
         CostRecovery_data = pd.read_excel(path_to_results, sheet_name='CostRecovery', index_col=0)
         LOL_data = pd.read_excel(path_to_results, sheet_name='LOL', index_col=0)
         ENS_data = pd.read_excel(path_to_results, sheet_name='ENS', index_col=0)
@@ -1605,7 +1605,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         VRES_data = pd.read_excel(path_to_results, sheet_name='VRES', index_col=0)
         ShareRES_data = pd.read_excel(path_to_results, sheet_name='ShareRES', index_col=0)
         last_year_operational_capacity_data = pd.read_excel(path_to_results, sheet_name='last_year_capacity', index_col=0)
-        clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price', index_col=0)
+        if calculate_capacity_mechanisms == True:
+            clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price', index_col=0)
         total_costs_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_total_costs', index_col=0)
 
         CostRecovery_data[scenario_name] = cost_recovery
@@ -1614,11 +1615,15 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         ElectricityPrices_data[scenario_name] =average_electricity_price["wholesale price"]
         ENS_data[scenario_name] = ENS_in_simulated_years
         ShareRES_data[scenario_name] = share_RES
-        CM_data[scenario_name] =  average_electricity_price['CapacityMarket']
-        VRES_data[scenario_name] = average_electricity_price['VRES support']
-        last_year_operational_capacity_data[scenario_name] = all_techs_capacity.loc[2049].T
-        clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
-        total_costs_capacity_market_data[scenario_name] = total_costs_CM
+        if calculate_capacity_mechanisms == True:
+            CM_data[scenario_name] =  average_electricity_price['CapacityMarket']
+            clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
+            total_costs_capacity_market_data[scenario_name] = total_costs_CM
+        if calculate_vres_support == True:
+            VRES_data[scenario_name] = average_electricity_price['VRES support']
+        last_year_operational_capacity_data[scenario_name] = all_techs_capacity.loc[years_to_generate[-1]].T
+        print("last year " + str(years_to_generate[-1]))
+
 
         with pd.ExcelWriter(path_to_results,
                             mode="a",
@@ -1630,12 +1635,15 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             ENS_data.to_excel(writer, sheet_name='ENS')
             SupplyRatio_data.to_excel(writer, sheet_name='SupplyRatio')
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
-            CM_data.to_excel(writer, sheet_name='CM')
-            VRES_data.to_excel(writer, sheet_name='VRES')
+            if calculate_capacity_mechanisms == True:
+                CM_data.to_excel(writer, sheet_name='CM')
+                clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
+                total_costs_capacity_market_data.to_excel(writer, sheet_name='CM_total_costs')
+            if calculate_vres_support == True:
+                VRES_data.to_excel(writer, sheet_name='VRES')
             ShareRES_data.to_excel(writer, sheet_name='ShareRES')
             last_year_operational_capacity_data.to_excel(writer, sheet_name='last_year_capacity')
-            clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
-            total_costs_capacity_market_data.to_excel(writer, sheet_name='CM_total_costs')
+
         writer.save()
 
     #section -----------------------------------------------------------------------------------------------Capacity Markets
@@ -1731,17 +1739,17 @@ try:
     # write the name of the existing scenario or the new scenario
     scenario_name = "-newGrouped_WIND_GAS_BIO_stableCO2"
     scenario_name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_WIND_GAS_BIO_CO2Increase"
-    #name = "NL2041_SD4_PH3_MI10000_totalProfits_future1installed1AMIRISOPEX_noImports"
-    #name = "DE2050_SD4_PH3_MI10000000_totalProfits_-extended_fixPrices2020"
-    existing_scenario = True
+    scenario_name = "NL2031_SD4_PH3_MI10000_totalProfits_future1installed1-AMIRIS_OPEX_no_imports"
+    scenario_name = "-newGrouped_WIND_GAS_BIO_doubleCO2_increasingfuels"
+    existing_scenario = False
     electricity_prices = True  # write False if not wished to graph electricity prices"
     capacity_mechanisms = False
     calculate_vres_support = False
-    save_excel = False
-    test_tick = 19
+    save_excel = True
+    test_tick = 3
     #test_tech = "Fuel oil PGT"
     test_tech = "OCGT"
-    test_tech = "WTG_offshore"
+    # test_tech = "WTG_offshore"
     #test_tech = "Biomass_CHP_wood_pellets_DH"
     #test_tech = None
     if scenario_name == "":
@@ -1803,16 +1811,21 @@ try:
 
     if not os.path.exists(path_to_plots):
         os.makedirs(path_to_plots)
-    #plot_initial_power_plants(path_to_plots, "superGroupedNL") # other options are "extendedDE" extendedNL, groupedNL, groupedNLprePP
-
-    if reps.writeALLcostsinOPEX ==True:
-        print("all costs in Opex")
+    #plot_initial_power_plants(path_to_plots, "groupedNL") # other options are "extendedDE" extendedNL, groupedNL, groupedNLprePP
+    file = open(path_to_plots + "/info.txt","w")
     if reps.fix_prices_to_2020 ==True:
         print("fix_prices_to_2020" )
+        file.write("fix_prices_to_2020 \n")
     if reps.fix_prices_to_2030 == True:
-        print("fix_prices_to_2020" )
+        print("fix_prices_to_2030" )
+        file.write("fix_prices_to_2030 \n")
     if reps.yearly_CO2_prices == True:
         print("yearly CO2 prices")
+        file.write("yearly_CO2_prices \n")
+    for candidate in reps.candidatePowerPlants.values():
+        print(candidate.name + " " + candidate.technology.name +" Tested: "  + str(candidate.capacity) + " and to be installed: " + str(candidate.capacityTobeInstalled) + "\n" )
+        file.write(candidate.name + " " + candidate.technology.name +" Tested: "  + str(candidate.capacity) + " and to be installed: " + str(candidate.capacityTobeInstalled) + "\n" )
+    file.close()
 
     generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,  test_tick, test_tech,
                    capacity_mechanisms, calculate_vres_support, save_excel, scenario_name)
