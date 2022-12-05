@@ -62,6 +62,7 @@ class SpineDBReaderWriter:
         reps.dbrw = self
         self.stage_init_alternative("0")
 
+
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
@@ -87,10 +88,10 @@ class SpineDBReaderWriter:
 
             elif row['parameter_name'] == 'short_term_investment_minimal_irr':
                 reps.short_term_investment_minimal_irr = row['parameter_value']
-            elif row['parameter_name'] == 'start_year_fuel_trends':
-                reps.start_year_fuel_trends = int(row['parameter_value'])
-            elif row['parameter_name'] == 'start_year_dismantling':
-                reps.start_year_dismantling = int(row['parameter_value'])
+            elif row['parameter_name'] == 'start_tick_fuel_trends':
+                reps.start_tick_fuel_trends = int(row['parameter_value'])
+            elif row['parameter_name'] == 'start_tick_dismantling':
+                reps.start_tick_dismantling = int(row['parameter_value'])
             elif row['parameter_name'] == 'maximum_investment_capacity_per_year':
                 reps.maximum_investment_capacity_per_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'typeofProfitforPastHorizon':
@@ -117,6 +118,15 @@ class SpineDBReaderWriter:
                 reps.writeALLcostsinOPEX = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_demand_to_initial_year':
                 reps.fix_demand_to_initial_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'Power_plants_from_year':
+                reps.Power_plants_from_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'install_at_look_ahead_year':
+                reps.install_at_look_ahead_year = bool(row['parameter_value'])
+
+
+        # these are the years that need to be added to the power plants on the first simulation tick
+        reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
+
         print("-----------------------------------------------------------" + str(reps.current_tick))
         reps.dictionaryFuelNames = {i['parameter_name']: i['parameter_value'] for i
                                     in
@@ -374,10 +384,10 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.investment_decisions_classname, [year_iteration])
 
     def stage_investment_decisions(self, Candidatenumber, power_plant_id, iteration, futureYear, tick):
-        year_iteration = str(futureYear) + "-" + str(iteration)
+        year_and_iteration = str(futureYear) + "-" + str(iteration)
         self.stage_object(self.investment_decisions_classname, Candidatenumber)
         self.stage_object_parameter_values(self.investment_decisions_classname, Candidatenumber,
-                                           [(year_iteration, power_plant_id)], str(tick))
+                                           [(year_and_iteration, power_plant_id)], str(tick))
 
     def stage_init_future_operational_profits(self):
         self.stage_object_class(self.powerplantprofits_classname)
@@ -700,7 +710,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     # Ignore decommissioned power plants # todo: this anyways shouldnt be imported
     # reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in }
     elif object_class_name == 'PowerPlantsInstalled':
-
         if reps.runningModule == "plotting":
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
         else:

@@ -106,7 +106,7 @@ try:  # Try statement to always close DB properly
         # adding id to candidate power plants. Add 9999 at the beginning, to distinguish from installed power plants
 
         for pp in reps.power_plants.values():
-            if int(pp.name) > 1000:
+            if pp.is_new_installed():
                 raise Exception("there are installed power plants, clean DB")
 
         pp_counter = 0

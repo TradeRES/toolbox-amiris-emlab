@@ -24,6 +24,7 @@ class Dismantle(DefaultModule):
         else:
             self.add_one_year_to_age() # add one year to the age of power plants
         self.set_powerplants_status()  # set status according to operational time
+
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
@@ -31,7 +32,7 @@ class Dismantle(DefaultModule):
     def check_ids(self, reps):
         # this was added for debugging. The ids were different possibly because of not cleaning the DB at start
         for pp in reps.power_plants.values():
-            if int(pp.name) > 1000:
+            if pp.is_new_installed():
                 if pp.id != int(pp.name):
                     raise Exception("there is something wrong here Id " + str(pp.id) +" Name " + str(pp.name))
 
@@ -55,7 +56,7 @@ class Dismantle(DefaultModule):
             # TODO is the power plant subsidized ? then dismantle
 
 
-            if self.reps.current_tick >= self.reps.start_year_dismantling:
+            if self.reps.current_tick >= self.reps.start_tick_dismantling:
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
                 if profit <= requiredProfit:
                     #print(plant.name + " " + str(profit))

@@ -50,8 +50,8 @@ class Repository:
         self.pastTimeHorizon = 0
         self.current_year = 0
         self.simulation_length = 0
-        self.start_year_fuel_trends = 0
-        self.start_year_dismantling = 0
+        self.start_tick_fuel_trends = 0
+        self.start_tick_dismantling = 0
         self.investmentIteration = 0
         self.maximum_investment_capacity_per_year = 0
         self.typeofProfitforPastHorizon = ""
@@ -67,6 +67,9 @@ class Repository:
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = True
         self.fix_demand_to_initial_year = False
+        self.Power_plants_from_year = 2019
+        self.install_at_look_ahead_year = True
+
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

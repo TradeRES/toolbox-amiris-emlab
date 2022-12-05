@@ -67,7 +67,7 @@ class Substance(ImportObject):
             self.newSimulatedPrice = self.all_years_CO2_price[year]
             return self.newSimulatedPrice
 
-        elif tick < reps.start_year_fuel_trends:
+        elif tick < reps.start_tick_fuel_trends:
             # electricity is also considered as a fuel. Input
             xp = [2020, 2050]
             fp = [substance.initialprice2020, substance.initialprice2050]
@@ -103,7 +103,7 @@ class Substance(ImportObject):
         #     self.newFuturePrice = np.interp(futureYear, xp, fp)
         #     return self.newFuturePrice
 
-        elif reps.current_tick >= reps.start_year_fuel_trends:
+        elif reps.current_tick >= reps.start_tick_fuel_trends:
             self.initializeGeometricTrendRegression(reps, substance)
             self.newFuturePrice = self.geometricRegression.predict(futureYear)
             return self.newFuturePrice

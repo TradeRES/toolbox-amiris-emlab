@@ -64,13 +64,20 @@ class CandidatePowerPlant(PowerPlant):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
-        self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+        if self.reps.install_at_look_ahead_year ==True:
+            self.setExpectedEndOfLife(tick + self.reps.lookAhead + self.getTechnology().getExpectedLifetime())
+        else:
+            self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         return self
 
     def setConstructionStartTime(self):
-        self.constructionStartTime = - (self.technology.expected_leadtime +
+        if self.reps.install_at_look_ahead_year ==True:
+            self.constructionStartTime = - (self.reps.lookAhead +
+                                            self.technology.expected_lifetime)
+        else:
+            self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
-                                        round(random() * self.technology.expected_lifetime)) + 2
+                                        self.technology.expected_lifetime)
 
 
     def setViableInvestment(self, viableInvestment):

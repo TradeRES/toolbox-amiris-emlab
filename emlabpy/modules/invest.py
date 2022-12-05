@@ -130,6 +130,7 @@ class Investmentdecision(DefaultModule):
 
                 if bestCandidatePowerPlant is not None:
                     # investing in best candidate power plant as it passed the checks.
+                    print("investing in " + bestCandidatePowerPlant.technology.name)
                     newplant = self.invest(bestCandidatePowerPlant, False)
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_loans(newplant)
@@ -164,7 +165,10 @@ class Investmentdecision(DefaultModule):
             print("agent is not longer willing to invest")  # This is not enabled for not
 
     def invest(self, bestCandidatePowerPlant, target_invest):
-        commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
+        if self.reps.install_at_look_ahead_year == True:
+            commissionedYear = self.reps.current_year + self.reps.lookAhead
+        else:
+            commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
         if target_invest == False:
             newid = (int(str(commissionedYear) +
                          str("{:02d}".format(
@@ -181,10 +185,14 @@ class Investmentdecision(DefaultModule):
         self.new_id += 1
         newplant = PowerPlant(newid)
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
+        if self.reps.install_at_look_ahead_year == True:
+            age = - self.reps.lookAhead
+        else:
+            age = - bestCandidatePowerPlant.technology.getExpectedLeadtime() - bestCandidatePowerPlant.technology.getExpectedPermittime()
         newplant.specifyPowerPlantforInvest(self.reps.current_tick, self.reps.current_year, self.agent,
                                             self.reps.country,
                                             bestCandidatePowerPlant.capacityTobeInstalled,
-                                            bestCandidatePowerPlant.technology)
+                                            bestCandidatePowerPlant.technology, age)
 
         print("{0} invests in technology {1} at tick {2}, with id{3}".format(self.agent.name,
                                                                              bestCandidatePowerPlant.technology.name,
@@ -381,7 +389,7 @@ class Investmentdecision(DefaultModule):
                 number_new_powerplants = math.floor(installedCapacityDeviation / bestCandidatePowerPlant.capacity)
                 remainder = installedCapacityDeviation % bestCandidatePowerPlant.capacity
                 for i in range(number_new_powerplants):
-                    print("investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity) )
+                    print("Target investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity) )
                     if i == number_new_powerplants -1 :
                         bestCandidatePowerPlant.capacity += remainder
                     else:

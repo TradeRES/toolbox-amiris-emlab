@@ -9,7 +9,9 @@ class InvestmentDecisions(ImportObject):
     def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
         """"
         object name = candidate technology
-        In the DB objectname = str(futureYear) + "-" + str(iteration)
+        In the DB:
+        objectname = str(futureYear) + "-" + str(iteration)
+        alternative = year when decision was made
         This function is being read for the plotting. The investment decisions are saved in the invest module
         """
         future_year, iteration = parameter_name.split('-')
