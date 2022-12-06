@@ -548,7 +548,7 @@ class SpineDBReaderWriter:
                                            ],
                                            '0')
 
-    # todo this could also be read as all other functions
+    # todo this could also be read as all other functions but then it would be read in each step.
     def findFinancialValueForPlant(self, powerplant, value):
         financialresults = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
             self.financial_reports_object_classname, powerplant.name, value, 0)

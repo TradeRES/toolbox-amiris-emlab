@@ -82,13 +82,18 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.lookAhead
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
-                if self.reps.current_tick >= self.reps.start_tick_dismantling :
+                # the decommission forecast starts one year before, there is already data
+                # in reality the profit is delayed. The average profits for years 2020 - 2022 is considered for dismantling in 2022 + look ahead
+                # by 2022 there is already data, no need to wait till 2023
+                if self.reps.current_tick >= self.reps.start_tick_dismantling - 1 :
                     # calculate the past operating profit
                     profit = self.calculateAveragePastOperatingProfit(powerplant, horizon)
 
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.status = globalNames.power_plant_status_decommissioned
+                        print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                              .format(powerplant.name, horizon,  profit, requiredProfit))
                     else:
                         powerplant.fictional_status = globalNames.power_plant_status_operational
                         self.power_plants_list.append(powerplant)
@@ -145,13 +150,14 @@ class PrepareFutureMarketClearing(PrepareMarket):
         rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
         if rep is not None:
             # if there is data than the one needed for the horizon then an average of those years are taken
-            if self.reps.current_tick >= horizon:
+            if self.reps.current_tick >= horizon -1:
                 past_operating_profit_all_years = pd.Series(dict(rep["data"]))
-                # before year 4 there is no dismantling considered.
-                # in year 4 it looks for profits from tick  1 to tick 4
-                # but the dismantling in tick 8 (when the plants should be installed) there are more plants installed
+                # before year 3 there is no dismantling considered.
+                # in year 3 it looks for profits from tick  0 to tick 3
+                # but the dismantling in tick 7 (when the plants should be installed) there are more plants installed
+                # the ignored decomission in years 2024, 2025 made the plant more profitable and not to be dismantled
                 # also it looks for the profits from tick 5 to tick 8. So the profits are different
-                indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
+                indices = list(range(self.reps.current_tick - horizon + 1, self.reps.current_tick + 1))
                 past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
                 averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
             else:  # Attention for now, for the first years the availble past data is taken

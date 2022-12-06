@@ -204,13 +204,20 @@ try:
             #spinetoolbox dont advance for last tick
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
+                # updating file to stop simulation.
                 update_years_file(updated_year, StartYear, final_year,
-                                  lookAhead)  # need to update the file to make the loop stop
+                                  lookAhead)
+                # todo need to update the file to make the loop stop
+                # db_emlab.import_object_parameter_values(
+                #     [(class_name, object_name, object_parameter_value_name, new_tick, '0')])
+                # db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
+                # db_emlab.commit('Clock increment')
+
             else:
+                update_years_file(updated_year, StartYear, final_year, lookAhead)
                 db_emlab.import_object_parameter_values(
                     [(class_name, object_name, object_parameter_value_name, new_tick, '0')])
                 db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
-                update_years_file(updated_year, StartYear, final_year, lookAhead)
                 db_emlab.commit('Clock increment')
                 print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
 

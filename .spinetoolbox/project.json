@@ -327,17 +327,6 @@
                 ]
             },
             {
-                "name": "from import AMIRIS to AMIRIS DB",
-                "from": [
-                    "import AMIRIS",
-                    "right"
-                ],
-                "to": [
-                    "AMIRIS DB",
-                    "left"
-                ]
-            },
-            {
                 "name": "from power plants importer to EmlabDB",
                 "from": [
                     "power plants importer",
@@ -521,6 +510,17 @@
                 ],
                 "to": [
                     "Financial Results",
+                    "left"
+                ]
+            },
+            {
+                "name": "from import AMIRIS to AMIRIS DB",
+                "from": [
+                    "import AMIRIS",
+                    "right"
+                ],
+                "to": [
+                    "AMIRIS DB",
                     "left"
                 ]
             }
@@ -761,8 +761,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -50.099408796610554,
-            "y": -303.9211541253427,
+            "x": -50.09940879661055,
+            "y": -301.7708709320518,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
