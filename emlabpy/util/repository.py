@@ -196,13 +196,12 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_operational_profits_candidate_pp(self, plant_name, test_tech):
+    def get_operational_profits_pp(self, plant_name):
         try:  # this is only to compare with expected value In reality fixed costs are increased each year by eg .001
             return next(
-                i.totalProfits + (
-                            self.power_generating_technologies[test_tech].fixed_operating_costs * self.power_plants[
-                        plant_name].capacity) for i in
+                i.spotMarketRevenue - i.variableCosts for i in
                 self.financialPowerPlantReports.values() if i.name == plant_name)
+                #+ (self.power_generating_technologies[test_tech].fixed_operating_costs * self.power_plants[plant_name].capacity)
         except StopIteration:
             return None
 
@@ -415,11 +414,6 @@ class Repository:
         return sum(
             [i.capacity for i in self.power_plants.values() if i.status == globalNames.power_plant_status_inPipeline])
 
-    def findPowerGeneratingTechnologyTargetByTechnology(self, technology):
-        for i in self.target_investors.values():
-            if i.targetTechnology == technology.name and i.targetCountry == self.country:
-                return i
-
     def findPowerGeneratingTechnologyTargetByTechnologyandyear(self, technology, year):
         try:
             from_year = self.start_simulation_year
@@ -434,11 +428,11 @@ class Repository:
     def findTargetInvestorByCountry(self, country):
         return [i for i in self.target_investors.values() if i.targetCountry == country]
 
-    def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
-        return [i for i in self.power_plants if i.getConstructionStartTime() == tick]
+    # def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
+    #     return [i for i in self.power_plants if i.getConstructionStartTime() == tick]
 
-    def findAllPowerPlantsWhichAreNotDismantledBeforeTick(self, tick):
-        return [i for i in self.power_plants.values() if i.isWithinTechnicalLifetime(tick)]
+    # def findAllPowerPlantsWhichAreNotDismantledBeforeTick(self, tick):
+    #     return [i for i in self.power_plants.values() if i.isWithinTechnicalLifetime(tick)]
 
     def get_operational_power_plants_by_owner(self, owner: EnergyProducer) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

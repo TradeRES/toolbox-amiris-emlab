@@ -14,7 +14,8 @@ import numpy as np
 class PowerPlant(EMLabAgent):
     def __init__(self, name):
         super().__init__(name)
-        self.name = name
+
+        self.name = name # power plants that have a name/number higher than 1000
         self.id = 0
         self.technology = None
         self.location = ""
@@ -75,12 +76,19 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'Owner':
             self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
-            self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
-            if int(self.name) > 1000:
+            if reps.current_tick ==  0 and reps.runningModule == "run_decommission_module":
+               self.age = int(parameter_value) + reps.add_initial_age_years
+               self.commissionedYear = reps.current_year - int(parameter_value)  - reps.add_initial_age_years
+            else:
+                self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
+                self.commissionedYear = reps.current_year - int(parameter_value)
+
+            if self.is_new_installed() and reps.runningModule == "run_initialize_power_plants":
                 if self.age >  reps.current_tick:
                     raise Exception("age is higher than it should be " + str(self.id) +" Name " + str(self.name))
 
-            self.commissionedYear = reps.current_year - int(parameter_value)
+
+
            #  if int(self.name) > 10000:
            #      a = str(self.id)[0:4]
            #      self.commissionedYear = int(a)
@@ -126,8 +134,8 @@ class PowerPlant(EMLabAgent):
 
     def calculate_fixed_operating_cost(self):
         per_mw = self.technology.get_fixed_operating_cost(self.constructionStartTime +
-                                                          int(self.technology.expected_leadtime) +
-                                                          int(self.technology.expected_permittime))
+                                                              int(self.technology.expected_leadtime) +
+                                                              int(self.technology.expected_permittime))
         capacity = self.get_actual_nominal_capacity()
         return per_mw * capacity
 
@@ -184,23 +192,26 @@ class PowerPlant(EMLabAgent):
         self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
     # createPowerPlant from target investment or from investment algorithm chosen power plant
-    def specifyPowerPlantforInvest(self, tick, year, energyProducer, location, capacity, pgt):
+    def specifyPowerPlantforInvest(self, reps,  energyProducer,  capacity, pgt):
         self.dischargingEfficiency = 0
         self.setCapacity(capacity)
         self.setTechnology(pgt)
         self.setOwner(energyProducer)
-        self.setLocation(location)
+        self.setLocation(reps.country)
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
-        self.commissionedYear = year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
-        self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
-        self.constructionStartTime = tick
+        if reps.install_at_look_ahead_year == True:
+            self.age = -  reps.lookAhead
+            self.commissionedYear = reps.current_year + reps.lookAhead
+        else:
+            self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
+            self.commissionedYear = reps.current_year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
+        self.setExpectedEndOfLife(
+            reps.current_tick + self.getTechnology().getExpectedLifetime() - self.age)
+        self.constructionStartTime = reps.current_tick
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         self.calculateAndSetActualFixedOperatingCosts()
         self.calculateAndSetActualInvestedCapital(self.getConstructionStartTime())
-        #self.setDismantleTime(1000) # put very high so that its not considered to be dismantled?
-        self.setExpectedEndOfLife(
-            tick + self.getTechnology().getExpectedLifetime() - self.age)
         self.status = globalNames.power_plant_status_inPipeline
 
     def set_loans_installed_pp(self, reps):
@@ -258,22 +269,6 @@ class PowerPlant(EMLabAgent):
         else:
             return False
 
-    # def isOperational(self, currentTick):
-    #     finishedConstruction = self.getConstructionStartTime() + self.calculateActualPermittime() + self.calculateActualLeadtime()
-    #     if finishedConstruction <= currentTick:
-    #         # finished construction
-    #         if self.getDismantleTime() == 1000:
-    #             # No dismantletime set, therefore must be not yet dismantled.
-    #             return True
-    #         elif self.getDismantleTime() > currentTick:
-    #             # Dismantle time set, but not yet reached
-    #             return True
-    #         elif self.getDismantleTime() <= currentTick:
-    #             # Dismantle time passed so not operational
-    #             return False
-    #     # Construction not yet finished.
-    #     return False
-
     def isExpectedToBeOperational(self, futuretick, futureyear):
         # if the plants commissioned year is less than the future tick,
         # then passes from in pipeline to operational
@@ -306,14 +301,14 @@ class PowerPlant(EMLabAgent):
             actual = self.technology.expected_lifetime
         return actual
 
-    def isWithinTechnicalLifetime(self, currentTick):
-        endOfTechnicalLifetime = self.constructionStartTime + \
-                                 self.actualPermittime + \
-                                 self.actualLeadtime + \
-                                 self.age
-        if endOfTechnicalLifetime <= currentTick:
-            return False
-        return True
+    # def isWithinTechnicalLifetime(self, currentTick):
+    #     endOfTechnicalLifetime = self.constructionStartTime + \
+    #                              self.actualPermittime + \
+    #                              self.actualLeadtime + \
+    #                              self.age
+    #     if endOfTechnicalLifetime <= currentTick:
+    #         return False
+    #     return True
 
     def calculateAndSetActualInvestedCapital(self, timeOfPermitorBuildingStart):
         self.setActualInvestedCapital(self.technology.getInvestmentCost(
@@ -375,6 +370,7 @@ class PowerPlant(EMLabAgent):
         self.capacity = capacity
 
     def setConstructionStartTime(self):  # in terms of tick
+        # construction start time doesnt change
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
                                         self.age)

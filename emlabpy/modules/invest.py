@@ -93,8 +93,7 @@ class Investmentdecision(DefaultModule):
                     cp_numbers.append(candidatepowerplant.name)
                     cp_profits.append(candidatepowerplant.operationalProfit)
                     # calculate which is the power plant (technology) with the highest NPV
-                    candidatepowerplant.specifyTemporaryPowerPlant(self.reps.current_year, self.agent,
-                                                                   self.reps.country)
+                    candidatepowerplant.specifyTemporaryPowerPlant(self.reps, self.agent )
                     investable  = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant
                                                                                  )
                     if investable == False:
@@ -185,14 +184,10 @@ class Investmentdecision(DefaultModule):
         self.new_id += 1
         newplant = PowerPlant(newid)
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
-        if self.reps.install_at_look_ahead_year == True:
-            age = - self.reps.lookAhead
-        else:
-            age = - bestCandidatePowerPlant.technology.getExpectedLeadtime() - bestCandidatePowerPlant.technology.getExpectedPermittime()
-        newplant.specifyPowerPlantforInvest(self.reps.current_tick, self.reps.current_year, self.agent,
-                                            self.reps.country,
+
+        newplant.specifyPowerPlantforInvest(self.reps,  self.agent,
                                             bestCandidatePowerPlant.capacityTobeInstalled,
-                                            bestCandidatePowerPlant.technology, age)
+                                            bestCandidatePowerPlant.technology)
 
         print("{0} invests in technology {1} at tick {2}, with id{3}".format(self.agent.name,
                                                                              bestCandidatePowerPlant.technology.name,

@@ -57,27 +57,23 @@ class CandidatePowerPlant(PowerPlant):
                 self.capacity = reps.dummy_capacity
 
 
-    def specifyTemporaryPowerPlant(self, tick, energyProducer, location):
+    def specifyTemporaryPowerPlant(self, reps, energyProducer ):
         self.setOwner(energyProducer)
-        self.setLocation(location)
+        self.setLocation(reps.country)
         self.setConstructionStartTime()
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
-        if self.reps.install_at_look_ahead_year ==True:
-            self.setExpectedEndOfLife(tick + self.reps.lookAhead + self.getTechnology().getExpectedLifetime())
+        if reps.install_at_look_ahead_year ==True:
+            self.setExpectedEndOfLife(reps.current_year + reps.lookAhead + self.getTechnology().getExpectedLifetime())
         else:
-            self.setExpectedEndOfLife(tick + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+            self.setExpectedEndOfLife(reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         return self
 
     def setConstructionStartTime(self):
-        if self.reps.install_at_look_ahead_year ==True:
-            self.constructionStartTime = - (self.reps.lookAhead +
-                                            self.technology.expected_lifetime)
-        else:
-            self.constructionStartTime = - (self.technology.expected_leadtime +
-                                        self.technology.expected_permittime +
-                                        self.technology.expected_lifetime)
+        self.constructionStartTime = - (self.technology.expected_leadtime +
+                                    self.technology.expected_permittime +
+                                    self.technology.expected_lifetime)
 
 
     def setViableInvestment(self, viableInvestment):

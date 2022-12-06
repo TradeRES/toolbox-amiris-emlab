@@ -171,11 +171,11 @@ def plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, test
                 test_tick) + "future " + str(future_year) + ' ' + test_tech + '.png',
             bbox_inches='tight', dpi=300)
 
-def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteration, profits_plants_commissioned_in_future_year, test_tech, path_to_plots, future_year,
+def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteration, operational_profits_commissioned, test_tech, path_to_plots, future_year,
                                                  test_tick):
     plt.figure()
     axs11 = candidates_profits_per_iteration.plot()
-    profits_plants_commissioned_in_future_year.plot(style=".", ax=axs11, label="REAL")
+    operational_profits_commissioned.plot(style=".", ax=axs11, label="REAL")
     for label in axs11.get_xticklabels(which='major'):
         label.set(rotation=30, horizontalalignment='right')
     axs11.set_axisbelow(True)
@@ -452,7 +452,7 @@ def plot_annual_generation(all_techs_generation, path_to_plots, technology_color
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
-def plot_supply_ratio(supply_ratio, residual_load, path_to_plots):
+def plot_supply_ratio(supply_ratio, residual_load,yearly_load, path_to_plots):
     print("load and residual load = (minimum of hourly supplied /demand)")
     axs19 = supply_ratio.plot()
     axs19.set_axisbelow(True)
@@ -473,7 +473,8 @@ def plot_supply_ratio(supply_ratio, residual_load, path_to_plots):
     colors = plt.cm.rainbow(np.linspace(0, 1, n))
     for col in residual_load:
         rl_sorted[col] = residual_load[col].sort_values(ignore_index=True, ascending=False, )
-    load = reps.get_hourly_demand_by_country(reps.country)[1].sort_values(ascending=False, ignore_index=True)
+    load = yearly_load[reps.current_year].sort_values(ignore_index=True, ascending=False, )
+    # reps.get_hourly_demand_by_country(reps.country)[1].sort_values(ascending=False, ignore_index=True)
     rl_sorted.plot(ax=axs20, label="residual_load",color = colors)
     load.plot(ax=axs20, label="load in year " + str(reps.current_year))
     axs20.set_axisbelow(True)
@@ -740,10 +741,14 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
     fig32.savefig(path_to_plots + '/' + 'NPV new plants of tech ' + test_tech + ' .png', bbox_inches='tight', dpi=300)
 
     pp_installed_in_test_year = []
-    installed_year = test_year + reps.power_generating_technologies[test_tech].expected_leadtime + \
-                     reps.power_generating_technologies[test_tech].expected_permittime
-    installed_tick = test_tick + reps.power_generating_technologies[test_tech].expected_leadtime + \
-                     reps.power_generating_technologies[test_tech].expected_permittime
+    if reps.install_at_look_ahead_year == True:
+        installed_year = test_year + reps.lookAhead
+        installed_tick = test_tick + reps.lookAhead
+    else:
+        installed_year = test_year + reps.power_generating_technologies[test_tech].expected_leadtime + \
+                         reps.power_generating_technologies[test_tech].expected_permittime
+        installed_tick = test_tick + reps.power_generating_technologies[test_tech].expected_leadtime + \
+                         reps.power_generating_technologies[test_tech].expected_permittime
     for i in test_npvs.columns:
         pp = i.split()
         pp_name = pp[0]
@@ -795,11 +800,11 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
-    if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
-        years_to_generate_and_build = list(
-        range(2013, reps.current_year + 1 + reps.max_permit_build_time))
-    else:
-        pass
+    # if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
+    #     years_to_generate_and_build = list(
+    #     range(2013, reps.current_year + 1 + reps.max_permit_build_time))
+    # else:
+    #     pass
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
@@ -832,7 +837,11 @@ def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, uniq
             initial_power_plants.loc[:, pp.technology.name] += pp.capacity
         elif pp.age < reps.current_tick:
             # graphed according to commissioned year which is determined by age.
-            year_investment_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
+            print("-------"+pp.name+ " age"+ str(pp.age) +  " Comi "+ str(pp.commissionedYear))
+            if reps.install_at_look_ahead_year == True:
+                year_investment_decision = pp.commissionedYear - reps.lookAhead
+            else:
+                year_investment_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
             # the year when the investment decision was made
             annual_in_pipeline_capacity.at[year_investment_decision, pp.technology.name] += pp.capacity
             #  the year when the investment entered in operation
@@ -923,6 +932,7 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
 
 
 def prepare_profits_candidates_per_iteration(reps, test_tick):
+    # profits from candidate power plants are from excel sheets operationalProfit = CONTRIBUTION_MARGIN_IN_EURO
     profits = reps.get_profits_per_tick(test_tick)
     #  profits_per_iteration = pd.DataFrame(index=profits.profits_per_iteration_names_candidates[test_tick]).fillna(0)
     # ser = pd.Series(data2, index=list(profits.profits_per_iteration_candidates.items()))
@@ -976,20 +986,21 @@ def prepare_revenues_per_iteration(reps, test_tick,  future_tick, last_year, fut
 
     # real obtained operational profits
     if last_year >= future_year:
+        # get power plants invested in tick from investment decisions
         plants_commissioned_in_future_year = reps.get_power_plants_invested_in_tick(test_tick)
         profits_plants_commissioned = pd.DataFrame()
         for pp in plants_commissioned_in_future_year:
-            profits_plants_commissioned[pp] = reps.get_operational_profits_candidate_pp(pp, test_tech)
+            profits_plants_commissioned[pp] = reps.get_operational_profits_pp(pp)
         if profits_plants_commissioned.shape != (0,0):
-            profits_plants_commissioned_in_future_year = profits_plants_commissioned.loc[future_tick]
-            profits_plants_commissioned_in_future_year.reset_index(drop=True)
+            operational_profits_commissioned = profits_plants_commissioned.loc[future_tick]
+            operational_profits_commissioned.reset_index(drop=True)
         else:
-            profits_plants_commissioned_in_future_year = False
+            operational_profits_commissioned = False
     else:
-        profits_plants_commissioned_in_future_year = False
+        operational_profits_commissioned = False
 
 
-    return sorted_average_revenues_per_tech_test_tick, all_future_operational_profit, profits_plants_commissioned_in_future_year
+    return sorted_average_revenues_per_tech_test_tick, all_future_operational_profit, operational_profits_commissioned
 
 
 def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simulation_years, test_tech):
@@ -1540,13 +1551,13 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     candidates_profits_per_iteration = prepare_profits_candidates_per_iteration(reps, test_tick)
     plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots, test_tick,
                                          colors_unique_candidates)
-    sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit, profits_plants_commissioned_in_future_year = prepare_revenues_per_iteration(
+    sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit, operational_profits_commissioned = prepare_revenues_per_iteration(
         reps, test_tick,  future_tick, last_year, future_year, test_tech)
     plot_revenues_per_iteration_for_one_tech(all_future_operational_profit,  test_tech, path_to_plots, future_year,
                                              test_tick)
 
-    if isinstance(profits_plants_commissioned_in_future_year, pd.Series):
-        plot_expected_candidate_profits_real_profits(candidates_profits_per_iteration, profits_plants_commissioned_in_future_year, test_tech, path_to_plots, future_year,
+    if isinstance(operational_profits_commissioned, pd.Series):
+        plot_expected_candidate_profits_real_profits(candidates_profits_per_iteration, operational_profits_commissioned, test_tech, path_to_plots, future_year,
                                                 test_tick)
     plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_test_tick, path_to_plots, first_year,
                                         colors_unique_techs)
@@ -1569,7 +1580,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots)
         shortages, supply_ratio, ENS_in_simulated_years, simple_electricity_prices_average\
             = get_shortage_hours_and_power_ratio(reps, years_to_generate, electricity_prices,TotalAwardedPowerInMW, yearly_load)
-        plot_supply_ratio(supply_ratio, residual_load, path_to_plots)
+        plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots)
         plot_shortages_and_ENS( shortages, ENS_in_simulated_years, path_to_plots)
 
         #plotting costs to society
@@ -1737,16 +1748,22 @@ SpecificCo2EmissionsInTperMWH = {
 }
 try:
     # write the name of the existing scenario or the new scenario
-    scenario_name = "-newGrouped_WIND_GAS_BIO_stableCO2"
+
+    #scenario_name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-AMIRIS_WIND_GAS_increasing_demand"
+    scenario_name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_WIND_GAS_BIO_CO2stable"
+    scenario_name == "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_WIND_GAS"
+    # scenario_name = "NL2031_SD4_PH3_MI10000_totalProfits_future1installed1-AMIRIS_OPEX_no_imports"
+    # scenario_name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_WIND_GAS_BIO_CO2Increase"
+    scenario_name = "-newGrouped_WIND_GAS_BIO_CO2Increase_NOlimits"
     scenario_name = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_WIND_GAS_BIO_CO2Increase"
-    scenario_name = "NL2031_SD4_PH3_MI10000_totalProfits_future1installed1-AMIRIS_OPEX_no_imports"
-    scenario_name = "-newGrouped_WIND_GAS_BIO_doubleCO2_increasingfuels"
+    scenario_name  = "NL2040_SD4_PH3_MI15000_totalProfits_future1installed1-newGrouped_GAS_CO2Increase"
+    scenario_name = "Test"
     existing_scenario = False
     electricity_prices = True  # write False if not wished to graph electricity prices"
     capacity_mechanisms = False
     calculate_vres_support = False
-    save_excel = True
-    test_tick = 3
+    save_excel = False
+    test_tick = 2
     #test_tech = "Fuel oil PGT"
     test_tech = "OCGT"
     # test_tech = "WTG_offshore"
@@ -1771,7 +1788,7 @@ try:
         reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 
         pre_name = reps.country + str(reps.end_simulation_year) \
-                        + "_SD" + str(reps.start_year_dismantling) \
+                        + "_SD" + str(reps.start_tick_dismantling) \
                         + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                         + "_" + reps.typeofProfitforPastHorizon + "_"
         if reps.realistic_candidate_capacities_for_future == True:
@@ -1806,7 +1823,7 @@ try:
         power_plant.specifyPowerPlantsInstalled(reps.current_tick)
 
     print(" test_tick " + str(test_tick) + " " + str(test_tech))
-    print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_year_dismantling) +"_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
+    print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_tick_dismantling) + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
     path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", complete_name)
 
     if not os.path.exists(path_to_plots):

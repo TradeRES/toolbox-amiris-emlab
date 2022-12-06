@@ -37,7 +37,8 @@ class FinancialPowerPlantReport(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, iteration):
         # -----------------------------CM revenues from financial Reports classname
-        if reps.runningModule == "plotting" and  parameter_name in ['irr','npv',  'totalProfitswLoans', 'totalProfits', 'capacityMechanismRevenues']:
+        if reps.runningModule == "plotting" and  parameter_name in \
+            ['irr','npv',  'totalProfitswLoans', 'totalProfits', 'spotMarketRevenue', 'variableCosts','capacityMechanismRevenues']:
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
@@ -51,8 +52,11 @@ class FinancialPowerPlantReport(ImportObject):
             elif parameter_name == 'totalProfits':
                 self.totalProfits = pd_series
             elif  parameter_name == 'capacityMechanismRevenues':
-                # for plotting import all capacity mechanisms
                 self.capacityMarketRevenues = pd_series
+            elif parameter_name == 'variableCosts':
+                self.variableCosts = pd_series
+            elif  parameter_name == 'spotMarketRevenue':
+                self.spotMarketRevenue = pd_series
 
             # # todo: erase THESE are to test
             # elif parameter_name == 'totalCosts' and self.name == "112":

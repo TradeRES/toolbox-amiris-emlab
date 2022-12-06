@@ -245,6 +245,14 @@ class PrepareMarket(DefaultModule):
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.technology.efficiency  )
                 else:
+                    # print("--------------vom" + pp.technology.name)
+                    # print(pp.technology.variable_operating_costs)
+                    # print("fuel_price")
+                    # print(fuel_price)
+                    # print("CO2_price")
+                    # print(CO2_price)
+                    # print("efficicency")
+                    # print(pp.technology.efficiency)
                     OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.technology.efficiency )
 
                 Efficiency.append(pp.technology.efficiency)

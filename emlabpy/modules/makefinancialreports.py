@@ -19,7 +19,7 @@ class CreatingFinancialReports(DefaultModule):
     def act(self):
         # TODO WHY findAllPowerPlantsWhichAreNotDismantledBeforeTick(self.reps.current_tick - 2)
         self.createFinancialReportsForPowerPlantsAndTick()
-        self.addingMarketClearingIncome()
+       # self.addingMarketClearingIncome()
         print("finished financial report")
 
     def createFinancialReportsForPowerPlantsAndTick(self):
@@ -50,6 +50,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost) # saved as fixedCosts
 
             self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
+            # CO2 costs + fuel costs
             self.agent.CF_COMMODITY -= dispatch.variable_costs
 
             loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year

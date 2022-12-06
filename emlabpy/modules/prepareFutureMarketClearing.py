@@ -1,3 +1,5 @@
+import os
+import shutil
 
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
@@ -51,6 +53,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
             self.write_conventionals()
             self.write_biogas()
 
+        # todo: erase this
+        path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
+        shutil.copy(globalNames.amiris_data_path, path)
 
         self.write_times()
         self.writer.save()
@@ -59,12 +64,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
     def filter_power_plants_to_be_operational(self):
         """
         This function assign a fictional future status to power plants
-        If the plants have passed their expected lifetime then these are in theory decommissioned and not added to the list of power plants.
+        If the plants have passed their expected lifetime then these are
+        in theory decommissioned and not added to the list of power plants.
 
         :return:
         """
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.reps.agent)
-        #powerPlantsinSR = self.reps.get_power_plants_in_SR_by_name()
         powerPlantsinSR = []
         SR_price = 0
         requiredProfit = self.reps.energy_producers[self.reps.agent].getDismantlingRequiredOperatingProfit()
@@ -78,7 +83,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             fictional_age = powerplant.age + self.reps.lookAhead
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
-                if self.reps.current_tick >= self.reps.start_year_dismantling :
+                if self.reps.current_tick >= self.reps.start_tick_dismantling :
                     # calculate the past operating profit
                     profit = self.calculateAveragePastOperatingProfit(powerplant, horizon)
 
@@ -106,7 +111,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
             elif powerplant.commissionedYear <= self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list.append(powerplant)
-
             elif powerplant.commissionedYear > self.simulation_year:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
                 print("--------------------- in pipeline", powerplant.name)
