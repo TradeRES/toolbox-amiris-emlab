@@ -52,6 +52,15 @@ parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
 amiris_data_path =  os.path.join(  parentpath, 'amiris_workflow\\amiris_data_structure.xlsx' )
 load_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
 future_load_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_load.csv' )
+
+windon_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\windon.csv' )
+windoff_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\windoff.csv' )
+pv_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\pv.csv' )
+
+future_windon_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_windon.csv' )
+future_windoff_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_windoff.csv' )
+future_pv_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_pv.csv' )
+
 input_data_nl = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\NLVREprofilesandload2019-2050.xlsx')
 input_load_de = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')

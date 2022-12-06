@@ -691,8 +691,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1054.662456474751,
-            "y": -455.3583322915098,
+            "x": -1052.6165357976975,
+            "y": -455.3583322915097,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -717,8 +717,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -699.9280205375002,
-            "y": -477.7646065446261,
+            "x": -697.8820998604465,
+            "y": -477.764606544626,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -739,7 +739,7 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -774.9366531037729,
+            "x": -772.8907324267192,
             "y": -686.2769117552139,
             "specification": "Decommission",
             "execute_in_work": false,
@@ -808,7 +808,7 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -313.82943241161934,
+            "x": -311.7835117345656,
             "y": -478.9728403871571,
             "specification": "import amiris results",
             "cancel_on_error": false,
@@ -841,7 +841,7 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -182.03763800146652,
+            "x": -179.9917173244128,
             "y": -479.51117202084,
             "url": {
                 "dialect": "sqlite",
@@ -900,7 +900,7 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -438.38739838004005,
+            "x": -436.3414777029863,
             "y": -475.73131301635107,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
@@ -956,8 +956,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -568.4521007520846,
-            "y": -476.08652489699887,
+            "x": -566.4061800750309,
+            "y": -476.0865248969989,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -987,8 +987,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -47.853344947005965,
-            "y": -480.5630238550333,
+            "x": -45.80742426995226,
+            "y": -480.56302385503335,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [

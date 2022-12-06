@@ -201,6 +201,7 @@ try:
                                                                                                        object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
+            #spinetoolbox dont advance for last tick
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
                 update_years_file(updated_year, StartYear, final_year,
@@ -219,7 +220,7 @@ try:
     if sys.argv[2] == 'initialize_clock':
         future_year = StartYear + lookAhead
         if Country == "NL":
-            prepare_AMIRIS_data(StartYear, future_year, fix_demand_to_initial_year, "initialize" )
+            prepare_AMIRIS_data(StartYear, future_year, fix_demand_to_initial_year, "initialize")
         elif Country == "DE": # no dynamic data for other cases
             prepare_AMIRIS_data_fromDE()
         else:
@@ -228,6 +229,7 @@ try:
         if Country == "NL":
             future_year = updated_year + lookAhead
             prepare_AMIRIS_data(updated_year, future_year, fix_demand_to_initial_year, "increment")
+            print("prepared AMIRIS data " )
         elif Country == "DE": # no dynamic data for other cases
             print("no dynamic data for other DE")
         else:

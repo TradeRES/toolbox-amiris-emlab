@@ -62,9 +62,9 @@ def plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, t
                    xy=(1.1, 1.1), xycoords='figure fraction',
                    horizontalalignment='right', verticalalignment='top',
                    fontsize='small')
-    axs13.set_title('Expected future operational profits\n candidates in ' + str(test_tick))
+    axs13.set_title('Expected future operational profits\n candidates in tick ' + str(test_tick))
     fig13 = axs13.get_figure()
-    fig13.savefig(path_to_plots + '/' + 'Expected profits Candidates in tick' + str(test_tick) + '.png', bbox_inches='tight',
+    fig13.savefig(path_to_plots + '/' + 'Expected profits Candidates in tick ' + str(test_tick) + '.png', bbox_inches='tight',
                   dpi=300)
 
 
@@ -159,8 +159,8 @@ def plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, test
         plt.ylabel('Revenues - Operational Costs [Eur]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1), ncol=5)
         plt.grid()
-        axs11.set_title('Expected future operational profits \n in tick '
-                        + str(test_tick) + ' \n and technology ' + test_tech)
+        axs11.set_title('Operational profits of installed plants \n in tick '
+                        + str(test_tick) + ' = future year ' + str(future_year) + ' \n and technology ' + test_tech)
         axs11.annotate('legend =  capacity, efficiency, age',
                        xy=(1.1, 1.1), xycoords='figure fraction',
                        horizontalalignment='right', verticalalignment='top',
@@ -183,7 +183,7 @@ def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteratio
     plt.ylabel('Revenues - Operational Costs [Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1), ncol=5)
     plt.grid()
-    axs11.set_title('Expected candidate future vs real operational profits \n in tick '
+    axs11.set_title('Expected candidate future operatianal profits ' + str(future_year) + ' \n vs real operational profits in tick '
                     + str(test_tick) + ' \n and technology ' + test_tech)
 
     fig11 = axs11.get_figure()
@@ -325,7 +325,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs16.set_title('IRRs, not including NAN results (capped to -10 %+ 20 %)')
-    plt.ylim(-100,200)
+   # plt.ylim(-100,200)
     fig16 = axs16.get_figure()
     fig16.savefig(path_to_plots + '/' + 'IRRs per year per technology.png', bbox_inches='tight', dpi=300)
 
@@ -685,6 +685,7 @@ def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
 def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_plants_all, candidate_plants_project_value_per_MW,
                         test_tech, test_year, test_tick,
                         future_year, path_to_plots):
+
     fig30, axs30 = plt.subplots()
     # key gives the group name (i.e. category), data gives the actual values
     for key, data in irrs_per_year_new_plants_all.items():
@@ -732,7 +733,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('[Eur]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
-    axs32.set_title('NPV new plants \n for tech ' + test_tech)
+    axs32.set_title('NPV new plants \n of tech ' + test_tech)
     axs32.annotate('legend = name, capacity, age',
                    xy=(0, 1), xycoords='figure fraction',
                    horizontalalignment='left', verticalalignment='bottom',
@@ -986,10 +987,11 @@ def prepare_revenues_per_iteration(reps, test_tick,  future_tick, last_year, fut
 
     # real obtained operational profits
     if last_year >= future_year:
-        # get power plants invested in tick from investment decisions
+        # get power plants ids invested in tick from investment decisions
         plants_commissioned_in_future_year = reps.get_power_plants_invested_in_tick(test_tick)
         profits_plants_commissioned = pd.DataFrame()
         for pp in plants_commissioned_in_future_year:
+            # get operational profits
             profits_plants_commissioned[pp] = reps.get_operational_profits_pp(pp)
         if profits_plants_commissioned.shape != (0,0):
             operational_profits_commissioned = profits_plants_commissioned.loc[future_tick]
@@ -1549,8 +1551,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     decommissioning is plotted according to the year when it is decided to get decommissioned
     '''
     candidates_profits_per_iteration = prepare_profits_candidates_per_iteration(reps, test_tick)
-    plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots, test_tick,
-                                         colors_unique_candidates)
+    # this is already graphed in plot_expected_candidate_profits_real_profits
+    # plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots, test_tick,
+    #                                      colors_unique_candidates)
     sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit, operational_profits_commissioned = prepare_revenues_per_iteration(
         reps, test_tick,  future_tick, last_year, future_year, test_tech)
     plot_revenues_per_iteration_for_one_tech(all_future_operational_profit,  test_tech, path_to_plots, future_year,

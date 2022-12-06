@@ -1,3 +1,5 @@
+import shutil
+
 from modules.defaultmodule import DefaultModule
 import pandas as pd
 from datetime import datetime, timedelta
@@ -112,7 +114,11 @@ class PrepareMarket(DefaultModule):
                         # the load was already updated in the clock step
                         pass
                     elif self.reps.runningModule == "run_future_market":
-                        wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                        if self.reps.investmentIteration == 0:
+                            wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                            shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
+                            shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
+                            shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
                         # the write_demand_path continue being the same, as this is overwritten.
 
 
@@ -245,14 +251,6 @@ class PrepareMarket(DefaultModule):
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.technology.efficiency  )
                 else:
-                    # print("--------------vom" + pp.technology.name)
-                    # print(pp.technology.variable_operating_costs)
-                    # print("fuel_price")
-                    # print(fuel_price)
-                    # print("CO2_price")
-                    # print(CO2_price)
-                    # print("efficicency")
-                    # print(pp.technology.efficiency)
                     OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.technology.efficiency )
 
                 Efficiency.append(pp.technology.efficiency)

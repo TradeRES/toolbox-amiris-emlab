@@ -39,7 +39,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
         # from here functions are from prepare market clearing
-
         self.sort_power_plants_by_age()
         # functions to save the power plants
         self.openwriter()
@@ -53,9 +52,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
             self.write_conventionals()
             self.write_biogas()
 
-        # todo: erase this
-        path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
-        shutil.copy(globalNames.amiris_data_path, path)
+        # This is only for debugging
+        # path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
+        # shutil.copy(globalNames.amiris_data_path, path)
 
         self.write_times()
         self.writer.save()
