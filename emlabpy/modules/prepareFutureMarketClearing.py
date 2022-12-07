@@ -112,14 +112,15 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                 # # todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
                 self.power_plants_list.append(powerplant)
-            elif powerplant.commissionedYear <= self.simulation_year:
+            else:
                 powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list.append(powerplant)
-            elif powerplant.commissionedYear > self.simulation_year:
-                powerplant.fictional_status = globalNames.power_plant_status_inPipeline
-                print("--------------------- in pipeline", powerplant.name)
-            else:
-                print("status not set", powerplant.name)
+            # Even if plants are in pipeline, the future market should see that these plants will come
+            # elif powerplant.commissionedYear > self.simulation_year:
+            #     powerplant.fictional_status = globalNames.power_plant_status_inPipeline
+            #     print("--------------------- in pipeline", powerplant.name)
+            # else:
+            #     print("status not set", powerplant.name)
 
     def setTimeHorizon(self):
         """
