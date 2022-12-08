@@ -313,8 +313,8 @@ class SpineDBReaderWriter:
     def stage_fixed_operating_costs_and_efficiency(self, pp):
         self.stage_object(self.powerplant_installed_classname, pp.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
-                                           [('actualFixedOperatingCost', pp.actualFixedOperatingCost)],
-                                           [('Efficiency', pp.actualEfficiency)],
+                                           [('actualFixedOperatingCost', pp.actualFixedOperatingCost),
+                                           ('Efficiency', pp.actualEfficiency)],
                                            "0")
 
     def stage_list_decommissioned_plants(self, decommissioned_list):
