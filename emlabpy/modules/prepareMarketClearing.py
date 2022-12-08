@@ -147,7 +147,7 @@ class PrepareMarket(DefaultModule):
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
                     OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
-                Efficiency.append(pp.technology.efficiency)
+                Efficiency.append(pp.actualEfficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
 
@@ -249,11 +249,11 @@ class PrepareMarket(DefaultModule):
 
 
                 if pp.name in operator.list_of_plants:
-                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.technology.efficiency  )
+                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.actualEfficiency  )
                 else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.technology.efficiency )
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.actualEfficiency )
 
-                Efficiency.append(pp.technology.efficiency)
+                Efficiency.append(pp.actualEfficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
 
@@ -286,9 +286,9 @@ class PrepareMarket(DefaultModule):
                     fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
 
                 if pp.name in operator.list_of_plants:
-                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price)/pp.technology.efficiency  )
+                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price)/pp.actualEfficiency  )
                 else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price)/pp.technology.efficiency )
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price)/pp.actualEfficiency )
 
                 Set.append(self.reps.dictionaryTechSet[pp.technology.name])
                 SupportInstrument.append("-")
