@@ -21,7 +21,7 @@ class PowerPlant(EMLabAgent):
         self.location = ""
         self.owner = None # change if there are more energyproducers
         self.capacity = 0
-        self.efficiency = 0
+
         # TODO: Implement GetActualEfficiency -> for now the fixed costs are the ones incrementing with the year
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'

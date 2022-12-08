@@ -754,7 +754,6 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
         fig29.savefig(path_to_plots + '/' + 'IRR new plants of tech ' + test_tech + ' .png', bbox_inches='tight',
                       dpi=300)
 
-        print("asdafuhe")
         NPVNewPlants = test_npvs.mean(axis=1)
         axs32 = test_npvs.plot()
         plt.xlabel('Years', fontsize='medium')
@@ -1667,10 +1666,16 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         last_year_operational_capacity_data = pd.read_excel(path_to_results, sheet_name='last_year_capacity',
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
+        Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
+        all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
+        df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
+        Installed_capacity_data = pd.concat([Installed_capacity_data, df1], axis=1)
+        df2 = pd.DataFrame(NPVNewPlants, columns=[scenario_name])
+        NPVNewPlants_data = pd.concat([NPVNewPlants_data, df2], axis=1)
 
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
-                                                                index_col=0)
+                                                                      index_col=0)
         total_costs_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_total_costs', index_col=0)
 
         CostRecovery_data[scenario_name] = cost_recovery
@@ -1680,13 +1685,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         ENS_data[scenario_name] = ENS_in_simulated_years
         ShareRES_data[scenario_name] = share_RES
 
-        df2 = pd.DataFrame(NPVNewPlants, columns=[scenario_name])
-        NPVNewPlants_data = pd.concat([NPVNewPlants_data, df2], axis=1)
 
         if calculate_capacity_mechanisms == True:
             CM_data[scenario_name] = average_electricity_price['CapacityMarket']
             clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
+
         if calculate_vres_support == True:
             VRES_data[scenario_name] = average_electricity_price['VRES support']
         last_year_operational_capacity_data[scenario_name] = all_techs_capacity.loc[years_to_generate[-1]].T
@@ -1703,6 +1707,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             SupplyRatio_data.to_excel(writer, sheet_name='SupplyRatio')
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
             NPVNewPlants_data.to_excel(writer, sheet_name='NPVNewPlants')
+            Installed_capacity_data.to_excel(writer, sheet_name='InstalledCapacity')
             if calculate_capacity_mechanisms == True:
                 CM_data.to_excel(writer, sheet_name='CM')
                 clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
@@ -1858,11 +1863,13 @@ results_excel = "ValidationNLGas2.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-# SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4thOldismantle",
-#              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4NewDismantle",
-#              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewDismantle",
-#              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
-SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
+SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4thOldismantle",
+             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4NewDismantle",
+             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewDismantle",
+             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
+SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewestDismantle"]
+
+save_excel = True
 # leave as None if no specific technology shold be tested
 test_tick = 6
 test_tech = "OCGT"
@@ -1876,7 +1883,7 @@ template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosCompa
 if not os.path.exists(path_to_excel):
     shutil.copy(template_excel, path_to_excel)
 
-save_excel = False
+
 for scenario_name in SCENARIOS:
     try:
         existing_scenario = True
