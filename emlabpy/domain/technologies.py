@@ -24,6 +24,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.depreciation_time = 0
         self.minimum_running_hours = 0
         self.fixed_operating_cost_modifier_after_lifetime = 0
+        self.efficiency_modifier_after_lifetime = 0
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
@@ -58,6 +59,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_leadtime = int(parameter_value)
         elif parameter_name == 'FixedOperatingCostModifierAfterLifetime':
             self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
+        elif parameter_name == 'EfficiencyModifierAfterLifetime':
+            self.efficiency_modifier_after_lifetime = float(parameter_value)
         elif parameter_name == 'PeakSegmentDependentAvailability':
             self.peak_segment_dependent_availability = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':

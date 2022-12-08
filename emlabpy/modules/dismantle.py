@@ -5,6 +5,7 @@ import logging
 from spinedb_api import DatabaseMapping
 import pandas as pd
 
+
 class Dismantle(DefaultModule):
     """
     The class that decides to decomission some technologies
@@ -22,7 +23,7 @@ class Dismantle(DefaultModule):
         if self.reps.current_tick == 0:
             pass
         else:
-            self.add_one_year_to_age() # add one year to the age of power plants
+            self.add_one_year_to_age()  # add one year to the age of power plants
         self.set_powerplants_status()  # set status according to operational time
 
         self.decommision_by_age_and_profit()
@@ -34,7 +35,7 @@ class Dismantle(DefaultModule):
         for pp in reps.power_plants.values():
             if pp.is_new_installed():
                 if pp.id != int(pp.name):
-                    raise Exception("there is something wrong here Id " + str(pp.id) +" Name " + str(pp.name))
+                    raise Exception("there is something wrong here Id " + str(pp.id) + " Name " + str(pp.name))
 
         # try:
         #     subquery = db_map.object_parameter_value_sq
@@ -58,29 +59,34 @@ class Dismantle(DefaultModule):
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
                 if profit <= requiredProfit:
                     # operating loss (incl O&M cost)
-                    print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} "\
-                          .format(plant.name, horizon,  profit, requiredProfit))
+                    print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                          .format(plant.name, horizon, profit, requiredProfit))
                     plant.dismantlePowerPlant(self.reps.current_tick)
                     self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
                     plant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(plant.name)
                 else:
-                    #print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
+                    # print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
                             1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
                     plant.setActualFixedOperatingCost(ModifiedOM)
-                    # saving
-                    self.reps.dbrw.stage_fixed_operating_costs(plant)
+                    ModifiedEfficiency = plant.actualEfficiency * (
+                            1 - plant.technology.efficiency_modifier_after_lifetime)
+                    plant.setActualEfficiency(ModifiedEfficiency)
+                    self.reps.dbrw.stage_fixed_operating_costs_and_efficiency(plant)
             else:
-                #print("first years. Dont dismantle but increase fixed OPEX of {}".format(plant.name))
+                # if the plants cannot be deommmissioned yet, decrease efficiency
+                # print("first years. Dont dismantle but increase fixed OPEX of {}".format(plant.name))
                 if plant.age < plant.technology.getExpectedLifetime():
                     print("Age is less than expected life time!!! shouldnt be")
                 else:
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
                             1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
                     plant.setActualFixedOperatingCost(ModifiedOM)
-                    self.reps.dbrw.stage_fixed_operating_costs(plant)
-
+                    ModifiedEfficiency = plant.actualEfficiency * (
+                                1 - plant.technology.efficiency_modifier_after_lifetime)
+                    plant.setActualEfficiency(ModifiedEfficiency)
+                    self.reps.dbrw.stage_fixed_operating_costs_and_efficiency(plant)
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():
@@ -95,8 +101,8 @@ class Dismantle(DefaultModule):
             if self.reps.current_tick >= horizon:
                 past_operating_profit_all_years = pd.Series(dict(rep["data"]))
                 indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
-                past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
-                averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
+                past_operating_profit = past_operating_profit_all_years.loc[list(map(str, indices))].values
+                averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
             else:  # Attention for now, for the first years the available past data is taken
                 print("no past profits for plant", plant.name)
                 pass

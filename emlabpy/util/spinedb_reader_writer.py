@@ -62,7 +62,6 @@ class SpineDBReaderWriter:
         reps.dbrw = self
         self.stage_init_alternative("0")
 
-
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
@@ -123,7 +122,6 @@ class SpineDBReaderWriter:
             elif row['parameter_name'] == 'install_at_look_ahead_year':
                 reps.install_at_look_ahead_year = bool(row['parameter_value'])
 
-
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
@@ -162,7 +160,7 @@ class SpineDBReaderWriter:
                                    if i[0] == object_class_name and i[1] == object_name and i[2] == parameter_name)
                     add_parameter_value_to_repository_based_on_object_class_name(reps, db_line)
                 except StopIteration:
-                    #logging.warning
+                    # logging.warning
                     logging.warning('No value found for class: ' + object_class_name +
                                     ', object: ' + object_name +
                                     ', parameter: ' + parameter_name)
@@ -226,7 +224,7 @@ class SpineDBReaderWriter:
     Power plants
     """
 
-    def stage_start_target_capacities(self,targets):
+    def stage_start_target_capacities(self, targets):
         for target in targets:
             classname = "Targets"
             object_name = target.name
@@ -234,10 +232,9 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(classname, object_name,
                                                [('start_capacity', target.start_capacity)], "0")
 
-
     def stage_power_plant_id_and_loans(self, reps, power_plants):
         print("staging id and loans")
-        if reps.runningModule !=  "run_initialize_power_plants" :
+        if reps.runningModule != "run_initialize_power_plants":
             raise Exception("not initializing power plants")
 
         self.stage_object_class(self.powerplant_installed_classname)
@@ -313,10 +310,12 @@ class SpineDBReaderWriter:
     def stage_init_power_plants_fixed_costs(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['actualFixedOperatingCost'])
 
-    def stage_fixed_operating_costs(self, pp):
+    def stage_fixed_operating_costs_and_efficiency(self, pp):
         self.stage_object(self.powerplant_installed_classname, pp.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
-                                           [('actualFixedOperatingCost', pp.actualFixedOperatingCost)], "0")
+                                           [('actualFixedOperatingCost', pp.actualFixedOperatingCost)],
+                                           [('Efficiency', pp.actualEfficiency)],
+                                           "0")
 
     def stage_list_decommissioned_plants(self, decommissioned_list):
         self.stage_object_parameters("Decommissioned", ['Decommissioned'])
