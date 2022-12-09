@@ -813,7 +813,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
 
 
 def plot_initial_power_plants(path_to_plots, sheetname):
-    import seaborn as sns
+
     sns.set_theme(style="whitegrid")
     print("plotted initial power plants")
     sns.set(font_scale=1.2)
@@ -1793,6 +1793,7 @@ print('===== Start Generating Plots =====')
 
 technology_colors = {
     'Biomass_CHP_wood_pellets_DH': "green",
+    "Biomass_CHP_wood_pellets_PH": "greenyellow",
     'Coal PSC': "black",
     "Fuel oil PGT": "gray",
     'Lignite PSC': "darkgoldenrod",
@@ -1806,7 +1807,8 @@ technology_colors = {
     "Hydropower_ROR": "aquamarine",
     "Lithium_ion_battery": "hotpink",
     "Pumped_hydro": "darkcyan",
-    "CCGT_CHP_backpressure_DH": "orange"
+    "CCGT_CHP_backpressure_DH": "orange",
+
 }
 
 fuel_colors = {
