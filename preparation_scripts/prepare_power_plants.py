@@ -117,7 +117,7 @@ for t in techs:
 final = pd.concat(alltechs, ignore_index=True)
 final.rename(columns={"total_capacity": "Capacity", "efficiency_weighted_mean": "Efficiency"} , inplace=True , errors="raise")
 final['Location'] = country
-final['Owner'] = "Producer1"
+final['Owner'] = "Producer" + country
 final['cash'] = 0
 final['DischarginEfficiency'] = 0
 
