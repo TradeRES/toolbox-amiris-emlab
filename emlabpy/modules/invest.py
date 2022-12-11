@@ -269,9 +269,9 @@ class Investmentdecision(DefaultModule):
     def getinvestmentcosts(self, investmentCostperTechnology, time):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
-
-    def setPowerPlantExpectations(self, powerplant, time):
-        powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
+    #
+    # def setPowerPlantExpectations(self, powerplant, time):
+    #     powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
 
     def findAllClearingPointsForSubstanceAndTimeRange(self, substance, timeFrom, timeTo):
         pass
