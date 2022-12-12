@@ -1,3 +1,7 @@
+AgentGroups:
+  - &exchange 1
+  - &forecaster 6
+
 Agents:
   - column: StorageType
     target: STORAGE
@@ -21,7 +25,7 @@ Agents:
       - attribute: Attributes/Device/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/Strategy/StrategistType
-        value: SINGLE_AGENT_MIN_SYSTEM_COST
+        value: MULTI_AGENT_SIMPLE
       - attribute: Attributes/Strategy/ForecastPeriodInHours
         value: 168
       - attribute: Attributes/Strategy/ScheduleDurationInHours
@@ -30,8 +34,8 @@ Agents:
         value: 0
       - attribute: Attributes/Strategy/SingleAgent/ModelledChargingSteps
         value: 50
-#      - attribute: Attributes/Strategy/MultiAgent/AssessmentFunctionPrefactors
-#        value: [0.0, 1.0, 2.0]
+      - attribute: Attributes/Strategy/MultiAgent/AssessmentFunctionPrefactors
+        value: [0.0, 1.0, 2.0]
 
 
 Contracts:
@@ -41,48 +45,48 @@ Contracts:
 ###############################
 ## use with SINGLE* strategies#
 ###############################
-  - SenderType: StorageTrader
-    ReceiverId: 6
-    ProductName: MeritOrderForecastRequest
-    FirstDeliveryTime: -21
-    DeliveryIntervalInSteps: 3600
-
-  - SenderId: 6
-    ReceiverType: StorageTrader
-    ProductName: MeritOrderForecast
-    FirstDeliveryTime: -19
-    DeliveryIntervalInSteps: 3600
+#  - SenderType: StorageTrader
+#    ReceiverId: *forecaster
+#    ProductName: MeritOrderForecastRequest
+#    FirstDeliveryTime: -21
+#    DeliveryIntervalInSteps: 3600
+#
+#  - SenderId: *forecaster
+#    ReceiverType: StorageTrader
+#    ProductName: MeritOrderForecast
+#    FirstDeliveryTime: -19
+#    DeliveryIntervalInSteps: 3600
 
 ###############################
 ## use with MULTI strategy    #
 ###############################
-#  - SenderId: 6
-#    ReceiverType: StorageTrader
-#    ProductName: PriceForecast
-#    FirstDeliveryTime: -19
-#    DeliveryIntervalInSteps: 3600
-#
-#  - SenderType: StorageTrader
-#    ReceiverId: 6
-#    ProductName: PriceForecastRequest
-#    FirstDeliveryTime: -21
-#    DeliveryIntervalInSteps: 3600
+  - SenderId: *forecaster
+    ReceiverType: StorageTrader
+    ProductName: PriceForecast
+    FirstDeliveryTime: -19
+    DeliveryIntervalInSteps: 3600
+
+  - SenderType: StorageTrader
+    ReceiverId: *forecaster
+    ProductName: PriceForecastRequest
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: 3600
 ###############################
 ## required for all strategies#
 ###############################
-  - SenderId: 1
+  - SenderId: *exchange
     ReceiverType: StorageTrader
     ProductName: GateClosureInfo
     FirstDeliveryTime: -10
     DeliveryIntervalInSteps: 3600
 
   - SenderType: StorageTrader
-    ReceiverId: 1
+    ReceiverId: *exchange
     ProductName: Bids
     FirstDeliveryTime: 0
     DeliveryIntervalInSteps: 3600
 
-  - SenderId: 1
+  - SenderId: *exchange
     ReceiverType: StorageTrader
     ProductName: Awards
     FirstDeliveryTime: 4
