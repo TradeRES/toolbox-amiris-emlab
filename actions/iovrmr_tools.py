@@ -410,14 +410,20 @@ def calculate_overall_generation_per_group(
                 # Properly define index if run for the first time
                 generation = pd.DataFrame(
                     index=value.loc[value["AgentId"] == value["AgentId"].unique()[0]].index,
-                    columns=["res", "conventionals", "storages_discharging", "storages_charging"],
+                    columns=[
+                        "res",
+                        "conventionals",
+                        "storages_discharging",
+                        "storages_charging",
+                        "storages_aggregated_level",
+                    ],
                     data=0,
                 )
             for group in value.groupby("AgentId"):
                 generation["res"] += group[1]["AwardedPowerInMWH"]
         elif key == "StorageTrader":
             storage_results = val[
-                ["TimeStep", "AgentId", "AwardedDischargePowerInMWH", "AwardedChargePowerInMWH"]
+                ["TimeStep", "AgentId", "AwardedDischargePowerInMWH", "AwardedChargePowerInMWH", "StoredEnergyInMWH"]
             ].dropna()
             storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
             storage_results = storage_results.set_index("new_time_step")
@@ -425,6 +431,7 @@ def calculate_overall_generation_per_group(
             for group in storage_results.groupby("AgentId"):
                 generation["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
                 generation["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
+                generation["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
 
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
     conventional_generation["new_time_step"] = conventional_generation["TimeStep"] - operators_offset
