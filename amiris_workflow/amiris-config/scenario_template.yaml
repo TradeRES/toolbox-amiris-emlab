@@ -54,9 +54,9 @@ Agents:
   - Type: DemandTrader
     Id: 5
     Attributes:
-      Loads:
-        - ValueOfLostLoad: 3000.0
-          DemandSeries: "amiris-config/data/load.csv"
+      Loads: []
+#        - ValueOfLostLoad: 3000.0
+#          DemandSeries: "amiris-config/data/load.csv"
 
   - Type: MeritOrderForecaster # PriceForecaster
     Id: 6

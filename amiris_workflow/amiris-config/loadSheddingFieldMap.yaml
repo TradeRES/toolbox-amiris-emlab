@@ -1,0 +1,14 @@
+AgentGroups:
+  - &demand 5
+
+Agents:
+  - column: Type
+    target: SHEDDING
+    append:
+      - agent: *demand
+        below: Attributes/Loads
+        elements:
+           - attribute: ValueOfLostLoad
+             column: VOLL
+           - attribute: DemandSeries
+             column: TimeSeries
