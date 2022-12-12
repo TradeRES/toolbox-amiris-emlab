@@ -106,15 +106,18 @@ def plot_investments(annual_installed_capacity, annual_commissioned, annual_deco
     axs6[0].set_ylabel('In pipeline MW', fontsize='small')
     axs6[1].set_ylabel('Commissioned MW', fontsize='small')
     axs6[2].set_ylabel('Decommissioned MW', fontsize='small')
+    axs6[0].set_ylim(top=5000)
+    axs6[1].set_ylim(top=5000)
+    axs6[2].set_ylim(top=5000)
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     axs6[0].set_title(scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
                       str(reps.maximum_investment_capacity_per_year / 1000) + 'GW')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
 
-def power_plants_status(number_per_status, path_to_plots):
+def plot_power_plants_status(number_per_status, path_to_plots):
     print("power plants status")
-    axs8 = number_per_status.plot.bar(stacked=True, rot=0, colormap='tab20', grid=True, legend=False)
+    axs8 = number_per_status.plot.bar( rot=0,  grid=True, legend=False)
     axs8.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.xticks(rotation=60)
@@ -125,7 +128,7 @@ def power_plants_status(number_per_status, path_to_plots):
     fig8.savefig(path_to_plots + '/' + 'Power plants status per year.png', bbox_inches='tight', dpi=300)
 
 
-def power_plants_last_year_status(power_plants_last_year_status, path_to_plots, last_year):
+def plot_power_plants_last_year_status(power_plants_last_year_status, path_to_plots, last_year):
     plt.figure()
     axs9 = power_plants_last_year_status.plot.bar(stacked=True, rot=0, grid=True, legend=False)
     axs9.set_axisbelow(True)
@@ -179,7 +182,7 @@ def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteratio
                                                   path_to_plots, future_year,
                                                  ):
     plt.figure()
-    axs11 = candidates_profits_per_iteration.plot()
+    axs11 = candidates_profits_per_iteration.plot(style="*")
     operational_profits_commissioned.plot(style=".", ax=axs11, label="REAL")
     for label in axs11.get_xticklabels(which='major'):
         label.set(rotation=30, horizontalalignment='right')
@@ -189,13 +192,13 @@ def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteratio
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1), ncol=5)
     plt.grid()
     axs11.set_title(
-        'Expected candidate future operational profits ' + str(future_year) + ' \n vs real operational profits in tick '
-        + str(test_tick) + ' \n and technology ' + test_tech)
+        'Expected candidate future operational profits  vs real operational profits in tick in year '
+        + str(future_year) )
 
     fig11 = axs11.get_figure()
     fig11.savefig(
         path_to_plots + '/' + 'Expected candidate vs real profits in future year' + str(
-            future_year) + ' and real profit' + test_tech + '.png',
+            future_year) + ' and real profit.png',
         bbox_inches='tight', dpi=300)
 
 
@@ -813,7 +816,6 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
 
 
 def plot_initial_power_plants(path_to_plots, sheetname):
-
     sns.set_theme(style="whitegrid")
     print("plotted initial power plants")
     sns.set(font_scale=1.2)
@@ -1466,7 +1468,9 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     ENS_in_simulated_years = ENS.sum(axis=0)
 
     dispatched_demand = TotalAwardedPowerInMW / yearly_load
+    #supply_ratioratio =available supply at peak over peak demand.
     supply_ratio = dispatched_demand[years_to_generate].min()
+
     # total_capacity = all_techs_capacity.sum(axis=0)
     # controllable_capacity = all_techs_capacity.sum(axis=0)
     # supply_ratio = pd.DataFrame(index=years_to_generate)
@@ -1552,15 +1556,15 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     initial_power_plants, annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
     last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
-    last_year_strategic_reserve_capacity, number_per_status, number_per_status_last_year = \
+    last_year_strategic_reserve_capacity, capacity_per_status, number_per_status_last_year = \
         prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies)
 
     plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
                      path_to_plots, colors_unique_techs, scenario_name)
     plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors,
                             scenario_name)
-    power_plants_status(number_per_status, path_to_plots)
-    power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
+    plot_power_plants_status(capacity_per_status, path_to_plots)
+    plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
     irrs_per_tech_per_year, npvs_per_tech_per_MW, npvs_per_year_new_plants_all, irrs_per_year_new_plants_all = \
         prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
@@ -1602,7 +1606,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_revenues_per_iteration_for_one_tech(all_future_operational_profit,  path_to_plots, future_year
                                              )
 
-    if isinstance(operational_profits_commissioned, pd.Series):
+    if isinstance(operational_profits_commissioned, pd.Series) :
         plot_expected_candidate_profits_real_profits(candidates_profits_per_iteration, operational_profits_commissioned,
                                                       path_to_plots, future_year,
                                                      )
@@ -1667,6 +1671,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
+        Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
+        Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
+
         all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
         df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
         Installed_capacity_data = pd.concat([Installed_capacity_data, df1], axis=1)
@@ -1684,6 +1691,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         ElectricityPrices_data[scenario_name] = average_electricity_price["wholesale price"]
         ENS_data[scenario_name] = ENS_in_simulated_years
         ShareRES_data[scenario_name] = share_RES
+        Dismantled_capacity_data[scenario_name] = capacity_per_status.Decommissioned
+        Commissioned_capacity_data[scenario_name] = capacity_per_status.InPipeline
 
 
         if calculate_capacity_mechanisms == True:
@@ -1708,6 +1717,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
             NPVNewPlants_data.to_excel(writer, sheet_name='NPVNewPlants')
             Installed_capacity_data.to_excel(writer, sheet_name='InstalledCapacity')
+            Commissioned_capacity_data.to_excel(writer, sheet_name='Invested')
+            Dismantled_capacity_data.to_excel(writer, sheet_name='Dismantled')
             if calculate_capacity_mechanisms == True:
                 CM_data.to_excel(writer, sheet_name='CM')
                 clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
@@ -1861,18 +1872,20 @@ SpecificCo2EmissionsInTperMWH = {
     "wood_pellets": 0
 }
 
-results_excel = "ValidationNLGas2.xlsx"
+results_excel = "ValidationCommissionTimes-ExtendedPP.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4thOldismantle",
-             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4NewDismantle",
-             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewDismantle",
-             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
-SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewestDismantle"]
+# SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4thOldismantle",
+#              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4NewDismantle",
+#              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewDismantle",
+#              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
+SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfter4Years_Extended",
+             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction_Extended"
+             ]
 
 save_excel = True
-# leave as None if no specific technology shold be tested
+#  None if no specific technology shold be tested
 test_tick = 6
 test_tech = "OCGT"
 # test_tech = "WTG_offshore"
@@ -1880,8 +1893,11 @@ test_tech = "OCGT"
 # test_tech = None
 
 
+
 path_to_excel = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
 template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosComparisonTemplate.xlsx")
+
+
 if not os.path.exists(path_to_excel):
     shutil.copy(template_excel, path_to_excel)
 
@@ -1892,8 +1908,6 @@ for scenario_name in SCENARIOS:
         electricity_prices = True  # write False if not wished to graph electricity prices"
         capacity_mechanisms = False
         calculate_vres_support = False
-
-
         if scenario_name == "":
             raise Exception("Name needed")
 
