@@ -396,10 +396,11 @@ def calculate_overall_res_infeed(
     return overall_res_generation
 
 
-def calculate_overall_generation_per_group(
+def evaluate_dispatch_per_group(
     operator_results: Dict, conventional_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int = 4
-) -> pd.DataFrame:
-    """Calculate the generation per group (res, conventionals, storages)"""
+) -> (pd.DataFrame, pd.DataFrame):
+    """Evaluate the dispatch per group (res, conventionals, storages) as well as final storage states"""
+    final_storage_levels = pd.DataFrame()
     generation = pd.DataFrame()
     for key, val in operator_results.items():
         if key in ["Biogas", "VariableRenewableOperator"]:
@@ -428,10 +429,14 @@ def calculate_overall_generation_per_group(
             storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
             storage_results = storage_results.set_index("new_time_step")
 
+            final_storage_levels = pd.DataFrame(
+                index=[group[0] for group in storage_results.groupby("AgentId")], columns=["value"]
+            )
             for group in storage_results.groupby("AgentId"):
                 generation["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
                 generation["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
                 generation["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
+                final_storage_levels.at[group[0], "value"] = group[1]["StoredEnergyInMWH"].iloc[-1]
 
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
     conventional_generation["new_time_step"] = conventional_generation["TimeStep"] - operators_offset
@@ -442,4 +447,4 @@ def calculate_overall_generation_per_group(
 
     generation.reset_index(drop=True, inplace=True)
 
-    return generation
+    return generation, final_storage_levels

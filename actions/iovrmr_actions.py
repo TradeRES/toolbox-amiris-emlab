@@ -32,7 +32,9 @@ from iovrmr_tools import (
     sum_per_plant,
     clear_folder,
     DEMAND,
-    calculate_residual_load, calculate_overall_res_infeed, calculate_overall_generation_per_group,
+    calculate_residual_load,
+    calculate_overall_res_infeed,
+    evaluate_dispatch_per_group,
     CONVENTIONAL_RESULTS_GROUPED,
 )
 
@@ -288,7 +290,9 @@ def aggregate_results(data_manager, config, params):
 
     overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
-    generation_per_group = calculate_overall_generation_per_group(operator_results, conventional_results_grouped)
+    generation_per_group, final_storage_levels = evaluate_dispatch_per_group(
+        operator_results, conventional_results_grouped
+    )
 
     if conventional_series:
         to_concat.append(pd.concat(conventional_series, axis=1))
@@ -314,6 +318,11 @@ def aggregate_results(data_manager, config, params):
         generation_per_group.to_csv(
             config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_generation"]
         )
+        if not final_storage_levels.empty:
+            final_storage_levels.to_csv(
+                config["user"]["global"]["output"]["pbOutputProcessed"]
+                + params["args"]["file_name_final_storage_levels"]
+            )
 
     with data_manager.overwrite:
         data_manager[params["data"]["write_to_dmgr"]] = all_outputs_per_agent
