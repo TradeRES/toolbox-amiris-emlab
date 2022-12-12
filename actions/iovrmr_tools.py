@@ -397,7 +397,7 @@ def calculate_overall_res_infeed(
 
 
 def calculate_overall_generation_per_group(
-    operator_results: Dict, conventional_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int=4
+    operator_results: Dict, conventional_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int = 4
 ) -> pd.DataFrame:
     """Calculate the generation per group (res, conventionals, storages)"""
     generation = pd.DataFrame()
@@ -410,18 +410,21 @@ def calculate_overall_generation_per_group(
                 # Properly define index if run for the first time
                 generation = pd.DataFrame(
                     index=value.loc[value["AgentId"] == value["AgentId"].unique()[0]].index,
-                    columns=["res", "conventionals", "storages"],
+                    columns=["res", "conventionals", "storages_discharging", "storages_charging"],
                     data=0,
                 )
             for group in value.groupby("AgentId"):
                 generation["res"] += group[1]["AwardedPowerInMWH"]
         elif key == "StorageTrader":
-            storage_results = val[["TimeStep", "AgentId", "AwardedDischargePowerInMWH"]].dropna()
+            storage_results = val[
+                ["TimeStep", "AgentId", "AwardedDischargePowerInMWH", "AwardedChargePowerInMWH"]
+            ].dropna()
             storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
             storage_results = storage_results.set_index("new_time_step")
 
             for group in storage_results.groupby("AgentId"):
-                generation["storages"] += group[1]["AwardedDischargePowerInMWH"]
+                generation["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
+                generation["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
 
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
     conventional_generation["new_time_step"] = conventional_generation["TimeStep"] - operators_offset
