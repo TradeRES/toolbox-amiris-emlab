@@ -145,3 +145,4 @@ workflow:
         file_name_residual_load: residual_load.csv
         file_name_res_infeed: hourly_res_infeed.csv
         file_name_generation: hourly_generation_per_group.csv
+        file_name_final_storage_levels: final_storage_levels.csv
