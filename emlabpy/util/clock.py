@@ -161,7 +161,7 @@ try:
 
         fix_demand_to_initial_year = next(i['parameter_value'] for i in
                        db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
-                       if i['parameter_name'] == 'fix_demand_to_initial_year')
+                       if i['parameter_name'] == 'fix_demand_and_profiles_to_initial_year')
 
 
         reset_candidate_investable_status()
