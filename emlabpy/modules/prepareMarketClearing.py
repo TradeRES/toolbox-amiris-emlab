@@ -32,6 +32,7 @@ class PrepareMarket(DefaultModule):
                                                                         globalNames.power_plant_status_to_be_decommissioned,
                                                                         globalNames.power_plant_status_strategic_reserve,
                                                                         ])
+        self.calculate_save_available_capacity()
         self.sort_power_plants_by_age()
         self.setTimeHorizon()
         self.setExpectations()
@@ -51,6 +52,20 @@ class PrepareMarket(DefaultModule):
         self.writer.save()
         self.writer.close()
         print("saved to ", self.path)
+
+
+
+    def calculate_save_available_capacity(self):
+        sumcapacity = []
+        for pp in self.power_plants_list:
+            if pp.technology.intermittent == False:
+                # include hydropower, batteries, biogas,
+               # print(pp.technology.name + "_"+str(pp.capacity) )
+                sumcapacity.append(pp.capacity ) #* pp.actualEfficiency
+        peak_dispatchable_capacity = sum(sumcapacity)
+        self.reps.dbrw.stage_peak_dispatchable_capacity(peak_dispatchable_capacity, self.reps.current_year)
+
+
 
     def sort_power_plants_by_age(self):
         self.power_plants_list.sort(key=lambda x:x.age)

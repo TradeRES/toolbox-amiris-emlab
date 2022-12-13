@@ -47,6 +47,7 @@ class SpineDBReaderWriter:
         self.Conventionals_classname = "Conventionals"
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
+        self.total_capacity_classname = "InstalledDispatchableCapacity"
         self.amirisdb = None
 
         if open_db == "Amiris":
@@ -286,6 +287,15 @@ class SpineDBReaderWriter:
                                             ('Status', powerplant.status),
                                             ('Cash', powerplant.cash),
                                             ('Technology', powerplant.technology.name)], "0")
+
+    def stage_peak_dispatchable_capacity(self, peak_dispatchable_capacity,  year):
+        object_name = "All"
+        self.stage_object_class(self.total_capacity_classname)
+        self.stage_object(self.total_capacity_classname, object_name)
+        self.stage_object_parameter(self.total_capacity_classname, str(year))
+
+        self.stage_object_parameter_values(self.total_capacity_classname, object_name,
+                                           [(str(year) ,peak_dispatchable_capacity)], '0')
 
     def stage_candidate_pp_investment_status_structure(self):
         self.stage_object_class(self.candidate_powerplant_installed_classname)

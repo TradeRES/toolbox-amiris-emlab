@@ -1423,6 +1423,7 @@ def reading_electricity_prices(reps, existing_scenario, folder_name, scenario_na
         df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load"])
         yearly_electricity_prices.at[:, year] = df['energy_exchange'].ElectricityPriceInEURperMWH
         TotalAwardedPowerInMW.at[:, year] = df['energy_exchange'].TotalAwardedPowerInMW
+    #    TotalDispatchablePowerInMW.at[:, year] = df['conventionals']
         residual_load.at[:, year] = df['residual_load']['residual_load']
     return yearly_electricity_prices, residual_load, TotalAwardedPowerInMW
 

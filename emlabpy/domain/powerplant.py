@@ -144,13 +144,6 @@ class PowerPlant(EMLabAgent):
             self.operationalProfit = self.ReceivedMoneyinEUR - self.CostsinEUR
         return self.operationalProfit
 
-    def get_actual_nominal_capacity(self):
-        return self.capacity
-        # if self.capacity == 0:
-        #     return self.technology.capacity * float(self.location.parameters['CapacityMultiplicationFactor'])
-        # else:
-        #     return self.capacity
-
     def calculate_marginal_fuel_cost_per_mw_by_tick(self, reps, time):
         # fc = 0
         # substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
@@ -167,6 +160,13 @@ class PowerPlant(EMLabAgent):
         else:
             fc = 0
         return fc
+
+    def get_actual_nominal_capacity(self):
+        return self.capacity
+        # if self.capacity == 0:
+        #     return self.technology.capacity * float(self.location.parameters['CapacityMultiplicationFactor'])
+        # else:
+        #     return self.capacity
 
     def calculate_co2_tax_marginal_cost(self, reps):
         co2_intensity = self.calculate_emission_intensity(reps)
