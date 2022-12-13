@@ -691,8 +691,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1052.6165357976975,
-            "y": -455.3583322915097,
+            "x": -1081.0708474159458,
+            "y": -456.8559276398386,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -761,8 +761,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -50.09940879661055,
-            "y": -301.7708709320518,
+            "x": -47.9491256033197,
+            "y": -308.22172051192445,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [

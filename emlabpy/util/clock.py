@@ -81,32 +81,39 @@ def prepare_AMIRIS_data(year, future_year, fix_demand_to_initial_year, modality)
 
         print("finish reading  excel")
         if fix_demand_to_initial_year == True and modality == "increment" :
-            pass
+            print("not incrementing demand")
+
         elif fix_demand_to_initial_year == True and modality == "initialize" :
             demand = excel_NL['Load Profile'][year]
             demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-            future_demand = excel_NL['Load Profile'][year]
-            future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
+            wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
+            wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
+            wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
+            wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
+            pv = excel_NL['NL Sun PV profiles'][year]
+            pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
+
+
         else:
             demand = excel_NL['Load Profile'][year]
             demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
             future_demand = excel_NL['Load Profile'][future_year]
             future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
 
-        wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
-        future_wind_onshore = excel_NL['NL Wind Onshore profiles'][future_year]
-        wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
-        future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
+            wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
+            future_wind_onshore = excel_NL['NL Wind Onshore profiles'][future_year]
+            wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
+            future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
 
-        wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
-        future_wind_offshore = excel_NL['NL Wind Offshore profiles'][future_year]
-        wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
-        future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
+            wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
+            future_wind_offshore = excel_NL['NL Wind Offshore profiles'][future_year]
+            wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
+            future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
 
-        pv = excel_NL['NL Sun PV profiles'][year]
-        future_pv = excel_NL['NL Sun PV profiles'][future_year]
-        pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
-        future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
+            pv = excel_NL['NL Sun PV profiles'][year]
+            future_pv = excel_NL['NL Sun PV profiles'][future_year]
+            pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
+            future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
 
     except Exception as e:
         print("failed updating AMIRIS data")

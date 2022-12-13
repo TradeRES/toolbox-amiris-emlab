@@ -129,6 +129,9 @@ class PrepareMarket(DefaultModule):
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
                         # the load was already updated in the clock step
                         pass
+                    elif self.reps.runningModule == "run_future_market" and self.reps.fix_demand_to_initial_year:
+                        # load and profiles dont change
+                        pass
                     elif self.reps.runningModule == "run_future_market":
                         if self.reps.investmentIteration == 0:
                             wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)

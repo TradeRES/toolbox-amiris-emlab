@@ -116,7 +116,7 @@ class SpineDBReaderWriter:
                 reps.targetinvestment_per_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'writeALLcostsinOPEX':
                 reps.writeALLcostsinOPEX = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'fix_demand_to_initial_year':
+            elif row['parameter_name'] == 'fix_demand_and_profiles_to_initial_year':
                 reps.fix_demand_to_initial_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'Power_plants_from_year':
                 reps.Power_plants_from_year = int(row['parameter_value'])
