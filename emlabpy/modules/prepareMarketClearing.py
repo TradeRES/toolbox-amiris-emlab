@@ -41,11 +41,12 @@ class PrepareMarket(DefaultModule):
 
         if self.reps.writeALLcostsinOPEX ==True:
             self.write_conventionals_and_biogas_with_prices("next_year_price")
+
         else:
             self.write_conventionals()
             self.write_biogas()
+            self.write_scenario_data_emlab("next_year_price")
 
-        self.write_scenario_data_emlab("next_year_price")
         self.write_times()
         self.writer.save()
         self.writer.close()
@@ -231,7 +232,6 @@ class PrepareMarket(DefaultModule):
         identifier = []
         FuelType = []
         OpexVarInEURperMWH = []
-        Efficiency = []
         BlockSizeInMW = []
         InstalledPowerInMW = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
@@ -247,21 +247,31 @@ class PrepareMarket(DefaultModule):
                     fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
                     CO2_price = self.reps.substances["CO2"].futurePrice_inYear * pp.technology.fuel.co2_density
 
-
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.actualEfficiency  )
                 else:
                     OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.actualEfficiency )
 
-                Efficiency.append(pp.actualEfficiency)
+                #Efficiency.append(pp.actualEfficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
 
         d = {'identifier': identifier, 'FuelType': FuelType, 'OpexVarInEURperMWH': OpexVarInEURperMWH,
-             'Efficiency': Efficiency, 'BlockSizeInMW': BlockSizeInMW,
+             'BlockSizeInMW': BlockSizeInMW,
              'InstalledPowerInMW': InstalledPowerInMW}
-
         df = pd.DataFrame(data=d)
+        df.sort_values(by=['BlockSizeInMW'], inplace=True)
+        df.sort_values(by=['OpexVarInEURperMWH'], inplace=True)
+
+        min = 0.1
+        max = 0.4
+        myrange = max - min
+        length = df.index.size
+        efficiency = []
+        for t in list(range(0,length)):
+            efficiency.append(min + myrange*t/length)
+        efficiency.reverse()
+        df["Efficiency"] = efficiency
         df.to_excel(self.writer, sheet_name="conventionals")
 
         identifier = []
@@ -279,7 +289,6 @@ class PrepareMarket(DefaultModule):
                 pp.technology.name] == "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
-
                 if calculatedprices == "next_year_price":
                     fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
                 else:
@@ -301,6 +310,7 @@ class PrepareMarket(DefaultModule):
              'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
 
         df = pd.DataFrame(data=d)
+        df.sort_values(by=['InstalledPowerInMW'], inplace=True)
         df.to_excel(self.writer, sheet_name="biogas")
 
 

@@ -718,7 +718,7 @@
             "type": "Tool",
             "description": "",
             "x": -697.8820998604465,
-            "y": -477.764606544626,
+            "y": -479.9148897379169,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -956,8 +956,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -566.4061800750309,
-            "y": -476.0865248969989,
+            "x": -570.7067464616125,
+            "y": -469.6356753171264,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []

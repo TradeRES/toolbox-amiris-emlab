@@ -42,7 +42,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.sort_power_plants_by_age()
         # functions to save the power plants
         self.openwriter()
-        self.write_scenario_data_emlab("futurePrice")
+
         self.write_renewables()
         self.write_storage()
 
@@ -51,6 +51,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         else:
             self.write_conventionals()
             self.write_biogas()
+            self.write_scenario_data_emlab("futurePrice")
 
         # This is only for debugging
         # path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
