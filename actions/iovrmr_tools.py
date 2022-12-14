@@ -401,41 +401,32 @@ def evaluate_dispatch_per_group(
 ) -> (pd.DataFrame, pd.DataFrame):
     """Evaluate the dispatch per group (res, conventionals, storages) as well as final storage states"""
     final_storage_levels = pd.DataFrame()
-    generation = pd.DataFrame()
+    dispatch = pd.DataFrame()
     for key, val in operator_results.items():
         if key in ["Biogas", "VariableRenewableOperator"]:
-            value = val.loc[val["AwardedPowerInMWH"].notna()]
-            value["new_time_step"] = value["TimeStep"] - operators_offset
-            value = value.set_index("new_time_step")
-            if generation.empty:
-                # Properly define index if run for the first time
-                generation = pd.DataFrame(
-                    index=value.loc[value["AgentId"] == value["AgentId"].unique()[0]].index,
-                    columns=[
-                        "res",
-                        "conventionals",
-                        "storages_discharging",
-                        "storages_charging",
-                        "storages_aggregated_level",
-                    ],
-                    data=0,
-                )
-            for group in value.groupby("AgentId"):
-                generation["res"] += group[1]["AwardedPowerInMWH"]
+            operator_results = val.loc[val["AwardedPowerInMWH"].notna()]
+            operator_results["new_time_step"] = operator_results["TimeStep"] - operators_offset
+            operator_results = operator_results.set_index("new_time_step")
+            if dispatch.empty:
+                dispatch = initialize_dispatch(operator_results)
+            for group in operator_results.groupby("AgentId"):
+                dispatch["res"] += group[1]["AwardedPowerInMWH"]
         elif key == "StorageTrader":
             storage_results = val[
                 ["TimeStep", "AgentId", "AwardedDischargePowerInMWH", "AwardedChargePowerInMWH", "StoredEnergyInMWH"]
             ].dropna()
             storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
             storage_results = storage_results.set_index("new_time_step")
+            if dispatch.empty:
+                dispatch = initialize_dispatch(storage_results)
 
             final_storage_levels = pd.DataFrame(
                 index=[group[0] for group in storage_results.groupby("AgentId")], columns=["value"]
             )
             for group in storage_results.groupby("AgentId"):
-                generation["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
-                generation["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
-                generation["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
+                dispatch["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
+                dispatch["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
+                dispatch["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
                 final_storage_levels.at[group[0], "value"] = group[1]["StoredEnergyInMWH"].iloc[-1]
 
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
@@ -443,8 +434,23 @@ def evaluate_dispatch_per_group(
     conventional_generation = conventional_generation.set_index("new_time_step")
 
     for group in conventional_generation.groupby("AgentId"):
-        generation["conventionals"] += group[1]["AwardedPowerInMWH"]
+        dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
 
-    generation.reset_index(drop=True, inplace=True)
+    dispatch.reset_index(drop=True, inplace=True)
 
-    return generation, final_storage_levels
+    return dispatch, final_storage_levels
+
+
+def initialize_dispatch(dispatch_df) -> pd.DataFrame:
+    """Initialize a DataFrame for storing dispatch results"""
+    return pd.DataFrame(
+        index=dispatch_df.loc[dispatch_df["AgentId"] == dispatch_df["AgentId"].unique()[0]].index,
+        columns=[
+            "res",
+            "conventionals",
+            "storages_discharging",
+            "storages_charging",
+            "storages_aggregated_level",
+        ],
+        data=0,
+    )
