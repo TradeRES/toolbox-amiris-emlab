@@ -18,7 +18,30 @@ global:
     csvSeparator: ";"
 
 workflow:
-  # Add conventional plants to their corresponding individual plant builder
+  # Add carbon and fuel price to scenario
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: prices
+      args:
+        excelFile: amiris_data_structure.xlsx
+        excelSheet: scenario_data_emlab
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_amiris_config
+      data:
+        read_from_dmgr: prices
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/pricesFieldMap.yaml
+        templateFile: amiris-config/scenario_template.yaml
+        outputFile: scenario.yaml
+
+  # Add conventional plants to their corresponding individual plant builder (append to scenario)
   - action:
       project: general
       call: parse_excel
@@ -38,7 +61,7 @@ workflow:
         write_to_dmgr: null
       args:
         AMIRISConfigFieldMap: amiris-config/conventionalsFieldMap.yaml
-        templateFile: amiris-config/scenario_template.yaml
+        templateFile: amiris-config/scenario.yaml
         outputFile: scenario.yaml
 
   # Add storages (append to scenario)
