@@ -223,6 +223,9 @@ def create_agent(row, translation: List[Dict]) -> Dict:
         field = get_field(item, "attribute")
         if "value" in item:
             value = get_field(item, "value")
+        elif "list" in item:
+            value = get_field(item, "list")
+            value = get_elements_from_list(value, row)
         elif "column" in item:
             column = get_field(item, "column")
             value = get_field(row, column)
@@ -235,6 +238,26 @@ def create_agent(row, translation: List[Dict]) -> Dict:
         agent.update({field: value})
     return agent
 
+
+def get_elements_from_list(value: List, row) -> List[Dict]:
+    """Obtain list-like elements"""
+    length = value.pop(0)["length"]
+    attr_dict = {col_count: {} for col_count in range(length)}
+    for entry in value:
+        for col_count in range(length):
+            if "value" in entry:
+                if isinstance(entry["value"], list):
+                    value = get_field(entry, "value")[col_count]
+                    attr_dict[col_count][entry["attribute"]] = value
+                else:
+                    value = entry["value"]
+                    attr_dict[col_count][entry["attribute"]] = value
+            elif "column" in entry:
+                column = get_field(entry, "column")[col_count]
+                value = get_field(row, column)
+                attr_dict[col_count][entry["attribute"]] = value
+
+    return list(attr_dict.values())
 
 def get_id_or_derive_from_type(contract, unit, param):
     """

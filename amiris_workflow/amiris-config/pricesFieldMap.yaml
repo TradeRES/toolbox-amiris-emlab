@@ -1,0 +1,31 @@
+Agents:
+  # Carbon Market
+  - column: AgentType
+    target: CarbonMarket
+    create:
+      - attribute: Type
+        column: AgentType
+      - attribute: Id
+        value: 3
+      - attribute: Attributes/OperationMode
+        value: FIXED
+      - attribute: Attributes/Co2Prices
+        column: CO2
+
+  # Fuels Market
+  - column: AgentType
+    target: FuelsMarket
+    create:
+      - attribute: Type
+        column: AgentType
+      - attribute: Id
+        value: 4
+      - attribute: Attributes/FuelPrices
+        list:
+          - length: 6
+          - attribute: ConversionFactor
+            value: 1.0
+          - attribute: FuelType
+            value: [NUCLEAR, LIGNITE, HARD_COAL, NATURAL_GAS, OIL, HYDROGEN]
+          - attribute: Price
+            column: [NUCLEAR, LIGNITE, HARD_COAL, NATURAL_GAS, OIL, HYDROGEN]
