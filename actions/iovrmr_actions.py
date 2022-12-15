@@ -243,7 +243,6 @@ def aggregate_results(data_manager, config, params):
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
-    storage_results = pd.DataFrame()  # Safeguard if no storage is in the system
     to_concat = []
     conventional_series = []
     residual_load_results = {}
@@ -291,7 +290,7 @@ def aggregate_results(data_manager, config, params):
     overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
     generation_per_group, final_storage_levels = evaluate_dispatch_per_group(
-        operator_results, conventional_results_grouped
+        operator_results, conventional_results_grouped, residual_load_results[DEMAND[0]]
     )
 
     if conventional_series:

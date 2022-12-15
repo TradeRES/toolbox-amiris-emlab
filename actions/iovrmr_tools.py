@@ -259,6 +259,7 @@ def get_elements_from_list(value: List, row) -> List[Dict]:
 
     return list(attr_dict.values())
 
+
 def get_id_or_derive_from_type(contract, unit, param):
     """
     Returns Id derived from `param`+`id` in given `contract` dict or derived from `param`+`Type` in unit dictionary.
@@ -420,7 +421,12 @@ def calculate_overall_res_infeed(
 
 
 def evaluate_dispatch_per_group(
-    operator_results: Dict, conventional_results: pd.DataFrame, operators_offset: int = 5, trader_offset: int = 4
+    operator_results: Dict,
+    conventional_results: pd.DataFrame,
+    demand_results: pd.DataFrame,
+    operators_offset: int = 5,
+    trader_offset: int = 4,
+    demand_offset: int = 1,
 ) -> (pd.DataFrame, pd.DataFrame):
     """Evaluate the dispatch per group (res, conventionals, storages) as well as final storage states"""
     final_storage_levels = pd.DataFrame()
@@ -459,6 +465,15 @@ def evaluate_dispatch_per_group(
     for group in conventional_generation.groupby("AgentId"):
         dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
 
+    demand_results["AwardedEnergyInMWH"].fillna(method="bfill", inplace=True)
+    demand_dispatch = demand_results.dropna()
+    demand_dispatch["Shedding"] = demand_dispatch["RequestedEnergyInMWH"] - demand_dispatch["AwardedEnergyInMWH"]
+    demand_dispatch["new_time_step"] = demand_dispatch["TimeStep"] + demand_offset
+    demand_dispatch = demand_dispatch.set_index("new_time_step")
+
+    for group in demand_dispatch.groupby("AgentId"):
+        dispatch["load_shedding"] += group[1]["Shedding"]
+
     dispatch.reset_index(drop=True, inplace=True)
 
     return dispatch, final_storage_levels
@@ -474,6 +489,7 @@ def initialize_dispatch(dispatch_df) -> pd.DataFrame:
             "storages_discharging",
             "storages_charging",
             "storages_aggregated_level",
+            "load_shedding",
         ],
         data=0,
     )

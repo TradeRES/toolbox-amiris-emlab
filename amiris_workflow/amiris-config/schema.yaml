@@ -76,7 +76,7 @@ AgentTypes:
             AttributeType: enum
             List: false
             Mandatory: true
-            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN']
+            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS']
           Price:
             AttributeType: time_series
             List: false
@@ -953,7 +953,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN' ]
+            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS' ]
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true
