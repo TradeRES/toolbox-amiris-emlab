@@ -1760,6 +1760,13 @@ def writeInfo(reps, path_to_plots, scenario_name):
     file.write("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends))
     info.append("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends))
 
+    if reps.fix_fuel_prices_to_year != False:
+        print("fix_prices_to_2020")
+        file.write("fix_fuel_prices_to_year \n")
+        info.append("fix_fuel_prices_to_year")
+
+
+
     if reps.fix_prices_to_2020 == True:
         print("fix_prices_to_2020")
         file.write("fix_prices_to_2020 \n")
@@ -1881,14 +1888,14 @@ results_excel = "ValidationCommissionTimes-ExtendedPP.xlsx"
 #              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4NewDismantle",
 #              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewDismantle",
 #              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
-SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfter4Years_Extended",
-             "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction_Extended"
+SCENARIOS = ["AfterConstruction_Extended"
+           #  "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction_Extended"
              ]
 
-save_excel = True
+save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 6
-test_tech = "OCGT"
+test_tick = 0
+test_tech = None
 # test_tech = "WTG_offshore"
 # test_tech = "Biomass_CHP_wood_pellets_DH"
 # test_tech = None
@@ -1905,7 +1912,7 @@ if not os.path.exists(path_to_excel):
 
 for scenario_name in SCENARIOS:
     try:
-        existing_scenario = True
+        existing_scenario = False
         electricity_prices = True  # write False if not wished to graph electricity prices"
         capacity_mechanisms = False
         calculate_vres_support = False

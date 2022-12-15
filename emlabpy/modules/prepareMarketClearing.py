@@ -104,8 +104,6 @@ class PrepareMarket(DefaultModule):
         write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
         demand_file_for_amiris = globalNames.load_file_for_amiris
 
-
-
         for k, substance in self.reps.substances.items():
             if calculatedprices == "next_year_price":
                 fuel_price = substance.simulatedPrice_inYear

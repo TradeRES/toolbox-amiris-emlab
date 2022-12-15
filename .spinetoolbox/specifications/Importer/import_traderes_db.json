@@ -418,6 +418,26 @@
                         ]
                     }
                 }
+            ],
+            "screening curve": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -445,7 +465,8 @@
             "pivot1_2030": {},
             "pivot2030": {},
             "unit2030-noneWRONG": {},
-            "unit2030-none": {}
+            "unit2030-none": {},
+            "screening curve": {}
         },
         "table_types": {
             "flow": {

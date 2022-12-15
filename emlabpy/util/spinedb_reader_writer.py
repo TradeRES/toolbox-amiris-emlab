@@ -98,10 +98,10 @@ class SpineDBReaderWriter:
                 reps.typeofProfitforPastHorizon = str(row['parameter_value'])
             elif row['parameter_name'] == 'max_permit_build_time':
                 reps.max_permit_build_time = int(row['parameter_value'])
-            elif row['parameter_name'] == 'fix_prices_to_2020':
-                reps.fix_prices_to_2020 = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'fix_prices_to_2030':
-                reps.fix_prices_to_2030 = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'fix_fuel_prices_to_year':
+                reps.fix_fuel_prices_to_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'fix_price_year':
+                reps.fix_price_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'yearly_CO2_prices':
                 reps.yearly_CO2_prices = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_tobe_installed':
