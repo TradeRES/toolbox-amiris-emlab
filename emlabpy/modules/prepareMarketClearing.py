@@ -90,40 +90,18 @@ class PrepareMarket(DefaultModule):
         df.to_excel(self.writer, sheet_name="times")
 
     def write_scenario_data_emlab(self, calculatedprices):
-        Co2Prices = []
-        FuelPrice_NUCLEAR = []
-        FuelPrice_LIGNITE = []
-        FuelPrice_HARD_COAL = []
-        FuelPrice_NATURAL_GAS = []
-        FuelPrice_OIL = []
-        FuelPrice_HYDROGEN = []
-
         #demand = ["./timeseries/demand/load.csv"] * len(self.Years)
         wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
         demand = wholesale_market.hourlyDemand
         write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
         demand_file_for_amiris = globalNames.load_file_for_amiris
-
+        dict_fuels = {}
         for k, substance in self.reps.substances.items():
             if calculatedprices == "next_year_price":
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
-            if substance.name == "nuclear":
-                FuelPrice_NUCLEAR=fuel_price
-            elif substance.name == "lignite":
-                FuelPrice_LIGNITE=fuel_price
-            elif substance.name == "hard_coal":
-                FuelPrice_HARD_COAL=fuel_price
-            elif substance.name == "natural_gas":
-                FuelPrice_NATURAL_GAS=fuel_price
-            elif substance.name == "light_oil":
-                FuelPrice_OIL=fuel_price
-            elif substance.name == "hydrogen":
-                FuelPrice_HYDROGEN= fuel_price
-            elif substance.name == "CO2":
-                Co2Prices = fuel_price
-            elif substance.name == "electricity":
+            if substance.name == "electricity":
                 if self.reps.country == "DE": # for germany the load is calculated with a trend.
                     new_demand = demand.copy()
                     new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
@@ -142,24 +120,18 @@ class PrepareMarket(DefaultModule):
                             shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
                             shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
                         # the write_demand_path continue being the same, as this is overwritten.
+            elif substance.name == "CO2":
+                Co2Prices = fuel_price
+            else:
+                try:
+                    dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
+                except KeyError:
+                    print(k + "not amiris name")
 
-
-        # d = {'Co2Prices': Co2Prices,
-        #      'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
-        #      'FuelPrice_HARD_COAL': FuelPrice_HARD_COAL, 'FuelPrice_NATURAL_GAS': FuelPrice_NATURAL_GAS,
-        #      'FuelPrice_OIL': FuelPrice_OIL,
-        #      'DemandSeries': write_demand}
-        #
-        # df = pd.DataFrame.from_dict(d, orient='index',  columns=self.Years)
-
-        d = {'AgentType': "FuelsMarket",
-             'NUCLEAR': FuelPrice_NUCLEAR, 'LIGNITE': FuelPrice_LIGNITE,
-             'HARD_COAL': FuelPrice_HARD_COAL, 'NATURAL_GAS': FuelPrice_NATURAL_GAS ,
-             'OIL': FuelPrice_OIL, 'HYDROGEN':FuelPrice_HYDROGEN} # todo also
         d2 = {'AgentType': "CarbonMarket", 'CO2': Co2Prices}
 
 
-        fuels = pd.DataFrame.from_dict(d, orient='index', columns= [1])
+        fuels = pd.DataFrame.from_dict(dict_fuels, orient='index', columns= [1])
         co2 = pd.DataFrame.from_dict(d2 , orient='index')
 
         result = pd.concat(
