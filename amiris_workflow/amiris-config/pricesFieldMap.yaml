@@ -22,10 +22,10 @@ Agents:
         value: 4
       - attribute: Attributes/FuelPrices
         list:
-          - length: 6
+          - length: 8
           - attribute: ConversionFactor
             value: 1.0
           - attribute: FuelType
-            value: [NUCLEAR, LIGNITE, HARD_COAL, NATURAL_GAS, OIL, HYDROGEN]
+            value: [NUCLEAR, LIGNITE, HARD_COAL, NATURAL_GAS, OIL, HYDROGEN, BIOMASS, WASTE]
           - attribute: Price
-            column: [NUCLEAR, LIGNITE, HARD_COAL, NATURAL_GAS, OIL, HYDROGEN]
+            column: [NUCLEAR, LIGNITE, HARD_COAL, NATURAL_GAS, OIL, HYDROGEN, BIOMASS, WASTE]
