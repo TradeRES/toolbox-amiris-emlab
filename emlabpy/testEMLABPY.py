@@ -8,16 +8,34 @@ from functools import reduce
 import pandas as pd
 import math
 
-df = pd.DataFrame(np.random.randint(0,10,size=(10,2)), columns=["costs", "size"])
-
-years = [2020,"test",2022]
-test = pd.Series(dtype='float64')
+# df = pd.DataFrame(np.random.randint(0,10,size=(10,2)), columns=["costs", "size"])
+#
+# years = [2020,"test",2022]
+# test = pd.Series(dtype='float64')
 
 #test.at[0]=132489
-test.at[2020]=0
-test.at[2022]=2
+# test.at[2020]=0
+# test.at[2022]=2
 # upsampled = test.resample('Y')
 # interpolated = upsampled.interpolate(method='linear')
+
+d = {'AgentType': "FuelsMarket",
+     'CO2': 0,
+     'NUCLEAR': 2, 'LIGNITE': 3,
+     'HARD_COAL': 3, 'NATURAL_GAS': 3,
+     'OIL': 3}
+d2 = {'AgentType': "Carbon Market", 'CO2': 1}
+
+df = pd.DataFrame.from_dict(d , orient='index', columns= ["1"])
+df2 = pd.DataFrame.from_dict(d2 , orient='index')
+result = pd.concat(
+    [df,df2],
+    axis=1,
+    join="outer",
+)
+df1_transposed = result.T
+df.to_excel("test.xlsx")
+
 
 from pandas import datetime
 # def parser(x):

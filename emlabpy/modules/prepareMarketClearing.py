@@ -96,6 +96,7 @@ class PrepareMarket(DefaultModule):
         FuelPrice_HARD_COAL = []
         FuelPrice_NATURAL_GAS = []
         FuelPrice_OIL = []
+        FuelPrice_HYDROGEN = []
 
         #demand = ["./timeseries/demand/load.csv"] * len(self.Years)
         wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
@@ -103,23 +104,27 @@ class PrepareMarket(DefaultModule):
         write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
         demand_file_for_amiris = globalNames.load_file_for_amiris
 
+
+
         for k, substance in self.reps.substances.items():
             if calculatedprices == "next_year_price":
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
             if substance.name == "nuclear":
-                FuelPrice_NUCLEAR.append(fuel_price)
+                FuelPrice_NUCLEAR=fuel_price
             elif substance.name == "lignite":
-                FuelPrice_LIGNITE.append(fuel_price)
+                FuelPrice_LIGNITE=fuel_price
             elif substance.name == "hard_coal":
-                FuelPrice_HARD_COAL.append(fuel_price)
+                FuelPrice_HARD_COAL=fuel_price
             elif substance.name == "natural_gas":
-                FuelPrice_NATURAL_GAS.append(fuel_price)
+                FuelPrice_NATURAL_GAS=fuel_price
             elif substance.name == "light_oil":
-                FuelPrice_OIL.append(fuel_price)
+                FuelPrice_OIL=fuel_price
+            elif substance.name == "hydrogen":
+                FuelPrice_HYDROGEN= fuel_price
             elif substance.name == "CO2":
-                Co2Prices.append(fuel_price)
+                Co2Prices = fuel_price
             elif substance.name == "electricity":
                 if self.reps.country == "DE": # for germany the load is calculated with a trend.
                     new_demand = demand.copy()
@@ -141,14 +146,31 @@ class PrepareMarket(DefaultModule):
                         # the write_demand_path continue being the same, as this is overwritten.
 
 
-        d = {'Co2Prices': Co2Prices,
-             'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
-             'FuelPrice_HARD_COAL': FuelPrice_HARD_COAL, 'FuelPrice_NATURAL_GAS': FuelPrice_NATURAL_GAS,
-             'FuelPrice_OIL': FuelPrice_OIL,
-             'DemandSeries': write_demand}
+        # d = {'Co2Prices': Co2Prices,
+        #      'FuelPrice_NUCLEAR': FuelPrice_NUCLEAR, 'FuelPrice_LIGNITE': FuelPrice_LIGNITE,
+        #      'FuelPrice_HARD_COAL': FuelPrice_HARD_COAL, 'FuelPrice_NATURAL_GAS': FuelPrice_NATURAL_GAS,
+        #      'FuelPrice_OIL': FuelPrice_OIL,
+        #      'DemandSeries': write_demand}
+        #
+        # df = pd.DataFrame.from_dict(d, orient='index',  columns=self.Years)
 
-        df = pd.DataFrame.from_dict(d, orient='index',  columns=self.Years)
-        df.to_excel(self.writer, sheet_name="scenario_data_emlab")
+        d = {'AgentType': "FuelsMarket",
+             'NUCLEAR': FuelPrice_NUCLEAR, 'LIGNITE': FuelPrice_LIGNITE,
+             'HARD_COAL': FuelPrice_HARD_COAL, 'NATURAL_GAS': FuelPrice_NATURAL_GAS ,
+             'OIL': FuelPrice_OIL, 'HYDROGEN':FuelPrice_HYDROGEN} # todo also
+        d2 = {'AgentType': "CarbonMarket", 'CO2': Co2Prices}
+
+
+        fuels = pd.DataFrame.from_dict(d, orient='index', columns= [1])
+        co2 = pd.DataFrame.from_dict(d2 , orient='index')
+
+        result = pd.concat(
+            [co2,fuels],
+            axis=1,
+            join="outer",
+        )
+        df1_transposed = result.T
+        df1_transposed.to_excel(self.writer, sheet_name="scenario_data_emlab")
 
     def write_conventionals(self):
         identifier = []
