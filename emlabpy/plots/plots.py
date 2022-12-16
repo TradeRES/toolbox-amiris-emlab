@@ -1764,9 +1764,6 @@ def writeInfo(reps, path_to_plots, scenario_name):
         print("fix_prices_to_2020")
         file.write("fix_fuel_prices_to_year \n")
         info.append("fix_fuel_prices_to_year")
-
-
-
     if reps.fix_prices_to_2020 == True:
         print("fix_prices_to_2020")
         file.write("fix_prices_to_2020 \n")
@@ -1888,7 +1885,7 @@ results_excel = "ValidationCommissionTimes-ExtendedPP.xlsx"
 #              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-Commissioned4NewDismantle",
 #              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionNewDismantle",
 #              "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstructionOldDismantled"]
-SCENARIOS = ["AfterConstruction_Extended"
+SCENARIOS = ["test"
            #  "NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction_Extended"
              ]
 
@@ -1900,11 +1897,8 @@ test_tech = None
 # test_tech = "Biomass_CHP_wood_pellets_DH"
 # test_tech = None
 
-
-
 path_to_excel = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
 template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosComparisonTemplate.xlsx")
-
 
 if not os.path.exists(path_to_excel):
     shutil.copy(template_excel, path_to_excel)

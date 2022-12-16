@@ -67,6 +67,7 @@ class Repository:
         self.fix_prices_to_2020 = False
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = False
+        self.fix_profiles_to_initial_year = False
         self.fix_demand_to_initial_year = False
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True

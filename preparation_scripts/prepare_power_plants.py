@@ -36,7 +36,7 @@ excel_path =  'C:\\toolbox-amiris-emlab\\data\\Power_plants_Ni.xlsx'
 country = "NL"
 year = 2019
 dataframeoriginal = pd.read_excel(excel_path, sheet_name= "extendedNL_updated", usecols="A:K" )
-dictionary = pd.read_excel(excel_path, sheet_name= "Dict", )
+dictionary = pd.read_excel(excel_path, sheet_name= "Dict", usecols="A:B" )
 dataframe = dataframeoriginal.loc[dataframeoriginal['Location'] == country]
 a = dictionary.set_index('Competes').to_dict()['traderes']
 dataframe.replace(a, inplace=True)

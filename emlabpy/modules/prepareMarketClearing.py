@@ -54,18 +54,15 @@ class PrepareMarket(DefaultModule):
         print("saved to ", self.path)
 
 
-
     def calculate_save_available_capacity(self):
+        # saving the available capacity to calculate the supply ratio
         sumcapacity = []
         for pp in self.power_plants_list:
             if pp.technology.intermittent == False:
                 # include hydropower, batteries, biogas,
-               # print(pp.technology.name + "_"+str(pp.capacity) )
-                sumcapacity.append(pp.capacity ) #* pp.actualEfficiency
+                sumcapacity.append(pp.capacity )
         peak_dispatchable_capacity = sum(sumcapacity)
         self.reps.dbrw.stage_peak_dispatchable_capacity(peak_dispatchable_capacity, self.reps.current_year)
-
-
 
     def sort_power_plants_by_age(self):
         self.power_plants_list.sort(key=lambda x:x.age)
@@ -73,7 +70,6 @@ class PrepareMarket(DefaultModule):
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
         self.simulation_year = self.reps.current_year
-        #self.Years = (list(range(self.reps.start_simulation_year, self.simulation_year + 1, 1)))
         self.Years =  [self.simulation_year]
 
     def setExpectations(self):
@@ -90,10 +86,9 @@ class PrepareMarket(DefaultModule):
         df.to_excel(self.writer, sheet_name="times")
 
     def write_scenario_data_emlab(self, calculatedprices):
-        #demand = ["./timeseries/demand/load.csv"] * len(self.Years)
         wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
         demand = wholesale_market.hourlyDemand
-        write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
+        #write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
         demand_file_for_amiris = globalNames.load_file_for_amiris
         dict_fuels = {}
         for k, substance in self.reps.substances.items():
@@ -110,27 +105,35 @@ class PrepareMarket(DefaultModule):
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
                         # the load was already updated in the clock step
                         pass
-                    elif self.reps.runningModule == "run_future_market" and self.reps.fix_demand_to_initial_year:
-                        # load and profiles dont change
-                        pass
-                    elif self.reps.runningModule == "run_future_market":
+                    else: # if  "run_future_market":
                         if self.reps.investmentIteration == 0:
-                            wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
-                            shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
-                            shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
-                            shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
+                            if self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == False:
+                                wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                                shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
+                                shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
+                                shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
+                            elif self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == True:
+                                wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                                print("updating only load")
+                            else:
+                                raise Exception
+
                         # the write_demand_path continue being the same, as this is overwritten.
             elif substance.name == "CO2":
                 Co2Prices = fuel_price
             else:
                 try:
-                    dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
+                    if self.reps.dictionaryFuelNames[k] in ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "HYDROGEN", "BIOMASS", "WASTE"]:
+                        dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
+                    else:
+                        print("Fuel not considered in AMIRIS" )
                 except KeyError:
                     print(k + "not amiris name")
 
+
         d2 = {'AgentType': "CarbonMarket", 'CO2': Co2Prices}
 
-
+        dict_fuels['AgentType']= "FuelsMarket"
         fuels = pd.DataFrame.from_dict(dict_fuels, orient='index', columns= [1])
         co2 = pd.DataFrame.from_dict(d2 , orient='index')
 
@@ -167,6 +170,7 @@ class PrepareMarket(DefaultModule):
              'InstalledPowerInMW': InstalledPowerInMW}
 
         df = pd.DataFrame(data=d)
+        df.sort_values(by=['InstalledPowerInMW'], inplace=True)
         df.to_excel(self.writer, sheet_name="conventionals")
 
     def write_renewables(self):
@@ -234,96 +238,8 @@ class PrepareMarket(DefaultModule):
              'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
 
         df = pd.DataFrame(data=d)
-        df.to_excel(self.writer, sheet_name="biogas")
-
-
-
-    def write_conventionals_and_biogas_with_prices(self, calculatedprices):
-        identifier = []
-        FuelType = []
-        OpexVarInEURperMWH = []
-        BlockSizeInMW = []
-        InstalledPowerInMW = []
-        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-        for pp in self.power_plants_list:
-            if pp.technology.type == "ConventionalPlantOperator":
-                identifier.append(pp.id)
-                FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
-
-                if calculatedprices == "next_year_price":
-                    fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
-                    CO2_price = self.reps.substances["CO2"].simulatedPrice_inYear * pp.technology.fuel.co2_density
-                else:
-                    fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
-                    CO2_price = self.reps.substances["CO2"].futurePrice_inYear * pp.technology.fuel.co2_density
-
-                if pp.name in operator.list_of_plants:
-                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.actualEfficiency  )
-                else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.actualEfficiency )
-
-                #Efficiency.append(pp.actualEfficiency)
-                BlockSizeInMW.append(pp.capacity)
-                InstalledPowerInMW.append(pp.capacity)
-
-        d = {'identifier': identifier, 'FuelType': FuelType, 'OpexVarInEURperMWH': OpexVarInEURperMWH,
-             'BlockSizeInMW': BlockSizeInMW,
-             'InstalledPowerInMW': InstalledPowerInMW}
-        df = pd.DataFrame(data=d)
-        df.sort_values(by=['BlockSizeInMW'], inplace=True)
-        df.sort_values(by=['OpexVarInEURperMWH'], inplace=True)
-
-        min = 0.1
-        max = 0.4
-        myrange = max - min
-        length = df.index.size
-        efficiency = []
-        for t in list(range(0,length)):
-            efficiency.append(min + myrange*t/length)
-        efficiency.reverse()
-        df["Efficiency"] = efficiency
-        df.to_excel(self.writer, sheet_name="conventionals")
-
-        identifier = []
-        InstalledPowerInMW = []
-        OpexVarInEURperMWH = []
-        Set = []
-        SupportInstrument = []
-        FIT = []
-        Premium = []
-        Lcoe = []
-        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-
-        for pp in self.power_plants_list:
-            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
-                pp.technology.name] == "Biogas":
-                identifier.append(pp.id)
-                InstalledPowerInMW.append(pp.capacity)
-                if calculatedprices == "next_year_price":
-                    fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
-                else:
-                    fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
-
-                if pp.name in operator.list_of_plants:
-                    OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price)/pp.actualEfficiency  )
-                else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price)/pp.actualEfficiency )
-
-                Set.append(self.reps.dictionaryTechSet[pp.technology.name])
-                SupportInstrument.append("-")
-                FIT.append("-")
-                Premium.append("-")
-                Lcoe.append("-")
-
-        d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
-             'OpexVarInEURperMWH': OpexVarInEURperMWH,
-             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
-
-        df = pd.DataFrame(data=d)
         df.sort_values(by=['InstalledPowerInMW'], inplace=True)
         df.to_excel(self.writer, sheet_name="biogas")
-
-
 
     def write_storage(self):
         identifier = []
@@ -355,3 +271,92 @@ class PrepareMarket(DefaultModule):
 
     def openwriter(self):
         self.writer = pd.ExcelWriter(self.path, mode="a", engine='openpyxl', if_sheet_exists='replace')
+
+
+
+    # def write_conventionals_and_biogas_with_prices(self, calculatedprices):
+    #     identifier = []
+    #     FuelType = []
+    #     OpexVarInEURperMWH = []
+    #     BlockSizeInMW = []
+    #     InstalledPowerInMW = []
+    #     operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+    #     for pp in self.power_plants_list:
+    #         if pp.technology.type == "ConventionalPlantOperator":
+    #             identifier.append(pp.id)
+    #             FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
+    #
+    #             if calculatedprices == "next_year_price":
+    #                 fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
+    #                 CO2_price = self.reps.substances["CO2"].simulatedPrice_inYear * pp.technology.fuel.co2_density
+    #             else:
+    #                 fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
+    #                 CO2_price = self.reps.substances["CO2"].futurePrice_inYear * pp.technology.fuel.co2_density
+    #
+    #             if pp.name in operator.list_of_plants:
+    #                 OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price + CO2_price)/pp.actualEfficiency  )
+    #             else:
+    #                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price + CO2_price)/pp.actualEfficiency )
+    #
+    #             BlockSizeInMW.append(pp.capacity)
+    #             InstalledPowerInMW.append(pp.capacity)
+    #
+    #     d = {'identifier': identifier, 'FuelType': FuelType, 'OpexVarInEURperMWH': OpexVarInEURperMWH,
+    #          'BlockSizeInMW': BlockSizeInMW,
+    #          'InstalledPowerInMW': InstalledPowerInMW}
+    #     df = pd.DataFrame(data=d)
+    #     df.sort_values(by=['BlockSizeInMW'], inplace=True)
+    #     df.sort_values(by=['OpexVarInEURperMWH'], inplace=True)
+    #
+    #     min = 0.1
+    #     max = 0.4
+    #     myrange = max - min
+    #     length = df.index.size
+    #     efficiency = []
+    #     for t in list(range(0,length)):
+    #         efficiency.append(min + myrange*t/length)
+    #     efficiency.reverse()
+    #     df["Efficiency"] = efficiency
+    #     df.to_excel(self.writer, sheet_name="conventionals")
+    #
+    #     identifier = []
+    #     InstalledPowerInMW = []
+    #     OpexVarInEURperMWH = []
+    #     Set = []
+    #     SupportInstrument = []
+    #     FIT = []
+    #     Premium = []
+    #     Lcoe = []
+    #     operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+    #
+    #     for pp in self.power_plants_list:
+    #         if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
+    #             pp.technology.name] == "Biogas":
+    #             identifier.append(pp.id)
+    #             InstalledPowerInMW.append(pp.capacity)
+    #             if calculatedprices == "next_year_price":
+    #                 fuel_price = self.reps.substances[pp.technology.fuel.name].simulatedPrice_inYear
+    #             else:
+    #                 fuel_price = self.reps.substances[pp.technology.fuel.name].futurePrice_inYear
+    #
+    #             if pp.name in operator.list_of_plants:
+    #                 OpexVarInEURperMWH.append(operator.reservePriceSR + (fuel_price)/pp.actualEfficiency  )
+    #             else:
+    #                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs + (fuel_price)/pp.actualEfficiency )
+    #
+    #             Set.append(self.reps.dictionaryTechSet[pp.technology.name])
+    #             SupportInstrument.append("-")
+    #             FIT.append("-")
+    #             Premium.append("-")
+    #             Lcoe.append("-")
+    #
+    #     d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
+    #          'OpexVarInEURperMWH': OpexVarInEURperMWH,
+    #          'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
+    #
+    #     df = pd.DataFrame(data=d)
+    #     df.sort_values(by=['InstalledPowerInMW'], inplace=True)
+    #     df.to_excel(self.writer, sheet_name="biogas")
+
+
+
