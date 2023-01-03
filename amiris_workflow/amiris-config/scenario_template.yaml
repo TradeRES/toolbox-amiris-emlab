@@ -37,6 +37,15 @@ Agents:
       ForecastPeriodInHours: 168
       ForecastRequestOffsetInSeconds: 27
 
+  - Type: SupportPolicy
+    Id: 90
+    Attributes:
+      SetSupportData:
+        # Add first dummy list entry since FAME does not allow for empty lists
+        - Set: Undefined
+          FIT:
+            TsFit: 0
+
   - Type: IndividualPlantBuilder
     Id: 2000
     Attributes:
