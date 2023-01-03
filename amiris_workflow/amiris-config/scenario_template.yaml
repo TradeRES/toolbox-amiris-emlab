@@ -25,6 +25,14 @@ Agents:
     Attributes:
       ShareOfRevenues: 0.0
 
+  - Type: RenewableTrader
+    Id: 3
+    Attributes:
+      ShareOfRevenues: 0.0
+
+  - Type: SystemOperatorTrader
+    Id: 4
+
   - Type: DemandTrader
     Id: 5
     Attributes:
