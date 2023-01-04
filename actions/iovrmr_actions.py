@@ -107,9 +107,11 @@ def write_amiris_config(data_manager, config, params):
         try:
             res_operators_and_traders = config_and_agents[2]
         except IndexError:
-            pass
+            res_operators_and_traders = None
         if "Contracts" in translation_map:
-            config_file = insert_contracts_from_map(inserted_agents, translation_map["Contracts"], config_file)
+            config_file = insert_contracts_from_map(
+                inserted_agents, translation_map["Contracts"], config_file, res_operators_and_traders, data
+            )
 
     write_yaml(config_file, output_file_path)
 

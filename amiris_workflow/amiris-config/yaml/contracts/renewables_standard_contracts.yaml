@@ -1,6 +1,6 @@
 AgentGroups:
   - &exchange 1
-  - &marketer 11
+  - &marketer [11, 12, 13]
   - &forecaster 6
 
 Contracts:

@@ -169,6 +169,8 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
                                 append_operation["below"],
                                 nest_flattened_items(items_to_append),
                             )
+                            if append_operation["agent"] == 90 and "SupportPolicy" not in registered_agents_per_plant:
+                                registered_agents_per_plant["SupportPolicy"] = 90
                     else:
                         raise_and_log_critical_error(
                             "Missing either `create` or `append` key for {}".format(translation)
@@ -180,7 +182,8 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
             else:
                 raise_and_log_critical_error("Failed creating agent specified as {}".format(translation))
         if registered_agents_per_plant:
-            all_registered_agents.append(registered_agents_per_plant)
+            if registered_agents_per_plant not in all_registered_agents:
+                all_registered_agents.append(registered_agents_per_plant)
 
     agent_list = nest_flattened_items(agent_list)
 
@@ -271,7 +274,7 @@ def add_trader_by_support_instrument(agent: Dict, template: Dict):
     """Retrieve support instrument for VariableRenewableOperator and map Operator to Trader"""
     if agent["Type"] != "VariableRenewableOperator":
         raise ValueError(
-            f"Malspecified AgentType: It should be 'VariableRenewableOperator'. You specified 'agent['Type']'."
+            f"Malspecified AgentType: It should be 'VariableRenewableOperator'. You specified '{agent['Type']}'."
         )
     try:
         support_instrument = agent["Attributes"]["SupportInstrument"]
@@ -295,12 +298,30 @@ def retrieve_trader_id(template: Dict, trader_type: str):
             return template_agent["Id"]
 
 
-def insert_contracts_from_map(data, translation_map, template):
+def insert_contracts_from_map(data, translation_map, template, res_operators_and_traders, raw_data):
     """
     Appends list of contracts to the given `template` as specified in `translation_map`.
     'SenderId' and 'ReceiverId' are derived either from `translation_map` if specified or from given 'data' which
     stores all inserted agents. Returns filled `template`.
     """
+    if not res_operators_and_traders:
+        if not list(data[0].keys())[0] == "SupportPolicy":
+            contract_list = fill_contracts_list(data, translation_map)
+        else:
+            contract_list = fill_contracts_list_for_policy(data, translation_map, raw_data)
+    else:
+        contract_list = fill_contracts_list_for_res(data, translation_map, res_operators_and_traders)
+
+    if not template["Contracts"]:
+        template["Contracts"] = contract_list
+    else:
+        template["Contracts"].extend(contract_list)
+
+    return template
+
+
+def fill_contracts_list(data: list, translation_map: list):
+    """Insert contracts and return contract list using standard approach"""
     contract_list = []
     for unit in data:
         for translation in translation_map:
@@ -317,12 +338,92 @@ def insert_contracts_from_map(data, translation_map, template):
                 contract.update({field: value})
             contract_list.append(contract)
 
-    if not template["Contracts"]:
-        template["Contracts"] = contract_list
-    else:
-        template["Contracts"].extend(contract_list)
+    return contract_list
 
-    return template
+
+def fill_contracts_list_for_res(data: list, translation_map: list, res_operators_and_traders: list):
+    """Insert contracts and return contract list using approach for RES (check for corresponding trader)"""
+    contract_list = []
+    for unit in data:
+        # Only one dictionary entry
+        unit_id = list(unit.values())[0]
+        for translation in translation_map:
+            contract = {}
+            for field in translation:
+                if "sender" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Sender")
+                    # Replace placeholder marketer
+                    if value != unit_id:
+                        for entry in res_operators_and_traders:
+                            if entry["Operator"] == unit_id:
+                                value = entry["Trader"]
+                                break
+                    field = "SenderId"
+                elif "receiver" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Receiver")
+                    # Replace placeholder marketer
+                    if value != unit_id:
+                        for entry in res_operators_and_traders:
+                            if entry["Operator"] == unit_id:
+                                value = entry["Trader"]
+                                break
+                    field = "ReceiverId"
+                else:
+                    value = get_field(translation, field)
+                contract.update({field: value})
+            contract_list.append(contract)
+
+    return contract_list
+
+
+def fill_contracts_list_for_policy(data: list, translation_map: list, raw_data: pd.DataFrame):
+    """Insert contracts and return contract list using approach for policy (add traders)"""
+    all_traders, supported_traders = obtain_traders_from_renewables_data(raw_data)
+    contract_list = []
+    support_contracts = ["SupportInfoRequest", "SupportInfo", "SupportPayoutRequest", "SupportPayout"]
+    for unit in data:
+        for translation in translation_map:
+            contract = {}
+            for field in translation:
+                if "sender" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Sender")
+                    if not value:
+                        if translation["ProductName"] in support_contracts:
+                            value = supported_traders
+                        else:
+                            value = all_traders
+                    field = "SenderId"
+                elif "receiver" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Receiver")
+                    if not value:
+                        if translation["ProductName"] in support_contracts:
+                            value = supported_traders
+                        else:
+                            value = all_traders
+                    field = "ReceiverId"
+                else:
+                    value = get_field(translation, field)
+                contract.update({field: value})
+            contract_list.append(contract)
+
+    return contract_list
+
+
+def obtain_traders_from_renewables_data(raw_data: pd.DataFrame):
+    """Extract renewable traders for simulation based on support information from raw data for renewbables"""
+    all_traders = []
+    unique_support = raw_data["SupportInstrument"].unique()
+    remaining_entries = [el for el in unique_support if el not in ["MPVAR", "MPFIX", "CFD", "CP"]]
+    if remaining_entries:
+        all_traders.append(11)
+    if "MPVAR" in unique_support or "MPFIX" in unique_support or "CFD" in unique_support or "CP" in unique_support:
+        all_traders.append(12)
+    if "FIT" in unique_support:
+        all_traders.append(13)
+
+    supported_traders = [trader for trader in all_traders if trader != 11]
+
+    return all_traders, supported_traders
 
 
 def get_id_or_derive_from_type(contract, unit, param):
