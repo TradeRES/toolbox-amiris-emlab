@@ -101,7 +101,13 @@ def write_amiris_config(data_manager, config, params):
         translation_map = load_yaml(amiris_map)
         if "Agents" not in translation_map:
             raise_and_log_critical_error("Found no Agents to create/append in {}.".format(amiris_maps))
-        config_file, inserted_agents = insert_agents_from_map(data, translation_map["Agents"], config_file)
+        config_and_agents = insert_agents_from_map(data, translation_map["Agents"], config_file)
+        config_file = config_and_agents[0]
+        inserted_agents = config_and_agents[1]
+        try:
+            res_operators_and_traders = config_and_agents[2]
+        except IndexError:
+            pass
         if "Contracts" in translation_map:
             config_file = insert_contracts_from_map(inserted_agents, translation_map["Contracts"], config_file)
 

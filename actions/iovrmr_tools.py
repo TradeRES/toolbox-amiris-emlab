@@ -189,6 +189,13 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
     else:
         template["Agents"].extend(agent_list)
 
+    if len(agent_list) > 0 and agent_list[0]["Type"] == "VariableRenewableOperator":
+        res_operators_and_marketers = []
+        for agent in agent_list:
+            res_operators_and_marketers.append(add_trader_by_support_instrument(agent, template))
+
+        return template, all_registered_agents, res_operators_and_marketers
+
     return template, all_registered_agents
 
 
@@ -260,15 +267,32 @@ def get_elements_from_list(value: List, row) -> List[Dict]:
     return list(attr_dict.values())
 
 
-def get_id_or_derive_from_type(contract, unit, param):
-    """
-    Returns Id derived from `param`+`id` in given `contract` dict or derived from `param`+`Type` in unit dictionary.
-    Raises error if Id cannot be found either in `contract` or `unit`.
-    """
-    if param + "Id" in contract:
-        return get_field(contract, param + "Id")
-    else:
-        return unit[get_field(contract, param + "Type")]
+def add_trader_by_support_instrument(agent: Dict, template: Dict):
+    """Retrieve support instrument for VariableRenewableOperator and map Operator to Trader"""
+    if agent["Type"] != "VariableRenewableOperator":
+        raise ValueError(
+            f"Malspecified AgentType: It should be 'VariableRenewableOperator'. You specified 'agent['Type']'."
+        )
+    try:
+        support_instrument = agent["Attributes"]["SupportInstrument"]
+        if support_instrument in ["MPVAR", "MPFIX", "CFD", "CP"]:
+            trader_id = retrieve_trader_id(template, "RenewableTrader")
+        elif support_instrument == "FIT":
+            trader_id = retrieve_trader_id(template, "SystemOperatorTrader")
+        else:
+            trader_id = retrieve_trader_id(template, "NoSupportTrader")
+            agent["Attributes"].pop("SupportInstrument")
+    except KeyError:
+        trader_id = retrieve_trader_id(template, "NoSupportTrader")
+
+    return {"Operator": agent["Id"], "Trader": trader_id}
+
+
+def retrieve_trader_id(template: Dict, trader_type: str):
+    """Retrieve Id for given type of Trader from template"""
+    for template_agent in template["Agents"]:
+        if template_agent["Type"] == trader_type:
+            return template_agent["Id"]
 
 
 def insert_contracts_from_map(data, translation_map, template):
@@ -299,6 +323,17 @@ def insert_contracts_from_map(data, translation_map, template):
         template["Contracts"].extend(contract_list)
 
     return template
+
+
+def get_id_or_derive_from_type(contract, unit, param):
+    """
+    Returns Id derived from `param`+`id` in given `contract` dict or derived from `param`+`Type` in unit dictionary.
+    Raises error if Id cannot be found either in `contract` or `unit`.
+    """
+    if param + "Id" in contract:
+        return get_field(contract, param + "Id")
+    else:
+        return unit[get_field(contract, param + "Type")]
 
 
 def get_all_csv_files_in_folder(folder: str) -> List[str]:

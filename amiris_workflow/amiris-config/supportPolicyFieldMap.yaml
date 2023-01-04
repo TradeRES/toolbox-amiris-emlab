@@ -1,0 +1,63 @@
+AgentGroups:
+  - &support 90
+
+Agents:
+  # FIT
+  - column: SupportInstrument
+    target: FIT
+    append:
+      - agent: *support
+        below: Attributes/SetSupportData
+        elements:
+          - attribute: Set
+            column: Set
+          - attribute: FIT/TsFit
+            column: FIT
+
+  # MPVAR
+  - column: SupportInstrument
+    target: MPVAR
+    append:
+      - agent: *support
+        below: Attributes/SetSupportData
+        elements:
+          - attribute: Set
+            column: Set
+          - attribute: MPVAR/Lcoe
+            column: Lcoe
+
+  # MPFIX
+  - column: SupportInstrument
+    target: MPFIX
+    append:
+      - agent: *support
+        below: Attributes/SetSupportData
+        elements:
+          - attribute: Set
+            column: Set
+          - attribute: MPFIX/Premium
+            column: Premium
+
+  # CFD
+  - column: SupportInstrument
+    target: CFD
+    append:
+      - agent: *support
+        below: Attributes/SetSupportData
+        elements:
+          - attribute: Set
+            column: Set
+          - attribute: CFD/Lcoe
+            column: Lcoe
+
+  # CP
+  - column: SupportInstrument
+    target: CP
+    append:
+      - agent: *support
+        below: Attributes/SetSupportData
+        elements:
+          - attribute: Set
+            column: Set
+          - attribute: CP/Premium
+            column: Premium

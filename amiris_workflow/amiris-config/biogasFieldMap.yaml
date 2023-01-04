@@ -21,7 +21,7 @@ Agents:
 
 
 AgentGroups:
-  - &marketer 2
+  - &marketer 11
 
 Contracts:
 #################################

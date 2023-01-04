@@ -21,17 +21,17 @@ Agents:
       GateClosureInfoOffsetInSeconds: 11
 
   - Type: NoSupportTrader
-    Id: 2
+    Id: 11
     Attributes:
       ShareOfRevenues: 0.0
 
   - Type: RenewableTrader
-    Id: 3
+    Id: 12
     Attributes:
       ShareOfRevenues: 0.0
 
   - Type: SystemOperatorTrader
-    Id: 4
+    Id: 13
 
   - Type: DemandTrader
     Id: 5
@@ -49,7 +49,7 @@ Agents:
     Id: 90
     Attributes:
       SetSupportData:
-        # Add first dummy list entry since FAME does not allow for empty lists
+        # Add first dummy list entry since FAME does not allow for empty lists (in case no support is considered)
         - Set: Undefined
           FIT:
             TsFit: 0
