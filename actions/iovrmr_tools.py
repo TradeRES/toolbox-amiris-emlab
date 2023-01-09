@@ -27,6 +27,15 @@ CONVENTIONAL_AGENT_RESULTS = {
     "ConventionalPlantOperator_DispatchedPowerInMWHperPlant": "DispatchedPowerInMWHperPlant",
 }
 CONVENTIONAL_RESULTS_GROUPED = ["ConventionalPlantOperator"]
+SUPPORT_SCHEMES = {
+    "NONE": "NoSupportTrader",
+    "MPVAR": "RenewableTrader",
+    "MPFIX": "RenewableTrader",
+    "CFD": "RenewableTrader",
+    "CP": "RenewableTrader",
+    "FIT": "SystemOperatorTrader"
+}
+TRADER_SUFFIX = 10000
 
 
 class FilterType(Enum):
@@ -187,17 +196,25 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
 
     agent_list = nest_flattened_items(agent_list)
 
+    if len(agent_list) > 0 and agent_list[0]["Type"] in "VariableRenewableOperator":
+        marketers = [agent for agent in agent_list if agent["Type"] in SUPPORT_SCHEMES]
+        operators = [agent for agent in agent_list if agent not in marketers]
+        for marketer in marketers:
+            marketer["Type"] = SUPPORT_SCHEMES[marketer["Type"]]
+            if marketer["Type"] in ["RenewableTrader", "NoSupportTrader"]:
+                marketer["Attributes"] = {"ShareOfRevenues": 0}
+        res_operators_and_marketers = []
+        for operator in operators:
+            res_operators_and_marketers.append(add_trader_mapping(operator))
+
+        template["Agents"].extend(agent_list)
+
+        return template, all_registered_agents, res_operators_and_marketers
+
     if not template["Agents"]:
         template["Agents"] = agent_list
     else:
         template["Agents"].extend(agent_list)
-
-    if len(agent_list) > 0 and agent_list[0]["Type"] == "VariableRenewableOperator":
-        res_operators_and_marketers = []
-        for agent in agent_list:
-            res_operators_and_marketers.append(add_trader_by_support_instrument(agent, template))
-
-        return template, all_registered_agents, res_operators_and_marketers
 
     return template, all_registered_agents
 
@@ -268,6 +285,17 @@ def get_elements_from_list(value: List, row) -> List[Dict]:
                 attr_dict[col_count][entry["attribute"]] = value
 
     return list(attr_dict.values())
+
+
+def add_trader_mapping(operator: Dict):
+    """Add mapping between operator and trader and remove SupportInstrument attribute in case of no support"""
+    try:
+        support_instrument = operator["Attributes"]["SupportInstrument"]
+        if support_instrument == "NONE":
+            operator["Attributes"].pop("SupportInstrument")
+    except KeyError:
+        raise ValueError("Missing support instrument specification!")
+    return {"Operator": operator["Id"], "Trader": int(str(operator["Id"]) + str(TRADER_SUFFIX))}
 
 
 def add_trader_by_support_instrument(agent: Dict, template: Dict):
