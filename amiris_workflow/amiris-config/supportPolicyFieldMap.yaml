@@ -1,5 +1,6 @@
 AgentGroups:
   - &exchange 1
+  - &forecaster 6
   - &policy 90
   - &marketers []
   - &supportedMarketers []
@@ -66,6 +67,9 @@ Agents:
             column: Premium
 
 Contracts:
+#################################
+# Support Policy                #
+#################################
   - SenderId: *supportedMarketers
     ReceiverId: *policy
     ProductName: SupportInfoRequest
@@ -107,3 +111,44 @@ Contracts:
     ProductName: MarketValueCalculation
     FirstDeliveryTime: 2626204
     DeliveryIntervalInSteps: 2628000
+
+#################################
+# RES                           #
+#################################
+# -- Forecasting --             #
+#################################
+  - SenderId: *forecaster
+    ReceiverId: *marketers
+    ProductName: ForecastRequest
+    FirstDeliveryTime: -26
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketers
+    ReceiverId: *forecaster
+    ProductName: BidsForecast
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Bidding --                 #
+#################################
+  - SenderId: *exchange
+    ReceiverId: *marketers
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *marketers
+    ReceiverId: *exchange
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: 3600
+
+#################################
+# -- Dispatch --                #
+#################################
+  - SenderId: *exchange
+    ReceiverId: *marketers
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600

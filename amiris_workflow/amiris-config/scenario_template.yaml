@@ -20,18 +20,11 @@ Agents:
       DistributionMethod: SAME_SHARES
       GateClosureInfoOffsetInSeconds: 11
 
+  # Used only for biogas
   - Type: NoSupportTrader
     Id: 11
     Attributes:
       ShareOfRevenues: 0.0
-
-  - Type: RenewableTrader
-    Id: 12
-    Attributes:
-      ShareOfRevenues: 0.0
-
-  - Type: SystemOperatorTrader
-    Id: 13
 
   - Type: DemandTrader
     Id: 5
