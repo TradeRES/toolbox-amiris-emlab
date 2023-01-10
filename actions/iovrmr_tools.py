@@ -33,7 +33,7 @@ SUPPORT_SCHEMES = {
     "MPFIX": "RenewableTrader",
     "CFD": "RenewableTrader",
     "CP": "RenewableTrader",
-    "FIT": "SystemOperatorTrader"
+    "FIT": "SystemOperatorTrader",
 }
 TRADER_SUFFIX = 10000
 
@@ -295,7 +295,10 @@ def add_trader_mapping(operator: Dict):
             operator["Attributes"].pop("SupportInstrument")
     except KeyError:
         raise ValueError("Missing support instrument specification!")
-    return {"Operator": operator["Id"], "Trader": int(str(operator["Id"]) + str(TRADER_SUFFIX))}
+    return {
+        "Operator": operator["Id"],
+        "Trader": int(str(operator["Id"]) + str(TRADER_SUFFIX)),
+    }
 
 
 def add_trader_by_support_instrument(agent: Dict, template: Dict):
@@ -408,7 +411,12 @@ def fill_contracts_list_for_policy(data: list, translation_map: list, raw_data: 
     """Insert contracts and return contract list using approach for policy (add traders)"""
     all_traders, supported_traders = obtain_traders_from_renewables_data(raw_data)
     contract_list = []
-    support_contracts = ["SupportInfoRequest", "SupportInfo", "SupportPayoutRequest", "SupportPayout"]
+    support_contracts = [
+        "SupportInfoRequest",
+        "SupportInfo",
+        "SupportPayoutRequest",
+        "SupportPayout",
+    ]
     for unit in data:
         for translation in translation_map:
             contract = {}
@@ -438,18 +446,13 @@ def fill_contracts_list_for_policy(data: list, translation_map: list, raw_data: 
 
 
 def obtain_traders_from_renewables_data(raw_data: pd.DataFrame):
-    """Extract renewable traders for simulation based on support information from raw data for renewbables"""
-    all_traders = []
-    unique_support = raw_data["SupportInstrument"].unique()
-    remaining_entries = [el for el in unique_support if el not in ["MPVAR", "MPFIX", "CFD", "CP"]]
-    if remaining_entries:
-        all_traders.append(11)
-    if "MPVAR" in unique_support or "MPFIX" in unique_support or "CFD" in unique_support or "CP" in unique_support:
-        all_traders.append(12)
-    if "FIT" in unique_support:
-        all_traders.append(13)
-
-    supported_traders = [trader for trader in all_traders if trader != 11]
+    """Extract renewable traders for simulation based on support information from raw data for renewables"""
+    all_traders = list((raw_data["identifier"].astype(str) + str(TRADER_SUFFIX)).values)
+    supported_traders = list(
+        (raw_data.loc[raw_data["SupportInstrument"] != "NONE", "identifier"].astype(str) + str(TRADER_SUFFIX)).values
+    )
+    all_traders = [int(trader_id) for trader_id in all_traders]
+    supported_traders = [int(trader_id) for trader_id in supported_traders]
 
     return all_traders, supported_traders
 
@@ -529,7 +532,9 @@ def get_all_csv_files_in_folder_except(folder: str, exceptions: List[str] = None
 
 
 def calculate_residual_load(
-    residual_load_results: Dict[str, pd.DataFrame], operators_offset: int = 5, demand_offset: int = 1
+    residual_load_results: Dict[str, pd.DataFrame],
+    operators_offset: int = 5,
+    demand_offset: int = 1,
 ) -> pd.Series:
     """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
     res_generation_to_aggregate = []
@@ -560,7 +565,9 @@ def calculate_residual_load(
 
 
 def calculate_overall_res_infeed(
-    residual_load_results: Dict[str, pd.DataFrame], biogas_results: pd.DataFrame, operators_offset: int = 5
+    residual_load_results: Dict[str, pd.DataFrame],
+    biogas_results: pd.DataFrame,
+    operators_offset: int = 5,
 ) -> pd.Series:
     """Calculate the overall RES infeed"""
     res_generation = []
@@ -606,7 +613,13 @@ def evaluate_dispatch_per_group(
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
         elif key == "StorageTrader":
             storage_results = val[
-                ["TimeStep", "AgentId", "AwardedDischargePowerInMWH", "AwardedChargePowerInMWH", "StoredEnergyInMWH"]
+                [
+                    "TimeStep",
+                    "AgentId",
+                    "AwardedDischargePowerInMWH",
+                    "AwardedChargePowerInMWH",
+                    "StoredEnergyInMWH",
+                ]
             ].dropna()
             storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
             storage_results = storage_results.set_index("new_time_step")
@@ -614,7 +627,8 @@ def evaluate_dispatch_per_group(
                 dispatch = initialize_dispatch(storage_results)
 
             final_storage_levels = pd.DataFrame(
-                index=[group[0] for group in storage_results.groupby("AgentId")], columns=["value"]
+                index=[group[0] for group in storage_results.groupby("AgentId")],
+                columns=["value"],
             )
             for group in storage_results.groupby("AgentId"):
                 dispatch["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
