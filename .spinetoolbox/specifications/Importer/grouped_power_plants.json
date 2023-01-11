@@ -91,12 +91,7 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "PowerPlantsInstalled",
-                                "skip_columns": [
-                                    9,
-                                    10,
-                                    11
-                                ]
+                                "value": "PowerPlantsInstalled"
                             },
                             {
                                 "map_type": "Object",
@@ -522,7 +517,8 @@
                             {
                                 "map_type": "ObjectClass",
                                 "position": "hidden",
-                                "value": "PowerPlantsInstalled"
+                                "value": "PowerPlantsInstalled",
+                                "read_start_row": 1
                             },
                             {
                                 "map_type": "Object",
@@ -565,7 +561,7 @@
             },
             "extendedDE": {},
             "extendedNL": {
-                "read_until_col": false,
+                "read_until_col": true,
                 "read_until_row": true
             },
             "groupedDE_RES": {},
@@ -588,7 +584,10 @@
             "groupedNLOld_Ni": {},
             "extendedNLwrong": {},
             "AnalysisforNiPlants": {},
-            "extendedNLRES": {}
+            "extendedNLRES": {
+                "read_until_row": true,
+                "read_until_col": true
+            }
         },
         "table_types": {
             "germany2019": {
@@ -626,8 +625,7 @@
                 "6": "string",
                 "7": "string",
                 "8": "string",
-                "9": "string",
-                "10": "string"
+                "9": "string"
             },
             "groupedDE_RES": {
                 "0": "string",
@@ -765,7 +763,10 @@
                 "6": "string",
                 "7": "string",
                 "8": "string",
-                "9": "string"
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string"
             },
             "extendedNLRES": {
                 "0": "string",
@@ -777,8 +778,31 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "float",
-                "10": "float"
+                "9": "float"
+            },
+            "extendedNLwrong": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string"
+            },
+            "AnalysisforNiPlants": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string"
             }
         },
         "table_default_column_type": {},

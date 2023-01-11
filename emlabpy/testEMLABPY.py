@@ -19,22 +19,6 @@ import math
 # upsampled = test.resample('Y')
 # interpolated = upsampled.interpolate(method='linear')
 
-d = {'AgentType': "FuelsMarket",
-     'CO2': 0,
-     'NUCLEAR': 2, 'LIGNITE': 3,
-     'HARD_COAL': 3, 'NATURAL_GAS': 3,
-     'OIL': 3}
-d2 = {'AgentType': "Carbon Market", 'CO2': 1}
-
-df = pd.DataFrame.from_dict(d , orient='index', columns= ["1"])
-df2 = pd.DataFrame.from_dict(d2 , orient='index')
-result = pd.concat(
-    [df,df2],
-    axis=1,
-    join="outer",
-)
-df1_transposed = result.T
-df.to_excel("test.xlsx")
 
 
 from pandas import datetime
@@ -43,10 +27,6 @@ from pandas import datetime
 #new = pd.to_datetime()
 # test.to_datetime( unit="A")
 #resample = new.resample('A')
-test.at[2021] = np.nan
-test.sort_index(ascending=True, inplace=True)
-test.interpolate(method='linear',  inplace=True)
-print(test[2021])
 
 # number_new_powerplants = math.floor(installedCapacityDeviation / capacity)
 # remainder = installedCapacityDeviation % capacity
@@ -124,14 +104,14 @@ print(test[2021])
 
 # aaa = pd.Series([3,4], index=[3 ,4 ])
 # df["E" ] = aaa
-
-other = pd.DataFrame({'key': [1, 2, 5],
-                      'B': ['B0', 'B1', 'B2']})
-ssd = pd.DataFrame({'key': [1, 2, 3],
-                      'C': ['B0', 'B1', 'B2']})
-other["years"] = [2020,2021,2022]
-other.set_index('years', inplace=True)
-other.drop(['key'], axis=1, inplace=True)
+#
+# other = pd.DataFrame({'key': [1, 2, 5],
+#                       'B': ['B0', 'B1', 'B2']})
+# ssd = pd.DataFrame({'key': [1, 2, 3],
+#                       'C': ['B0', 'B1', 'B2']})
+# other["years"] = [2020,2021,2022]
+# other.set_index('years', inplace=True)
+# other.drop(['key'], axis=1, inplace=True)
 
 # ssd.set_index('key')
 # df = pd.merge(df, other,   on='key', how='inner')

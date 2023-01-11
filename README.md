@@ -19,34 +19,39 @@ The integration is best illustrated with following diagram.
 To run EMLabpy from the spinetoolbox, it needs to be packed as a python module. 
 To do so, run the following commands in the toolbox-amiris-emlab folder:
 
+### Requirements
+- install Anaconda - not miniconda (with miniconda there have been some errors)
+- install Git https://git-scm.com/download/win
+- Make sure that java > 8 is installed
+
 ## Prepare environments
-To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created: 
+To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created:
 spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be executed
 
-### install anaconda
-(with miniconda there have been some errors)
-### install java
-Make sure that java > 8 is installed
 ### AMIRIS (emlabEnv)
-in toolbox-amiris-emlab folder
+in a anaconda prmpttoolbox-amiris-emlab folder
 ```
 conda env create -f environment.yml
-activate the environment
+conda activate emlabEnv
 pip install -r requirements.txt
-``` 
 
+``` 
+close the command prompt
 ### EMLABpy
-in toolbox-amiris-emlab folder
+in other command prompt and in toolbox-amiris-emlab folder
 ```
 conda create -n emlabpy python=3.8
 conda activate emlabpy
-python setup.py install -> if changes are done to the code
-python -m pip install .
+python setup.py install (Emlabpy has to be installed as a local module to be run in spinetoolbox)  
+python -m pip install . 
 pip install -r requirements.txt
-
+close this command prompt
 ```
 ### spinetoolbox-dev
-download spinetoolbox and install all requirements
+Having git installed
+
+download spinetoolbox and install all requirements as follows: 
+in a new command prompt
 ```
 conda create -n spinetoolbox-dev python=3.8
 conda activate spinetoolbox-dev
@@ -56,6 +61,9 @@ cd Spine-toolbox\
 pip install -r requirements.txt
 cd bin 
 upgrade_spine_reqs.bat
+
+cd ..
+and type spinetoolbox to open the tool
 ```
 In the toolbox-amiris-emlab folder activate  the environment spinetoolbox-dev. type spinetoolbox to start the tool in this environment, and in this folder.
 
