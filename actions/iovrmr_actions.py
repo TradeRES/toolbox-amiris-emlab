@@ -36,6 +36,8 @@ from iovrmr_tools import (
     calculate_overall_res_infeed,
     evaluate_dispatch_per_group,
     CONVENTIONAL_RESULTS_GROUPED,
+    SUPPORTED_AGENTS,
+    TRADER_SUFFIX,
 )
 
 
@@ -251,7 +253,8 @@ def aggregate_results(data_manager, config, params):
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
-    to_concat = []
+    to_concat_row_wise = []
+    to_concat_col_wise = []
     conventional_series = []
     residual_load_results = {}
     operator_results = {}
@@ -266,7 +269,7 @@ def aggregate_results(data_manager, config, params):
             }
             outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
             outputs_per_agent.rename(columns=column_names, inplace=True)
-            to_concat.append(outputs_per_agent)
+            to_concat_row_wise.append(outputs_per_agent)
 
             if file_name not in ["StorageTrader", "Biogas"]:
                 residual_load_results[file_name] = type_df
@@ -275,6 +278,26 @@ def aggregate_results(data_manager, config, params):
                 biogas_results = type_df
 
             operator_results[file_name] = type_df
+
+        elif file_name in SUPPORTED_AGENTS:
+            type_df = pd.read_csv(file, sep=";")
+            column_names = {
+                "ReceivedSupportInEUR": "SUPPORT_RECEIVED_IN_EURO",
+                "RefundedSupportInEUR": "SUPPORT_REFUNDED_IN_EURO",
+                "ReceivedMarketRevenues": "MARKET_REVENUES_IN_EURO",
+            }
+            outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
+            outputs_per_agent.rename(columns=column_names, inplace=True)
+            outputs_per_agent["NET_SUPPORT_IN_EURO"] = (
+                outputs_per_agent["SUPPORT_RECEIVED_IN_EURO"] - outputs_per_agent["SUPPORT_REFUNDED_IN_EURO"]
+            )
+            if 11 in outputs_per_agent.index:
+                outputs_per_agent.drop(index=11, inplace=True)
+            outputs_per_agent["new_index"] = (
+                outputs_per_agent.index.astype(str).str.split(str(TRADER_SUFFIX), expand=True).get_level_values(0)
+            ).astype(float)
+            outputs_per_agent.set_index("new_index", inplace=True)
+            to_concat_col_wise.append(outputs_per_agent)
 
         elif file_name in CONVENTIONAL_AGENT_RESULTS:
             conventional_df = pd.read_csv(file, sep=";")
@@ -302,9 +325,11 @@ def aggregate_results(data_manager, config, params):
     )
 
     if conventional_series:
-        to_concat.append(pd.concat(conventional_series, axis=1))
+        to_concat_row_wise.append(pd.concat(conventional_series, axis=1))
 
-    all_outputs_per_agent = pd.concat(to_concat)
+    all_outputs_per_agent = pd.concat(to_concat_row_wise)
+    support_outputs = pd.concat(to_concat_col_wise)
+    all_outputs_per_agent = pd.concat([all_outputs_per_agent, support_outputs], axis=1)
     all_outputs_per_agent[AmirisOutputs.CONTRIBUTION_MARGIN_IN_EURO.name] = (
         all_outputs_per_agent[AmirisOutputs.REVENUES_IN_EURO.name]
         - all_outputs_per_agent[AmirisOutputs.VARIABLE_COSTS_IN_EURO.name]
