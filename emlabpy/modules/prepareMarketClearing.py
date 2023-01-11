@@ -108,13 +108,19 @@ class PrepareMarket(DefaultModule):
                     else: # if  "run_future_market":
                         if self.reps.investmentIteration == 0:
                             if self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == False:
+                                print("update demand and fuels")
                                 wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
                                 shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
                                 shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
                                 shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
                             elif self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == True:
+                                print("update demand ")
                                 wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
-                                print("updating only load")
+                            elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
+                                # fix all
+                                pass
+                            elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False :
+                                raise Exception # so far no option to fix demand but not profiles
                             else:
                                 raise Exception
 
@@ -126,7 +132,8 @@ class PrepareMarket(DefaultModule):
                     if self.reps.dictionaryFuelNames[k] in ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "HYDROGEN", "BIOMASS", "WASTE"]:
                         dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
                     else:
-                        print("Fuel not considered in AMIRIS" )
+                        pass
+                        #"Fuel not considered in AMIRIS"
                 except KeyError:
                     print(k + "not amiris name")
 

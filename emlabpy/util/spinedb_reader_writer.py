@@ -10,7 +10,7 @@ from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 
 from domain.financialReports import FinancialPowerPlantReport
-from domain.investments import Investments, InvestmentDecisions
+from domain.investments import Investments, InvestmentDecisions, InstalledCapacity
 from modules.profits import Profits
 from util import globalNames
 from domain.newTechnology import NewTechnology
@@ -772,6 +772,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, new_db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions':  # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
+    elif object_class_name == 'InstalledDispatchableCapacity' and reps.runningModule == "plotting":
+        add_parameter_value_to_repository(reps, db_line, reps.installedCapacity, InstalledCapacity)
     elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting",
                                                                                    "run_investment_module"]:
         if db_line[1] in (reps.decommissioned["Decommissioned"]).Decommissioned and reps.runningModule != "plotting":

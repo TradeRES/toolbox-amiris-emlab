@@ -109,8 +109,8 @@ def prepare_AMIRIS_data(year, future_year, fix_demand_to_initial_year,fix_profil
             else:
                 pass
 
-        elif fix_demand_to_initial_year == False and fix_profiles_to_initial_year == True :
-            raise Exception
+        elif fix_demand_to_initial_year == True and fix_profiles_to_initial_year == False :
+            raise Exception # so far no option to fix demand but not profiles
 
         elif fix_demand_to_initial_year == False and fix_profiles_to_initial_year == False:
             demand = excel_NL['Load Profile'][year]

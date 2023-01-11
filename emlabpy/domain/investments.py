@@ -45,3 +45,10 @@ class Investments(ImportObject):
 
             self.project_value_year[future_year].append((int(iteration), parameter_value))
 
+class InstalledCapacity(ImportObject):
+    def __init__(self, name):
+        super().__init__(name)
+        self.yearly = dict()
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        self.yearly[int(parameter_name)] = int(parameter_value)
