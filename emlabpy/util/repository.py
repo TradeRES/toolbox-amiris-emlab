@@ -71,7 +71,7 @@ class Repository:
         self.fix_demand_to_initial_year = False
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
-
+        self.market_driven_renewables_investments_done = False
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -327,6 +327,13 @@ class Repository:
     def get_candidate_name_by_technology(self, tech):
         return next(i.name for i in self.candidatePowerPlants.values() if i.technology.name == tech)
 
+    def get_investable_and_targeted_candidate_power_plants(self) -> List[CandidatePowerPlant]:
+        return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True and
+                i.technology in ["WTG_onshore",
+                                    "WTG_offshore",
+                                    "PV_utility_systems"
+                                    ]
+                ]
 
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]

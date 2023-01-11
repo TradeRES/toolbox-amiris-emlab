@@ -142,6 +142,11 @@ class Investmentdecision(DefaultModule):
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
                     self.stop_iteration()
+
+                    #saving
+                    # once renewables are not longer profitable, then these are invested by target
+                    self.reps.dbrw.stage_market_driven_RE_investments_done()
+
                     # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)
 
@@ -269,12 +274,6 @@ class Investmentdecision(DefaultModule):
     def getinvestmentcosts(self, investmentCostperTechnology, time):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
-    #
-    # def setPowerPlantExpectations(self, powerplant, time):
-    #     powerplant.calculate_marginal_fuel_cost_per_mw_by_tick(self.reps, time)
-
-    def findAllClearingPointsForSubstanceAndTimeRange(self, substance, timeFrom, timeTo):
-        pass
 
     def calculateandCheckFutureCapacityExpectation(self, candidatepowerplant):
         # checking if the technology can be installed or not
