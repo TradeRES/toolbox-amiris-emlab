@@ -61,6 +61,7 @@ class Repository:
         self.realistic_candidate_capacities_for_future = False
         self.dummy_capacity = 1
         self.targetinvestment_per_year = True
+        self.install_missing_capacity_as_one_pp = True
         self.npv_with_annuity = False
         self.fix_fuel_prices_to_year = False
         self.fix_prices_to_2030 = False
@@ -330,7 +331,7 @@ class Repository:
 
     def get_investable_and_targeted_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True and
-                i.technology in ["WTG_onshore",
+                i.technology.name in ["WTG_onshore",
                                     "WTG_offshore",
                                     "PV_utility_systems"
                                     ]
