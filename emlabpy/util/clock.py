@@ -15,6 +15,14 @@ import os
 import pandas as pd
 from os.path import dirname, realpath
 #dirname(dirname(dirname(realpath(os.getcwd()))))
+"""
+This modules keeps the count of the clock, simulation year. 
+
+1. ("reset power plants status to investable = True
+2. If the clock is initialiaze the clock is set to zero and the data files are prepared
+2. If the clock 
+
+"""
 
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)

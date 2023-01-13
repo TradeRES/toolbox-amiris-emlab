@@ -29,21 +29,20 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
 
-        if reps.targetinvestment_per_year == True:
+        if reps.current_tick == 0 and self.reps.investmentIteration == 0 :
+            # In the first round it might not be necessary to test with these power plants
+            self.power_plants_list = []
+        elif reps.targetinvestment_per_year == True:
             if reps.market_driven_renewables_investments_done == False:
                 self.power_plants_list = self.reps.get_investable_and_targeted_candidate_power_plants()
                 # market driven are done, now testing the rest of the technologies
             elif reps.stage_market_driven_RE_investments_done == True:
                 # the renewables should have already be saved as not investable
                 self.power_plants_list = self.reps.get_investable_candidate_power_plants()
-
         else: # no target investments, test as normal
             self.power_plants_list = self.reps.get_investable_candidate_power_plants()
 
         # self.power_plants_ids_list = list(range(1, len(reps.candidatePowerPlants) + 1, 1))
-
-
-
 
     def act(self):
         self.setTimeHorizon()

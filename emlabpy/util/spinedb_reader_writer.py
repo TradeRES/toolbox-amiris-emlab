@@ -115,6 +115,8 @@ class SpineDBReaderWriter:
                 reps.npv_with_annuity = bool(row['parameter_value'])
             elif row['parameter_name'] == 'targetinvestment_per_year':
                 reps.targetinvestment_per_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'install_missing_capacity_as_one_pp':
+                reps.install_missing_capacity_as_one_pp = bool(row['parameter_value'])
             elif row['parameter_name'] == 'writeALLcostsinOPEX':
                 reps.writeALLcostsinOPEX = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_profiles_to_initial_year':

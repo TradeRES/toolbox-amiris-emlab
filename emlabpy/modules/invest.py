@@ -120,7 +120,6 @@ class Investmentdecision(DefaultModule):
                     elif projectvalue < 0:
                         # the power plant should not be investable in next rounds
                         # saving if the candidate power plant remains or not as investable
-
                         candidatepowerplant.setViableInvestment(False)
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
@@ -164,6 +163,7 @@ class Investmentdecision(DefaultModule):
                                                                       self.reps.investmentIteration,
                                                                       self.futureInvestmentyear, self.reps.current_tick)
                     # saving profits of installed power plants.
+
                     self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
 
             else:
@@ -383,16 +383,24 @@ class Investmentdecision(DefaultModule):
 
                 number_new_powerplants = math.floor(installedCapacityDeviation / bestCandidatePowerPlant.capacity)
                 remainder = installedCapacityDeviation % bestCandidatePowerPlant.capacity
-                for i in range(number_new_powerplants):
+                if self.reps.install_missing_capacity_as_one_pp == True:
+                    bestCandidatePowerPlant.capacity = installedCapacityDeviation
                     print("Target investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity) )
-                    if i == number_new_powerplants -1 :
-                        bestCandidatePowerPlant.capacity += remainder
-                    else:
-                        pass
                     newplant = self.invest(bestCandidatePowerPlant, True)
                     newplant.candidate_name = candidate_name
-                   # a =zip(newplant, candidate_name)
                     new_target_power_plants.append(newplant)
+                else:
+                    for i in range(number_new_powerplants):
+                        print("Target investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity) )
+                        if i == number_new_powerplants -1 :
+                            bestCandidatePowerPlant.capacity += remainder
+                        else:
+                            pass
+                        newplant = self.invest(bestCandidatePowerPlant, True)
+                        newplant.candidate_name = candidate_name
+                       # a =zip(newplant, candidate_name)
+                        new_target_power_plants.append(newplant)
+
         return new_target_power_plants
 
 
