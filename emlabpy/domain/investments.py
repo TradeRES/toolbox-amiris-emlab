@@ -52,3 +52,12 @@ class InstalledCapacity(ImportObject):
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         self.yearly[int(parameter_name)] = int(parameter_value)
+
+
+class InstalledFuturePowerPlants(ImportObject):
+    def __init__(self, name):
+        super().__init__(name)
+        self.installed_names = dict()
+
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        self.installed_names[int(parameter_name)] = parameter_value

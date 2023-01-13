@@ -66,7 +66,7 @@ class Dismantle(DefaultModule):
                     plant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(plant.name)
                 else:
-                    # print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
+                    print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
                             1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
                     plant.setActualFixedOperatingCost(ModifiedOM)
@@ -113,6 +113,7 @@ class Dismantle(DefaultModule):
             technology = self.reps.power_generating_technologies[powerplant.technology.name]
             if powerplant.age > technology.expected_lifetime:
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
+                print(powerplant.name + " " + str(powerplant.age) + " to be decomm")
             elif powerplant.commissionedYear <= self.reps.current_year:
                 powerplant.status = globalNames.power_plant_status_operational
             elif powerplant.commissionedYear > self.reps.current_year:

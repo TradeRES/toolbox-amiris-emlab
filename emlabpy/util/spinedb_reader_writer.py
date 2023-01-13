@@ -10,9 +10,9 @@ from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 
 from domain.financialReports import FinancialPowerPlantReport
-from domain.investments import Investments, InvestmentDecisions, InstalledCapacity
+from domain.investments import Investments, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
 from modules.profits import Profits
-from util import globalNames
+
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
 from util.repository import *
@@ -48,6 +48,7 @@ class SpineDBReaderWriter:
         self.VariableRenewable_classname = "Renewables"
         self.Storages_classname = "Storages"
         self.total_capacity_classname = "InstalledDispatchableCapacity"
+        self.installed_future_power_plants = "InstalledFuturePowerPlants"
         self.amirisdb = None
 
         if open_db == "Amiris":
@@ -297,9 +298,17 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.total_capacity_classname)
         self.stage_object(self.total_capacity_classname, object_name)
         self.stage_object_parameter(self.total_capacity_classname, str(year))
-
         self.stage_object_parameter_values(self.total_capacity_classname, object_name,
                                            [(str(year) ,peak_dispatchable_capacity)], '0')
+
+    def stage_installed_pp_names(self, list_installed_pp, simulation_tick):
+        object_name = "All"
+        self.stage_object_class(self.installed_future_power_plants)
+        self.stage_object(self.installed_future_power_plants, object_name)
+        self.stage_object_parameter(self.installed_future_power_plants, str(simulation_tick))
+        self.stage_object_parameter_values(self.installed_future_power_plants, object_name,
+                                           [(str(simulation_tick) ,list_installed_pp)], '0')
+
 
     def stage_candidate_pp_investment_status_structure(self):
         self.stage_object_class(self.candidate_powerplant_installed_classname)
@@ -423,6 +432,26 @@ class SpineDBReaderWriter:
                                            [("ProfitsC", pp_profits)], "0")
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("PowerPlantsC", pp_numbers)], "0")
+
+
+    def stage_future_total_profits_installed_plants(self, reps, pp_names, pp_total_profits):
+        tick = reps.current_tick  + reps.lookAhead
+        parametername = "expectedTotalProfits"
+        self.stage_object_class(self.powerplant_installed_classname)
+        self.stage_object_parameter(self.powerplant_installed_classname, parametername)
+        for i, pp_name in enumerate(pp_names):
+            pp_profit = pp_total_profits[i] - reps.power_plants[pp_name].actualFixedOperatingCost
+            self.stage_object(self.powerplant_installed_classname, str(pp_name))
+            self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
+                                               [(parametername, Map( [str(tick)], [float(pp_profit)]) )], "0")
+
+        for pp_name in reps.installedFuturePowerPlants["All"].installed_names[tick]:
+            if pp_name not in pp_names:
+                print(pp_name + "was tested but not used - > no operational profits")
+                pp_profit = - reps.power_plants[pp_name].actualFixedOperatingCost
+                self.stage_object(self.powerplant_installed_classname, str(pp_name))
+                self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
+                                                   [(parametername, Map( [str(tick)], [float(pp_profit)]) )], "0")
 
     def get_last_iteration(self):
         return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
@@ -778,8 +807,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, new_db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'InvestmentDecisions':  # needed fo "run_financial_results", "plotting", investment
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
-    elif object_class_name == 'InstalledDispatchableCapacity' and reps.runningModule == "plotting":
+    elif object_class_name == "InstalledDispatchableCapacity" and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.installedCapacity, InstalledCapacity)
+    elif object_class_name == "InstalledFuturePowerPlants" and reps.runningModule == "run_investment_module":
+        add_parameter_value_to_repository(reps, db_line, reps.installedFuturePowerPlants, InstalledFuturePowerPlants)
     elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting",
                                                                                    "run_investment_module"]:
         if db_line[1] in (reps.decommissioned["Decommissioned"]).Decommissioned and reps.runningModule != "plotting":
