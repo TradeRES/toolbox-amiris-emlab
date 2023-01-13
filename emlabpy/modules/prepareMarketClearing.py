@@ -105,7 +105,7 @@ class PrepareMarket(DefaultModule):
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
                         # the load was already updated in the clock step
                         pass
-                    else: # if  "run_future_market":
+                    else: # runnning   "run_future_market":
                         if self.reps.investmentIteration == 0:
                             if self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == False:
                                 print("update demand and fuels")
@@ -117,7 +117,7 @@ class PrepareMarket(DefaultModule):
                                 print("update demand ")
                                 wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
                             elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
-                                # fix all
+                                print("dont update demand, nor profiles")
                                 pass
                             elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False :
                                 raise Exception # so far no option to fix demand but not profiles

@@ -102,13 +102,15 @@ from pandas import datetime
 #
 # df.index.name = "key"
 
-# aaa = pd.Series([3,4], index=[3 ,4 ])
-# df["E" ] = aaa
+a = pd.Series([3,8], index=[4, 5])
+print(a.loc[3,4])
+
 #
 # other = pd.DataFrame({'key': [1, 2, 5],
 #                       'B': ['B0', 'B1', 'B2']})
-# ssd = pd.DataFrame({'key': [1, 2, 3],
-#                       'C': ['B0', 'B1', 'B2']})
+
+
+
 # other["years"] = [2020,2021,2022]
 # other.set_index('years', inplace=True)
 # other.drop(['key'], axis=1, inplace=True)

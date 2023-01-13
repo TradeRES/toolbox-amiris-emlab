@@ -105,6 +105,7 @@ class Repository:
         self.investments = dict()
         self.investmentDecisions = dict()
         self.installedCapacity = dict()
+        self.installedFuturePowerPlants = dict()
 
         self.bigBank = BigBank("bank")
         self.manufacturer = PowerPlantManufacturer("manufacturer")

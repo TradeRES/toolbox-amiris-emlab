@@ -42,7 +42,7 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     ax1.set_ylabel('NPV [Eur/MW] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per MW per iterations for future year ' + str(future_year))
-    ax1.set_ylim(bottom=0)
+    #ax1.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
                bbox_to_anchor=(1.2, 1.1))
@@ -690,11 +690,11 @@ def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
     plt.ylabel('Market based cost recovery [Eur]', fontsize='medium')
     plt.grid()
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
-    # axs33.set_title('Market based cost recovery ')
-    # axs33.annotate('(Revenues - Costs) Include Capacity Mechanisms',
-    #                xy=(1, 1.1), xycoords='figure fraction',
-    #                horizontalalignment='right', verticalalignment='bottom',
-    #                fontsize='small')
+    axs33.set_title('Market based cost recovery ')
+    axs33.annotate('(Revenues - Costs) Include Capacity Mechanisms',
+                   xy=(1, 1.1), xycoords='figure fraction',
+                   horizontalalignment='right', verticalalignment='bottom',
+                   fontsize='small')
     fig33 = axs33.get_figure()
     fig33.savefig(path_to_plots + '/' + 'Cost recovery.png', bbox_inches='tight', dpi=300)
     plt.close()
@@ -1656,7 +1656,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
     yearly_costs = prepare_screening_curves(reps, test_year)
-    if calculate_investments !=False:
+    if calculate_investments != False:
         yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
         plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, test_year + reps.lookAhead)
     plot_screening_curve(yearly_costs, path_to_plots, test_year)
@@ -1760,12 +1760,13 @@ def writeInfo(reps, path_to_plots, scenario_name):
     print("pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling" + str(reps.start_tick_dismantling))
     file.write(
         "pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling " + str(reps.start_tick_dismantling))
-    info.append("pastTimeHorizon " + str(reps.pastTimeHorizon))
-    info.append("start_tick_dismantling" + str(reps.start_tick_dismantling))
-    file.write("look ahead " + str(reps.lookAhead))
-    info.append("look ahead " + str(reps.lookAhead))
-    file.write("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends))
-    info.append("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends))
+    info.append("pastTimeHorizon " + str(reps.pastTimeHorizon) + "\n")
+    info.append("start_tick_dismantling" + str(reps.start_tick_dismantling)+ "\n")
+    file.write("look ahead " + str(reps.lookAhead)+ "\n")
+    info.append("look ahead " + str(reps.lookAhead)+ "\n")
+    file.write("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends)+ "\n")
+    info.append("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends)+ "\n")
+
 
     if reps.fix_fuel_prices_to_year != False:
         print("fix_prices_to_2020")
@@ -1895,11 +1896,11 @@ SCENARIOS = ["test"
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 0
+test_tick = 5
 # write None is no investment is expected,
-test_tech =  None
+test_tech =  "CCGT"
+calculate_investments = True
 existing_scenario = False
-calculate_investments = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False

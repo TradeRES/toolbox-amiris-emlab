@@ -64,21 +64,24 @@ class Investmentdecision(DefaultModule):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
         self.read_csv_results_and_filter_candidate_plants()
-        pp_numbers = []
+        pp_names = []
         pp_profits = []
         cp_numbers = []
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
-        # todo: this could be removel once the model is validated
+        # todo: these variables could be removed once the model is validated
         for pp_id in self.ids_of_future_installed_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
-            pp_numbers.append(pp.name)
+            pp_names.append(pp.name)
             pp_profits.append(pp.operationalProfit)
-        self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_numbers, pp_profits)
+        self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_names, pp_profits)
         self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+        if self.reps.current_tick == 0 and self.reps.investmentIteration == 0 :
+            # the first iteration on the first year, no investments are done, it is only to check the old power plants profits in a future market
+            print(" FIRST RUN ONLY TO TEST THE MARKET")
+            self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
 
-        # save the iteration
-        if self.agent.readytoInvest == True:  # todo this is also for now not active. no cash flow is considered as an impedement to invest
+        else:
             #  for now there is only one energyproducer
             bestCandidatePowerPlant = None
             highestValue = 0
@@ -160,13 +163,11 @@ class Investmentdecision(DefaultModule):
                             self.reps.dbrw.stage_investment_decisions(newplant.candidate_name, newplant.name,
                                                                       self.reps.investmentIteration,
                                                                       self.futureInvestmentyear, self.reps.current_tick)
+                    # saving profits of installed power plants.
+                    self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
 
-                    # self.agent.readytoInvest = False #
             else:
                 print("all technologies are unprofitable")
-
-        else:
-            print("agent is not longer willing to invest")  # This is not enabled for not
 
     def invest(self, bestCandidatePowerPlant, target_invest):
         if self.reps.install_at_look_ahead_year == True:

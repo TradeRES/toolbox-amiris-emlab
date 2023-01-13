@@ -73,6 +73,7 @@ class CreatingFinancialReports(DefaultModule):
             self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
             # total profits are used to decide for decommissioning saved as totalProfits
             operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues +  fixed_and_variable_costs
+
             financialPowerPlantReport.totalProfits= operational_profit  # saved as totalProfits
 
             # total profits with loans are to calculate RES support. saved as totalProfitswLoans
@@ -83,6 +84,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.irr = irr
             financialPowerPlantReport.npv = npv
             financialPowerPlantReports.append(financialPowerPlantReport)
+        # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
 

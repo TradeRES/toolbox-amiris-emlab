@@ -2,10 +2,10 @@
 This file contains all classes directly related to
 PowerPlant
 """
-from domain.energyproducer import EnergyProducer
 from domain.import_object import *
 from random import random
 import logging
+import pandas as pd
 from domain.actors import EMLabAgent
 from domain.loans import Loan
 from util import globalNames
@@ -14,14 +14,13 @@ import numpy as np
 class PowerPlant(EMLabAgent):
     def __init__(self, name):
         super().__init__(name)
-
         self.name = name # power plants that have a name/number higher than 1000
         self.id = 0
         self.technology = None
         self.location = ""
         self.owner = None # change if there are more energyproducers
         self.capacity = 0
-
+        self.expectedTotalProfits = 0
         # TODO: Implement GetActualEfficiency -> for now the fixed costs are the ones incrementing with the year
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
@@ -77,6 +76,7 @@ class PowerPlant(EMLabAgent):
             self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
             if reps.current_tick ==  0 and reps.runningModule == "run_decommission_module":
+                # The difference of the year of the power plants is added to the age of power plants in the first decommission step
                self.age = int(parameter_value) + reps.add_initial_age_years
                self.commissionedYear = reps.current_year - int(parameter_value)  - reps.add_initial_age_years
             else:
@@ -87,13 +87,6 @@ class PowerPlant(EMLabAgent):
                 if self.age >  reps.current_tick:
                     raise Exception("age is higher than it should be " + str(self.id) +" Name " + str(self.name))
 
-
-
-           #  if int(self.name) > 10000:
-           #      a = str(self.id)[0:4]
-           #      self.commissionedYear = int(a)
-           #  else:
-           #      self.commissionedYear = reps.current_year - int(parameter_value)
         elif parameter_name == 'actualFixedOperatingCost':
             self.actualFixedOperatingCost =  float(parameter_value)
         elif parameter_name == 'dismantleTime':
@@ -110,7 +103,11 @@ class PowerPlant(EMLabAgent):
             self.label = parameter_value
         elif parameter_name == 'InitialEnergyLevelInMWH':
             self.initialEnergyLevelInMWH = float(parameter_value)
-
+        elif parameter_name == 'expectedTotalProfits' and reps.runningModule == "run_future_market":
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.expectedTotalProfits = pd.Series(values, index = index)
 
     def calculate_emission_intensity(self, reps):
         # emission = 0
