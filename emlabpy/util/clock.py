@@ -18,9 +18,10 @@ from os.path import dirname, realpath
 """
 This modules keeps the count of the clock, simulation year. 
 
-1. ("reset power plants status to investable = True
-2. If the clock is initialiaze the clock is set to zero and the data files are prepared
-2. If the clock 
+1. first all candidate power plants are reset to be investable 
+2. If the clock is initialiaze the clock is set to zero, years file set, and the data files are prepared
+2. If the clock is to be incremented, then the clock is incremented
+    If the final year is achieved then only years file is updated, otherwise also the next year is updated in the DB
 
 """
 
@@ -232,7 +233,6 @@ try:
 
             new_tick = step + previous_tick
             print('Incrementing Clock to ' + str(new_tick))
-
             Current_year = next(int(i['parameter_value']) for i in
                                 db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                        object_name) \
