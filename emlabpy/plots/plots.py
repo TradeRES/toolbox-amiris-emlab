@@ -839,11 +839,11 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
-    # if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
-    #     years_to_generate_and_build = list(
-    #     range(2013, reps.current_year + 1 + reps.max_permit_build_time))
-    # else:
-    #     pass
+    if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
+        years_to_generate_and_build = list(
+        range(2013, reps.current_year + 1 + reps.max_permit_build_time))
+    else:
+        pass
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
@@ -1891,14 +1891,14 @@ results_excel = "ValidationCommissionTimes_DemandGrowth.xlsx"
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2045_SD50_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction",
 #              "NL2045_SD50_PH3_MI15000_totalProfits_future1installed1-ComissionAfter4years"]
-SCENARIOS = ["test_investments"
+SCENARIOS = ["test"
              ]
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 20
+test_tick = 0
 # write None is no investment is expected,
-test_tech =  "OCGT"
+test_tech =  "CCGT"
 calculate_investments = True
 existing_scenario = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
@@ -1957,10 +1957,6 @@ for scenario_name in SCENARIOS:
             spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
             reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
             folder_name = first + scenario_name
-
-            # attention: erase this
-            # reps.current_year =2025
-            # reps.current_tick =5
 
             if read_electricity_prices == True:
                 electricity_prices, residual_load, TotalAwardedPowerInMW = reading_electricity_prices(reps,

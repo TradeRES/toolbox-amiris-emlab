@@ -53,6 +53,7 @@ class Repository:
         self.start_tick_fuel_trends = 0
         self.start_tick_dismantling = 0
         self.investmentIteration = 0
+        self.testing_future_year = 0 # testing the future market from the next year during initialization
         self.maximum_investment_capacity_per_year = 0
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
@@ -366,6 +367,12 @@ class Repository:
     def get_unique_candidate_technologies(self):
         try:
             return [i.technology for name, i in self.candidatePowerPlants.items()]
+        except StopIteration:
+            return None
+
+    def get_unique_candidate_names(self):
+        try:
+            return [name for name, i in self.candidatePowerPlants.items()]
         except StopIteration:
             return None
 

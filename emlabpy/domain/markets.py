@@ -42,8 +42,7 @@ class ElectricitySpotMarket(Market):
             load_path =globalNames.load_file_for_amiris
             if reps.country =="DE":
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
-                # no dynamic load for other cases yet
-                self.future_demand = self.hourlyDemand
+                self.future_demand = self.hourlyDemand # no dynamic load for other cases yet
             elif reps.country =="NL":
                 future_load_path =globalNames.future_load_file_for_amiris
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)

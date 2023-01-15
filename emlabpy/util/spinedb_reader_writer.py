@@ -117,8 +117,6 @@ class SpineDBReaderWriter:
                 reps.targetinvestment_per_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'install_missing_capacity_as_one_pp':
                 reps.install_missing_capacity_as_one_pp = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'writeALLcostsinOPEX':
-                reps.writeALLcostsinOPEX = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_profiles_to_initial_year':
                 reps.fix_profiles_to_initial_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_demand_to_initial_year':
@@ -129,7 +127,8 @@ class SpineDBReaderWriter:
                 reps.install_at_look_ahead_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'target_investments_done':
                 reps.target_investments_done = bool(row['parameter_value'])
-
+            elif row['parameter_name'] == 'testing_future_year':
+                reps.testing_future_year = int(row['parameter_value'])
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
@@ -322,6 +321,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.candidate_powerplant_installed_classname, object_name,
                                            [('ViableInvestment', candidatepowerplant.viableInvestment)], '0')
 
+    def stage_candidate_status_to_investable(self, all_candidates_names):
+        for candidate in all_candidates_names:
+            self.stage_object(self.candidate_powerplant_installed_classname, candidate)
+            self.stage_object_parameter_values(self.candidate_powerplant_installed_classname, candidate,
+                                               [('ViableInvestment', True)], '0')
+
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 
@@ -435,6 +440,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("PowerPlantsC", pp_numbers)], "0")
 
+    def stage_testing_future_year(self,reps):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "testing_future_year")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [("testing_future_year", reps.testing_future_year)], "0")
 
     def stage_future_total_profits_installed_plants(self, reps, pp_names, pp_total_profits):
         tick = reps.current_tick  + reps.lookAhead

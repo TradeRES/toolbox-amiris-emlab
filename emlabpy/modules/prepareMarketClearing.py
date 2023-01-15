@@ -19,7 +19,6 @@ class PrepareMarket(DefaultModule):
         self.tick = 0
         self.simulation_year = 0
         self.empty = None
-        self.Years = []
         self.writer = None
         self.path = globalNames.amiris_data_path
         self.power_plants_list = []
@@ -39,15 +38,9 @@ class PrepareMarket(DefaultModule):
         self.openwriter()
         self.write_renewables()
         self.write_storage()
-
-        if self.reps.writeALLcostsinOPEX ==True:
-            self.write_conventionals_and_biogas_with_prices("next_year_price")
-
-        else:
-            self.write_conventionals()
-            self.write_biogas()
-            self.write_scenario_data_emlab("next_year_price")
-
+        self.write_conventionals()
+        self.write_biogas()
+        self.write_scenario_data_emlab("next_year_price")
         self.write_times()
         self.writer.save()
         self.writer.close()
@@ -70,7 +63,6 @@ class PrepareMarket(DefaultModule):
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
         self.simulation_year = self.reps.current_year
-        self.Years =  [self.simulation_year]
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
@@ -107,24 +99,34 @@ class PrepareMarket(DefaultModule):
                         pass
                     else: # runnning   "run_future_market":
                         if self.reps.investmentIteration == 0:
-                            if self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == False:
-                                print("update demand and fuels")
-                                wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
-                                shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
-                                shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
-                                shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
-                            elif self.reps.fix_demand_to_initial_year == False and self.reps.fix_profiles_to_initial_year == True:
-                                print("update demand ")
-                                wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
-                            elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
+                            if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
-                                pass
+                            elif self.reps.fix_demand_to_initial_year == False:
+                                if  self.reps.current_tick == 0  and self.reps.testing_future_year <  self.reps.lookAhead and self.reps.testing_future_year > 0:
+                                    print("Initialization investment update demand to year "  + str(self.simulation_year))
+                                    excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
+                                                             sheet_name=["Load Profile"])
+                                    demand = excel_NL['Load Profile'][self.simulation_year]
+                                    demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=True)
+                                else:
+                                    print("updated demand for year "  + str(self.simulation_year))
+                                    wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+
+                                if self.reps.fix_profiles_to_initial_year == True:
+                                    print("dont update profiles")
+                                else:
+                                    print("update profiles")
+                                    shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
+                                    shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
+                                    shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
                             elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False :
                                 raise Exception # so far no option to fix demand but not profiles
                             else:
                                 raise Exception
 
-                        # the write_demand_path continue being the same, as this is overwritten.
+                        else:
+                            pass # next iterations shouldnt update the demand and
+
             elif substance.name == "CO2":
                 Co2Prices = fuel_price
             else:
