@@ -43,11 +43,20 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.ids_of_future_installed_and_dispatched_pp = []
+        self.initialization_investments = False
 
-        self.setTimeHorizon(reps.lookAhead)
+
+        if reps.current_tick == 0  and reps.testing_future_year <  reps.lookAhead and   reps.testing_future_year >  0:
+            # Adding the investments as an initialization
+            self.initialization_investments = True
+            self.setTimeHorizon(reps.testing_future_year)
+            self.look_ahead_years = reps.testing_future_year
+        else:
+            self.setTimeHorizon(reps.lookAhead)
+            self.look_ahead_years = reps.lookAhead
+
         self.future_installed_plants_names = reps.get_names_of_future_installed_plants(self.futureTick)
-        self.wacc = (
-                                1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
+        self.wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
         reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
@@ -60,7 +69,6 @@ class Investmentdecision(DefaultModule):
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_init_future_operational_profits()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
-        # self.expectedOwnedCapacityInMarketOfThisTechnology = 0
 
     def act(self):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
@@ -77,15 +85,18 @@ class Investmentdecision(DefaultModule):
             pp_names.append(pp.name)
             pp_profits.append(pp.operationalProfit)
         self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_names, pp_profits)
-        self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
-        if self.reps.current_tick == 0 and self.reps.investmentIteration == 0 :
+
+        if self.reps.current_tick == 0 and self.reps.testing_future_year == 0 :
             # the first iteration on the first year, no investments are done, it is only to check the old power plants profits in a future market
             print(" FIRST RUN ONLY TO TEST THE MARKET")
             self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
+            print("increasing testing year by one")
+            self.reps.testing_future_year += 1
+            self.reps.dbrw.stage_testing_future_year(self.reps)
             self.continue_iteration()
-
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
-            print("Target investment active")
+            print("Investing according to TARGETS")
+            self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
                 self.reps.dbrw.stage_new_power_plant(newplant)
@@ -97,8 +108,9 @@ class Investmentdecision(DefaultModule):
             self.reps.dbrw.stage_target_investments_done()
             self.continue_iteration()
             return
+
         else:
-            #  for now there is only one energyproducer
+            self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
             bestCandidatePowerPlant = None
             highestValue = 0
             # power plants are investable when they havent passed the capacity limits
@@ -155,15 +167,25 @@ class Investmentdecision(DefaultModule):
                                                               self.reps.investmentIteration,
                                                               self.futureInvestmentyear, self.reps.current_tick)
                     self.continue_iteration()
-                    return
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
-                    self.stop_iteration()
+                    if self.initialization_investments == True:
+                        print("increasing testing year by one")
+                        self.reps.testing_future_year += 1
+                        self.reps.dbrw.stage_testing_future_year(self.reps)
+                        self.reps.dbrw.stage_iteration(0)
+                        self.continue_iteration()
+                        # reset all candidate power plants to investable
+                        candidates_names = self.reps.get_unique_candidate_names()
+                        self.reps.dbrw.stage_candidate_status_to_investable(candidates_names)
 
-                    # saving iteration number back to zero for next year
-                    self.reps.dbrw.stage_iteration(0)
+                    else:
+                        self.stop_iteration()
+                        # saving iteration number back to zero for next year
+                        self.reps.dbrw.stage_iteration(0)
 
                     # saving profits of installed power plants.
+                    print("saving future total profits")
                     self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
 
             else:
@@ -171,8 +193,9 @@ class Investmentdecision(DefaultModule):
 
     def invest(self, bestCandidatePowerPlant, target_invest):
         if self.reps.install_at_look_ahead_year == True:
-            commissionedYear = self.reps.current_year + self.reps.lookAhead
+            commissionedYear = self.reps.current_year + self.look_ahead_years
         else:
+            print("fix this!!!!!")
             commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
         if target_invest == False:
             newid = (int(str(commissionedYear) +
@@ -192,7 +215,7 @@ class Investmentdecision(DefaultModule):
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlantforInvest(self.reps,  self.agent,
                                             bestCandidatePowerPlant.capacityTobeInstalled,
-                                            bestCandidatePowerPlant.technology)
+                                            bestCandidatePowerPlant.technology, self.look_ahead_years)
 
         print("{0} invests in technology {1} at tick {2}, with id{3}".format(self.agent.name,
                                                                              bestCandidatePowerPlant.technology.name,
@@ -231,7 +254,6 @@ class Investmentdecision(DefaultModule):
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTick
 
     def getProjectCashFlow(self, candidatepowerplant, agent):
-        # technology = self.reps.power_generating_technologies[candidatepowerplant.technology]
         technology = candidatepowerplant.technology
         totalInvestment = self.getActualInvestedCapitalperMW(
             technology) * candidatepowerplant.capacity  # candidate power plants only have 1MW installed
@@ -358,10 +380,9 @@ class Investmentdecision(DefaultModule):
         for target in targetInvestors:
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
             # TODO: later the expected installed power plants can be calculated according to profits not only for lookahead but also fot future time:
-            #futuretime =self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)
             expectedInstalledCapacity = expectedInstalledCapacityperTechnology[target_tech.name]
             pgtNodeLimit = target_tech.getMaximumCapacityinCountry(self.futureInvestmentyear) # now is for all technologies the same.
-            #futureTimePoint = self.reps.current_tick + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
+
             #targetCapacity = target_tech.getTrend().getValue(futureTimePoint)
             technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(target_tech,
                                                                                                         self.futureInvestmentyear)
@@ -401,9 +422,6 @@ class Investmentdecision(DefaultModule):
                         new_target_power_plants.append(newplant)
 
         return new_target_power_plants
-
-
-
 
     # expectedTechnologyCapacity = reps.powerPlantRepository.calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, pggt.getPowerGeneratingTechnology(), time)
     # targetDifference = pggt.getTrend().getValue(time) - expectedTechnologyCapacity

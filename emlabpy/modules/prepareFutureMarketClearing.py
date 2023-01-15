@@ -29,14 +29,21 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
 
-        if reps.current_tick == 0 and self.reps.investmentIteration == 0 :
-            # In the first round it might not be necessary to test with these power plants
-            self.power_plants_list = []
-        elif reps.targetinvestment_per_year == True and reps.target_investments_done == False:
-            self.power_plants_list = []
-        else: # no target investments, test as normal
-            self.power_plants_list = self.reps.get_investable_candidate_power_plants()
-        # self.power_plants_ids_list = list(range(1, len(reps.candidatePowerPlants) + 1, 1))
+        if reps.current_tick == 0 and reps.testing_future_year < reps.lookAhead and reps.testing_future_year > 0:
+            print("initialization investments for year  " + str(reps.testing_future_year) )
+            self.power_plants_list = reps.get_investable_candidate_power_plants()
+            self.look_ahead_years = reps.testing_future_year
+        else:
+            self.look_ahead_years = reps.lookAhead
+            if reps.current_tick == 0 and reps.testing_future_year == 0:
+                # In the first round it might not be necessary to test with these power plants
+                self.power_plants_list = []
+            elif reps.targetinvestment_per_year == True and reps.target_investments_done == False:
+                # investing in target technologies
+                self.power_plants_list = []
+            else: # no target investments, test as normal
+                self.power_plants_list = reps.get_investable_candidate_power_plants()
+
 
     def act(self):
         self.setTimeHorizon()
@@ -51,13 +58,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
         self.write_renewables()
         self.write_storage()
-
-        if self.reps.writeALLcostsinOPEX ==True:
-            self.write_conventionals_and_biogas_with_prices("futurePrice")
-        else:
-            self.write_conventionals()
-            self.write_biogas()
-            self.write_scenario_data_emlab("futurePrice")
+        self.write_conventionals()
+        self.write_biogas()
+        self.write_scenario_data_emlab("futurePrice")
 
         # This is only for debugging
         # path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
@@ -91,11 +94,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 SR_price = i.reservePriceSR
 
         for powerplant in powerPlantsfromAgent:
-            fictional_age = powerplant.age + self.reps.lookAhead
+            fictional_age = powerplant.age + self.look_ahead_years
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
-                if self.reps.current_tick == 0 and self.reps.investmentIteration == 0: # test all power plants
+                if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
+                    #  In the first iteration test the future market test all power plants
                     powerplant.fictional_status = globalNames.power_plant_status_operational
                     self.power_plants_list.append(powerplant)
                 elif self.reps.current_tick >= horizon: # there are enough past simulations
@@ -109,8 +113,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         powerplant.fictional_status = globalNames.power_plant_status_operational
                         self.power_plants_list.append(powerplant)
 
-                else: #
-                    # (self.reps.current_tick == 0 and self.reps.investmentIteration > 0 ) or (current tick 1 or 2)
+                else:  # there are not enough past simulations
                     profit = powerplant.expectedTotalProfits.mean()
                     if profit <= requiredProfit:
                         powerplant.status = globalNames.power_plant_status_decommissioned
@@ -119,7 +122,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     else:
                         powerplant.fictional_status = globalNames.power_plant_status_operational
                         self.power_plants_list.append(powerplant)
-
 
                 # todo better to make decisions according to expected profit and expected participation in capacity market/strategic reserve
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
@@ -139,24 +141,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list.append(powerplant)
 
-            # Even if plants are in pipeline, the future market should see that these plants will come
-            # elif powerplant.commissionedYear > self.simulation_year:
-            #     powerplant.fictional_status = globalNames.power_plant_status_inPipeline
-            #     print("--------------------- in pipeline", powerplant.name)
-            # else:
-            #     print("status not set", powerplant.name)
-
     def setTimeHorizon(self):
         """
         The years are defined to export all the CO2 prices
         :return:
         """
-        startfutureyear = self.reps.start_simulation_year +   self.reps.lookAhead
-                        #  self.reps.energy_producers[self.agent].getInvestmentFutureTimeHorizon()
-        self.simulation_year = self.reps.current_year + self.reps.lookAhead
-        self.simulation_tick = self.reps.current_tick + self.reps.lookAhead
-        #self.Years = (list(range(startfutureyear, self.simulation_year + 1, 1)))
-        self.Years =  [self.simulation_year]
+        self.simulation_year = self.reps.current_year + self.look_ahead_years
+        self.simulation_tick = self.reps.current_tick + self.look_ahead_years
 
     def setExpectations(self):
         """
@@ -171,7 +162,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def calculateExpectedOperatingProfitfrompastIterations(self, plant, horizon ):
         # "totalProfits" or "irr"
-        indices = list(range(self.reps.current_tick + self.reps.lookAhead - horizon , self.reps.current_tick + self.reps.lookAhead))
+        indices = list(range(self.reps.current_tick + self.look_ahead_years - horizon , self.reps.current_tick + self.look_ahead_years))
         try:
             past_operating_profit = plant.expectedTotalProfits.loc[ indices].values
             averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)

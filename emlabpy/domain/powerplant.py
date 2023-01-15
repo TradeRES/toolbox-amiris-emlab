@@ -189,7 +189,7 @@ class PowerPlant(EMLabAgent):
         self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
     # createPowerPlant from target investment or from investment algorithm chosen power plant
-    def specifyPowerPlantforInvest(self, reps,  energyProducer,  capacity, pgt):
+    def specifyPowerPlantforInvest(self, reps,  energyProducer,  capacity, pgt, look_ahead_years):
         self.dischargingEfficiency = 0
         self.setCapacity(capacity)
         self.setTechnology(pgt)
@@ -198,8 +198,8 @@ class PowerPlant(EMLabAgent):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         if reps.install_at_look_ahead_year == True:
-            self.age = -  reps.lookAhead
-            self.commissionedYear = reps.current_year + reps.lookAhead
+            self.age = - look_ahead_years
+            self.commissionedYear = reps.current_year + look_ahead_years
         else:
             self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
             self.commissionedYear = reps.current_year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
