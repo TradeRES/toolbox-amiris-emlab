@@ -18,7 +18,8 @@ from os.path import dirname, realpath
 """
 This modules keeps the count of the clock, simulation year. 
 
-1. first all candidate power plants are reset to be investable and target investments status
+1. first all candidate power plants are reset to be investable
+ If target ivestments, the target investments status is also reset to false
 2. If the clock is initialiaze the clock is set to zero, years file set, and the data files are prepared
 2. If the clock is to be incremented, then the clock is incremented
     If the final year is achieved then only years file is updated, otherwise also the next year is updated in the DB

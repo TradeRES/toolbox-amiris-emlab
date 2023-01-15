@@ -635,11 +635,11 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.fuel_classname)
         self.stage_object_parameters(self.fuel_classname, [globalNames.future_prices])
 
-    def stage_target_investments_done(self):
+    def stage_target_investments_done(self, done):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "target_investments_done")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [("target_investments_done", True)], "0")
+                                           [("target_investments_done", done)], "0")
 
     def stage_simulated_fuel_prices(self, year, price, substance):
         object_name = substance.name
