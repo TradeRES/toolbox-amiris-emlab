@@ -127,8 +127,8 @@ class SpineDBReaderWriter:
                 reps.Power_plants_from_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'install_at_look_ahead_year':
                 reps.install_at_look_ahead_year = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'market_driven_renewables_investments_done':
-                reps.market_driven_renewables_investments_done = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'target_investments_done':
+                reps.target_investments_done = bool(row['parameter_value'])
 
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
@@ -447,7 +447,7 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
                                                [(parametername, Map( [str(tick)], [float(pp_profit)]) )], "0")
 
-        for pp_name in reps.installedFuturePowerPlants["All"].installed_names[tick]:
+        for pp_name in reps.get_names_of_future_installed_plants(tick):
             if pp_name not in pp_names:
                 print(pp_name + "was tested but not used - > no operational profits")
                 pp_profit = - reps.power_plants[pp_name].actualFixedOperatingCost
@@ -624,9 +624,11 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.fuel_classname)
         self.stage_object_parameters(self.fuel_classname, [globalNames.future_prices])
 
-    def stage_market_driven_RE_investments_done(self):
+    def stage_target_investments_done(self):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "target_investments_done")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [("market_driven_renewables_investments_done", True)], "0")
+                                           [("target_investments_done", True)], "0")
 
     def stage_simulated_fuel_prices(self, year, price, substance):
         object_name = substance.name

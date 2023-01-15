@@ -18,7 +18,7 @@ from os.path import dirname, realpath
 """
 This modules keeps the count of the clock, simulation year. 
 
-1. first all candidate power plants are reset to be investable 
+1. first all candidate power plants are reset to be investable and target investments status
 2. If the clock is initialiaze the clock is set to zero, years file set, and the data files are prepared
 2. If the clock is to be incremented, then the clock is incremented
     If the final year is achieved then only years file is updated, otherwise also the next year is updated in the DB
@@ -52,6 +52,10 @@ def reset_candidate_investable_status():
         db_emlab.import_object_parameter_values(
             [(class_name, candidate["object_name"], "ViableInvestment", bool(1), '0')])
 
+def reset_target_investments_done():
+    class_name = "Configuration"
+    db_emlab.import_object_parameter_values(
+            [(class_name, "SimulationYears" , "target_investments_done", bool(0), '0')])
 
 def update_years_file(current_year, initial, final_year, lookAhead):
     print("updated years file")
@@ -185,6 +189,12 @@ try:
                          db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                          if i['parameter_name'] == 'Country')
 
+        targetinvestment_per_year = next(i['parameter_value'] for i in
+                       db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
+                       if i['parameter_name'] == 'targetinvestment_per_year')
+
+
+
         fix_demand_to_initial_year = False
 
         fix_demand_to_initial_year = next(i['parameter_value'] for i in
@@ -196,7 +206,7 @@ try:
                                           if i['parameter_name'] == 'fix_profiles_to_initial_year')
 
         reset_candidate_investable_status()
-        print("reset power plants status")
+        print("reset power plants status ")
 
         if sys.argv[2] == 'initialize_clock':
             print('delete excels in output')
@@ -221,6 +231,9 @@ try:
             print('Done initializing clock (tick 0)')
 
         if sys.argv[2] == 'increment_clock':
+            if targetinvestment_per_year ==True:
+                reset_target_investments_done()
+                print(" target investments status")
             step = next(int(i['parameter_value']) for i
                         in
                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \

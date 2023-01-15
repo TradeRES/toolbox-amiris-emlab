@@ -61,6 +61,7 @@ class Repository:
         self.realistic_candidate_capacities_for_future = False
         self.dummy_capacity = 1
         self.targetinvestment_per_year = True
+        self.target_investments_done = False
         self.install_missing_capacity_as_one_pp = True
         self.npv_with_annuity = False
         self.fix_fuel_prices_to_year = False
@@ -72,7 +73,7 @@ class Repository:
         self.fix_demand_to_initial_year = False
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
-        self.market_driven_renewables_investments_done = False
+
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -370,6 +371,10 @@ class Repository:
 
     # ----------------------------------------------------------------------------section PowerPlants
 
+    def get_names_of_future_installed_plants(self, futuretick) -> list:
+        return self.installedFuturePowerPlants["All"].installed_names[futuretick]
+
+
     def get_id_last_power_plant(self) -> int:
         # the last 5 numbers are the power plant list
         sorted_ids =  sorted([str(i.id)[-4:] for i in self.power_plants.values()])
@@ -384,22 +389,22 @@ class Repository:
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 
-    def calculateCapacityExpectedofListofPlants(self, ids_of_future_installed_pp, investable_candidate_plants):
+    def calculateCapacityExpectedofListofPlants(self, future_installed_plants_names, investable_candidate_plants):
         investable_technologies = [i.technology.name for i in investable_candidate_plants]
         expectedOperationalcapacity = dict()
         for tech in investable_technologies:
             capacity = 0
             for plant in self.power_plants.values():
-                if plant.id in ids_of_future_installed_pp:
+                if plant.name in future_installed_plants_names:
                     if plant.technology.name == tech:
                         capacity += plant.capacity
             expectedOperationalcapacity[tech] = capacity
         return expectedOperationalcapacity
 
-    # def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, ids_of_future_installed_pp):
+    # def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, ids_of_future_installed_and_dispatched_pp):
     #     expectedOperationalcapacity = 0
     #     for plant in self.power_plants.values():
-    #         if plant.id in ids_of_future_installed_pp:
+    #         if plant.id in ids_of_future_installed_and_dispatched_pp:
     #             if plant.technology.name == technology.name:
     #                 expectedOperationalcapacity += plant.capacity
     #     return expectedOperationalcapacity

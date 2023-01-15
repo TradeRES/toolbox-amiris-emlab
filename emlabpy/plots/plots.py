@@ -106,9 +106,9 @@ def plot_investments(annual_installed_capacity, annual_commissioned, annual_deco
     axs6[0].set_ylabel('In pipeline MW', fontsize='small')
     axs6[1].set_ylabel('Commissioned MW', fontsize='small')
     axs6[2].set_ylabel('Decommissioned MW', fontsize='small')
-    axs6[0].set_ylim(top=5000)
-    axs6[1].set_ylim(top=5000)
-    axs6[2].set_ylim(top=5000)
+    # axs6[0].set_ylim(top=5000)
+    # axs6[1].set_ylim(top=5000)
+    # axs6[2].set_ylim(top=5000)
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     axs6[0].set_title(scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
                       str(reps.maximum_investment_capacity_per_year / 1000) + 'GW')
@@ -1891,14 +1891,14 @@ results_excel = "ValidationCommissionTimes_DemandGrowth.xlsx"
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2045_SD50_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction",
 #              "NL2045_SD50_PH3_MI15000_totalProfits_future1installed1-ComissionAfter4years"]
-SCENARIOS = ["test"
+SCENARIOS = ["test_investments"
              ]
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 5
+test_tick = 20
 # write None is no investment is expected,
-test_tech =  "CCGT"
+test_tech =  "OCGT"
 calculate_investments = True
 existing_scenario = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
