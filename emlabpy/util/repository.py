@@ -378,9 +378,8 @@ class Repository:
 
     # ----------------------------------------------------------------------------section PowerPlants
 
-    def get_names_of_future_installed_plants(self, futuretick) -> list:
-        return self.installedFuturePowerPlants["All"].installed_names[futuretick]
-
+    def get_ids_of_future_installed_plants(self, futuretick) -> list:
+        return self.installedFuturePowerPlants["All"].installed_ids[futuretick]
 
     def get_id_last_power_plant(self) -> int:
         # the last 5 numbers are the power plant list
@@ -396,13 +395,13 @@ class Repository:
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 
-    def calculateCapacityExpectedofListofPlants(self, future_installed_plants_names, investable_candidate_plants):
+    def calculateCapacityExpectedofListofPlants(self, future_installed_plants_ids, investable_candidate_plants):
         investable_technologies = [i.technology.name for i in investable_candidate_plants]
         expectedOperationalcapacity = dict()
         for tech in investable_technologies:
             capacity = 0
             for plant in self.power_plants.values():
-                if plant.name in future_installed_plants_names:
+                if plant.id in future_installed_plants_ids:
                     if plant.technology.name == tech:
                         capacity += plant.capacity
             expectedOperationalcapacity[tech] = capacity

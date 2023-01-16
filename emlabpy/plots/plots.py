@@ -1885,22 +1885,22 @@ SpecificCo2EmissionsInTperMWH = {
     "wood_pellets": 0
 }
 
-results_excel = "ValidationCommissionTimes_DemandGrowth.xlsx"
+results_excel = "investment_initialization.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-# SCENARIOS = ["NL2045_SD50_PH3_MI15000_totalProfits_future1installed1-ComissionAfterConstruction",
-#              "NL2045_SD50_PH3_MI15000_totalProfits_future1installed1-ComissionAfter4years"]
-SCENARIOS = ["test"
-             ]
+SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments",
+             "NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-no_target_investments"]
+# SCENARIOS = ["target_investments"
+#              ] # add a dash before!
 
-save_excel = False
+save_excel = True
 #  None if no specific technology shold be tested
-test_tick = 0
+test_tick = 7
 # write None is no investment is expected,
 test_tech =  "CCGT"
 calculate_investments = True
-existing_scenario = False
+existing_scenario = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False

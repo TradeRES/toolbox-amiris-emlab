@@ -57,7 +57,8 @@ class InstalledCapacity(ImportObject):
 class InstalledFuturePowerPlants(ImportObject):
     def __init__(self, name):
         super().__init__(name)
-        self.installed_names = dict()
-
+        self.installed_ids = dict()
+        # storing as ids because the candidate power plants could have same name
+        # these are saved to calculate expecetd capacity and to calculate profits of non dispatched plants
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
-        self.installed_names[int(parameter_name)] = parameter_value
+        self.installed_ids[int(parameter_name)] = parameter_value

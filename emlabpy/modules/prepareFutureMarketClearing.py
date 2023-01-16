@@ -50,30 +50,21 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
         self.save_future_plants_to_be_operational()
-
         # from here functions are from prepare market clearing
         self.sort_power_plants_by_age()
         # functions to save the power plants
         self.openwriter()
-
         self.write_renewables()
         self.write_storage()
         self.write_conventionals()
         self.write_biogas()
         self.write_scenario_data_emlab("futurePrice")
-
         # This is only for debugging
         # path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
         # shutil.copy(globalNames.amiris_data_path, path)
-
         self.write_times()
         self.writer.save()
         self.writer.close()
-
-    def save_future_plants_to_be_operational(self):
-        #saving
-        list_installed_pp = [i.name for i in self.power_plants_list]
-        self.reps.dbrw.stage_installed_pp_names(list_installed_pp, self.simulation_tick)
 
     def filter_power_plants_to_be_operational(self):
         """
@@ -140,6 +131,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # power plants in pipeline are also considered to be operational in the future
                 powerplant.fictional_status = globalNames.power_plant_status_operational
                 self.power_plants_list.append(powerplant)
+
+    def save_future_plants_to_be_operational(self):
+        #saving for investment algorithm
+        list_installed_pp = [i.id for i in self.power_plants_list if i.is_not_candidate_power_plant()]
+        self.reps.dbrw.stage_installed_pp_names(list_installed_pp, self.simulation_tick)
 
     def setTimeHorizon(self):
         """

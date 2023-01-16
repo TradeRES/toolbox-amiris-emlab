@@ -266,6 +266,13 @@ class PowerPlant(EMLabAgent):
         else:
             return False
 
+    def is_not_candidate_power_plant(self):
+        if str(self.id)[0 : 4] != "9999":
+            return True
+        else:
+            return False
+
+
     def isExpectedToBeOperational(self, futuretick, futureyear):
         # if the plants commissioned year is less than the future tick,
         # then passes from in pipeline to operational

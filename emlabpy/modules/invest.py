@@ -54,7 +54,7 @@ class Investmentdecision(DefaultModule):
             self.setTimeHorizon(reps.lookAhead)
             self.look_ahead_years = reps.lookAhead
         print("Look ahead year " + str(self.look_ahead_years))
-        self.future_installed_plants_names = reps.get_names_of_future_installed_plants(self.futureTick)
+        self.future_installed_plants_ids = reps.get_ids_of_future_installed_plants(self.futureTick)
         self.wacc = (
                                 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
@@ -74,22 +74,25 @@ class Investmentdecision(DefaultModule):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
         self.read_csv_results_and_filter_candidate_plants()
-        pp_names = []
+        pp_dispatched_names = []
+        pp_dispatched_ids= []
         pp_profits = []
         cp_numbers = []
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
-        # todo: these variables could be removed once the model is validated
+
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
-            pp_names.append(pp.name)
+            pp_dispatched_names.append(pp.name)
+            pp_dispatched_ids.append(pp_id)
             pp_profits.append(pp.operationalProfit)
-        self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_names, pp_profits)
+        # todo: these variables could be removed once the model is validated
+        self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
 
         if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
             # the first iteration on the first year, no investments are done, it is only to check the old power plants profits in a future market
             print(" FIRST RUN ONLY TO TEST THE MARKET")
-            self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
+            self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_dispatched_names, pp_dispatched_ids , pp_profits, self.future_installed_plants_ids)
             print("increasing testing year by one")
             self.reps.testing_future_year += 1
             self.reps.dbrw.stage_testing_future_year(self.reps)
@@ -116,7 +119,7 @@ class Investmentdecision(DefaultModule):
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if self.investable_candidate_plants:  # check if the are investable power plants
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
-                    self.future_installed_plants_names, self.investable_candidate_plants)
+                    self.future_installed_plants_ids, self.investable_candidate_plants)
 
                 for candidatepowerplant in self.investable_candidate_plants:
                     cp_numbers.append(candidatepowerplant.name)
@@ -186,7 +189,7 @@ class Investmentdecision(DefaultModule):
 
                     # saving profits of installed power plants.
                     print("saving future total profits")
-                    self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_names, pp_profits)
+                    self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_dispatched_names,pp_dispatched_ids, pp_profits, self.future_installed_plants_ids)
             else:
                 print("all technologies are unprofitable")
 
@@ -373,7 +376,7 @@ class Investmentdecision(DefaultModule):
 
         self.investable_candidate_plants = self.investable_candidate_plants + target_candidate_power_plants
         expectedInstalledCapacityperTechnology = self.reps.calculateCapacityExpectedofListofPlants(
-            self.future_installed_plants_names, self.investable_candidate_plants)
+            self.future_installed_plants_ids, self.investable_candidate_plants)
 
         for target in targetInvestors:
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
