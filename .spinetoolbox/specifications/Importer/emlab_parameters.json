@@ -1134,6 +1134,26 @@
                         ]
                     }
                 }
+            ],
+            "graphs": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1154,7 +1174,8 @@
             "Dismantled",
             "Potentials",
             "YearlyTargets",
-            "yearlyCO2"
+            "yearlyCO2",
+            "graphs"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1190,7 +1211,8 @@
                 "read_until_row": false
             },
             "Fuels": {
-                "read_until_col": true
+                "read_until_col": true,
+                "read_until_row": true
             },
             "NewTechnologies": {},
             "not chosen technologies": {},
@@ -1222,7 +1244,8 @@
                 "read_until_row": true
             },
             "sources": {},
-            "Sheet1": {}
+            "Sheet1": {},
+            "graphs": {}
         },
         "table_types": {
             "CapacityMarkets": {

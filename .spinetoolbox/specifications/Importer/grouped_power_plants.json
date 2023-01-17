@@ -122,102 +122,6 @@
                     }
                 }
             ],
-            "groupedDE_RES": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "Sheet1": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "two_techs_DE": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "extendedDEmoreoptimal": [
                 {
                     "Mapping 1": {
@@ -256,47 +160,7 @@
                     }
                 }
             ],
-            "extendedNLold": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "dutchGermanPlants2015_from_emla": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "extendedNL2020": [
                 {
                     "Mapping 1": {
                         "mapping": [
@@ -450,46 +314,6 @@
                     }
                 }
             ],
-            "groupedNLOld_Ni": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "extendedNLwrong": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "AnalysisforNiPlants": [
                 {
                     "Mapping 1": {
@@ -548,10 +372,48 @@
                         ]
                     }
                 }
+            ],
+            "groupedDecarbonizedNL": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "extendedNL"
+            "groupedDecarbonizedNL"
         ],
         "table_options": {
             "germany2019": {
@@ -564,13 +426,8 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "groupedDE_RES": {},
-            "Sheet1": {},
-            "two_techs_DE": {},
             "extendedDEmoreoptimal": {},
-            "extendedNLold": {},
             "dutchGermanPlants2015_from_emla": {},
-            "extendedNL2020": {},
             "powerplants_grouped_DE": {},
             "groupedNL": {
                 "read_until_col": true,
@@ -581,12 +438,14 @@
                 "read_until_row": true
             },
             "groupedNLGAS": {},
-            "groupedNLOld_Ni": {},
-            "extendedNLwrong": {},
             "AnalysisforNiPlants": {},
             "extendedNLRES": {
                 "read_until_row": true,
                 "read_until_col": true
+            },
+            "groupedDecarbonizedNL": {
+                "read_until_col": true,
+                "read_until_row": true
             }
         },
         "table_types": {
@@ -627,34 +486,6 @@
                 "8": "string",
                 "9": "string"
             },
-            "groupedDE_RES": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float"
-            },
-            "Sheet1": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string"
-            },
-            "two_techs_DE": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float"
-            },
             "extendedDEmoreoptimal": {
                 "0": "string",
                 "1": "float",
@@ -667,17 +498,6 @@
                 "8": "float",
                 "9": "float"
             },
-            "extendedNLold": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string"
-            },
             "dutchGermanPlants2015_from_emla": {
                 "0": "string",
                 "1": "string",
@@ -688,20 +508,6 @@
                 "6": "string",
                 "7": "string",
                 "8": "string"
-            },
-            "extendedNL2020": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string"
             },
             "groupedNL": {
                 "0": "string",
@@ -753,21 +559,6 @@
                 "9": "float",
                 "10": "float"
             },
-            "groupedNLOld_Ni": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string",
-                "12": "string"
-            },
             "extendedNLRES": {
                 "0": "string",
                 "1": "float",
@@ -780,22 +571,6 @@
                 "8": "float",
                 "9": "float"
             },
-            "extendedNLwrong": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string",
-                "12": "string",
-                "13": "string"
-            },
             "AnalysisforNiPlants": {
                 "0": "string",
                 "1": "string",
@@ -803,6 +578,19 @@
                 "3": "string",
                 "4": "string",
                 "5": "string"
+            },
+            "groupedDecarbonizedNL": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float"
             }
         },
         "table_default_column_type": {},

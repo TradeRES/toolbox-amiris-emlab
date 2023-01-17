@@ -90,6 +90,7 @@ class Substance(ImportObject):
 
     def get_price_for_future_tick(self, reps, futureYear, substance):
         if reps.fix_fuel_prices_to_year != False: # attention this shouldnt be neede once all data is there
+            # fixing prices to year
             if  substance.name == "CO2":
                 self.newFuturePrice = self.all_years_CO2_price[reps.fix_price_year]
                 return self.newFuturePrice
