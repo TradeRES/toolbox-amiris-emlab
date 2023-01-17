@@ -259,7 +259,6 @@ class Investmentdecision(DefaultModule):
         technology = candidatepowerplant.technology
         totalInvestment = self.getActualInvestedCapitalperMW(
             technology) * candidatepowerplant.capacity  # candidate power plants only have 1MW installed
-        # candidatepowerplant.InvestedCapital = totalInvestment
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         interestRate = technology.interest_rate
@@ -303,7 +302,6 @@ class Investmentdecision(DefaultModule):
         # checking if the technology can be installed or not
         technology = candidatepowerplant.technology
         expectedInstalledCapacityOfTechnology = self.expectedInstalledCapacityPerTechnology[technology.name]
-
         # This calculation dont consider that some power plants might not be decommissioned because of positive profits
         # oldExpectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(
         #     technology, self.futureTick, ids_of_future_installed_and_dispatched_pp)
@@ -321,7 +319,6 @@ class Investmentdecision(DefaultModule):
             if (technologyTargetCapacity > expectedInstalledCapacityOfTechnology):
                 # if there are capacity targets then the targets are the exoected cspaacity
                 expectedInstalledCapacityOfTechnology = technologyTargetCapacity
-
         self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
             technology)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
@@ -397,12 +394,10 @@ class Investmentdecision(DefaultModule):
             # if the missing capacity is smaller than a unit, then dont install anything
             if installedCapacityDeviation > 0 and installedCapacityDeviation > target_tech.getCapacity():
                 print(target.name + " needs to invest " + str(installedCapacityDeviation) + " MW")
-
                 candidate_name = self.reps.get_candidate_name_by_technology(target_tech.name)
                 for investable in self.investable_candidate_plants:
                     if investable.name == candidate_name:
                         bestCandidatePowerPlant = investable
-
                 if self.reps.install_missing_capacity_as_one_pp == True:
                     bestCandidatePowerPlant.capacityTobeInstalled = installedCapacityDeviation
                     print("Target investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity))
@@ -422,7 +417,8 @@ class Investmentdecision(DefaultModule):
                         newplant.candidate_name = candidate_name
                         # a =zip(newplant, candidate_name)
                         new_target_power_plants.append(newplant)
-
+            else:
+                print(target.name + "has passed target limits")
         return new_target_power_plants
 
     # expectedTechnologyCapacity = reps.powerPlantRepository.calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, pggt.getPowerGeneratingTechnology(), time)
