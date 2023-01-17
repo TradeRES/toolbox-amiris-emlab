@@ -1,7 +1,6 @@
 {
     "project": {
-        "version": 8,
-        "name": "Spine-EMLab-Amiris",
+        "version": 9,
         "description": "",
         "specifications": {
             "Tool": [
@@ -166,6 +165,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Importer/import_energy_exchange.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Importer/storage_levels_2.json"
                 }
             ],
             "Exporter": [
@@ -523,6 +527,28 @@
                     "AMIRIS DB",
                     "left"
                 ]
+            },
+            {
+                "name": "from specify year to storage_levels",
+                "from": [
+                    "specify year",
+                    "right"
+                ],
+                "to": [
+                    "storage_levels",
+                    "left"
+                ]
+            },
+            {
+                "name": "from storage_levels to Emlab3",
+                "from": [
+                    "storage_levels",
+                    "right"
+                ],
+                "to": [
+                    "Emlab3",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -808,8 +834,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -311.7835117345656,
-            "y": -478.9728403871571,
+            "x": -307.7448388138334,
+            "y": -468.87615808532667,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -817,6 +843,10 @@
                 [
                     "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
+                ],
+                [
+                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv",
+                    false
                 ]
             ]
         },
@@ -886,8 +916,8 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -544.2257854720692,
-            "y": -321.70739251528994,
+            "x": -534.1291031702386,
+            "y": -646.8205626342298,
             "file_references": [
                 {
                     "type": "path",
@@ -928,6 +958,10 @@
                 {
                     "type": "resource",
                     "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv"
+                },
+                {
+                    "type": "resource",
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv"
                 }
             ]
         },
@@ -1021,6 +1055,41 @@
                     "path": ".spinetoolbox/items/energy_exchange/energy exchange.sqlite"
                 }
             }
+        },
+        "Emlab3": {
+            "type": "Data Store",
+            "description": "",
+            "x": -151.4502345274565,
+            "y": -666.3810319208084,
+            "url": {
+                "dialect": "sqlite",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/emlabdb/EmlabDB.sqlite"
+                }
+            }
+        },
+        "storage_levels": {
+            "type": "Importer",
+            "description": "",
+            "x": -329.151843039672,
+            "y": -658.303686079344,
+            "specification": "storage_levels_2",
+            "cancel_on_error": false,
+            "on_conflict": "merge",
+            "file_selection": [
+                [
+                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
+                    false
+                ],
+                [
+                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv",
+                    true
+                ]
+            ]
         }
     }
 }

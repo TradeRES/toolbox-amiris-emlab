@@ -44,6 +44,12 @@
                 "username": "",
                 "password": ""
             }
+        },
+        "Emlab3": {
+            "url": {
+                "username": "",
+                "password": ""
+            }
         }
     }
 }
