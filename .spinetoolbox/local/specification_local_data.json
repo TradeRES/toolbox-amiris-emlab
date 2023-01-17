@@ -111,8 +111,8 @@
         },
         "Amiris future": {
             "execution_settings": {
+                "kernel_spec_name": "",
                 "env": "",
-                "kernel_spec_name": "amiris",
                 "use_jupyter_console": false,
                 "executable": "C:/Programs/Anaconda3/envs/emlabEnv/python.exe"
             }
@@ -127,8 +127,8 @@
         },
         "define AMIRIS results year": {
             "execution_settings": {
+                "kernel_spec_name": "",
                 "env": "",
-                "kernel_spec_name": "emlabpy",
                 "use_jupyter_console": true,
                 "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
             }

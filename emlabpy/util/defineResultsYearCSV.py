@@ -6,6 +6,8 @@ f = open(years_file, "r")
 years_str = f.read()
 years = years_str.split("/")
 current_year = years[0]
+# first_year = years[1]
+# tick = int(current_year) - int(first_year)
 f.close()
 
 amiris_results_path = sys.argv[1]
@@ -26,6 +28,13 @@ hourly_generation_group_path = sys.argv[6]
 df_hourly_generation_raw = pd.read_csv( hourly_generation_group_path, sep =",")
 
 grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
+storage_level_path = sys.argv[7]
+df_storage_levels = pd.read_csv( storage_level_path, sep =",")
+df_storage_levels['year'] = current_year
+df_storage_levels.to_csv(storage_level_path, index=False)
+# new_storage_level_path = os.path.join(grandparentpath,'amiris_workflow\\output\\'+str(tick) +'.csv')
+#Renaming the file
+#os.rename(storage_level_path, new_storage_level_path)
 amiris_results_year = os.path.join(grandparentpath,'amiris_workflow\\output\\'+current_year +'.xlsx')
 
 with pd.ExcelWriter(amiris_results_year) as writer:

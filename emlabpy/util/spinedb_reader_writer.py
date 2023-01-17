@@ -779,7 +779,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         else:
             if object_name not in (reps.decommissioned["Decommissioned"]).Decommissioned:
                 add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
-
+    elif object_class_name == "Storage" and reps.runningModule == "run_future_market":
+        add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
     elif object_class_name in "CandidatePowerPlants":
         add_parameter_value_to_repository(reps, db_line, reps.candidatePowerPlants, CandidatePowerPlant)
     elif object_class_name == 'NewTechnologies':

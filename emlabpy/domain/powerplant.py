@@ -101,8 +101,13 @@ class PowerPlant(EMLabAgent):
             self.ReceivedMoneyinEUR = float(parameter_value)
         elif parameter_name == 'label':
             self.label = parameter_value
-        elif parameter_name == 'InitialEnergyLevelInMWH':
-            self.initialEnergyLevelInMWH = float(parameter_value)
+        elif parameter_name == 'LastEnergyLevels':
+            # last energy levels will be next years initial Energy Level
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            all_storages = pd.Series(values, index = index)
+            self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
         elif parameter_name == 'expectedTotalProfits' and reps.runningModule == "run_future_market":
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
