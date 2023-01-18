@@ -841,7 +841,7 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
     if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
         years_to_generate_and_build = list(
-        range(2013, reps.current_year + 1 + reps.max_permit_build_time))
+        range(reps.start_simulation_year - reps.lookAhead , reps.current_year + 1 + reps.max_permit_build_time))
     else:
         pass
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
@@ -1890,15 +1890,15 @@ results_excel = "investment_initialization.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments_interrupted",
-#              "NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-no_target_investments"]
-SCENARIOS = ["-target_investments"
+#              ]
+SCENARIOS = ["-future"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 7
+test_tick = 1
 # write None is no investment is expected,
-test_tech =  "CCGT"
+test_tech =  "Lithium_ion_battery"
 calculate_investments = True
 existing_scenario = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
