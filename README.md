@@ -26,10 +26,11 @@ To do so, run the following commands in the toolbox-amiris-emlab folder:
 
 ## Prepare environments
 To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created:
-spinetoolbox-dev, iovrmr and EMLabpy. To do so following commands can be executed
+spinetoolbox, iovrmr and EMLabpy. To do so following commands can be executed
 
 ### AMIRIS (emlabEnv)
-in a anaconda prmpttoolbox-amiris-emlab folder
+Open an anaconda prompt
+In toolbox-amiris-emlab folder
 ```
 conda env create -f environment.yml
 conda activate emlabEnv
@@ -47,25 +48,15 @@ python -m pip install .
 pip install -r requirements.txt
 close this command prompt
 ```
-### spinetoolbox-dev
+### spinetoolbox
 Having git installed
+download spinetoolbox and install all requirements as their webpage indicated in :
+https://github.com/Spine-project/Spine-Toolbox
+!!! Make a new environment called spinetoolbox. 
 
-download spinetoolbox and install all requirements as follows: 
-in a new command prompt
-```
-conda create -n spinetoolbox-dev python=3.8
-conda activate spinetoolbox-dev
-pip install git+https://github.com/Spine-project/spinetoolbox-dev
-git clone https://github.com/Spine-project/Spine-Toolbox
-cd Spine-toolbox\
-pip install -r requirements.txt
-cd bin 
-upgrade_spine_reqs.bat
+In the toolbox-amiris-emlab folder activate  the environment spinetoolbox. 
 
-cd ..
-and type spinetoolbox to open the tool
-```
-In the toolbox-amiris-emlab folder activate  the environment spinetoolbox-dev. type spinetoolbox to start the tool in this environment, and in this folder.
+(Type spinetoolbox to start the tool in this environment)
 
 Once the project is open, make an emlabpy kernel as follows:
 In spinetooolbox > file > settings> tools > jupyter console> kernel spec editor>
