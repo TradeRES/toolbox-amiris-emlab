@@ -125,6 +125,14 @@
                 "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
             }
         },
+        "define AMIRIS results year": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
+            }
+        },
         "clock": {
             "execution_settings": {
                 "env": "",
@@ -163,14 +171,6 @@
                 "kernel_spec_name": "emlabpy",
                 "use_jupyter_console": true,
                 "executable": ""
-            }
-        },
-        "define AMIRIS results year": {
-            "execution_settings": {
-                "env": "",
-                "kernel_spec_name": "emlabpy",
-                "use_jupyter_console": true,
-                "executable": "C:\\Programs\\Anaconda3\\envs\\emlabpy\\python.exe"
             }
         }
     }

@@ -1174,8 +1174,7 @@
             "Dismantled",
             "Potentials",
             "YearlyTargets",
-            "yearlyCO2",
-            "graphs"
+            "yearlyCO2"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1499,6 +1498,12 @@
                 "11": "string",
                 "12": "string",
                 "13": "string"
+            },
+            "graphs": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string"
             }
         },
         "table_default_column_type": {},
