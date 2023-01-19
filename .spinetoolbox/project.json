@@ -655,8 +655,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1309.493507430801,
-            "y": -279.091679441842,
+            "x": -1309.4935074308007,
+            "y": -279.8655774862529,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "on_conflict": "merge",

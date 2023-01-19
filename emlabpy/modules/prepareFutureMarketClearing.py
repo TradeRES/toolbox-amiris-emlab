@@ -16,7 +16,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def __init__(self, reps):
         super().__init__(reps)
-
         self.newPowerPlant = None
         self.newTechnologies = None
         self.lastrenewableId = 0
@@ -114,7 +113,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         powerplant.fictional_status = globalNames.power_plant_status_operational
                         self.power_plants_list.append(powerplant)
 
-                # todo better to make decisions according to expected profit and expected participation in capacity market/strategic reserve
+                # todo better to make decisions according to expected participation in capacity market/strategic reserve?
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
@@ -126,6 +125,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                 # # todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
                 self.power_plants_list.append(powerplant)
+            elif fictional_age < 0: #powerplant.commissionedYear > self.simulation_year:
+                # planned power plants further in the future should not be considered.
+                powerplant.fictional_status = globalNames.power_plant_status_inPipeline
             else:
                 # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
                 # power plants in pipeline are also considered to be operational in the future

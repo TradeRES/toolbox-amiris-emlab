@@ -115,10 +115,23 @@ class PrepareMarket(DefaultModule):
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles")
                                 else:
-                                    print("update profiles")
-                                    shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
-                                    shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
-                                    shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
+                                    if  self.reps.current_tick == 0  and self.reps.testing_future_year <  self.reps.lookAhead and self.reps.testing_future_year > 0:
+                                        print("Update profiles "  + str(self.simulation_year))
+                                        excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
+                                                                 sheet_name=["NL Wind Onshore profiles",
+                                                                             "NL Wind Offshore profiles",
+                                                                             "NL Sun PV profiles"])
+                                        wind_onshore = excel_NL['NL Wind Onshore profiles'][self.simulation_year]
+                                        wind_onshore.to_csv(globalNames.windon_file_for_amiris, header=False, sep=';', index=True)
+                                        wind_offshore = excel_NL['NL Wind Offshore profiles'][self.simulation_year]
+                                        wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
+                                        pv = excel_NL['NL Sun PV profiles'][self.simulation_year]
+                                        pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
+                                    else:
+                                        print("update profiles")
+                                        shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
+                                        shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
+                                        shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
                             elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False :
                                 raise Exception # so far no option to fix demand but not profiles
                             else:

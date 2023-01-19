@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 """
 This script groups the power plants per age. 
 The capacity is summed and the efficiency is weighted averaged
@@ -32,10 +33,10 @@ technology_colors = {
 # dataframe = dataframeoriginal.loc[dataframeoriginal['Location'] == country]
 # min_capacity_to_group = 600
 
-excel_path =  'C:\\toolbox-amiris-emlab\\data\\Power_plants_Ni.xlsx'
+excel_path =  'C:\\toolbox-amiris-emlab\\data\\archiv\\Power_plants_Ni.xlsx'
 country = "NL"
-year = 2019
-dataframeoriginal = pd.read_excel(excel_path, sheet_name= "extendedNL_updated", usecols="A:K" )
+year = 2010
+dataframeoriginal = pd.read_excel(excel_path, sheet_name= "NL_2010_with_RES", usecols="A:K" )
 dictionary = pd.read_excel(excel_path, sheet_name= "Dict", usecols="A:B" )
 dataframe = dataframeoriginal.loc[dataframeoriginal['Location'] == country]
 a = dictionary.set_index('Competes').to_dict()['traderes']
@@ -54,8 +55,9 @@ weighted_avail = lambda x: np.average(x, weights=dataframe.loc[x.index, "Availab
 df = dataframe.groupby(["Technology", 'Age'], as_index=False).agg(total_capacity=("Capacity", "sum"),
                                                                   efficiency_weighted_mean=("Efficiency", weighted_eff),
                                                                   availability_weighted_mean=("Availability", weighted_avail))
-#drop all power plants after year 2020
-df = df[df["Age"]>=0]
+#drop all power plants after year
+#attention!  comment this line if plan power plants are not wanted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#df = df[df["Age"]>=0]
 #group power plants with negative capacity installed before year !
 for t in techs:
     negative = df.loc[(df['total_capacity'] < 0) & (df['Technology'] == t)]
@@ -140,9 +142,9 @@ fig1 = sns.relplot(x="Age", y="Efficiency", hue="Technology", size="Capacity",
                    height=6, data=final)
 plt.xlabel("Age", fontsize="large")
 plt.ylabel("Efficiency", fontsize="large")
+
 fig1.savefig('../data/' + 'Initial_power_plants_NL.png', bbox_inches='tight', dpi=300)
 plt.close('all')
 
 
-
-final.to_excel( "../data/" + country  +  "_datapower_plants.xlsx")
+final.to_excel( "../data/" + country  +  str(year) + "planned_RES_datapower_plants.xlsx")
