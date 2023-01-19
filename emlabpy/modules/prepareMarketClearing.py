@@ -88,45 +88,40 @@ class PrepareMarket(DefaultModule):
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
+            # ---------------------------------------------------------------------------------------------
             if substance.name == "electricity":
                 if self.reps.country == "DE": # for germany the load is calculated with a trend.
                     new_demand = demand.copy()
                     new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
-                    new_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
+                    new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else: # for now, only have dynamic data for NL case
-                    if self.reps.runningModule == "run_prepare_next_year_market_clearing":
+                    if self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick>0:
                         # the load was already updated in the clock step
                         pass
+                    elif self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick==0:
+                        self.update_demand_file()
+                        self.update_profiles_files()
                     else: # runnning   "run_future_market":
                         if self.reps.investmentIteration == 0:
+                            # only update data in first iteration
                             if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
                             elif self.reps.fix_demand_to_initial_year == False:
+                                # fix demand
                                 if  self.reps.current_tick == 0  and self.reps.testing_future_year <  self.reps.lookAhead and self.reps.testing_future_year > 0:
-                                    print("Initialization investment update demand to year "  + str(self.simulation_year))
-                                    excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
-                                                             sheet_name=["Load Profile"])
-                                    demand = excel_NL['Load Profile'][self.simulation_year]
-                                    demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=True)
+                                    # do update during initialization investment
+                                    self.update_demand_file()
                                 else:
                                     print("updated demand for year "  + str(self.simulation_year))
-                                    wholesale_market.future_demand.to_csv(demand_file_for_amiris, header=False, sep=';', index=False)
-
+                                    # copying future demand file to be load.csv
+                                    wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
+                                # ========================================================================================================================
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles")
                                 else:
                                     if  self.reps.current_tick == 0  and self.reps.testing_future_year <  self.reps.lookAhead and self.reps.testing_future_year > 0:
-                                        print("Update profiles "  + str(self.simulation_year))
-                                        excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
-                                                                 sheet_name=["NL Wind Onshore profiles",
-                                                                             "NL Wind Offshore profiles",
-                                                                             "NL Sun PV profiles"])
-                                        wind_onshore = excel_NL['NL Wind Onshore profiles'][self.simulation_year]
-                                        wind_onshore.to_csv(globalNames.windon_file_for_amiris, header=False, sep=';', index=True)
-                                        wind_offshore = excel_NL['NL Wind Offshore profiles'][self.simulation_year]
-                                        wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
-                                        pv = excel_NL['NL Sun PV profiles'][self.simulation_year]
-                                        pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
+                                        # do update during initialization investment
+                                        self.update_profiles_files()
                                     else:
                                         print("update profiles")
                                         shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
@@ -166,6 +161,27 @@ class PrepareMarket(DefaultModule):
         )
         df1_transposed = result.T
         df1_transposed.to_excel(self.writer, sheet_name="scenario_data_emlab")
+
+    def update_demand_file(self):
+        print("updated demand file"  + str(self.simulation_year))
+        excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
+                                 sheet_name=["Load Profile"])
+        demand = excel_NL['Load Profile'][self.simulation_year]
+        demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
+
+    def update_profiles_files(self):
+        print("Update profiles "  + str(self.simulation_year))
+        excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
+                                 sheet_name=["NL Wind Onshore profiles",
+                                             "NL Wind Offshore profiles",
+                                             "NL Sun PV profiles"])
+        wind_onshore = excel_NL['NL Wind Onshore profiles'][self.simulation_year]
+        wind_onshore.to_csv(globalNames.windon_file_for_amiris, header=False, sep=';', index=True)
+        wind_offshore = excel_NL['NL Wind Offshore profiles'][self.simulation_year]
+        wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
+        pv = excel_NL['NL Sun PV profiles'][self.simulation_year]
+        pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
+
 
     def write_conventionals(self):
         identifier = []
