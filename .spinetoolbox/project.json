@@ -549,6 +549,17 @@
                     "Emlab3",
                     "left"
                 ]
+            },
+            {
+                "name": "from Emlab3 to import AMIRIS",
+                "from": [
+                    "Emlab3",
+                    "right"
+                ],
+                "to": [
+                    "import AMIRIS",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -655,7 +666,7 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1309.4935074308007,
+            "x": -1311.2841627231714,
             "y": -279.8655774862529,
             "specification": "import traderes db",
             "cancel_on_error": false,
@@ -847,6 +858,10 @@
                 [
                     "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv",
                     false
+                ],
+                [
+                    "db_url@Emlab3",
+                    true
                 ]
             ]
         },
@@ -916,7 +931,7 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -534.1291031702386,
+            "x": -582.4767960642442,
             "y": -646.8205626342298,
             "file_references": [
                 {
@@ -1059,8 +1074,8 @@
         "Emlab3": {
             "type": "Data Store",
             "description": "",
-            "x": -151.4502345274565,
-            "y": -666.3810319208084,
+            "x": -226.6577568070207,
+            "y": -671.7529977979201,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -1075,8 +1090,8 @@
         "storage_levels": {
             "type": "Importer",
             "description": "",
-            "x": -329.151843039672,
-            "y": -658.303686079344,
+            "x": -390.03412298027155,
+            "y": -674.4195837106791,
             "specification": "storage_levels_2",
             "cancel_on_error": false,
             "on_conflict": "merge",

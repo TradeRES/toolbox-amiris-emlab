@@ -464,5 +464,3 @@ class Investmentdecision(DefaultModule):
 
     def setAgent(self, agent):
         self.agent = self.reps.energy_producers[agent]
-
-    # TODO check the budget of all power plants

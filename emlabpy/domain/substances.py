@@ -13,8 +13,7 @@ class Substance(ImportObject):
         self.price = 0
         self.trend = None
         self.all_years_CO2_price = pd.Series(dtype='float64')
-        self.initialprice2020 = 0
-        self.initialprice2050 = 0
+        self.initialPrice = pd.Series(dtype='float64')
         self.futurePrice = []
         self.futurePrice_inYear = 0
         self.simulatedPrice = []
@@ -22,8 +21,7 @@ class Substance(ImportObject):
         self.resource_limit2020 = 0
         self.values = []
         self.geometricRegression = None
-        self.newSimulatedPrice = 0
-        self.newFuturePrice = 0
+        self.newPrice = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'AmirisFuelSpecificCo2EmissionsInTperMWH': # todo: AMIRIS add this as an input parameter 'co2Density'
@@ -32,13 +30,6 @@ class Substance(ImportObject):
         #     self.energy_density = float(parameter_value)
         elif parameter_name == 'quality':
             self.quality = float(parameter_value)
-        elif parameter_name == 'price2020': # TODO take out the hardcoded price
-            self.initialprice2020 = float(parameter_value)
-        elif parameter_name == 'price2050':
-            # if reps.fix_fuel_prices_to_year == 2020: # for verification runs. If its indicated fuel prices, CO2 prices and electricity demand is fix to 2020
-            #     self.initialprice2050 = self.initialprice2020
-            # else:
-            self.initialprice2050 = float(parameter_value)
         elif parameter_name == 'annual_resource_limit' and alternative == "biopotential_2020":# TODO take out the hardcoded scenario
             self.resource_limit2020 = float(parameter_value)
         elif parameter_name == 'trend':
@@ -53,67 +44,64 @@ class Substance(ImportObject):
             index = [int(i[0]) for i in array["data"]]
             pd_series = pd.Series(values, index = index)
             self.all_years_CO2_price = pd_series
+        elif parameter_name == "price":
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
+            self.initialPrice = pd_series.sort_values(ascending=True)
 
-
-
-    def get_price_for_next_tick(self, reps, tick, year, substance):
+    def get_price_for_tick(self, reps, year, substance, future):
         # first consider prices if these are supposed to be fix
-        if reps.fix_fuel_prices_to_year != False: # attention this shouldnt be neede once all data is there
-            if  substance.name == "CO2":
-                self.newSimulatedPrice = self.all_years_CO2_price[reps.fix_price_year]
-                return self.newSimulatedPrice
-            else:
-                xp = [2020, 2050]
-                fp = [substance.initialprice2020, substance.initialprice2050]
-                self.newSimulatedPrice = np.interp(reps.fix_price_year, xp, fp)
-                return self.newSimulatedPrice
-
-        elif  substance.name == "CO2" and reps.yearly_CO2_prices == True:
-            self.newSimulatedPrice = self.all_years_CO2_price[year]
-            return self.newSimulatedPrice
-        #otherwise check if the start tick trend is already active
-        # Year when the prices are not longer interpolated, but determined through trend.
-        elif tick < reps.start_tick_fuel_trends:
-            # electricity is also considered as a fuel. Input
-            xp = [2020, 2050]
-            fp = [substance.initialprice2020, substance.initialprice2050]
-            self.newSimulatedPrice = np.interp(year, xp, fp)
-            return self.newSimulatedPrice
-        else:
-            calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, "simulatedPrice")
-            df = pd.DataFrame(calculatedPrices['data'])
-            df.set_index(0, inplace=True)
-            last_value = df.loc[str(year - 1)][1]
-            random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
-            self.newSimulatedPrice = last_value * random_number
-        return self.newSimulatedPrice
-
-    def get_price_for_future_tick(self, reps, futureYear, substance):
-        if reps.fix_fuel_prices_to_year != False: # attention this shouldnt be neede once all data is there
+        if reps.fix_fuel_prices_to_year == True: # attention this shouldnt be neede once all data is there
             # fixing prices to year
-            if  substance.name == "CO2":
-                self.newFuturePrice = self.all_years_CO2_price[reps.fix_price_year]
-                return self.newFuturePrice
+            if  substance.name == "CO2" and reps.yearly_CO2_prices == True:
+                # yearly prices
+                self.get_CO2_yearly_price(reps.fix_price_year)
             else:
-                xp = [2020, 2050]
-                fp = [substance.initialprice2020, substance.initialprice2050]
-                self.newFuturePrice = np.interp(reps.fix_price_year, xp, fp)
-                return self.newFuturePrice
+                self.newPrice = self.interpolate_year(reps.fix_price_year)
+                return self.newPrice
 
-        elif substance.name == "CO2" and reps.yearly_CO2_prices == True:
-            self.newFuturePrice = self.all_years_CO2_price[futureYear]
-            return self.newFuturePrice
+        elif substance.name == "CO2":
+            if reps.yearly_CO2_prices == True:
+                # dont fix prices
+                self.newPrice = self.get_CO2_yearly_price(year)
+            else:
+                print("should not extrapolate with CO2 prices")
+                self.newPrice = self.get_CO2_yearly_price(year)
+            return self.newPrice
 
         elif reps.current_tick >= reps.start_tick_fuel_trends:
-            self.initializeGeometricTrendRegression(reps, substance)
-            self.newFuturePrice = self.geometricRegression.predict(futureYear)
-            return self.newFuturePrice
+            if future == True:
+                # simulating future market
+                self.initializeGeometricTrendRegression(reps, substance)
+                self.newPrice = self.geometricRegression.predict(year)
+                return self.newPrice
+            else:
+                # simulating next year prices from past results and random
+                calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, "simulatedPrice")
+                df = pd.DataFrame(calculatedPrices['data'])
+                df.set_index(0, inplace=True)
+                last_value = df.loc[str(year - 1)][1]
+                random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
+                self.newPrice = last_value * random_number
+        else:
+            self.newPrice = self.interpolate_year(year)
+            return self.newPrice
 
+    def get_CO2_yearly_price(self, year):
+        if year in self.all_years_CO2_price.index:
+            self.newPrice = self.all_years_CO2_price[year]
         else:
             xp = [2020, 2050]
-            fp = [substance.initialprice2020, substance.initialprice2050]
-            self.newFuturePrice = np.interp(futureYear, xp, fp)
-            return self.newFuturePrice
+            fp = [self.all_years_CO2_price[2020], self.all_years_CO2_price[2050]]
+            self.newPrice = np.interp(year, xp, fp)
+        return self.newPrice
+
+    def interpolate_year(self, year):
+        c = np.polyfit(self.initialPrice.index, self.initialPrice.values, 2)
+        f = np.poly1d(c)
+        return f(year)
 
     def initializeGeometricTrendRegression(self, reps, substance):
         self.geometricRegression = GeometricTrendRegression("geometrictrendRegression" + self.name)
@@ -121,6 +109,7 @@ class Substance(ImportObject):
         x = []
         y = []
         for i in calculatedfuturePrices['data']:
+            # todo improve
             x.append(int(i[0]))
             y.append(i[1])
         self.geometricRegression.addData(x,y)

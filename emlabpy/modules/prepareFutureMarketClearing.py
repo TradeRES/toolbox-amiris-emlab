@@ -153,7 +153,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         :return:
         """
         for k, substance in self.reps.substances.items():
-            future_price = substance.get_price_for_future_tick(self.reps, self.simulation_year, substance)
+            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, substance, True)
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)
