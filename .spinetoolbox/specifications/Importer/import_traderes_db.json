@@ -102,7 +102,8 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": 1
+                                "position": "hidden",
+                                "value": "price"
                             },
                             {
                                 "map_type": "Alternative",
@@ -113,7 +114,21 @@
                                 "position": "hidden"
                             },
                             {
-                                "map_type": "ParameterValue",
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden",
+                                "value": "year"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
                                 "position": 3
                             }
                         ]
@@ -438,19 +453,64 @@
                         ]
                     }
                 }
+            ],
+            "node2010": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2010": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "node",
             "unit2020",
-            "unit2030-none"
+            "unit2030-none",
+            "node2010",
+            "unit2010"
         ],
         "table_options": {
             "grid": {},
             "flow": {},
             "reserve_type": {},
             "unittype": {},
-            "node": {},
+            "node": {
+                "read_until_row": true,
+                "read_until_col": true
+            },
             "flow__unit": {},
             "grid__node__unit__io": {},
             "explanation": {},
@@ -466,7 +526,9 @@
             "pivot2030": {},
             "unit2030-noneWRONG": {},
             "unit2030-none": {},
-            "screening curve": {}
+            "screening curve": {},
+            "node2010": {},
+            "unit2010": {}
         },
         "table_types": {
             "flow": {
@@ -474,12 +536,9 @@
             },
             "node": {
                 "0": "string",
-                "1": "string",
+                "1": "float",
                 "2": "string",
-                "3": "float",
-                "4": "string",
-                "5": "string",
-                "6": "string"
+                "3": "float"
             },
             "grid__node__unit__io": {
                 "0": "string",
