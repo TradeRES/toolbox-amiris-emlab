@@ -70,9 +70,8 @@
         },
         "table_types": {
             "data": {
-                "0": "float",
-                "1": "float",
-                "2": "string"
+                "0": "string",
+                "1": "float"
             }
         },
         "table_default_column_type": {},

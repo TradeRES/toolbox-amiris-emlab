@@ -52,18 +52,10 @@ class Repository:
         self.simulation_length = 0
         self.start_tick_fuel_trends = 0
         self.start_tick_dismantling = 0
-        self.investmentIteration = 0
         self.testing_future_year = 0 # testing the future market from the next year during initialization
-        self.maximum_investment_capacity_per_year = 0
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
         self.runningModule = ""
-        self.realistic_candidate_capacities_tobe_installed = False
-        self.realistic_candidate_capacities_for_future = False
-        self.dummy_capacity = 1
-        self.targetinvestment_per_year = True
-        self.target_investments_done = False
-        self.install_missing_capacity_as_one_pp = True
         self.npv_with_annuity = False
         self.fix_fuel_prices_to_year = False
         self.fix_prices_to_2030 = False
@@ -74,7 +66,16 @@ class Repository:
         self.fix_demand_to_initial_year = False
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
-
+        # section --------------------------------------------------------------------------------------investments
+        self.investmentIteration = 0
+        self.targetinvestment_per_year = True
+        self.target_investments_done = False
+        self.install_missing_capacity_as_one_pp = True
+        self.decommission_from_input = False
+        self.realistic_candidate_capacities_tobe_installed = False
+        self.realistic_candidate_capacities_for_future = False
+        self.maximum_investment_capacity_per_year = 0
+        self.dummy_capacity = 1
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

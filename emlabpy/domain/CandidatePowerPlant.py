@@ -65,9 +65,9 @@ class CandidatePowerPlant(PowerPlant):
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
         if reps.install_at_look_ahead_year ==True:
-            self.setExpectedEndOfLife(reps.current_year + reps.lookAhead + self.getTechnology().getExpectedLifetime())
+            self.setEndOfLife(reps.current_year + reps.lookAhead + self.getTechnology().getExpectedLifetime())
         else:
-            self.setExpectedEndOfLife(reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+            self.setEndOfLife(reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         return self
 
     def setConstructionStartTime(self):
