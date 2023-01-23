@@ -25,7 +25,6 @@ class Dismantle(DefaultModule):
         else:
             self.add_one_year_to_age()  # add one year to the age of power plants
         self.set_powerplants_status()  # set status according to operational time
-
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
@@ -61,8 +60,8 @@ class Dismantle(DefaultModule):
                     # operating loss (incl O&M cost)
                     print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                           .format(plant.name, horizon, profit, requiredProfit))
-                    plant.dismantlePowerPlant(self.reps.current_tick)
-                    self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
+                    # plant.dismantlePowerPlant(self.reps.current_tick)
+                    # self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
                     plant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(plant.name)
                 else:
@@ -111,7 +110,12 @@ class Dismantle(DefaultModule):
     def set_powerplants_status(self):
         for powerplantname, powerplant in self.reps.power_plants.items():
             technology = self.reps.power_generating_technologies[powerplant.technology.name]
-            if powerplant.age > technology.expected_lifetime:
+            if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:
+                if  self.reps.current_tick >= powerplant.endOfLife :
+                    powerplant.status = globalNames.power_plant_status_decommissioned
+                    self.decommissioned_list.append(powerplant.name)
+                    print(powerplant.name + "decommissioned from input")
+            elif powerplant.age > technology.expected_lifetime:
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
                 print(powerplant.name + " " + str(powerplant.age) + " to be decomm")
             elif powerplant.commissionedYear <= self.reps.current_year:

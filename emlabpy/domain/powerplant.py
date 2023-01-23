@@ -30,7 +30,8 @@ class PowerPlant(EMLabAgent):
         self.downpayment_in_year = 0
         self.downpayment = Loan()
         self.dismantleTime = 0  # in terms of tick
-        self.expectedEndOfLife = 0  # in terms of tick
+        self.decommissionInYear = None
+        self.endOfLife = None  # in terms of tick
         # scenario from artificial emlab parameters
         self.constructionStartTime = 0
         self.actualLeadtime = 0
@@ -53,6 +54,7 @@ class PowerPlant(EMLabAgent):
         self.ReceivedMoneyinEUR = 0
         self.operationalProfit = 0
         self.initialEnergyLevelInMWH = 0
+        self.DecommissionInYear = 0
         self.cash = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -86,7 +88,8 @@ class PowerPlant(EMLabAgent):
             if self.is_new_installed() and reps.runningModule == "run_initialize_power_plants":
                 if self.age >  reps.current_tick:
                     raise Exception("age is higher than it should be " + str(self.id) +" Name " + str(self.name))
-
+        elif parameter_name == 'DecommissionInYear':
+            self.decommissionInYear =  int(parameter_value)
         elif parameter_name == 'actualFixedOperatingCost':
             self.actualFixedOperatingCost =  float(parameter_value)
         elif parameter_name == 'dismantleTime':
@@ -99,6 +102,8 @@ class PowerPlant(EMLabAgent):
             self.OfferedPowerinMW = float(parameter_value)
         elif parameter_name == 'ReceivedMoneyInEUR':
             self.ReceivedMoneyinEUR = float(parameter_value)
+        elif parameter_name == 'label':
+            self.label = parameter_value
         elif parameter_name == 'label':
             self.label = parameter_value
         elif parameter_name == 'LastEnergyLevels':
@@ -165,10 +170,6 @@ class PowerPlant(EMLabAgent):
 
     def get_actual_nominal_capacity(self):
         return self.capacity
-        # if self.capacity == 0:
-        #     return self.technology.capacity * float(self.location.parameters['CapacityMultiplicationFactor'])
-        # else:
-        #     return self.capacity
 
     def calculate_co2_tax_marginal_cost(self, reps):
         co2_intensity = self.calculate_emission_intensity(reps)
@@ -208,7 +209,7 @@ class PowerPlant(EMLabAgent):
         else:
             self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
             self.commissionedYear = reps.current_year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
-        self.setExpectedEndOfLife(
+        self.setEndOfLife(
             reps.current_tick + self.getTechnology().getExpectedLifetime() - self.age)
         self.constructionStartTime = reps.current_tick
         self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
@@ -227,7 +228,7 @@ class PowerPlant(EMLabAgent):
                         startpayments , done_payments, self)
 
     # createPowerPlant from initial database
-    def specifyPowerPlantsInstalled(self, tick ):
+    def specifyPowerPlantsInstalled(self, reps ):
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
@@ -237,9 +238,9 @@ class PowerPlant(EMLabAgent):
            self.calculateAndSetActualEfficiency(self.getConstructionStartTime())
         if self.actualFixedOperatingCost == 'NOTSET': # old power plants have set their fixed costs
             self.calculateAndSetActualFixedOperatingCosts()
-        # as a default the expected end of life is assigned by the technology expected lifetime
-        self.setExpectedEndOfLife( # set in terms of tick
-            tick + self.getTechnology().getExpectedLifetime() - self.age)
+        if reps.decommission_from_input == True and self.decommissionInYear is not None:
+            self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year) # set in terms of tick
+        #self.setEndOfLife(tick + self.getTechnology().getExpectedLifetime() - self.age)
         self.setPowerPlantsStatusforInstalledPowerPlants()
         return
 
@@ -276,18 +277,16 @@ class PowerPlant(EMLabAgent):
             return True
         else:
             return False
-
-
-    def isExpectedToBeOperational(self, futuretick, futureyear):
-        # if the plants commissioned year is less than the future tick,
-        # then passes from in pipeline to operational
-        if self.commissionedYear <= futureyear:
-            # also plants that are not having a
-            if self.getExpectedEndOfLife() > futuretick:
-                # Powerplant is not expected to be dismantled
-                return True
-        else: # plant is expected to be dismantled
-            return False
+    # def isExpectedToBeOperational(self, futuretick, futureyear):
+    #     # if the plants commissioned year is less than the future tick,
+    #     # then passes from in pipeline to operational
+    #     if self.commissionedYear <= futureyear:
+    #         # also plants that are not having a
+    #         if self.getEndOfLife() > futuretick:
+    #             # Powerplant is not expected to be dismantled
+    #             return True
+    #     else: # plant is expected to be dismantled
+    #         return False
 
     def calculateActualLeadtime(self):
         actual = None
@@ -411,11 +410,11 @@ class PowerPlant(EMLabAgent):
     def dismantlePowerPlant(self, dismantleTime):
         self.dismantleTime = dismantleTime
 
-    def setExpectedEndOfLife(self, expectedEndOfLife):
-        self.expectedEndOfLife = expectedEndOfLife
+    def setEndOfLife(self, endOfLife):
+        self.endOfLife = endOfLife
 
-    def getExpectedEndOfLife(self):
-        return self.expectedEndOfLife
+    def getEndOfLife(self):
+        return self.endOfLife
 
     def setActualNominalCapacity(self, actualNominalCapacity):
         # self.setActualNominalCapacity(self.getCapacity() * location.getCapacityMultiplicationFactor())

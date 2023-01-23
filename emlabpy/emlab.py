@@ -122,7 +122,7 @@ try:  # Try statement to always close DB properly
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
         # adding id to power plants
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
+            power_plant.specifyPowerPlantsInstalled(reps)
             power_plant.set_loans_installed_pp(reps)
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
@@ -142,9 +142,8 @@ try:  # Try statement to always close DB properly
     else:
         # if the id initialization was done, it is not needed to store it again.
         # then only set actual lead time, permit time, efficiencies, correct status
-        # todo: save most in the db, so that it doesnt have to be recalculated.
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick )
+            power_plant.specifyPowerPlantsInstalled(reps)
 
     spinedb_reader_writer.commit('Initialize all module import structures')
     print("repository complete")
