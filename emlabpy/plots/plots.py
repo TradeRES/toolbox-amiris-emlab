@@ -422,6 +422,8 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs17.set_title(scenario_name + "\n Installed Capacity ")
     # plt.legend(fontsize='large')
+    results_file = os.path.join(path_to_plots,'capacities.csv')
+    all_techs_capacity_nozeroes.to_csv(results_file, header=True, sep=';', index=True)
     plt.grid()
     fig17 = axs17.get_figure()
     fig17.savefig(path_to_plots + '/' + 'Annual installed Capacity per technology.png', bbox_inches='tight', dpi=300)
@@ -839,18 +841,17 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
-    if reps.country == "NL": # the initial power plants have negative age to avoid all to be commmissioned in one year
+    if reps.decommission_from_input == True: # the initial power plants have negative age to avoid all to be commmissioned in one year
+        years_to_generate_and_build = list(range(reps.start_simulation_year - reps.lookAhead , 2051))
+    else:
         years_to_generate_and_build = list(
         range(reps.start_simulation_year - reps.lookAhead , reps.current_year + 1 + reps.max_permit_build_time))
-    else:
-        pass
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
         for year, year_investments in investments.invested_in_iteration.items():
             number_investments_per_technology[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
                 year_investments)
-
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies,
                                                   index=years_to_generate_and_build).fillna(0)
     annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
@@ -867,9 +868,9 @@ def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, uniq
 
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_decommissioned:
-            year = pp.dismantleTime + reps.start_simulation_year
+            year = pp.decommissionInYear
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-            if pp.age + pp.dismantleTime > (reps.current_year - reps.start_simulation_year):
+            if pp.age + pp.decommissionInYear  - reps.start_simulation_year > (reps.current_year):
                 initial_power_plants.loc[:, pp.technology.name] += pp.capacity
         # if the age at the start was larger than zero then they count as being installed.
         elif pp.age > (reps.current_year - reps.start_simulation_year):
@@ -1387,7 +1388,7 @@ def calculating_RES_support(reps, years_to_generate):
             financialPowerPlantReport = reps.get_financial_report_for_plant(target_invested_plant.name)
             # filter total profits until end of life
             # end of lifetime = current tick(5) + expected lifetime (30) - age(2) =  33
-            last_tick = min(reps.current_tick, target_invested_plant.expectedEndOfLife)
+            last_tick = min(reps.current_tick, target_invested_plant.endOfLife)
             index_years = list(range(commissioned_tick, last_tick + 1))
             totalprofits_until_RES_Support = financialPowerPlantReport.totalProfitswLoans.loc[index_years]
             VRES_support[name] = totalprofits_until_RES_Support
@@ -1416,7 +1417,6 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))
     yearly_electricity_prices = pd.DataFrame()
     TotalAwardedPowerInMW = pd.DataFrame()
-
     residual_load = pd.DataFrame()
     for year in years_to_generate:
         if existing_scenario == True:
@@ -1891,16 +1891,16 @@ results_excel = "investment_initialization.xlsx"
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments_interrupted",
 #              ]
-SCENARIOS = ["-future"
+SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-increasing_investment_cost_planned_plants"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 1
+test_tick = 9
 # write None is no investment is expected,
-test_tech =  "Lithium_ion_battery"
+test_tech = None
 calculate_investments = True
-existing_scenario = False
+existing_scenario = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False
@@ -1967,7 +1967,7 @@ for scenario_name in SCENARIOS:
             scenario_name = splitname[1]
 
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps.current_tick)
+            power_plant.specifyPowerPlantsInstalled(reps)
 
 
         print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_tick_dismantling) + "_PH" + str(

@@ -131,7 +131,7 @@ class Investmentdecision(DefaultModule):
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
                         print(
-                            "set to non investable, too much in pipeline of this technology" + candidatepowerplant.technology.name)
+                            "set to non investable " + candidatepowerplant.technology.name)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         break
@@ -240,7 +240,7 @@ class Investmentdecision(DefaultModule):
                                                   buildingTime,
                                                   self.reps.current_tick, 0, newplant)
         # the rest of downpayments are scheduled. Are saved to the power plant
-        newplant.setDownpayment(downpayment)
+        newplant.downpayment = downpayment
         # --------------------------------------------------------------------------------------creating loans
         amount = self.reps.determineLoanAnnuities(investmentCostPayedByDebt,
                                                   newplant.getTechnology().getDepreciationTime(),
@@ -331,13 +331,11 @@ class Investmentdecision(DefaultModule):
         # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
         if self.capacityOfTechnologyInPipeline >= self.reps.maximum_investment_capacity_per_year:
             print(
-                " will not invest in {} technology because there's too much capacity in the pipeline " +
-                technology.name)
+                " will not invest in " +technology.name+" because there's too much capacity in the pipeline ")
             candidatepowerplant.setViableInvestment(False)
             return False
         elif expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
-            print(" will not invest in {} technology because the capacity limits are achieved" +
-                  technology.name)
+            print(" will not invest in " +technology.name+" because the capacity limits are achieved")
             candidatepowerplant.setViableInvestment(False)
             return False
             # TODO: add if the agent dont have enough cash then change the agent.readytoInvest = False
@@ -370,7 +368,6 @@ class Investmentdecision(DefaultModule):
         for i in self.investable_candidate_plants:
             already_investable.append(i.technology.name)
         target_candidate_power_plants = self.reps.get_target_candidate_power_plants(already_investable)
-
         self.investable_candidate_plants = self.investable_candidate_plants + target_candidate_power_plants
         expectedInstalledCapacityperTechnology = self.reps.calculateCapacityExpectedofListofPlants(
             self.future_installed_plants_ids, self.investable_candidate_plants)

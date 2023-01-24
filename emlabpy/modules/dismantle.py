@@ -60,8 +60,8 @@ class Dismantle(DefaultModule):
                     # operating loss (incl O&M cost)
                     print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                           .format(plant.name, horizon, profit, requiredProfit))
-                    # plant.dismantlePowerPlant(self.reps.current_tick)
-                    # self.reps.dbrw.stage_decommission_time(plant.name, self.reps.current_tick)
+                    plant.dismantlePowerPlant(self.reps.current_year)
+                    self.reps.dbrw.stage_decommission_year(plant.name, self.reps.current_year)
                     plant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(plant.name)
                 else:
