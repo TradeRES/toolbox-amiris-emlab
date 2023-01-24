@@ -28,7 +28,7 @@ class StrategicReserveSubmitBids_swe(MarketModule):
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
             # Get Variable Operating Costs
-            variable_costs = powerplant.calculate_marginal_cost_excl_co2_market_cost(self.reps, self.reps.current_tick)
+            variable_costs =  self.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
 
             # Place bids on market (full capacity at cost price per MW)
             # Only renewable plants may participate in the Swedish strategic reserve

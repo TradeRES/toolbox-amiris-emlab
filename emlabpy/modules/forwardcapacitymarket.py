@@ -35,7 +35,7 @@ class ForwardCapacityMarketSubmitBids(MarketModule):
                 self.agent.name):
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             market = self.reps.get_capacity_market_for_plant(powerplant)
-            fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
+            fixed_on_m_cost = powerplant.actualFixedOperatingCost
             nominal_capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)
 

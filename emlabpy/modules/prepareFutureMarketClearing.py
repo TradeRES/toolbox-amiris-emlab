@@ -90,14 +90,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 if self.simulation_tick  >= powerplant.endOfLife:
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
-                    powerplant.fictional_status = globalNames.power_plant_status_operational
-                    self.power_plants_list.append(powerplant)
+                    self.set_power_plant_as_operational(powerplant)
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
                 if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
-                    #  In the first iteration test the future market test all power plants
-                    powerplant.fictional_status = globalNames.power_plant_status_operational
-                    self.power_plants_list.append(powerplant)
+                    #  In the first iteration test the future market with all power plants
+                    self.set_power_plant_as_operational(powerplant)
+
                 elif self.reps.current_tick >= horizon: # there are enough past simulations
                     profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
                     if profit <= requiredProfit:
@@ -106,8 +105,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                               .format(powerplant.name, horizon,  profit, requiredProfit))
                     else: # power plants in pipeline are also considered to be operational in the future
-                        powerplant.fictional_status = globalNames.power_plant_status_operational
-                        self.power_plants_list.append(powerplant)
+                        self.set_power_plant_as_operational(powerplant)
 
                 else:  # there are not enough past simulations
                     profit = powerplant.expectedTotalProfits.mean()
@@ -116,8 +114,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         print("{} expected operating loss {} : was {} which is less than required:  {} " \
                               .format(powerplant.name, horizon,  profit, requiredProfit))
                     else:
-                        powerplant.fictional_status = globalNames.power_plant_status_operational
-                        self.power_plants_list.append(powerplant)
+                        self.set_power_plant_as_operational(powerplant)
 
                 # todo better to make decisions according to expected participation in capacity market/strategic reserve?
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
@@ -137,8 +134,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # planned power plants further in the future should not be considered.
                 # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
                 # power plants in pipeline are also considered to be operational in the future
-                powerplant.fictional_status = globalNames.power_plant_status_operational
-                self.power_plants_list.append(powerplant)
+                self.set_power_plant_as_operational(powerplant)
+
+
+    def set_power_plant_as_operational(self, powerplant):
+        powerplant.fictional_status = globalNames.power_plant_status_operational
+        self.power_plants_list.append(powerplant)
 
     def save_future_plants_to_be_operational(self):
         #saving for investment algorithm
@@ -147,7 +148,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def setTimeHorizon(self):
         """
-        The years are defined to export all the CO2 prices
+        The years are defined to store installed future power plants
         :return:
         """
         self.simulation_year = self.reps.current_year + self.look_ahead_years
@@ -159,7 +160,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         :return:
         """
         for k, substance in self.reps.substances.items():
-            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, substance, True)
+            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, True)
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)
@@ -174,24 +175,24 @@ class PrepareFutureMarketClearing(PrepareMarket):
             averagePastOperatingProfit = -1
         return averagePastOperatingProfit
 
-    def calculateAveragePastOperatingProfit_OLD(self, plant, horizon ):
-        # "totalProfits" or "irr"
-        averagePastOperatingProfit = 0
-        # typeofProfitforPastHorizon are the total Profits which exclude the loans
-        rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
-        if rep is not None:
-            # if there is data than the one needed for the horizon then an average of those years are taken
-            if self.reps.current_tick >= horizon -1:
-                past_operating_profit_all_years = pd.Series(dict(rep["data"]))
-                # before year 3 there is no dismantling considered.
-                # in year 3 it looks for profits from tick  0 to tick 3
-                # but the dismantling in tick 7 (when the plants should be installed) there are more plants installed
-                # the ignored decomission in years 2024, 2025 made the plant more profitable and not to be dismantled
-                # also it looks for the profits from tick 5 to tick 8. So the profits are different
-                indices = list(range(self.reps.current_tick - horizon + 1, self.reps.current_tick + 1))
-                past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
-                averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
-            else:  # Attention for now, for the first years the availble past data is taken
-                print("no past profits for plant", plant.name)
-                pass
-        return averagePastOperatingProfit
+    # def calculateAveragePastOperatingProfit_OLD(self, plant, horizon):
+    #     # "totalProfits" or "irr"
+    #     averagePastOperatingProfit = 0
+    #     # typeofProfitforPastHorizon are the total Profits which exclude the loans
+    #     rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
+    #     if rep is not None:
+    #         # if there is data than the one needed for the horizon then an average of those years are taken
+    #         if self.reps.current_tick >= horizon -1:
+    #             past_operating_profit_all_years = pd.Series(dict(rep["data"]))
+    #             # before year 3 there is no dismantling considered.
+    #             # in year 3 it looks for profits from tick  0 to tick 3
+    #             # but the dismantling in tick 7 (when the plants should be installed) there are more plants installed
+    #             # the ignored decomission in years 2024, 2025 made the plant more profitable and not to be dismantled
+    #             # also it looks for the profits from tick 5 to tick 8. So the profits are different
+    #             indices = list(range(self.reps.current_tick - horizon + 1, self.reps.current_tick + 1))
+    #             past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
+    #             averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
+    #         else:  # Attention for now, for the first years the availble past data is taken
+    #             print("no past profits for plant", plant.name)
+    #             pass
+    #     return averagePastOperatingProfit

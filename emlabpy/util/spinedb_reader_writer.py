@@ -782,7 +782,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
             if object_name not in (reps.decommissioned["Decommissioned"]).Decommissioned:
                 add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
     elif object_class_name == "Storage" and reps.runningModule == "run_prepare_next_year_market_clearing":
-        if str(object_name)[0 : 4] != "9999": # not candidate
+        if str(object_name)[0 : 4] != "9999": # Read the state of charge of storages, but not of candidate storage.
             pp_name = reps.get_power_plant_by_id(object_name)
             db_line[1] = pp_name
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)

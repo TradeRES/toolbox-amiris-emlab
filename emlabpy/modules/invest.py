@@ -125,7 +125,7 @@ class Investmentdecision(DefaultModule):
                     cp_numbers.append(candidatepowerplant.name)
                     cp_profits.append(candidatepowerplant.operationalProfit)
                     # calculate which is the power plant (technology) with the highest NPV
-                    candidatepowerplant.specifyTemporaryPowerPlant(self.reps, self.agent)
+                    candidatepowerplant.specifyCandidatePPCapacity(self.reps, self.agent)
                     investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant
                                                                                  )
                     if investable == False:
@@ -223,6 +223,7 @@ class Investmentdecision(DefaultModule):
                                                                              bestCandidatePowerPlant.technology.name,
                                                                              self.reps.current_tick, newid))
         # --------------------------------------------------------------------------------------Payments
+        print(newplant.getActualInvestedCapital()/1000000)
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
         totalDownPayment = investmentCostPayedByEquity
@@ -291,7 +292,7 @@ class Investmentdecision(DefaultModule):
         return discountedprojectvalue
 
     def getActualInvestedCapitalperMW(self, technology):
-        investmentCostperTechnology = technology.get_investment_costs_by_year(self.futureInvestmentyear)
+        investmentCostperTechnology = technology.get_investment_costs_perMW_by_year(self.futureInvestmentyear)
         return investmentCostperTechnology
 
     def getinvestmentcosts(self, investmentCostperTechnology, time):

@@ -51,18 +51,18 @@ class Substance(ImportObject):
             pd_series = pd.Series(values, index = index)
             self.initialPrice = pd_series.sort_values(ascending=True)
 
-    def get_price_for_tick(self, reps, year, substance, future):
+    def get_price_for_tick(self, reps, year, simulating_future_market):
         # first consider prices if these are supposed to be fix
         if reps.fix_fuel_prices_to_year == True: # attention this shouldnt be neede once all data is there
             # fixing prices to year
-            if  substance.name == "CO2" and reps.yearly_CO2_prices == True:
+            if  self.name == "CO2" and reps.yearly_CO2_prices == True:
                 # yearly prices
                 self.get_CO2_yearly_price(reps.fix_price_year)
             else:
                 self.newPrice = self.interpolate_year(reps.fix_price_year)
                 return self.newPrice
 
-        elif substance.name == "CO2":
+        elif self.name == "CO2":
             if reps.yearly_CO2_prices == True:
                 # dont fix prices
                 self.newPrice = self.get_CO2_yearly_price(year)
@@ -72,14 +72,13 @@ class Substance(ImportObject):
             return self.newPrice
 
         elif reps.current_tick >= reps.start_tick_fuel_trends:
-            if future == True:
-                # simulating future market
-                self.initializeGeometricTrendRegression(reps, substance)
+            if simulating_future_market == True:
+                self.initializeGeometricTrendRegression(reps)
                 self.newPrice = self.geometricRegression.predict(year)
                 return self.newPrice
             else:
                 # simulating next year prices from past results and random
-                calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, "simulatedPrice")
+                calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(self.name, "simulatedPrice")
                 df = pd.DataFrame(calculatedPrices['data'])
                 df.set_index(0, inplace=True)
                 last_value = df.loc[str(year - 1)][1]
@@ -103,9 +102,9 @@ class Substance(ImportObject):
         f = np.poly1d(c)
         return f(year)
 
-    def initializeGeometricTrendRegression(self, reps, substance):
+    def initializeGeometricTrendRegression(self, reps):
         self.geometricRegression = GeometricTrendRegression("geometrictrendRegression" + self.name)
-        calculatedfuturePrices =  reps.dbrw.get_calculated_simulated_fuel_prices(substance.name, "futurePrice")
+        calculatedfuturePrices =  reps.dbrw.get_calculated_simulated_fuel_prices(self.name, "futurePrice")
         x = []
         y = []
         for i in calculatedfuturePrices['data']:

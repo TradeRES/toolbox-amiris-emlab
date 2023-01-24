@@ -56,21 +56,13 @@ class CandidatePowerPlant(PowerPlant):
             else:
                 self.capacity = reps.dummy_capacity
 
-
-    def specifyTemporaryPowerPlant(self, reps, energyProducer ):
+    def specifyCandidatePPCapacity(self, reps, energyProducer):
         self.setOwner(energyProducer)
         self.setLocation(reps.country)
-        self.setConstructionStartTime()
-        self.setActualLeadtime(self.technology.getExpectedLeadtime())
-        self.setActualPermittime(self.technology.getExpectedPermittime())
-        self.setActualNominalCapacity(self.getCapacity())
-        if reps.install_at_look_ahead_year ==True:
-            self.setEndOfLife(reps.current_year + reps.lookAhead + self.getTechnology().getExpectedLifetime())
-        else:
-            self.setEndOfLife(reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
+        self.setActualNominalCapacity(self.capacity)  # capacity is the one being tested
         return self
 
-    def setConstructionStartTime(self):
+    def setConstructionStartTick(self):
         self.constructionStartTime = - (self.technology.expected_leadtime +
                                     self.technology.expected_permittime +
                                     self.technology.expected_lifetime)
@@ -88,9 +80,6 @@ class FutureStorageTrader(ImportObject):
         self.AwardedPower = 0
         self.StoredMWh = 0
         self.Profit = 0
-        #self.OfferedChargePrice = None
-        #self.OfferedDischargePrice = None
-        #self.OfferedPowerinMW
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'AwardedPowerinMWh':

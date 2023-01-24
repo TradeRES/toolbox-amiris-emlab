@@ -11,17 +11,17 @@ from domain.loans import Loan
 from util import globalNames
 import numpy as np
 
+
 class PowerPlant(EMLabAgent):
     def __init__(self, name):
         super().__init__(name)
-        self.name = name # power plants that have a name/number higher than 1000
+        self.name = name
         self.id = 0
         self.technology = None
         self.location = ""
-        self.owner = None # change if there are more energyproducers
+        self.owner = None  # change if there are more energyproducers
         self.capacity = 0
         self.expectedTotalProfits = 0
-        # TODO: Implement GetActualEfficiency -> for now the fixed costs are the ones incrementing with the year
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.fictional_status = globalNames.power_plant_status_not_set
@@ -34,13 +34,13 @@ class PowerPlant(EMLabAgent):
         # scenario from artificial emlab parameters
         self.constructionStartTick = 0
         self.actualLeadtime = 0
-        self.actualPermittime = 0 # todo clear this functionalities
+        self.actualPermittime = 0  # todo clear this functionalities
         self.age = 0
         self.commissionedYear = 0
         self.label = ""
         self.actualInvestedCapital = 0
         self.actualFixedOperatingCost = 'NOTSET'
-        self.actualEfficiency = 0
+        self.actualEfficiency = None  # TODO: Implement GetActualEfficiency -> for now the fixed costs are the ones incrementing with the year
         self.actualNominalCapacity = 0
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
@@ -57,13 +57,13 @@ class PowerPlant(EMLabAgent):
         self.cash = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        # do not import decommissioned power plants to the repository if it is not the plotting step
         if reps.runningModule != "plotting" and self.name in (
+                # do not import decommissioned power plants to the repository if it is not the plotting step
                 reps.decommissioned["Decommissioned"]).Decommissioned:
             return
         elif parameter_name == 'Status':
             self.status = str(parameter_value)
-        elif parameter_name == 'Efficiency':  # the efficiency stored in the DB is the actual one
+        elif parameter_name == 'Efficiency':
             self.actualEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
             self.location = parameter_value
@@ -76,21 +76,21 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'Owner':
             self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
-            if reps.current_tick ==  0 and reps.runningModule == "run_decommission_module":
-                # The difference of the year of the power plants is added to the age of power plants in the first decommission step
-               self.age = int(parameter_value) + reps.add_initial_age_years
-               self.commissionedYear = reps.current_year - int(parameter_value)  - reps.add_initial_age_years
+            if reps.current_tick == 0 and reps.runningModule == "run_decommission_module":
+                # In the first decommission step,the year of the power plants list is added to the age of power plants
+                self.age = int(parameter_value) + reps.add_initial_age_years
+                self.commissionedYear = reps.current_year - int(parameter_value) - reps.add_initial_age_years
             else:
-                self.age = int(parameter_value) # for emlab data the commissioned year can be read from the age
+                self.age = int(parameter_value)  # for emlab data the commissioned year can be read from the age
                 self.commissionedYear = reps.current_year - int(parameter_value)
 
             if self.is_new_installed() and reps.runningModule == "run_initialize_power_plants":
-                if self.age >  reps.current_tick:
-                    raise Exception("age is higher than it should be " + str(self.id) +" Name " + str(self.name))
+                if self.age > reps.current_tick:
+                    raise Exception("age is higher than it should be " + str(self.id) + " Name " + str(self.name))
         elif parameter_name == 'DecommissionInYear':
-            self.decommissionInYear =  int(parameter_value)
+            self.decommissionInYear = int(parameter_value)
         elif parameter_name == 'actualFixedOperatingCost':
-            self.actualFixedOperatingCost =  float(parameter_value)
+            self.actualFixedOperatingCost = float(parameter_value)
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':
@@ -108,82 +108,13 @@ class PowerPlant(EMLabAgent):
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
-            all_storages = pd.Series(values, index = index)
+            all_storages = pd.Series(values, index=index)
             self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
         elif parameter_name == 'expectedTotalProfits' and reps.runningModule == "run_future_market":
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
-            self.expectedTotalProfits = pd.Series(values, index = index)
-
-    def calculate_emission_intensity(self, reps):
-        # emission = 0
-        # substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
-        # for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
-        #     # CO2 Density is a ton CO2 / MWh
-        #     co2_density = substance_in_fuel_mix.co2_density * (1 - float(
-        #         self.technology.co2_capture_efficiency))
-        #
-        #     # Returned value is ton CO2 / MWh
-        #     emission_for_this_fuel = substance_in_fuel_mix_object.share * co2_density / self.efficiency
-        #     emission += emission_for_this_fuel
-        # return emission
-        if self.technology.fuel != '':
-            co2_density = self.technology.fuel.co2_density * (1 - float(
-                self.technology.co2_capture_efficiency))
-            emission = co2_density / self.technology.efficiency
-        else:
-            emission = 0
-        return emission
-
-    def calculate_fixed_operating_cost(self):
-        per_mw = self.technology.get_fixed_operating_cost(self.constructionStartTick +
-                                                          int(self.technology.expected_leadtime) +
-                                                          int(self.technology.expected_permittime))
-        capacity = self.get_actual_nominal_capacity()
-        return per_mw * capacity
-
-    def get_Profit(self):
-        if not self.operationalProfit:
-            self.operationalProfit = self.ReceivedMoneyinEUR - self.CostsinEUR
-        return self.operationalProfit
-
-    def calculate_marginal_fuel_cost_per_mw_by_tick(self, reps, time):
-        # fc = 0
-        # substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
-        # for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
-        #     # Fuel price is Euro / MWh
-        #     fc += substance_in_fuel_mix_object.share * substance_in_fuel_mix.get_price_for_tick(time) / self.efficiency
-        # return fc
-        if self.technology.fuel != '':
-            xp = [2020, 2050]
-            fp = [self.technology.fuel.initialprice2020, self.technology.fuel.initialprice2050]
-            newSimulatedPrice = np.interp(reps.current_year, xp, fp)
-            fc = newSimulatedPrice / self.technology.efficiency
-            # fc = self.technology.fuel.futurePrice.values[0] / self.technology.efficiency
-        else:
-            fc = 0
-        return fc
-
-    def get_actual_nominal_capacity(self):
-        return self.capacity
-
-    def calculate_co2_tax_marginal_cost(self, reps):
-        co2_intensity = self.calculate_emission_intensity(reps)
-        co2_tax = 0  # TODO: Retrieve CO2 Market Price
-        return co2_intensity * co2_tax
-
-    def calculate_marginal_cost_excl_co2_market_cost(self, reps, time):
-        mc = 0
-        mc += self.calculate_marginal_fuel_cost_per_mw_by_tick(reps, time)
-        mc += self.calculate_co2_tax_marginal_cost(reps)
-        return mc
-
-    def get_load_factor_for_production(self, production):
-        if self.capacity != 0:
-            return production / self.capacity
-        else:
-            return 0
+            self.expectedTotalProfits = pd.Series(values, index=index)
 
     def add_values_from_df(self, results):
         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
@@ -191,8 +122,10 @@ class PowerPlant(EMLabAgent):
         self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
         self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
-    # createPowerPlant from target investment or from investment algorithm chosen power plant
-    def specifyPowerPlantforInvest(self, reps,  energyProducer,  capacity, pgt, look_ahead_years):
+    def specifyPowerPlantforInvest(self, reps, energyProducer, capacity, pgt, look_ahead_years):
+        """"
+        specify power plant invested by NPV or target
+        """
         self.dischargingEfficiency = 0
         self.setCapacity(capacity)
         self.setTechnology(pgt)
@@ -203,47 +136,54 @@ class PowerPlant(EMLabAgent):
         if reps.install_at_look_ahead_year == True:
             self.age = - look_ahead_years
             self.commissionedYear = reps.current_year + look_ahead_years
+            commissionedTick = reps.current_tick + look_ahead_years
+            self.setEndOfLife(
+                reps.current_year + reps.lookAhead + self.getTechnology().getExpectedLifetime())  # for dismantling decision
         else:
             self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
             self.commissionedYear = reps.current_year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
-        self.setEndOfLife(
-            reps.current_tick + self.getTechnology().getExpectedLifetime() - self.age)
-        self.constructionStartTick = reps.current_tick
-        self.calculateAndSetActualEfficiency(self.getConstructionStartTick())
-        self.calculateAndSetActualFixedOperatingCosts()
-        self.calculateAndSetActualInvestedCapital(reps, pgt, self.getConstructionStartTick()) # INVEST
+            commissionedTick = reps.current_tick + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
+            self.setEndOfLife(
+                reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.status = globalNames.power_plant_status_inPipeline
+        self.calculateAndSetActualEfficiency(commissionedTick)
+        self.calculateAndSetActualFixedOperatingCosts(
+            commissionedTick)  # by GeometricTrend by tick --- > negative exponential value
+        self.calculateAndSetActualInvestedCapital(reps, pgt, commissionedTick)  # INVEST
+
+    def specifyPowerPlantsInstalled(self, reps):
+        """"
+        specify power plant from initial database
+        """
+        self.setActualLeadtime(self.technology.getExpectedLeadtime())
+        self.setActualPermittime(self.technology.getExpectedPermittime())
+        self.setActualNominalCapacity(self.getCapacity())
+        self.setConstructionStartTick()  # minus age, permit and lead time
+        commissionedTick = - self.age
+        self.calculateAndSetActualInvestedCapital(reps, self.technology,
+                                                  commissionedTick)  # INITIAL investment cost by time series = 2020
+        if self.actualEfficiency == None:  # if there is not initial efficiency, then assign the efficiency by the technology
+            self.calculateAndSetActualEfficiency(commissionedTick)
+        if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
+            self.calculateAndSetActualFixedOperatingCosts(
+                commissionedTick)  # by GeometricTrend by tick --- > positive exponential value
+        if reps.decommission_from_input == True and self.decommissionInYear is not None:
+            self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year)  # set in terms of tick
+        self.setPowerPlantsStatusforInstalledPowerPlants()
+        return
 
     def set_loans_installed_pp(self, reps):
         amountPerPayment = reps.determineLoanAnnuities(
             self.getActualInvestedCapital() * self.owner.getDebtRatioOfInvestments(),
             self.getTechnology().getDepreciationTime(), self.owner.getLoanInterestRate())
-        # todo : check in emlab
-        done_payments = self.age
+        done_payments = self.age # the loan  is paid since it was constructed.
         startpayments = - self.age
-        reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment, self.getTechnology().getDepreciationTime(),
-                        startpayments , done_payments, self)
-
-    # createPowerPlant from initial database
-    def specifyPowerPlantsInstalled(self, reps ):
-        self.setActualLeadtime(self.technology.getExpectedLeadtime())
-        self.setActualPermittime(self.technology.getExpectedPermittime())
-        self.setActualNominalCapacity(self.getCapacity())
-        self.setConstructionStartTime()  # minus age, permit and lead time
-        self.calculateAndSetActualInvestedCapital(reps, self.technology, self.getConstructionStartTick()) # INITIAL investment cost by time series = 2020
-        if self.actualEfficiency == 0: # if there is not initial efficiency, then assign the efficiency by the technology
-           self.calculateAndSetActualEfficiency(self.getConstructionStartTick())
-        if self.actualFixedOperatingCost == 'NOTSET': # old power plants have set their fixed costs
-            self.calculateAndSetActualFixedOperatingCosts()
-        if reps.decommission_from_input == True and self.decommissionInYear is not None:
-            self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year) # set in terms of tick
-        #self.setEndOfLife(tick + self.getTechnology().getExpectedLifetime() - self.age)
-        self.setPowerPlantsStatusforInstalledPowerPlants()
-        return
+        reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment,
+                        self.getTechnology().getDepreciationTime(),
+                        startpayments, done_payments, self)
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
-        # todo if the plant is in strategic reserve. Then the status shouldnt change? this is better kept through the list of power plants
-        # and self.status != globalNames.power_plant_status_strategic_reserve
+        # if the plant is in strategic reserve. Then the status shouldnt change? this is better kept through the list of power plants
         if self.age is not None:
             if self.status == globalNames.power_plant_status_decommissioned:
                 pass
@@ -256,7 +196,16 @@ class PowerPlant(EMLabAgent):
         else:
             print("power plant dont have an age ", self.name)
 
+    def get_Profit(self):
+        if not self.operationalProfit:
+            self.operationalProfit = self.ReceivedMoneyinEUR - self.CostsinEUR
+        return self.operationalProfit
+
+    def get_actual_nominal_capacity(self):
+        return self.capacity
+
     def is_new_installed(self):
+        # power plants that have a name/number higher than 100000 can be considered as newly installed.
         if int(self.name) > 100000:
             return True
         else:
@@ -269,39 +218,28 @@ class PowerPlant(EMLabAgent):
             return False
 
     def is_not_candidate_power_plant(self):
-        if str(self.id)[0 : 4] != "9999":
+        if str(self.id)[0: 4] != "9999":
             return True
         else:
             return False
 
-
-    def calculateActualPermittime(self):
-        actual = self.actualPermittime
-        if actual <= 0:
-            actual = self.technology.expected_permittime
-        return actual
-
-    def calculateActualLifetime(self):
-        actual = self.age
-        if actual <= 0:
-            actual = self.technology.expected_lifetime
-        return actual
-
-    def calculateAndSetActualInvestedCapital(self, reps, technology, timeOfPermitorBuildingStart):
-        # if the
-        if timeOfPermitorBuildingStart <= reps.earliest_investment_data_year_as_tick:
+    def calculateAndSetActualInvestedCapital(self, reps, technology, commissionedTick):
+        # if the price is available
+        investment_year = commissionedTick + reps.start_simulation_year
+        if investment_year <= reps.earliest_investment_data_year:
+            # Fins investment cost by time series = 2020 price
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
-                timeOfPermitorBuildingStart + self.getActualPermittime() + self.getActualLeadtime()) * self.get_actual_nominal_capacity())
-        else:
-            technology.get_investment_costs_by_year(timeOfPermitorBuildingStart + reps.start_simulation_year) * self.get_actual_nominal_capacity()
+                commissionedTick) * self.get_actual_nominal_capacity())
+        else:  # by year
+            technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity()
 
-    def calculateAndSetActualFixedOperatingCosts(self): # get fixed costs according to age
-        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_cost_trend(self.age)\
+    def calculateAndSetActualFixedOperatingCosts(self, tick):
+        # get fixed costs by GeometricTrend by tick. rom specify power plants
+        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_cost_trend(tick) \
                                          * self.getActualNominalCapacity())
 
-    def calculateAndSetActualEfficiency(self, timeOfPermitorBuildingStart):
-        self.setActualEfficiency(self.getTechnology().getEfficiency(
-            timeOfPermitorBuildingStart + self.getActualLeadtime() + self.getActualPermittime()))
+    def calculateAndSetActualEfficiency(self, commissionedTick):
+        self.setActualEfficiency(self.getTechnology().getEfficiency(commissionedTick))
 
     def calculateEmissionIntensity(self):
         emission = 0
@@ -348,7 +286,7 @@ class PowerPlant(EMLabAgent):
     def setCapacity(self, capacity):
         self.capacity = capacity
 
-    def setConstructionStartTime(self):  # in terms of tick
+    def setConstructionStartTick(self):  # in terms of tick
         # construction start time doesnt change
         self.constructionStartTick = - (self.technology.expected_leadtime +
                                         self.technology.expected_permittime +
@@ -384,9 +322,6 @@ class PowerPlant(EMLabAgent):
     def setEndOfLife(self, endOfLife):
         self.endOfLife = endOfLife
 
-    def getEndOfLife(self):
-        return self.endOfLife
-
     def setActualNominalCapacity(self, actualNominalCapacity):
         # self.setActualNominalCapacity(self.getCapacity() * location.getCapacityMultiplicationFactor())
         if actualNominalCapacity < 0:
@@ -404,6 +339,50 @@ class PowerPlant(EMLabAgent):
 
     def setDownpayment(self, downpayment):
         self.downpayment = downpayment
+
+    def calculate_emission_intensity(self, reps):
+        # emission = 0
+        # substance_in_fuel_mix_object = reps.get_substances_in_fuel_mix_by_plant(self)
+        # for substance_in_fuel_mix in substance_in_fuel_mix_object.substances:
+        #     # CO2 Density is a ton CO2 / MWh
+        #     co2_density = substance_in_fuel_mix.co2_density * (1 - float(
+        #         self.technology.co2_capture_efficiency))
+        #
+        #     # Returned value is ton CO2 / MWh
+        #     emission_for_this_fuel = substance_in_fuel_mix_object.share * co2_density / self.efficiency
+        #     emission += emission_for_this_fuel
+        # return emission
+        if self.technology.fuel != '':
+            co2_density = self.technology.fuel.co2_density * (1 - float(
+                self.technology.co2_capture_efficiency))
+            emission = co2_density / self.technology.efficiency
+        else:
+            emission = 0
+        return emission
+
+    # def calculate_marginal_cost_excl_co2_market_cost(self, reps, time):
+    #     mc = 0
+    #     if self.technology.fuel != '':
+    #         xp = [2020, 2050]
+    #         fp = [self.technology.fuel.initialprice2020, self.technology.fuel.initialprice2050]
+    #         newSimulatedPrice = np.interp(reps.current_year, xp, fp)
+    #         fc = newSimulatedPrice / self.technology.efficiency
+    #     else:
+    #         fc = 0
+    #     mc += fc
+    #     mc += self.calculate_co2_tax_marginal_cost(reps)
+    #     return mc
+
+    # def calculate_co2_tax_marginal_cost(self, reps):
+    #     co2_intensity = self.calculate_emission_intensity(reps)
+    #     co2_tax = 0  # TODO: Retrieve CO2 Market Price
+    #     return co2_intensity * co2_tax
+
+    # def get_load_factor_for_production(self, production):
+    #     if self.capacity != 0:
+    #         return production / self.capacity
+    #     else:
+    #         return 0
 
 
 class Decommissioned(ImportObject):

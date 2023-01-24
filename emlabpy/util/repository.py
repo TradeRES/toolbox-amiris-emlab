@@ -76,7 +76,7 @@ class Repository:
         self.realistic_candidate_capacities_for_future = False
         self.maximum_investment_capacity_per_year = 0
         self.dummy_capacity = 1
-        self.earliest_investment_data_year_as_tick = 2020 - self.start_simulation_year
+        self.earliest_investment_data_year = 2020 - self.start_simulation_year
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -381,6 +381,7 @@ class Repository:
     # ----------------------------------------------------------------------------section PowerPlants
 
     def get_ids_of_future_installed_plants(self, futuretick) -> list:
+        # the installed power plants include the ones invested in previous iterations
         return self.installedFuturePowerPlants["All"].installed_ids[futuretick]
 
     def get_id_last_power_plant(self) -> int:
@@ -408,14 +409,6 @@ class Repository:
                         capacity += plant.capacity
             expectedOperationalcapacity[tech] = capacity
         return expectedOperationalcapacity
-
-    # def calculateCapacityOfExpectedOperationalPlantsperTechnology(self, technology, ids_of_future_installed_and_dispatched_pp):
-    #     expectedOperationalcapacity = 0
-    #     for plant in self.power_plants.values():
-    #         if plant.id in ids_of_future_installed_and_dispatched_pp:
-    #             if plant.technology.name == technology.name:
-    #                 expectedOperationalcapacity += plant.capacity
-    #     return expectedOperationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
         plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology.name == technology.name
@@ -526,15 +519,6 @@ class Repository:
                                          if i.tick == current_tick])
         return plant.capacity - ppdps_sum_accepted_amount
 
-    def get_power_plant_costs_by_tick_and_market(self, power_plant: PowerPlant, time: int, market: Market) -> float:
-        # MC is Euro / MW
-        mc = power_plant.calculate_marginal_cost_excl_co2_market_cost(self, time)
-        # FOC is Euro
-        foc = power_plant.calculate_fixed_operating_cost()
-        # total capacity is in MWh
-        total_capacity = self.get_total_accepted_amounts_by_power_plant_and_tick_and_market(power_plant, time, market)
-        return foc + mc * total_capacity
-
     def get_power_plant_emissions_by_tick(self, time: int) -> Dict[str, float]:
         if 'YearlyEmissions' in self.emissions.keys():
             res = self.emissions['YearlyEmissions'].emissions[time]
@@ -558,13 +542,13 @@ class Repository:
             logging.warning('No PPDP Price found for plant' + str(power_plant_id))
         return 0
 
-    def get_power_plant_electricity_spot_market_revenues_by_tick(self, power_plant_id: str, time: int) -> float:
-        try:  # TODO fix this
-            return next(i.revenues for i in self.power_plant_dispatch_plans_in_year.values() if
-                        i.power_plant_id == power_plant_id and i.tick == time)
-        except StopIteration:
-            logging.warning('No PPDP Price found for plant  and at time ' + str(time))
-        return 0
+    # def get_power_plant_electricity_spot_market_revenues_by_tick(self, power_plant_id: str, time: int) -> float:
+    #     try:
+    #         return next(i.revenues for i in self.power_plant_dispatch_plans_in_year.values() if
+    #                     i.power_plant_id == power_plant_id and i.tick == time)
+    #     except StopIteration:
+    #         logging.warning('No PPDP Price found for plant  and at time ' + str(time))
+    #     return 0
 
     def get_total_accepted_amounts_by_power_plant_and_tick_and_market(self, power_plant: PowerPlant, time: int,
                                                                       market: Market) -> float:
