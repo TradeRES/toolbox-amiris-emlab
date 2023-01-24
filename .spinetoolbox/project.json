@@ -845,8 +845,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -307.7448388138334,
-            "y": -468.87615808532667,
+            "x": -260.4386085614347,
+            "y": -481.77785724507174,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -886,8 +886,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -182.14200051770365,
-            "y": -479.51117202084004,
+            "x": -162.78945177808598,
+            "y": -483.81173840742173,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

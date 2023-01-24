@@ -89,6 +89,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
             if self.reps.decommission_from_input == True  and powerplant.decommissionInYear is not None:
                 if self.simulation_tick  >= powerplant.endOfLife:
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                else:
+                    powerplant.fictional_status = globalNames.power_plant_status_operational
+                    self.power_plants_list.append(powerplant)
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
                 if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
@@ -128,10 +131,10 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                 # # todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
                 self.power_plants_list.append(powerplant)
-            elif fictional_age < 0: #powerplant.commissionedYear > self.simulation_year:
-                # planned power plants further in the future should not be considered.
+            elif fictional_age < 0:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
-            else:
+            else: #powerplant.commissionedYear > self.simulation_year
+                # planned power plants further in the future should not be considered.
                 # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
                 # power plants in pipeline are also considered to be operational in the future
                 powerplant.fictional_status = globalNames.power_plant_status_operational
