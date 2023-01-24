@@ -729,7 +729,7 @@
             "type": "Data Store",
             "description": "",
             "x": -1218.5522954611822,
-            "y": -461.4120565463154,
+            "y": -463.5623397396062,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -754,8 +754,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -697.8820998604465,
-            "y": -479.9148897379169,
+            "x": -699.6016861110319,
+            "y": -479.91488973791684,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [

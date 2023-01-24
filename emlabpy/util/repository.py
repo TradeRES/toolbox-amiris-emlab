@@ -76,6 +76,7 @@ class Repository:
         self.realistic_candidate_capacities_for_future = False
         self.maximum_investment_capacity_per_year = 0
         self.dummy_capacity = 1
+        self.earliest_investment_data_year_as_tick = 2020 - self.start_simulation_year
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -453,7 +454,7 @@ class Repository:
         return [i for i in self.target_investors.values() if i.targetCountry == country]
 
     # def findAllPowerPlantsWithConstructionStartTimeInTick(self, tick):
-    #     return [i for i in self.power_plants if i.getConstructionStartTime() == tick]
+    #     return [i for i in self.power_plants if i.getConstructionStartTick() == tick]
 
     # def findAllPowerPlantsWhichAreNotDismantledBeforeTick(self, tick):
     #     return [i for i in self.power_plants.values() if i.isWithinTechnicalLifetime(tick)]
