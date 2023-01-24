@@ -489,7 +489,7 @@
             ]
         },
         "selected_tables": [
-            "NL_withplanneddecommissions"
+            "extendedNL"
         ],
         "table_options": {
             "germany2019": {

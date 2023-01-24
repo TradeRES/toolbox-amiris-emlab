@@ -1202,7 +1202,7 @@ def prepare_screening_curves(reps, year):
     co2price = co2prices[year]
     for tech_name, tech in reps.power_generating_technologies.items():
         if tech.intermittent == False:
-            investment_cost = tech.get_investment_costs_by_year(year)
+            investment_cost = tech.get_investment_costs_perMW_by_year(year)
             annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -investment_cost)
             if tech.fuel == "":
                 fuel_price = np.int64(0)
@@ -1244,7 +1244,7 @@ def prepare_screening_curves_candidates(reps, year):
     co2price = co2prices[year]
 
     for tech in reps.get_unique_candidate_technologies():
-        investment_cost = tech.get_investment_costs_by_year(year)
+        investment_cost = tech.get_investment_costs_perMW_by_year(year)
         annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -investment_cost)
         if tech.fuel == "":
             # ton / MWh

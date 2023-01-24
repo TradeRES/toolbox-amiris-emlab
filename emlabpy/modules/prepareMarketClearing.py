@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from util import globalNames
 import os
 
+
 class PrepareMarket(DefaultModule):
     """
     This function prepares the information for next years market clearing:
@@ -27,10 +28,10 @@ class PrepareMarket(DefaultModule):
 
     def act(self):
         # look for all power plants, except for decommissioned and in pipeline
-        self.power_plants_list =  self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
-                                                                        globalNames.power_plant_status_to_be_decommissioned,
-                                                                        globalNames.power_plant_status_strategic_reserve,
-                                                                        ])
+        self.power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
+                                                                       globalNames.power_plant_status_to_be_decommissioned,
+                                                                       globalNames.power_plant_status_strategic_reserve,
+                                                                       ])
         self.calculate_save_available_capacity()
         self.sort_power_plants_by_age()
         self.setTimeHorizon()
@@ -46,19 +47,18 @@ class PrepareMarket(DefaultModule):
         self.writer.close()
         print("saved to ", self.path)
 
-
     def calculate_save_available_capacity(self):
         # saving the available capacity to calculate the supply ratio
         sumcapacity = []
         for pp in self.power_plants_list:
             if pp.technology.intermittent == False:
                 # include hydropower, batteries, biogas,
-                sumcapacity.append(pp.capacity )
+                sumcapacity.append(pp.capacity)
         peak_dispatchable_capacity = sum(sumcapacity)
         self.reps.dbrw.stage_peak_dispatchable_capacity(peak_dispatchable_capacity, self.reps.current_year)
 
     def sort_power_plants_by_age(self):
-        self.power_plants_list.sort(key=lambda x:x.age)
+        self.power_plants_list.sort(key=lambda x: x.age)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
@@ -66,11 +66,14 @@ class PrepareMarket(DefaultModule):
 
     def setExpectations(self):
         for k, substance in self.reps.substances.items():
-            fuel_price = substance.get_price_for_tick(self.reps, self.simulation_year, substance, False)
+            fuel_price = substance.get_price_for_tick(self.reps, self.simulation_year, False)
             substance.simulatedPrice_inYear = fuel_price
             self.reps.dbrw.stage_simulated_fuel_prices(self.simulation_year, fuel_price, substance)
 
     def write_times(self):
+        """"
+        These are not read by AMIRIS
+        """
         startime = datetime(self.simulation_year, 1, 1) - timedelta(minutes=2)
         stoptime = datetime(self.simulation_year, 12, 31) - timedelta(minutes=2)
         d = {'StartTime': startime, 'StopTime': stoptime}
@@ -80,82 +83,85 @@ class PrepareMarket(DefaultModule):
     def write_scenario_data_emlab(self, calculatedprices):
         wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
         demand = wholesale_market.hourlyDemand
-        #write_demand = ["./amiris_workflow/amiris-config/data/load.csv"]
-        demand_file_for_amiris = globalNames.load_file_for_amiris
         dict_fuels = {}
         for k, substance in self.reps.substances.items():
-            if calculatedprices == "next_year_price":
+            if calculatedprices == "next_year_price":  # choose the prices depending if nexy year or future year is calculated
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
-            # ---------------------------------------------------------------------------------------------
+            # ----------------------------------------------------------------------------preparing demand and yield profiles
             if substance.name == "electricity":
-                if self.reps.country == "DE": # for germany the load is calculated with a trend.
+                if self.reps.country == "DE":  # for germany the load is calculated with a trend.
                     new_demand = demand.copy()
                     new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
-                else: # for now, only have dynamic data for NL case
-                    if self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick>0:
+                else:  # for now, only have dynamic data for NL case
+                    if self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick > 0:
                         # the load was already updated in the clock step
                         pass
-                    elif self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick==0:
+                    elif self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick == 0:
                         self.update_demand_file()
                         self.update_profiles_files()
-                    else: # runnning   "run_future_market":
+                    else:  # runnning   "run_future_market":
                         if self.reps.investmentIteration == 0:
                             # only update data in first iteration
                             if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
                             elif self.reps.fix_demand_to_initial_year == False:
-                                # fix demand
-                                if  self.reps.current_tick == 0  and self.reps.testing_future_year <  self.reps.lookAhead and self.reps.testing_future_year > 0:
+                                # ================================================================== Updating demand
+                                if self.reps.current_tick == 0 and self.reps.testing_future_year < self.reps.lookAhead and self.reps.testing_future_year > 0:
                                     # do update during initialization investment
                                     self.update_demand_file()
                                 else:
-                                    print("updated demand for year "  + str(self.simulation_year))
+                                    print("updated demand for year " + str(self.simulation_year))
                                     # copying future demand file to be load.csv
-                                    wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
-                                # ========================================================================================================================
+                                    wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris,
+                                                                          header=False, sep=';', index=False)
+                                # ================================================================== Updating profiles
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles")
                                 else:
-                                    if  self.reps.current_tick == 0  and self.reps.testing_future_year <  self.reps.lookAhead and self.reps.testing_future_year > 0:
+                                    if self.reps.current_tick == 0 and self.reps.testing_future_year < self.reps.lookAhead and self.reps.testing_future_year > 0:
                                         # do update during initialization investment
                                         self.update_profiles_files()
                                     else:
                                         print("update profiles")
-                                        shutil.copy(globalNames.future_windoff_file_for_amiris, globalNames.windoff_file_for_amiris)
-                                        shutil.copy(globalNames.future_windon_file_for_amiris, globalNames.windon_file_for_amiris)
-                                        shutil.copy(globalNames.future_pv_file_for_amiris, globalNames.pv_file_for_amiris)
-                            elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False :
-                                raise Exception # so far no option to fix demand but not profiles
+                                        shutil.copy(globalNames.future_windoff_file_for_amiris,
+                                                    globalNames.windoff_file_for_amiris)
+                                        shutil.copy(globalNames.future_windon_file_for_amiris,
+                                                    globalNames.windon_file_for_amiris)
+                                        shutil.copy(globalNames.future_pv_file_for_amiris,
+                                                    globalNames.pv_file_for_amiris)
+                            elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False:
+                                raise Exception  # so far no option to fix demand but not profiles
                             else:
                                 raise Exception
 
                         else:
-                            pass # next iterations shouldnt update the demand and
+                            # next iterations have same market conditions, no need to update the demand or profile
+                            pass
 
             elif substance.name == "CO2":
                 Co2Prices = fuel_price
             else:
                 try:
-                    if self.reps.dictionaryFuelNames[k] in ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "HYDROGEN", "BIOMASS", "WASTE"]:
+                    if self.reps.dictionaryFuelNames[k] in ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL",
+                                                            "HYDROGEN", "BIOMASS", "WASTE"]:
                         dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
                     else:
                         pass
-                        #"Fuel not considered in AMIRIS"
+                        # "Fuel not considered in AMIRIS"
                 except KeyError:
                     print(k + "not amiris name")
 
-
         d2 = {'AgentType': "CarbonMarket", 'CO2': Co2Prices}
 
-        dict_fuels['AgentType']= "FuelsMarket"
-        fuels = pd.DataFrame.from_dict(dict_fuels, orient='index', columns= [1])
-        co2 = pd.DataFrame.from_dict(d2 , orient='index')
+        dict_fuels['AgentType'] = "FuelsMarket"
+        fuels = pd.DataFrame.from_dict(dict_fuels, orient='index', columns=[1])
+        co2 = pd.DataFrame.from_dict(d2, orient='index')
 
         result = pd.concat(
-            [co2,fuels],
+            [co2, fuels],
             axis=1,
             join="outer",
         )
@@ -163,14 +169,14 @@ class PrepareMarket(DefaultModule):
         df1_transposed.to_excel(self.writer, sheet_name="scenario_data_emlab")
 
     def update_demand_file(self):
-        print("updated demand file"  + str(self.simulation_year))
+        print("updated demand file" + str(self.simulation_year))
         excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
                                  sheet_name=["Load Profile"])
         demand = excel_NL['Load Profile'][self.simulation_year]
         demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
 
     def update_profiles_files(self):
-        print("Update profiles "  + str(self.simulation_year))
+        print("Update profiles " + str(self.simulation_year))
         excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
                                  sheet_name=["NL Wind Onshore profiles",
                                              "NL Wind Offshore profiles",
@@ -181,7 +187,6 @@ class PrepareMarket(DefaultModule):
         wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
         pv = excel_NL['NL Sun PV profiles'][self.simulation_year]
         pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
-
 
     def write_conventionals(self):
         identifier = []
@@ -310,8 +315,6 @@ class PrepareMarket(DefaultModule):
     def openwriter(self):
         self.writer = pd.ExcelWriter(self.path, mode="a", engine='openpyxl', if_sheet_exists='replace')
 
-
-
     # def write_conventionals_and_biogas_with_prices(self, calculatedprices):
     #     identifier = []
     #     FuelType = []
@@ -395,6 +398,3 @@ class PrepareMarket(DefaultModule):
     #     df = pd.DataFrame(data=d)
     #     df.sort_values(by=['InstalledPowerInMW'], inplace=True)
     #     df.to_excel(self.writer, sheet_name="biogas")
-
-
-

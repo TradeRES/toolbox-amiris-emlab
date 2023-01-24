@@ -73,7 +73,7 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'lifetime_technical':
             pass
         elif parameter_name == 'lifetime_economic':
-            self.depreciation_time = int(parameter_value)
+            self.depreciation_time = int(parameter_value) # depreciation time is used to calculate the loans
             self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
@@ -137,7 +137,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.efficiency_time_series.start = self.efficiency
         self.efficiency_time_series.growth_rate = 0.00
 
-    def get_investment_costs_by_year(self, year):
+    def get_investment_costs_perMW_by_year(self, year):
         if year in self.investment_cost_eur_MW.index.values:  # value is present
             return self.investment_cost_eur_MW[year]
         else: # interpolate years
@@ -154,19 +154,13 @@ class PowerGeneratingTechnology(ImportObject):
         else:
             print("missing investment cost for " + self.name)
 
-    def get_fixed_operating_cost_trend(self, time):
-        return self.fixed_operating_cost_time_series.get_value(time)
-
-    def get_fixed_operating_cost(self, time):
-        return self.fixed_operating_cost_time_series.get_value(time)
+    def get_fixed_operating_cost_trend(self, tick):
+        return self.fixed_operating_cost_time_series.get_value(tick)
 
     # --------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def getDepreciationTime(self):
         return self.depreciation_time
-
-    def setDepreciationTime(self, depreciation_time):
-        self.depreciation_time = depreciation_time
 
     #     * assumption: the first is the main fuel
     def getMainFuel(self):

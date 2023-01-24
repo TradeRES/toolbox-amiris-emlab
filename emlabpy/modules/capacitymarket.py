@@ -31,7 +31,8 @@ class CapacityMarketSubmitBids(MarketModule):
         for powerplant in self.reps.get_operational_and_to_be_decommissioned_but_no_RES_support():
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             market = self.reps.get_capacity_market_for_plant(powerplant)
-            fixed_on_m_cost = powerplant.calculate_fixed_operating_cost()
+            fixed_on_m_cost = powerplant.actualFixedOperatingCost
+
             capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
             powerplant_load_factor = 1  # TODO: Power Plant Load Factor
             dispatch = self.reps.get_power_plant_electricity_dispatch(powerplant.id)

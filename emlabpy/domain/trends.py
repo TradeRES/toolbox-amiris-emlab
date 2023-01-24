@@ -43,8 +43,8 @@ class GeometricTrend(Trend):
         elif parameter_name == 'growthRate':
             self.growth_rate = float(parameter_value)
 
-    def get_value(self, time):
-        return pow(1 + self.growth_rate, time) * self.start
+    def get_value(self, tick):
+        return pow(1 + self.growth_rate, tick) * self.start
 
 
 class StepTrend(Trend):
