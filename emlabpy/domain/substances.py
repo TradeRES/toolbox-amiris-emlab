@@ -57,10 +57,9 @@ class Substance(ImportObject):
             # fixing prices to year
             if  self.name == "CO2" and reps.yearly_CO2_prices == True:
                 # yearly prices
-                self.get_CO2_yearly_price(reps.fix_price_year)
+                self.newPrice = self.get_CO2_yearly_price(year)
             else:
                 self.newPrice = self.interpolate_year(reps.fix_price_year)
-                return self.newPrice
 
         elif self.name == "CO2":
             if reps.yearly_CO2_prices == True:
@@ -69,13 +68,12 @@ class Substance(ImportObject):
             else:
                 print("should not extrapolate with CO2 prices")
                 self.newPrice = self.get_CO2_yearly_price(year)
-            return self.newPrice
 
         elif reps.current_tick >= reps.start_tick_fuel_trends:
             if simulating_future_market == True:
                 self.initializeGeometricTrendRegression(reps)
                 self.newPrice = self.geometricRegression.predict(year)
-                return self.newPrice
+
             else:
                 # simulating next year prices from past results and random
                 calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(self.name, "simulatedPrice")
@@ -84,9 +82,11 @@ class Substance(ImportObject):
                 last_value = df.loc[str(year - 1)][1]
                 random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
                 self.newPrice = last_value * random_number
+
         else:
             self.newPrice = self.interpolate_year(year)
-            return self.newPrice
+
+        return self.newPrice
 
     def get_CO2_yearly_price(self, year):
         if year in self.all_years_CO2_price.index:

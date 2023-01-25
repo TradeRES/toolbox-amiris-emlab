@@ -89,7 +89,7 @@ class PrepareMarket(DefaultModule):
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
-            # ----------------------------------------------------------------------------preparing demand and yield profiles
+            # --------------------------------------------------------------------- preparing demand and yield profiles
             if substance.name == "electricity":
                 if self.reps.country == "DE":  # for germany the load is calculated with a trend.
                     new_demand = demand.copy()
@@ -140,9 +140,10 @@ class PrepareMarket(DefaultModule):
                         else:
                             # next iterations have same market conditions, no need to update the demand or profile
                             pass
-
+            # ----------------------------------------------------------------------------preparing CO2 price
             elif substance.name == "CO2":
                 Co2Prices = fuel_price
+            # ----------------------------------------------------------------------------preparing  other fuel prices
             else:
                 try:
                     if self.reps.dictionaryFuelNames[k] in ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL",

@@ -728,7 +728,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1218.5522954611822,
+            "x": -1216.4020122678912,
             "y": -463.5623397396062,
             "url": {
                 "dialect": "sqlite",

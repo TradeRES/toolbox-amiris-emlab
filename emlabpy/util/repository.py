@@ -395,6 +395,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_power_plant_name_by_id(self, id):
+        try:
+            return next(i.name for i in self.power_plants.values() if i.id == int(id))
+        except StopIteration:
+            return None
+
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 
