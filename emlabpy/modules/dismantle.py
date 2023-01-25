@@ -19,11 +19,12 @@ class Dismantle(DefaultModule):
         self.check_ids(reps)
 
     def act(self):
-        # on the first year the age shouldnt be increased
         if self.reps.current_tick == 0:
+            # on the first year the age shouldnt be increased
             pass
         else:
-            self.add_one_year_to_age()  # add one year to the age of power plants
+            # add one year to the age of power plants
+            self.add_one_year_to_age()
         self.set_powerplants_status()  # set status according to operational time
         self.decommision_by_age_and_profit()
         self.save_powerplants_status_and_age()

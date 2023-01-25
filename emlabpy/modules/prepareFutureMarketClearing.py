@@ -28,20 +28,25 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
 
+        """
+        In the first tick and iteration the market is tested without candidate power plants
+        Then the market is tested for next year and so on, until the testing futur year is same as 
+        the look ahead year defined by the user
+        """
         if reps.current_tick == 0 and reps.testing_future_year < reps.lookAhead and reps.testing_future_year > 0:
             print("initialization investments for year  " + str(reps.testing_future_year) )
             self.power_plants_list = reps.get_investable_candidate_power_plants()
             self.look_ahead_years = reps.testing_future_year
         else:
-            self.look_ahead_years = reps.lookAhead
             if reps.current_tick == 0 and reps.testing_future_year == 0:
-                # In the first round it might not be necessary to test with these power plants
+                # In the first round it is not necessary to test with these power plants
                 self.power_plants_list = []
             elif reps.targetinvestment_per_year == True and reps.target_investments_done == False:
                 # investing in target technologies
                 self.power_plants_list = []
             else: # no target investments, test as normal
                 self.power_plants_list = reps.get_investable_candidate_power_plants()
+            self.look_ahead_years = reps.lookAhead
 
 
     def act(self):
@@ -49,9 +54,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.setExpectations()
         self.filter_power_plants_to_be_operational()
         self.save_future_plants_to_be_operational()
-        # from here functions are from prepare market clearing
         self.sort_power_plants_by_age()
-        # functions to save the power plants
+        # ----------------------------------------------------functions to save the power plants
         self.openwriter()
         self.write_renewables()
         self.write_storage()
@@ -88,13 +92,15 @@ class PrepareFutureMarketClearing(PrepareMarket):
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if self.reps.decommission_from_input == True  and powerplant.decommissionInYear is not None:
                 if self.simulation_tick  >= powerplant.endOfLife:
+                    # decommissioned as specified by input
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
                     self.set_power_plant_as_operational(powerplant)
+
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
                 if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
-                    #  In the first iteration test the future market with all power plants
+                    #  In the first iteration test the future market with all power plants, except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational(powerplant)
 
                 elif self.reps.current_tick >= horizon: # there are enough past simulations
@@ -160,7 +166,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         :return:
         """
         for k, substance in self.reps.substances.items():
-            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, True)
+            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, True) # True = simulating future prices
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)
