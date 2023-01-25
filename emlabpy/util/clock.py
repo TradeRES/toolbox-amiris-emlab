@@ -1,8 +1,18 @@
 """
-This file contains all interactions with the system clock.
-A tick is one year.
-For the initialization. make current year the start year and the Simulation tick 0
-for the increment clock, add a tick to SimulationTick and a year to current year
+This modules keeps the count of the clock, simulation year.
+
+1. first all candidate power plants are reset to be investable
+
+In the "initializate_clock" mode the excel results from previous simulations are deleted
+2a. the current year in DB is set to the year specified in the input
+3a. the years file is updated
+4a. The load and profile data are prepared
+
+In the "increment_clock" mode
+If there are target ivestments, the target investments status is also reset to false
+2.b current year and tick are increased (if its not the final year) in DB
+3.b years file is updated
+4.b The load and profile data are prepared
 
 Ingrid modified 17-2-2022
 Jim Hommes - 7-4-2021
@@ -14,15 +24,8 @@ import glob
 import os
 import pandas as pd
 from os.path import dirname, realpath
-#dirname(dirname(dirname(realpath(os.getcwd()))))
-"""
-This modules keeps the count of the clock, simulation year. 
 
-1. first all candidate power plants are reset to be investable
- If target ivestments, the target investments status is also reset to false
-2. If the clock is initialiaze the clock is set to zero, years file set, and the data files are prepared
-2. If the clock is to be incremented, then the clock is incremented
-    If the final year is achieved then only years file is updated, otherwise also the next year is updated in the DB
+"""
 
 """
 
@@ -67,22 +70,6 @@ def update_years_file(current_year, initial, final_year, lookAhead):
     years_str = str(current_year) + "/" + str(initial) + "/" + str(final_year) + "/" + str(current_year + lookAhead)
     f.write(years_str)
     f.close()
-
-
-def erase_not_accepted_bids(db_url):
-    print("removing awaiting bids")
-    db_map = DatabaseMapping(db_url)
-
-    try:
-        subquery = db_map.object_parameter_value_sq
-        statuses = {row.object_id: from_database(row.value, row.type) for row in
-                    db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
-        removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
-        db_map.cascade_remove_items(object=removable_object_ids)
-        print("removed awaiting bids")
-        db_map.commit_session("Removed unacceptable objects.")
-    finally:
-        db_map.connection.close()
 
 def prepare_AMIRIS_data(year, future_year, fix_demand_to_initial_year,fix_profiles_to_initial_year,  modality):
     print("preparing data for years " + str(year) + " and " + str(future_year) + " for NL")
@@ -172,7 +159,7 @@ try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
     object_parameter_value_name = 'SimulationTick'
-    print(os.getcwd())
+    #print(os.getcwd())
     if len(sys.argv) >= 2:
         lookAhead = next(int(i['parameter_value']) for i
                          in
@@ -194,10 +181,7 @@ try:
                        db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                        if i['parameter_name'] == 'targetinvestment_per_year')
 
-
-
         fix_demand_to_initial_year = False
-
         fix_demand_to_initial_year = next(i['parameter_value'] for i in
                        db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                        if i['parameter_name'] == 'fix_demand_to_initial_year')
@@ -230,8 +214,16 @@ try:
             update_years_file(StartYear, StartYear, final_year, lookAhead)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
+            future_year = StartYear + lookAhead
+            if Country == "NL":
+                prepare_AMIRIS_data(StartYear, future_year, fix_demand_to_initial_year, fix_profiles_to_initial_year ,"initialize")
+            elif Country == "DE": # no dynamic data for other cases
+                prepare_AMIRIS_data_fromDE()
+            else:
+                raise Exception("no data for this country " + Country)
 
-        if sys.argv[2] == 'increment_clock':
+        if sys.argv[2] == 'increment_clock': # increment clock
+
             if targetinvestment_per_year ==True:
                 reset_target_investments_done()
                 print(" target investments status")
@@ -252,13 +244,13 @@ try:
                                                                                                        object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
             updated_year = step + Current_year
-            #spinetoolbox dont advance for last tick
+
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
                 # updating file to stop simulation.
                 update_years_file(updated_year, StartYear, final_year,
                                   lookAhead)
-                # todo need to update the file to make the loop stop
+                # todo need to update the file to make the loop stop. spinetoolbox dont advance for last tick
                 # db_emlab.import_object_parameter_values(
                 #     [(class_name, object_name, object_parameter_value_name, new_tick, '0')])
                 # db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", updated_year, '0')])
@@ -272,33 +264,20 @@ try:
                 db_emlab.commit('Clock increment')
                 print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
 
-    else:
-        print('No mode specified.')
-
-    if sys.argv[2] == 'initialize_clock':
-        future_year = StartYear + lookAhead
-        if Country == "NL":
-            prepare_AMIRIS_data(StartYear, future_year, fix_demand_to_initial_year, fix_profiles_to_initial_year ,"initialize")
-        elif Country == "DE": # no dynamic data for other cases
-            prepare_AMIRIS_data_fromDE()
-        else:
-            raise Exception("no data for this country " + Country)
-    else:  # increment clock
-        if Country == "NL":
-            future_year = updated_year + lookAhead
-            prepare_AMIRIS_data(updated_year, future_year, fix_demand_to_initial_year,fix_profiles_to_initial_year , "increment")
-            print("prepared AMIRIS data " )
-        elif Country == "DE": # no dynamic data for other cases
-            print("no dynamic data for other DE")
-        else:
-            raise Exception("no data for this country " + Country)
+            if Country == "NL":
+                future_year = updated_year + lookAhead
+                prepare_AMIRIS_data(updated_year, future_year, fix_demand_to_initial_year,fix_profiles_to_initial_year , "increment")
+                print("prepared AMIRIS data " )
+            elif Country == "DE": # no dynamic data for other cases
+                print("no dynamic data for other DE")
+            else:
+                raise Exception("no data for this country " + Country)
 
 except Exception:
     raise
 finally:
     print('Closing DB Connections...')
     db_emlab.close_connection()
-
 
 print('removing awaiting bids...')
 db_map = DatabaseMapping(db_url)
@@ -314,6 +293,23 @@ if sys.argv[2] == 'increment_clock':
         db_map.commit_session("Removed unacceptable objects.")
     finally:
         db_map.connection.close()
+
+# hasnt worked as function
+# def erase_not_accepted_bids(db_url):
+#     print("removing awaiting bids")
+#     db_map = DatabaseMapping(db_url)
+#
+#     try:
+#         subquery = db_map.object_parameter_value_sq
+#         statuses = {row.object_id: from_database(row.value, row.type) for row in
+#                     db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+#         removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
+#         db_map.cascade_remove_items(object=removable_object_ids)
+#         print("removed awaiting bids")
+#         db_map.commit_session("Removed unacceptable objects.")
+#     finally:
+#         db_map.connection.close()
+
 
         # todo finish this if bids are being erased then the awarded capapcity of CM should also be saved.
         #
