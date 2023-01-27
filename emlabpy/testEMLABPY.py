@@ -8,6 +8,16 @@ from functools import reduce
 import pandas as pd
 import math
 
+xp = [1, 2, 3]
+fp = [3, 2, 0]
+a = np.interp(5, xp, fp)
+b = np.interp([0, 1, 1.5, 2.72, 3.14], xp, fp)
+
+c = np.polyfit(xp, fp, 1)
+f = np.poly1d(c)
+y_new = f(5).astype(int)
+print(y_new)
+
 # df = pd.DataFrame(np.random.randint(0,10,size=(10,2)), columns=["costs", "size"])
 #
 # years = [2020,"test",2022]

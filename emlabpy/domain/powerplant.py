@@ -109,7 +109,10 @@ class PowerPlant(EMLabAgent):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             all_storages = pd.Series(values, index=index)
-            self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
+            if (reps.current_year - 1)  in all_storages.index:
+                self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
+            else:
+                self.initialEnergyLevelInMWH = 0
         elif parameter_name == 'expectedTotalProfits' and reps.runningModule == "run_future_market":
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
@@ -160,8 +163,7 @@ class PowerPlant(EMLabAgent):
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTick()  # minus age, permit and lead time
         commissionedTick = - self.age
-        self.calculateAndSetActualInvestedCapital(reps, self.technology,
-                                                  commissionedTick)  # INITIAL investment cost by time series = 2020
+        self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INITIAL investment cost by time series = 2020
         if self.actualEfficiency == None:  # if there is not initial efficiency, then assign the efficiency by the technology
             self.calculateAndSetActualEfficiency(commissionedTick)
         if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
