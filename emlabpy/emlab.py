@@ -1,6 +1,12 @@
 """
-The main EM-Lab file for in SpineToolbox.
-Commandline arguments provide which modules are run and which aren't.
+
+This is the main file that activates the different EMLabpy module depending on the arguments.
+In the initialization run, a unique id is assigned to each power plant and saved in the DB.
+The investments are calculated and the loans to be paid are stored in the DB.
+
+If no intialization is run, then only the
+efficiency, fixed costs, end of life and status are assigned to each power plant
+
 Ingrid Sanchez 28-3-2022
 Jim Hommes - 25-3-2021
 """
@@ -121,7 +127,7 @@ try:  # Try statement to always close DB properly
         pp_counter = 20  # start in 20, the first 20 are left to the candidate power plants.
         # adding id to power plants
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps)
+            power_plant.specifyPowerPlantsInstalled(reps, run_initialize_power_plants)
             power_plant.set_loans_installed_pp(reps)
             pp_counter += 1
             power_plant.id = (int(str(power_plant.commissionedYear) +
@@ -136,7 +142,7 @@ try:  # Try statement to always close DB properly
         # if the id initialization was done, it is not needed to store it again.
         # then only set actual lead time, permit time, efficiencies, correct status
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps)
+            power_plant.specifyPowerPlantsInstalled(reps, run_initialize_power_plants)
 
     spinedb_reader_writer.commit('Initialize all module import structures')
     print("repository complete")

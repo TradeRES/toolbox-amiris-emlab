@@ -492,7 +492,7 @@
                 ],
                 "to": [
                     "prepare future market",
-                    "left"
+                    "right"
                 ]
             },
             {
@@ -717,8 +717,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1216.402012267891,
-            "y": -465.83482101230953,
+            "x": -1214.3001609883602,
+            "y": -467.9366722918406,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -743,8 +743,8 @@
         "Prepare Data Amiris": {
             "type": "Tool",
             "description": "",
-            "x": -699.6016861110319,
-            "y": -479.91488973791684,
+            "x": -697.4998348315007,
+            "y": -479.9148897379168,
             "specification": "Prepare market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -765,7 +765,7 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -772.8907324267192,
+            "x": -770.788881147188,
             "y": -686.2769117552139,
             "specification": "Decommission",
             "execute_in_work": false,
@@ -994,7 +994,7 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -568.3597706971523,
+            "x": -566.257919417621,
             "y": -471.29526956882506,
             "specification": "Amiris future",
             "execute_in_work": false,
@@ -1048,7 +1048,7 @@
             "type": "Data Store",
             "description": "",
             "x": -226.6577568070207,
-            "y": -671.7529977979201,
+            "y": -669.651146518389,
             "url": {
                 "dialect": "sqlite",
                 "host": "",

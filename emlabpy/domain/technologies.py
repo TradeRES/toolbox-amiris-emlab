@@ -28,7 +28,8 @@ class PowerGeneratingTechnology(ImportObject):
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
-        self.maximum_installed_capacity_in_country = pd.Series(dtype='float64')
+        self.yearlyPotential = pd.Series(dtype='float64')
+        self.totalPotential = None
         self.intermittent = False
         self.fuel = ''
         self.type = ''
@@ -93,6 +94,15 @@ class PowerGeneratingTechnology(ImportObject):
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':
             self.fuel = reps.substances[parameter_value]
+        elif parameter_name == 'totalPotential':
+            print(alternative)
+            print(parameter_value)
+            self.totalPotential = float(parameter_value)
+        elif parameter_name == 'yearlyPotential' and alternative == reps.country:
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.yearlyPotential = pd.Series(values, index=index)
         elif parameter_name == 'efficiency_full_load':
             self.efficiency = float(parameter_value)
             self.initializeEfficiencytrend()
@@ -105,32 +115,19 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'DischargingEfficiency':
             self.dischargingEfficiency = float(parameter_value)
 
-    def add_potentials(self, reps, db_line):
-        object_name = db_line[1]
-        parameter_name = db_line[2]
-        parameter_value = db_line[3]
-        if object_name not in reps.power_generating_technologies.keys():
-            reps.power_generating_technologies[object_name] = self(object_name)
-        if parameter_name[0:2] == reps.country:
-            year = parameter_name[2:6]
-            try:
-                int(year)
-                reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[int(year)] = parameter_value * 1000 # capacities from GW to MW (emlab)
-            except ValueError:
-                reps.power_generating_technologies[object_name].maximum_installed_capacity_in_country.at[0] = parameter_value * 1000
-
     def getMaximumCapacityinCountry(self, futureInvestmentyear):
-        if self.maximum_installed_capacity_in_country.size==0:
-            return np.nan
-        elif futureInvestmentyear in self.maximum_installed_capacity_in_country.index.values:  # value is present
-            return self.maximum_installed_capacity_in_country[futureInvestmentyear]
-        elif 0 in self.maximum_installed_capacity_in_country.index.values: # unique value for all years
-            return self.maximum_installed_capacity_in_country[0]
-        else: # interpolate years
-            self.maximum_installed_capacity_in_country.at[futureInvestmentyear] = np.nan
-            self.maximum_installed_capacity_in_country.sort_index(ascending=True, inplace=True)
-            self.maximum_installed_capacity_in_country.interpolate(method='linear',  inplace=True)
-            return self.maximum_installed_capacity_in_country[futureInvestmentyear]
+        if self.totalPotential != None:
+            return self.totalPotential
+        elif self.yearlyPotential.size > 0:
+            if futureInvestmentyear in self.yearlyPotential.index.values:  # value is present
+                return self.yearlyPotential[futureInvestmentyear]
+            else: # interpolate years
+                self.yearlyPotential.at[futureInvestmentyear] = np.nan
+                self.yearlyPotential.sort_index(ascending=True, inplace=True)
+                self.yearlyPotential.interpolate(method='linear',  inplace=True)
+                return self.yearlyPotential[futureInvestmentyear]
+        else: #self.totalPotential == None and self.yearlyPotential.size == 0:
+            return 100000000000 # if there is no declared limit, use a very high number
 
     def initializeEfficiencytrend(self):
         self.efficiency_time_series = GeometricTrend("geometrictrend" + self.name)

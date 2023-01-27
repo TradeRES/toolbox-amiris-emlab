@@ -1,17 +1,26 @@
-import os
-import shutil
-
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
-import pandas as pd
 
 
 class PrepareFutureMarketClearing(PrepareMarket):
+    """
+    This module prepares the information for the future market.
 
-    """ This function creates the power plants that will be analyzed as possible investments. It
-        creates the Candidate Power Plants and these are assigned a capacity of 1 MW not to modify the
-        For the first 2 years the fuel prices are considering interpolating.
-        For the next years the fuel prices are considered with a geometric trend.
+    In the first simulation year,
+        In the first iteration the market is prepared for user-defined look-ahead years without candidate power plants
+        In the next iteration, the initialization investment is prepared. The market prices and laod is prepared for next year,
+        then 2 years ahead and so on until the user-defined look-ahead year is reached.
+        Investable Candidate power plants are added to the market.
+
+    1. the fuel prices are calculated by interpolation and
+        after a year X (specified by the user), fuel prices are stochastically simulated with a geometric trend regression
+    2. if the simulation year has reached the user-defined pastTimeHorizon, then
+        power plants that have passed their lifetime and that presented negative operational profits in the
+        last pastTimeHorizon years are then set to de decommissioned, otherwise they are set to be operational
+
+    2. demand and yield profiles are saved to files to be read by dispatch-model(AMIRIS)
+    3. power plants are saved in excel to be read by dispatch-model(AMIRIS), as well as the fuel and CO2 prices.
+
     """
 
     def __init__(self, reps):
@@ -28,13 +37,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
 
-        """
-        In the first tick and iteration the market is tested without candidate power plants
-        Then the market is tested for next year and so on, until the testing futur year is same as 
-        the look ahead year defined by the user
-        """
         if reps.current_tick == 0 and reps.testing_future_year < reps.lookAhead and reps.testing_future_year > 0:
-            print("initialization investments for year  " + str(reps.testing_future_year) )
+            print("initialization investments for year  " + str(reps.testing_future_year))
             self.power_plants_list = reps.get_investable_candidate_power_plants()
             self.look_ahead_years = reps.testing_future_year
         else:
@@ -44,14 +48,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
             elif reps.targetinvestment_per_year == True and reps.target_investments_done == False:
                 # investing in target technologies
                 self.power_plants_list = []
-            else: # no target investments, test as normal
+            else:  # no target investments, test as normal
                 self.power_plants_list = reps.get_investable_candidate_power_plants()
             self.look_ahead_years = reps.lookAhead
 
-
     def act(self):
         self.setTimeHorizon()
-        self.setExpectations()
+        self.setFuelPrices()
         self.filter_power_plants_to_be_operational()
         self.save_future_plants_to_be_operational()
         self.sort_power_plants_by_age()
@@ -72,8 +75,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
     def filter_power_plants_to_be_operational(self):
         """
         This function assign a fictional future status to power plants
-        If the plants have passed their expected lifetime then these are
-        in theory decommissioned and not added to the list of power plants.
+        For plants that have passed their liftime
+            If the decommission year is specified in input file, these plants are decommissioned.
 
         :return:
         """
@@ -90,8 +93,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.look_ahead_years
             # for plants that have passed their lifetime, assume that these will be decommissioned
-            if self.reps.decommission_from_input == True  and powerplant.decommissionInYear is not None:
-                if self.simulation_tick  >= powerplant.endOfLife:
+            if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:
+                if self.simulation_tick >= powerplant.endOfLife:
                     # decommissioned as specified by input
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
@@ -103,14 +106,15 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     #  In the first iteration test the future market with all power plants, except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational(powerplant)
 
-                elif self.reps.current_tick >= horizon: # there are enough past simulations
+                elif self.reps.current_tick >= horizon:  # there are enough past simulations
                     profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                        print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
-                              .format(powerplant.name, horizon,  profit, requiredProfit))
-                    else: # power plants in pipeline are also considered to be operational in the future
+                        print(
+                            "{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                            .format(powerplant.name, horizon, profit, requiredProfit))
+                    else:  # power plants in pipeline are also considered to be operational in the future
                         self.set_power_plant_as_operational(powerplant)
 
                 else:  # there are not enough past simulations
@@ -118,7 +122,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     if profit <= requiredProfit:
                         powerplant.status = globalNames.power_plant_status_decommissioned
                         print("{} expected operating loss {} : was {} which is less than required:  {} " \
-                              .format(powerplant.name, horizon,  profit, requiredProfit))
+                              .format(powerplant.name, horizon, profit, requiredProfit))
                     else:
                         self.set_power_plant_as_operational(powerplant)
 
@@ -126,7 +130,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
-                #powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
                 # todo: if plant is in strategic reserve , it should be decommissioned after 4 years so make an
                 # exception for the power plants that were contracted earlier
                 powerplant.owner = 'StrategicReserveOperator'
@@ -136,19 +140,18 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 self.power_plants_list.append(powerplant)
             elif fictional_age < 0:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
-            else: #powerplant.commissionedYear > self.simulation_year
+            else:  # powerplant.commissionedYear > self.simulation_year
                 # planned power plants further in the future should not be considered.
                 # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
                 # power plants in pipeline are also considered to be operational in the future
                 self.set_power_plant_as_operational(powerplant)
-
 
     def set_power_plant_as_operational(self, powerplant):
         powerplant.fictional_status = globalNames.power_plant_status_operational
         self.power_plants_list.append(powerplant)
 
     def save_future_plants_to_be_operational(self):
-        #saving for investment algorithm
+        # saving for investment algorithm
         list_installed_pp = [i.id for i in self.power_plants_list if i.is_not_candidate_power_plant()]
         self.reps.dbrw.stage_installed_pp_names(list_installed_pp, self.simulation_tick)
 
@@ -160,23 +163,25 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.simulation_year = self.reps.current_year + self.look_ahead_years
         self.simulation_tick = self.reps.current_tick + self.look_ahead_years
 
-    def setExpectations(self):
+    def setFuelPrices(self):
         """
         The demand is also predicted as a substance
         :return:
         """
         for k, substance in self.reps.substances.items():
-            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, True) # True = simulating future prices
+            future_price = substance.get_price_for_tick(self.reps, self.simulation_year,
+                                                        True)  # True = simulating future prices
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)
 
-    def calculateExpectedOperatingProfitfrompastIterations(self, plant, horizon ):
+    def calculateExpectedOperatingProfitfrompastIterations(self, plant, horizon):
         # "totalProfits" or "irr"
-        indices = list(range(self.reps.current_tick + self.look_ahead_years - horizon , self.reps.current_tick + self.look_ahead_years))
+        indices = list(range(self.reps.current_tick + self.look_ahead_years - horizon,
+                             self.reps.current_tick + self.look_ahead_years))
         try:
-            past_operating_profit = plant.expectedTotalProfits.loc[ indices].values
-            averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
+            past_operating_profit = plant.expectedTotalProfits.loc[indices].values
+            averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
         except:
             averagePastOperatingProfit = -1
         return averagePastOperatingProfit
