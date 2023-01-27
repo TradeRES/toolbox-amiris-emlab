@@ -52,7 +52,7 @@ class Repository:
         self.simulation_length = 0
         self.start_tick_fuel_trends = 0
         self.start_tick_dismantling = 0
-        self.testing_future_year = 0 # testing the future market from the next year during initialization
+        self.testing_future_year = 0  # testing the future market from the next year during initialization
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
         self.runningModule = ""
@@ -210,7 +210,7 @@ class Repository:
             return next(
                 i.spotMarketRevenue - i.variableCosts for i in
                 self.financialPowerPlantReports.values() if i.name == plant_name)
-                #+ (self.power_generating_technologies[test_tech].fixed_operating_costs * self.power_plants[plant_name].capacity)
+            # + (self.power_generating_technologies[test_tech].fixed_operating_costs * self.power_plants[plant_name].capacity)
         except StopIteration:
             return None
 
@@ -339,9 +339,9 @@ class Repository:
     def get_investable_and_targeted_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True and
                 i.technology.name in ["WTG_onshore",
-                                    "WTG_offshore",
-                                    "PV_utility_systems"
-                                    ]
+                                      "WTG_offshore",
+                                      "PV_utility_systems"
+                                      ]
                 ]
 
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
@@ -352,7 +352,8 @@ class Repository:
 
     def get_target_candidate_power_plants(self, already_investable) -> List[CandidatePowerPlant]:
         target_technologies = self.get_target_technologies()
-        return [i for i in self.candidatePowerPlants.values() if i.technology.name in target_technologies and i.technology.name not in already_investable]
+        return [i for i in self.candidatePowerPlants.values() if
+                i.technology.name in target_technologies and i.technology.name not in already_investable]
 
     def update_candidate_plant_results(self, results):
         try:
@@ -389,7 +390,7 @@ class Repository:
 
     def get_id_last_power_plant(self) -> int:
         # the last 5 numbers are the power plant list
-        sorted_ids =  sorted([str(i.id)[-4:] for i in self.power_plants.values()])
+        sorted_ids = sorted([str(i.id)[-4:] for i in self.power_plants.values()])
         return sorted_ids[-1]
 
     def get_power_plant_by_id(self, id):
@@ -426,12 +427,12 @@ class Repository:
 
     def calculateCapacityOfOperationalPlantsforallTechnologies(self):
         uniquetechnologies = self.get_unique_technologies_names()
-        start_capacity= dict.fromkeys(uniquetechnologies, 0)
+        start_capacity = dict.fromkeys(uniquetechnologies, 0)
         for pp in self.power_plants.values():
-            if pp.status not in  [globalNames.power_plant_status_inPipeline,globalNames.power_plant_status_decommissioned ]:
+            if pp.status not in [globalNames.power_plant_status_inPipeline,
+                                 globalNames.power_plant_status_decommissioned]:
                 start_capacity[pp.technology.name] += pp.capacity
         return start_capacity
-
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
@@ -446,12 +447,12 @@ class Repository:
             from_year = self.start_simulation_year
             last_year = self.end_simulation_year
             to_year = year
-            return next(i.get_cummulative_capacity(from_year, to_year, last_year) for i in self.target_investors.values() if
-                        i.targetTechnology == technology.name and i.targetCountry == self.country)
+            return next(
+                i.get_cummulative_capacity(from_year, to_year, last_year) for i in self.target_investors.values() if
+                i.targetTechnology == technology.name and i.targetCountry == self.country)
         except StopIteration:
             logging.warning('No yearly target for this year.' + str(year))
         return None
-
 
     def find_technology_year_target(self, technology, year):
         try:

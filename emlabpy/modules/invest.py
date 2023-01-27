@@ -314,7 +314,8 @@ class Investmentdecision(DefaultModule):
         return investable
 
     def check(self, technology, candidatepowerplant, expectedInstalledCapacityOfTechnology):
-        technologyCapacityLimit = self.findLimitsByTechnology(technology)
+        technologyCapacityLimit = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
+
         # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
         if self.capacityOfTechnologyInPipeline >= self.reps.maximum_investment_capacity_per_year:
             print(
@@ -340,13 +341,6 @@ class Investmentdecision(DefaultModule):
             candidatepowerplant.setViableInvestment(True)
             return True
 
-    def findLimitsByTechnology(self, technology):
-        LimitinCountry = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
-        if math.isnan(LimitinCountry):
-            return 100000000000  # if there is no declared limit, use a very high number
-        else:
-            return LimitinCountry
-
     def investbyTargets(self):
         targetInvestors = self.reps.findTargetInvestorByCountry(self.reps.country)
         new_target_power_plants = []
@@ -362,7 +356,8 @@ class Investmentdecision(DefaultModule):
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
             # TODO: later the expected installed power plants can be calculated according to profits not only for lookahead but also fot future time:
             expectedInstalledCapacity = expectedInstalledCapacityperTechnology[target_tech.name]
-            pgt_country_limit =  self.findLimitsByTechnology(target_tech)
+            pgt_country_limit =  target_tech.getMaximumCapacityinCountry(self.futureInvestmentyear)
+
             # targetCapacity = target_tech.getTrend().getValue(futureTimePoint)
             # technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(target_tech,
             #                                                                                             self.futureInvestmentyear)

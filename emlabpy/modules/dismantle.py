@@ -5,10 +5,13 @@ import logging
 from spinedb_api import DatabaseMapping
 import pandas as pd
 
-
 class Dismantle(DefaultModule):
     """
-    The class that decides to decomission some technologies
+    1. one year is added to the age of the power plants if it is not the first simulation year (current tick == 0 )
+    2. the status of the power plants is updated simply by commission year
+    3. for plants that have passed their lifetime and if the simulation year , specified by user, is reached
+        then the power plants aare decommissioned by profit
+    4. If plants are not decommissioned but have passed their lifetime, their fixed costs is increased
     """
 
     def __init__(self, reps: Repository):
@@ -26,7 +29,7 @@ class Dismantle(DefaultModule):
             # add one year to the age of power plants
             self.add_one_year_to_age()
         self.set_powerplants_status()  # set status according to operational time
-        self.decommision_by_age_and_profit()
+        self.decommision_by_profit()
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
 
@@ -49,7 +52,7 @@ class Dismantle(DefaultModule):
         # finally:
         #     db_map.connection.close()
 
-    def decommision_by_age_and_profit(self):
+    def decommision_by_profit(self):
         producer = self.reps.energy_producers[self.reps.agent]
         horizon = self.reps.pastTimeHorizon
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
@@ -118,7 +121,7 @@ class Dismantle(DefaultModule):
                     print(powerplant.name + "decommissioned from input")
             elif powerplant.age > technology.expected_lifetime:
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
-                print(powerplant.name + " " + str(powerplant.age) + " to be decomm")
+               # print(powerplant.name + " " + str(powerplant.age) + " to be decomm")
             elif powerplant.commissionedYear <= self.reps.current_year:
                 powerplant.status = globalNames.power_plant_status_operational
             elif powerplant.commissionedYear > self.reps.current_year:

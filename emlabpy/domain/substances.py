@@ -26,8 +26,6 @@ class Substance(ImportObject):
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'AmirisFuelSpecificCo2EmissionsInTperMWH': # todo: AMIRIS add this as an input parameter 'co2Density'
             self.co2_density = float(parameter_value)
-        # elif parameter_name == 'energyDensity': # this was from EMLab, not used here
-        #     self.energy_density = float(parameter_value)
         elif parameter_name == 'quality':
             self.quality = float(parameter_value)
         elif parameter_name == 'annual_resource_limit' and alternative == "biopotential_2020":# TODO take out the hardcoded scenario
@@ -56,24 +54,18 @@ class Substance(ImportObject):
         if reps.fix_fuel_prices_to_year == True: # attention this shouldnt be neede once all data is there
             # fixing prices to year
             if  self.name == "CO2" and reps.yearly_CO2_prices == True:
-                # yearly prices
+                # but dont fix yearly prices
                 self.newPrice = self.get_CO2_yearly_price(year)
             else:
                 self.newPrice = self.interpolate_year(reps.fix_price_year)
 
-        elif self.name == "CO2":
-            if reps.yearly_CO2_prices == True:
-                # dont fix prices
-                self.newPrice = self.get_CO2_yearly_price(year)
-            else:
-                print("should not extrapolate with CO2 prices")
-                self.newPrice = self.get_CO2_yearly_price(year)
+        if self.name == "CO2" and reps.yearly_CO2_prices == True:
+            self.newPrice = self.get_CO2_yearly_price(year)
 
         elif reps.current_tick >= reps.start_tick_fuel_trends:
             if simulating_future_market == True:
                 self.initializeGeometricTrendRegression(reps)
                 self.newPrice = self.geometricRegression.predict(year)
-
             else:
                 # simulating next year prices from past results and random
                 calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(self.name, "simulatedPrice")
@@ -86,6 +78,8 @@ class Substance(ImportObject):
         else:
             self.newPrice = self.interpolate_year(year)
 
+        if self.newPrice < 0:
+            raise Exception("negative price")
         return self.newPrice
 
     def get_CO2_yearly_price(self, year):
@@ -98,9 +92,13 @@ class Substance(ImportObject):
         return self.newPrice
 
     def interpolate_year(self, year):
-        c = np.polyfit(self.initialPrice.index, self.initialPrice.values, 2)
-        f = np.poly1d(c)
-        return f(year)
+        if year < self.initialPrice.min() and self.name == "CO2":
+            interpolated_price = self.initialPrice.values.min()
+        else:
+            c = np.polyfit(self.initialPrice.index, self.initialPrice.values, 2)
+            f = np.poly1d(c)
+            interpolated_price = f(year)
+        return interpolated_price
 
     def initializeGeometricTrendRegression(self, reps):
         self.geometricRegression = GeometricTrendRegression("geometrictrendRegression" + self.name)

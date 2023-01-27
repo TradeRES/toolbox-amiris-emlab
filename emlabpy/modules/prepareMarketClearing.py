@@ -1,18 +1,19 @@
 import shutil
-
 from modules.defaultmodule import DefaultModule
 import pandas as pd
 from datetime import datetime, timedelta
 from util import globalNames
-import os
 
 
 class PrepareMarket(DefaultModule):
     """
-    This function prepares the information for next years market clearing:
-    -fuel prices and demand. the demand is as the node "electricity".
-    The fuel prices are stochastically simulated with a triangular trend
-
+    This module prepares the information for the current simulation year
+    1. operational, to be decommissioned and in strategic reserve power plants are chosen
+    2. the fuel prices is calculated by interpolation and
+        after a year X (specified by the user), fuel prices are stochastically simulated with a triangular trend
+        the demand is as the node "electricity" for DE
+    3. demand and yield profiles are saved to files to be read by amiris
+    4. power plants are saved in excel to be read by amiris. as well as the fuel and CO2 prices.
     """
 
     def __init__(self, reps):
@@ -28,14 +29,14 @@ class PrepareMarket(DefaultModule):
 
     def act(self):
         # look for all power plants, except for decommissioned and in pipeline
+        self.setTimeHorizon()
+        self.setFuelPrices()
         self.power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
                                                                        globalNames.power_plant_status_to_be_decommissioned,
                                                                        globalNames.power_plant_status_strategic_reserve,
                                                                        ])
-        self.calculate_save_available_capacity()
+        self.calculate_save_peak_dispatchable_capacity()
         self.sort_power_plants_by_age()
-        self.setTimeHorizon()
-        self.setExpectations()
         self.openwriter()
         self.write_renewables()
         self.write_storage()
@@ -47,7 +48,7 @@ class PrepareMarket(DefaultModule):
         self.writer.close()
         print("saved to ", self.path)
 
-    def calculate_save_available_capacity(self):
+    def calculate_save_peak_dispatchable_capacity(self):
         # saving the available capacity to calculate the supply ratio
         sumcapacity = []
         for pp in self.power_plants_list:
@@ -57,14 +58,14 @@ class PrepareMarket(DefaultModule):
         peak_dispatchable_capacity = sum(sumcapacity)
         self.reps.dbrw.stage_peak_dispatchable_capacity(peak_dispatchable_capacity, self.reps.current_year)
 
-    def sort_power_plants_by_age(self):
+    def sort_power_plants_by_age(self):  # AMIRIS seem to give dispatch priority according to the order in the excel.
         self.power_plants_list.sort(key=lambda x: x.age)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
         self.simulation_year = self.reps.current_year
 
-    def setExpectations(self):
+    def setFuelPrices(self):
         for k, substance in self.reps.substances.items():
             fuel_price = substance.get_price_for_tick(self.reps, self.simulation_year, False)
             substance.simulatedPrice_inYear = fuel_price

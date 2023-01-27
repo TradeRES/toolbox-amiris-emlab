@@ -64,7 +64,7 @@ class ShortInvestmentdecision(Investmentdecision):
             print("no Investment in quick technologies ")
 
     def calculateandCheckFutureCapacityExpectation(self, technology):
-        technologyCapacityLimit = self.findLimitsByTechnology(technology)
+        technologyCapacityLimit = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
         # in contrast to long term investment decision, this is calculated for the current year
         # todo check this as it has been changes
         self.expectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(

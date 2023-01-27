@@ -154,7 +154,7 @@ class PowerPlant(EMLabAgent):
             commissionedTick)  # by GeometricTrend by tick --- > negative exponential value
         self.calculateAndSetActualInvestedCapital(reps, pgt, commissionedTick)  # INVEST
 
-    def specifyPowerPlantsInstalled(self, reps):
+    def specifyPowerPlantsInstalled(self, reps, run_initialize_power_plants):
         """"
         specify power plant from initial database
         """
@@ -163,15 +163,19 @@ class PowerPlant(EMLabAgent):
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTick()  # minus age, permit and lead time
         commissionedTick = - self.age
-        self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INITIAL investment cost by time series = 2020
         if self.actualEfficiency == None:  # if there is not initial efficiency, then assign the efficiency by the technology
             self.calculateAndSetActualEfficiency(commissionedTick)
+            #print(self.actualEfficiency)
         if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
             self.calculateAndSetActualFixedOperatingCosts(
                 commissionedTick)  # by GeometricTrend by tick --- > positive exponential value
+            #print(self.actualFixedOperatingCost)
         if reps.decommission_from_input == True and self.decommissionInYear is not None:
             self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year)  # set in terms of tick
-        self.setPowerPlantsStatusforInstalledPowerPlants()
+
+        if run_initialize_power_plants == True:  # only run this in the initialization step and while plotting
+            self.setPowerPlantsStatusforInstalledPowerPlants() # the status for each year is set in dismantle module
+            self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INITIAL investment cost by time series = 2020
         return
 
     def set_loans_installed_pp(self, reps):
@@ -185,7 +189,7 @@ class PowerPlant(EMLabAgent):
                         startpayments, done_payments, self)
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
-        # if the plant is in strategic reserve. Then the status shouldnt change? this is better kept through the list of power plants
+        # the strategiv reserve status is better kept through the list of power plants
         if self.age is not None:
             if self.status == globalNames.power_plant_status_decommissioned:
                 pass
@@ -233,7 +237,8 @@ class PowerPlant(EMLabAgent):
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
                 commissionedTick) * self.get_actual_nominal_capacity())
         else:  # by year
-            technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity()
+            self.setActualInvestedCapital(technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity())
+
 
     def calculateAndSetActualFixedOperatingCosts(self, tick):
         # get fixed costs by GeometricTrend by tick. rom specify power plants
