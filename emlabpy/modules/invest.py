@@ -112,6 +112,7 @@ class Investmentdecision(DefaultModule):
             return
         else:
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+            print("Investing according to market results")
             highestNPVCandidatePP = None
             highestNPV = 0
             # power plants are investable when they havent passed the capacity limits
@@ -305,20 +306,6 @@ class Investmentdecision(DefaultModule):
         # This calculation dont consider that some power plants might not be decommissioned because of positive profits
         # oldExpectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(
         #     technology, self.futureTick, ids_of_future_installed_and_dispatched_pp)
-        if self.reps.targetinvestment_per_year == True:
-            technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(technology,
-                                                                                                        self.futureInvestmentyear)
-        else:
-            technologyTargetCapacity = None
-            # TODO: finish the target capacity with trends
-            # technologyTarget = self.reps.findPowerGeneratingTechnologyTargetByTechnology(technology, self.future)
-            # technologyTargetCapacity = self.reps.trends[technologyTarget.name].get_value(self.futureTick)
-
-        # many technologies dont have capacity targets
-        if technologyTargetCapacity != None:
-            if (technologyTargetCapacity > expectedInstalledCapacityOfTechnology):
-                # if there are capacity targets then the targets are the exoected cspaacity
-                expectedInstalledCapacityOfTechnology = technologyTargetCapacity
         self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
             technology)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
@@ -368,35 +355,27 @@ class Investmentdecision(DefaultModule):
         for i in self.investable_candidate_plants:
             already_investable.append(i.technology.name)
         target_candidate_power_plants = self.reps.get_target_candidate_power_plants(already_investable)
-        self.investable_candidate_plants = self.investable_candidate_plants + target_candidate_power_plants
         expectedInstalledCapacityperTechnology = self.reps.calculateCapacityExpectedofListofPlants(
-            self.future_installed_plants_ids, self.investable_candidate_plants)
+            self.future_installed_plants_ids, target_candidate_power_plants)
 
         for target in targetInvestors:
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
             # TODO: later the expected installed power plants can be calculated according to profits not only for lookahead but also fot future time:
             expectedInstalledCapacity = expectedInstalledCapacityperTechnology[target_tech.name]
-
-            pgt_country_limit = target_tech.getMaximumCapacityinCountry(
-                self.futureInvestmentyear)  # now is for all technologies the same.
-
+            pgt_country_limit =  self.findLimitsByTechnology(target_tech)
             # targetCapacity = target_tech.getTrend().getValue(futureTimePoint)
             # technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(target_tech,
             #                                                                                             self.futureInvestmentyear)
             yearlyCapacityTarget = self.reps.find_technology_year_target(target_tech, self.futureInvestmentyear)
 
-            if math.isnan(pgt_country_limit) ==False:
-                # if there is a limit
-                if pgt_country_limit > yearlyCapacityTarget + expectedInstalledCapacity : # limit is not reached
-                    pass
-                else:
-                    yearlyCapacityTarget = pgt_country_limit - expectedInstalledCapacity
-                    print("limit is reached, so install the maximum")
-            else: # there is no limit
+            if pgt_country_limit > yearlyCapacityTarget + expectedInstalledCapacity : # limit is not reached
                 pass
+            else:
+                yearlyCapacityTarget = pgt_country_limit - expectedInstalledCapacity
+                print("limit is reached, so install the maximum")
 
-            # if the missing capacity is smaller than a unit, then dont install anything
-            if yearlyCapacityTarget > 0:
+
+            if yearlyCapacityTarget > 0: # if the missing capacity is smaller than a unit, then dont install anything
                 #print(target.name + " needs to invest " + str(yearlyCapacityTarget) + " MW")
                 targetCandidatePowerPlant = self.reps.get_candidate_by_technology(target_tech.name)
                 if self.reps.install_missing_capacity_as_one_pp == True:
