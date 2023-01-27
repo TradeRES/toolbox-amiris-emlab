@@ -397,17 +397,6 @@
                 ]
             },
             {
-                "name": "from TraderesDB to exporterTraderes",
-                "from": [
-                    "TraderesDB",
-                    "right"
-                ],
-                "to": [
-                    "exporterTraderes",
-                    "left"
-                ]
-            },
-            {
                 "name": "from Initialize Clock to Initialize power plants",
                 "from": [
                     "Initialize Clock",
@@ -652,8 +641,8 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1467.7805335951089,
-            "y": -279.02044215956477,
+            "x": -1478.5123471942795,
+            "y": -277.67896545966835,
             "file_references": [
                 {
                     "type": "path",
@@ -666,8 +655,8 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1311.2841627231714,
-            "y": -279.8655774862529,
+            "x": -1319.885295496335,
+            "y": -282.01586067954366,
             "specification": "import traderes db",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -728,8 +717,8 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1216.4020122678912,
-            "y": -463.5623397396062,
+            "x": -1216.402012267891,
+            "y": -465.83482101230953,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -917,8 +906,8 @@
         "power plants": {
             "type": "Data Connection",
             "description": "",
-            "x": -1476.017351059917,
-            "y": -385.42637007924475,
+            "x": -1477.3588277598133,
+            "y": -389.45080017893366,
             "file_references": [
                 {
                     "type": "path",
@@ -1006,7 +995,7 @@
             "type": "Tool",
             "description": "",
             "x": -568.3597706971523,
-            "y": -469.63567531712647,
+            "y": -471.29526956882506,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -1054,22 +1043,6 @@
                     "arg": "run_financial_results"
                 }
             ]
-        },
-        "energy exchange": {
-            "type": "Data Store",
-            "description": "",
-            "x": -228.42302013952326,
-            "y": -1028.7593561415938,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/energy_exchange/energy exchange.sqlite"
-                }
-            }
         },
         "Emlab3": {
             "type": "Data Store",

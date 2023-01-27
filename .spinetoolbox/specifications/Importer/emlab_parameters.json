@@ -904,49 +904,6 @@
                     }
                 }
             ],
-            "Potentials": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "technologyPotentials",
-                                "skip_columns": [
-                                    4,
-                                    5
-                                ],
-                                "read_start_row": 1
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": 2
-                            }
-                        ]
-                    }
-                }
-            ],
             "backup": [
                 {
                     "Mapping 1": {
@@ -1154,6 +1111,44 @@
                         ]
                     }
                 }
+            ],
+            "technologyPotentials": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 2
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1172,9 +1167,9 @@
             "CandidatePowerPlants",
             "StrategicReserveOperator",
             "Dismantled",
-            "Potentials",
             "YearlyTargets",
-            "yearlyCO2"
+            "yearlyCO2",
+            "technologyPotentials"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1226,10 +1221,6 @@
             },
             "StrategicReserveOperator": {},
             "Dismantled": {},
-            "Potentials": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
             "backup": {},
             "YearlyTargets": {
                 "read_until_col": true
@@ -1244,7 +1235,11 @@
             },
             "sources": {},
             "Sheet1": {},
-            "graphs": {}
+            "graphs": {},
+            "technologyPotentials": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1446,11 +1441,6 @@
                 "0": "string",
                 "1": "float"
             },
-            "Potentials": {
-                "0": "string",
-                "1": "string",
-                "2": "float"
-            },
             "backup": {
                 "0": "string",
                 "1": "string",
@@ -1504,6 +1494,11 @@
                 "1": "string",
                 "2": "string",
                 "3": "string"
+            },
+            "technologyPotentials": {
+                "0": "string",
+                "1": "string",
+                "2": "float"
             }
         },
         "table_default_column_type": {},

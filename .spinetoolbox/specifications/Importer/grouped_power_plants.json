@@ -334,45 +334,6 @@
                     }
                 }
             ],
-            "extendedNLRES": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled",
-                                "read_start_row": 1
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "groupedDecarbonizedNL": [
                 {
                     "Mapping 1": {
@@ -506,10 +467,48 @@
                         ]
                     }
                 }
+            ],
+            "groupedNLRES": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "NL_withplanneddecommissions"
+            "groupedNLRES"
         ],
         "table_options": {
             "germany2019": {
@@ -535,10 +534,6 @@
             },
             "groupedNLGAS": {},
             "AnalysisforNiPlants": {},
-            "extendedNLRES": {
-                "read_until_row": true,
-                "read_until_col": true
-            },
             "groupedDecarbonizedNL": {
                 "read_until_col": true,
                 "read_until_row": true
@@ -551,7 +546,11 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "Sheet1": {}
+            "Sheet1": {},
+            "groupedNLRES": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "germany2019": {
@@ -664,18 +663,6 @@
                 "9": "float",
                 "10": "float"
             },
-            "extendedNLRES": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
-            },
             "AnalysisforNiPlants": {
                 "0": "string",
                 "1": "string",
@@ -728,6 +715,18 @@
                 "2": "string",
                 "3": "string",
                 "4": "string"
+            },
+            "groupedNLRES": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float"
             }
         },
         "table_default_column_type": {},

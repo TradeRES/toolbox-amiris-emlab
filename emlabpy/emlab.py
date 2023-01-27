@@ -12,7 +12,6 @@ from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
-from modules.prepareMarketClearing import PrepareMarket
 from util.spinedb_reader_writer import *
 from modules.capacitymarket import *
 from modules.forwardcapacitymarket import *
@@ -129,13 +128,7 @@ try:  # Try statement to always close DB properly
                                   str("{:02d}".format(int(reps.dictionaryTechNumbers[power_plant.technology.name]))) +
                                   str("{:05d}".format(pp_counter))
                                   ))
-
         # saving ids in the DB
-        start_capacity = reps.calculateCapacityOfOperationalPlantsforallTechnologies()
-        targets = reps.findTargetInvestorByCountry(reps.country)
-        for target in targets:
-            target.set_start_capacity(start_capacity[target.targetTechnology])
-        spinedb_reader_writer.stage_start_target_capacities(targets)
         spinedb_reader_writer.stage_power_plant_id_and_loans(reps, reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
         print('Staged IDs')
