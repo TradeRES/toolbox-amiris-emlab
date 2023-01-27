@@ -9,7 +9,7 @@ class TargetInvestor(EnergyProducer):
         self.targetCountry = None
         self.yearly_increment = pd.Series(dtype='float64')
         self.trend = None
-        self.start_capacity = 0
+
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'targetTechnology':
@@ -17,15 +17,11 @@ class TargetInvestor(EnergyProducer):
         elif parameter_name == 'targetCountry' or parameter_name == 'targetNode':
             self.targetCountry = parameter_value
         elif parameter_name == 'start_capacity':
-            self.start_capacity = parameter_value
-        else:
-            #
+            pass
+           # self.start_capacity = parameter_value
+        else: # todo improve this condition
             year = parameter_name[0:4]
             self.yearly_increment.at[int(year)] = parameter_value
-            #self.yearly_increment.set_value(parameter_value)
-
-    def set_start_capacity(self, start_capacity):
-        self.start_capacity = start_capacity
 
     def get_cummulative_capacity(self, from_year, to_year, last_year):
         if to_year > last_year: # erase this if there are capacity targets after 2050
@@ -33,4 +29,4 @@ class TargetInvestor(EnergyProducer):
         list_years = list(range(from_year,to_year))
         increment_in_years  = self.yearly_increment[list_years]
         cummulative = increment_in_years.cumsum()
-        return self.start_capacity + cummulative[to_year-1]
+        return cummulative[to_year-1]

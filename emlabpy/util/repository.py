@@ -333,6 +333,9 @@ class Repository:
     def get_candidate_name_by_technology(self, tech):
         return next(i.name for i in self.candidatePowerPlants.values() if i.technology.name == tech)
 
+    def get_candidate_by_technology(self, tech):
+        return next(i for i in self.candidatePowerPlants.values() if i.technology.name == tech)
+
     def get_investable_and_targeted_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True and
                 i.technology.name in ["WTG_onshore",
@@ -444,6 +447,15 @@ class Repository:
             last_year = self.end_simulation_year
             to_year = year
             return next(i.get_cummulative_capacity(from_year, to_year, last_year) for i in self.target_investors.values() if
+                        i.targetTechnology == technology.name and i.targetCountry == self.country)
+        except StopIteration:
+            logging.warning('No yearly target for this year.' + str(year))
+        return None
+
+
+    def find_technology_year_target(self, technology, year):
+        try:
+            return next(i.yearly_increment[year] for i in self.target_investors.values() if
                         i.targetTechnology == technology.name and i.targetCountry == self.country)
         except StopIteration:
             logging.warning('No yearly target for this year.' + str(year))

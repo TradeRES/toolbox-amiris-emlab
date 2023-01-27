@@ -80,7 +80,6 @@ class Investmentdecision(DefaultModule):
         cp_numbers = []
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
-
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
             pp_dispatched_names.append(pp.name)
@@ -113,8 +112,8 @@ class Investmentdecision(DefaultModule):
             return
         else:
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
-            bestCandidatePowerPlant = None
-            highestValue = 0
+            highestNPVCandidatePP = None
+            highestNPV = 0
             # power plants are investable when they havent passed the capacity limits
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if self.investable_candidate_plants:  # check if the are investable power plants
@@ -144,9 +143,9 @@ class Investmentdecision(DefaultModule):
                                                                       self.reps.investmentIteration,
                                                                       self.futureInvestmentyear,
                                                                       )
-                    if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestValue):
-                        highestValue = projectvalue / candidatepowerplant.capacity  # capacity is anyways 1
-                        bestCandidatePowerPlant = candidatepowerplant
+                    if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
+                        highestNPV = projectvalue / candidatepowerplant.capacity  # capacity is anyways 1
+                        highestNPVCandidatePP = candidatepowerplant
                     elif projectvalue < 0:
                         # the power plant should not be investable in next rounds
                         # saving if the candidate power plant remains or not as investable
@@ -158,14 +157,14 @@ class Investmentdecision(DefaultModule):
                 # saving: operational profits from candidate plants
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
                 # if the power plant is correctly saved
-                if bestCandidatePowerPlant is not None:
+                if highestNPVCandidatePP is not None:
                     # investing in best candidate power plant as it passed the checks.
-                    print("Investing in " + bestCandidatePowerPlant.technology.name)
-                    newplant = self.invest(bestCandidatePowerPlant, False)
+                    print("Investing in " + highestNPVCandidatePP.technology.name)
+                    newplant = self.invest(highestNPVCandidatePP, False)
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_loans(newplant)
                     self.reps.dbrw.stage_downpayments(newplant)
-                    self.reps.dbrw.stage_investment_decisions(bestCandidatePowerPlant.name, newplant.name,
+                    self.reps.dbrw.stage_investment_decisions(highestNPVCandidatePP.name, newplant.name,
                                                               self.reps.investmentIteration,
                                                               self.futureInvestmentyear, self.reps.current_tick)
                     self.continue_iteration()
@@ -377,46 +376,48 @@ class Investmentdecision(DefaultModule):
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
             # TODO: later the expected installed power plants can be calculated according to profits not only for lookahead but also fot future time:
             expectedInstalledCapacity = expectedInstalledCapacityperTechnology[target_tech.name]
-            pgtNodeLimit = target_tech.getMaximumCapacityinCountry(
+
+            pgt_country_limit = target_tech.getMaximumCapacityinCountry(
                 self.futureInvestmentyear)  # now is for all technologies the same.
 
             # targetCapacity = target_tech.getTrend().getValue(futureTimePoint)
-            technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(target_tech,
-                                                                                                        self.futureInvestmentyear)
-            installedCapacityDeviation = 0
-            if pgtNodeLimit > technologyTargetCapacity:
-                installedCapacityDeviation = technologyTargetCapacity - expectedInstalledCapacity
-            else:
-                installedCapacityDeviation = pgtNodeLimit - expectedInstalledCapacity
+            # technologyTargetCapacity = self.reps.findPowerGeneratingTechnologyTargetByTechnologyandyear(target_tech,
+            #                                                                                             self.futureInvestmentyear)
+            yearlyCapacityTarget = self.reps.find_technology_year_target(target_tech, self.futureInvestmentyear)
+
+            if math.isnan(pgt_country_limit) ==False:
+                # if there is a limit
+                if pgt_country_limit > yearlyCapacityTarget + expectedInstalledCapacity : # limit is not reached
+                    pass
+                else:
+                    yearlyCapacityTarget = pgt_country_limit - expectedInstalledCapacity
+                    print("limit is reached, so install the maximum")
+            else: # there is no limit
+                pass
 
             # if the missing capacity is smaller than a unit, then dont install anything
-            if installedCapacityDeviation > 0 and installedCapacityDeviation > target_tech.getCapacity():
-                print(target.name + " needs to invest " + str(installedCapacityDeviation) + " MW")
-                candidate_name = self.reps.get_candidate_name_by_technology(target_tech.name)
-                for investable in self.investable_candidate_plants:
-                    if investable.name == candidate_name:
-                        bestCandidatePowerPlant = investable
+            if yearlyCapacityTarget > 0:
+                #print(target.name + " needs to invest " + str(yearlyCapacityTarget) + " MW")
+                targetCandidatePowerPlant = self.reps.get_candidate_by_technology(target_tech.name)
                 if self.reps.install_missing_capacity_as_one_pp == True:
-                    bestCandidatePowerPlant.capacityTobeInstalled = installedCapacityDeviation
-                    print("Target investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity))
-                    newplant = self.invest(bestCandidatePowerPlant, True)
-                    newplant.candidate_name = candidate_name
+                    targetCandidatePowerPlant.capacityTobeInstalled = yearlyCapacityTarget
+                    print("Target investing in " + target_tech.name + str(targetCandidatePowerPlant.capacityTobeInstalled))
+                    newplant = self.invest(targetCandidatePowerPlant, True)
+                    newplant.candidate_name = targetCandidatePowerPlant.name # changing name to be saved in investment decisions
                     new_target_power_plants.append(newplant)
                 else:
-                    number_new_powerplants = math.floor(installedCapacityDeviation / bestCandidatePowerPlant.capacity)
-                    remainder = installedCapacityDeviation % bestCandidatePowerPlant.capacity
+                    number_new_powerplants = math.floor(yearlyCapacityTarget / targetCandidatePowerPlant.capacityTobeInstalled)
+                    remainder = yearlyCapacityTarget % targetCandidatePowerPlant.capacityTobeInstalled
                     for i in range(number_new_powerplants):
-                        print("Target investing in " + target_tech.name + str(bestCandidatePowerPlant.capacity))
+                        print("Target investing in " + target_tech.name + str(targetCandidatePowerPlant.capacityTobeInstalled))
                         if i == number_new_powerplants - 1:
-                            bestCandidatePowerPlant.capacityTobeInstalled += remainder
+                            targetCandidatePowerPlant.capacityTobeInstalled += remainder
                         else:
                             pass
-                        newplant = self.invest(bestCandidatePowerPlant, True)
-                        newplant.candidate_name = candidate_name
-                        # a =zip(newplant, candidate_name)
+                        newplant = self.invest(targetCandidatePowerPlant, True)
+                        newplant.candidate_name = targetCandidatePowerPlant.name # changing name to be saved in investment decisions
                         new_target_power_plants.append(newplant)
-            else:
-                print(target.name + "has passed target limits")
+
         return new_target_power_plants
 
     # expectedTechnologyCapacity = reps.powerPlantRepository.calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, pggt.getPowerGeneratingTechnology(), time)

@@ -169,8 +169,6 @@ class PowerGeneratingTechnology(ImportObject):
         else:
             return None
 
-    def getCapacity(self):
-        return self.capacity
 
     def getEfficiency(self, time):
         return self.efficiency_time_series.get_value(time)

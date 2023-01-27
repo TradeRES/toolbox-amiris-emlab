@@ -39,12 +39,6 @@
         "years": {
             "db_credentials": {}
         },
-        "energy exchange": {
-            "url": {
-                "username": "",
-                "password": ""
-            }
-        },
         "Emlab3": {
             "url": {
                 "username": "",
