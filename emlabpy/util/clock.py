@@ -25,10 +25,6 @@ import os
 import pandas as pd
 from os.path import dirname, realpath
 
-"""
-
-"""
-
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 from spinedb_api import DatabaseMapping, from_database
@@ -276,7 +272,6 @@ try:
 except Exception:
     raise
 finally:
-    print('Closing DB Connections...')
     db_emlab.close_connection()
 
 print('removing awaiting bids...')
