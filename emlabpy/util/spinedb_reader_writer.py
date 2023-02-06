@@ -82,8 +82,11 @@ class SpineDBReaderWriter:
             elif row[
                 'parameter_name'] == 'Country':  # changed from node(emlab) to country because in traderes Node is used for fuels
                 reps.country = str(row['parameter_value'])
+                if reps.country == "NL":
+                    reps.avoid_alternative = "DE"
+                else:
+                    reps.avoid_alternative = "NL"
                 reps.agent = "Producer" + reps.country
-
             elif row['parameter_name'] == 'short_term_investment_minimal_irr':
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] in ['start_tick_fuel_trends', 'start_year_fuel_trends']:
@@ -163,7 +166,8 @@ class SpineDBReaderWriter:
             for (_, object_name, _) in [i for i in db_data['objects'] if i[0] == object_class_name]:
                 try:
                     db_line = next(i for i in object_parameter_values
-                                   if i[0] == object_class_name and i[1] == object_name and i[2] == parameter_name)
+                                   if i[0] == object_class_name and i[1] == object_name and i[2] == parameter_name
+                                   and i[4] != reps.avoid_alternative)
                     add_parameter_value_to_repository_based_on_object_class_name(reps, db_line)
                 except StopIteration:
                     # logging.warning

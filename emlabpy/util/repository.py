@@ -39,6 +39,7 @@ class Repository:
         # section --------------------------------------------------------------------------------------configuration
         self.simulation_name = "test"
         self.country = ""
+        self.avoid_alternative = ""
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent
         self.current_tick = 0
