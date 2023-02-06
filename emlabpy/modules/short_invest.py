@@ -2,6 +2,7 @@ from modules.invest import Investmentdecision
 import numpy_financial as npf
 from util.repository import Repository
 import logging
+from modules.prepareFutureMarketClearing import PrepareFutureMarketClearing
 
 import pandas as pd
 
@@ -21,16 +22,12 @@ class ShortInvestmentdecision(Investmentdecision):
         reps.dbrw.stage_candidate_pp_investment_status_structure()
 
     def act(self):
-        print(F"{self.agent.name} invests in technology at tick {self.reps.current_tick}")
-        # TODO if there would be more agents, the future capacity should be analyzed per agent
-        # checks if the technology technical limits are passed
-        # if not it removes the technology from the list quick Investabletechnologies
-        # and dont proceed with the returns calculation
 
-        for quick_technology in self.quickInvestabletechnologies:
-            self.calculateandCheckFutureCapacityExpectation(self.reps.power_generating_technologies[quick_technology])
+        #PrepareFutureMarketClearing.filter_power_plants_to_be_operational()
+        # for quick_technology in self.quickInvestabletechnologies:
+        #     self.calculateandCheckFutureCapacityExpectation(self.reps.power_generating_technologies[quick_technology])
 
-            # the list is updated in the step before!!!!!!!!!!!
+         # the list is updated in the step before!!!!!!!!!!!
         technologies_highreturns =[]
         for quick_technology in self.quickInvestabletechnologies:
             operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,
@@ -41,10 +38,8 @@ class ShortInvestmentdecision(Investmentdecision):
             if pd.isna(average_profit):
                 pass
             else:
-
                 # Todo change this to the last 3 years profits ????
                 pp_return_per_tech = self.getProjectIRR(self.reps.power_generating_technologies[quick_technology], average_profit,  self.agent)
-
                 if pp_return_per_tech > self.reps.short_term_investment_minimal_irr:
                     technologies_highreturns.append(pp_return_per_tech)
 
@@ -52,6 +47,7 @@ class ShortInvestmentdecision(Investmentdecision):
             PowerPlantstoInvest = self.reps.get_candidate_power_plants_of_technologies(technologies_highreturns)
             for planttoInvest in PowerPlantstoInvest:
                 newplant = self.invest(planttoInvest, False)
+                print(F"{self.agent.name} invests in plant  {newplant.name}at tick {self.reps.current_tick}")
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)
@@ -59,36 +55,30 @@ class ShortInvestmentdecision(Investmentdecision):
                 self.reps.dbrw.stage_investment_decisions(PowerPlantstoInvest.name, newplant.name,
                                                           self.reps.investmentIteration,
                                                           self.futureInvestmentyear,  self.reps.current_tick)
-
         else:
             print("no Investment in quick technologies ")
 
     def calculateandCheckFutureCapacityExpectation(self, technology):
         technologyCapacityLimit = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
         # in contrast to long term investment decision, this is calculated for the current year
-        # todo check this as it has been changes
         self.expectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(
             technology,
             self.reps.current_tick + technology.expected_leadtime + technology.expected_permittime)
         self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
             technology)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
-
         # the check is not done for candidate power plant, but for installed power plants
-        if (
-                self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology) or self.capacityOfTechnologyInPipeline > 9000:
-            logging.info(" will not invest in '%s  technology because there's too much capacity in the pipeline",
-                         technology.name)
-            self.quickInvestabletechnologies.remove(technology.name)
-            return False
-        elif self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
+
+        if self.expectedInstalledCapacityOfTechnology > technologyCapacityLimit:
             logging.info(" will not invest in '%s  technology because the capacity limits are achieved", technology)
-            self.quickInvestabletechnologies.remove(technology.name)
             return False
         else:
             logging.info( " '%s passes capacity limit.  will now calculate financial viability.", technology)
             return True
-            # TODO: add the maxExpected Load amd agent cash
+
+    def set_candidate_technology_NOT_invstable(self, technology):
+        # if technical limits are not passed, the technology from the list quick Investabletechnologies
+        self.quickInvestabletechnologies.remove(technology.name)
 
 
     def getProjectIRR(self, technology ,average_profit, agent):

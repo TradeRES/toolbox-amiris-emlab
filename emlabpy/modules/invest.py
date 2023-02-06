@@ -45,7 +45,8 @@ class Investmentdecision(DefaultModule):
         self.ids_of_future_installed_and_dispatched_pp = []
         self.initialization_investments = False
 
-        if reps.current_tick == 0 and reps.testing_future_year < reps.lookAhead and reps.testing_future_year > 0:
+        if reps.current_tick == 0 and reps.testing_future_year > 0 and reps.testing_future_year < reps.lookAhead \
+                and reps.runningModule != "run_short_investment_module":
             # Adding the investments as an initialization
             self.initialization_investments = True
             self.setTimeHorizon(reps.testing_future_year)
@@ -54,7 +55,7 @@ class Investmentdecision(DefaultModule):
             self.setTimeHorizon(reps.lookAhead)
             self.look_ahead_years = reps.lookAhead
         print("Look ahead year " + str(self.look_ahead_years))
-        self.future_installed_plants_ids = reps.get_ids_of_future_installed_plants(self.futureTick)
+
         self.wacc = (
                                 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
@@ -71,6 +72,7 @@ class Investmentdecision(DefaultModule):
         reps.dbrw.stage_candidate_pp_investment_status_structure()
 
     def act(self):
+        self.future_installed_plants_ids = self.reps.get_ids_of_future_installed_plants(self.futureTick)
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
         self.read_csv_results_and_filter_candidate_plants()
@@ -197,7 +199,7 @@ class Investmentdecision(DefaultModule):
         if self.reps.install_at_look_ahead_year == True:
             commissionedYear = self.reps.current_year + self.look_ahead_years
         else:
-            print("fix this!!!!!")
+            print("fix this if needed !!!!!")
             commissionedYear = self.reps.current_year + bestCandidatePowerPlant.technology.expected_permittime + bestCandidatePowerPlant.technology.expected_leadtime
         if target_invest == False:
             newid = (int(str(commissionedYear) +
@@ -275,10 +277,11 @@ class Investmentdecision(DefaultModule):
 
         # print("total investment cost in MIll", totalInvestment / 1000000)
         if self.reps.npv_with_annuity == True:
-            for i in range(0, buildingTime):
-                investmentCashFlow[i] = - equalTotalDownPaymentInstallment
-            for i in range(buildingTime, depreciationTime + buildingTime):
-                investmentCashFlow[i] = operatingProfit - fixed_costs - annuity
+            for i in range(0, buildingTime + depreciationTime):
+                if i < buildingTime:
+                    investmentCashFlow[i] = - equalTotalDownPaymentInstallment
+                else:
+                    investmentCashFlow[i] = operatingProfit - fixed_costs - annuity
         else:
             for i in range(0, buildingTime):
                 investmentCashFlow[i] = - equalTotalDownPaymentInstallment
@@ -299,7 +302,7 @@ class Investmentdecision(DefaultModule):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
 
-    def calculateandCheckFutureCapacityExpectation(self, candidatepowerplant):
+    def calculateandCheckFutureCapacityExpectation(self, candidatepowerplant):         # if there would be more agents, the future capacity should be analyzed per age
         # checking if the technology can be installed or not
         technology = candidatepowerplant.technology
         expectedInstalledCapacityOfTechnology = self.expectedInstalledCapacityPerTechnology[technology.name]

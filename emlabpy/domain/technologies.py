@@ -29,8 +29,8 @@ class PowerGeneratingTechnology(ImportObject):
         self.expected_leadtime = 0
         self.expected_permittime = 0
         self.yearlyPotential = pd.Series(dtype='float64')
-        self.totalPotential = None
-        self.intermittent = False
+        self.totalPotential = None # in MW
+        self.intermittent = False # in MW
         self.fuel = ''
         self.type = ''
 
@@ -94,9 +94,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':
             self.fuel = reps.substances[parameter_value]
-        elif parameter_name == 'totalPotential':
-            print(alternative)
-            print(parameter_value)
+        elif parameter_name == 'totalPotential' and alternative == reps.country:
             self.totalPotential = float(parameter_value)
         elif parameter_name == 'yearlyPotential' and alternative == reps.country:
             array = parameter_value.to_dict()
