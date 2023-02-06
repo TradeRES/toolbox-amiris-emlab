@@ -717,7 +717,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1214.3001609883602,
+            "x": -1216.4020122678917,
             "y": -467.9366722918406,
             "url": {
                 "dialect": "sqlite",
@@ -972,8 +972,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -297.381109661273,
-            "y": -132.93731977980877,
+            "x": -299.4829609408041,
+            "y": -147.65027873652656,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
