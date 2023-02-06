@@ -235,7 +235,7 @@ def plot_future_fuel_prices(future_fuel_prices, path_to_plots):
     fig12.savefig(path_to_plots + '/' + 'Future Fuel prices per year.png', bbox_inches='tight', dpi=300)
 
 
-def plot_screening_curve(yearly_costs, path_to_plots, test_year):
+def plot_screening_curve(yearly_costs, marginal_costs_per_hour, path_to_plots, test_year):
     colors_unique_techs = [technology_colors[tech] for tech in yearly_costs.columns.values]
     axs13 = yearly_costs.plot(color=colors_unique_techs)
     axs13.set_axisbelow(True)
@@ -250,6 +250,16 @@ def plot_screening_curve(yearly_costs, path_to_plots, test_year):
     axs13.set_title('Screening curve in year ' + str(test_year))
     fig13 = axs13.get_figure()
     fig13.savefig(path_to_plots + '/' + 'Screening curve (with CO2)' + str(test_year) + '.png', bbox_inches='tight',
+                  dpi=300)
+    plt.close('all')
+    axs14 =marginal_costs_per_hour.reset_index().plot.scatter( x = "index" , y = 0)
+    axs14.set_axisbelow(True)
+    plt.xticks(rotation=90)
+    plt.ylabel('Prices (Eur/MWh per hour', fontsize='medium')
+    #axs14.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs14.set_title('Marginal costs at year ' + str(test_year))
+    fig14 = axs14.get_figure()
+    fig14.savefig(path_to_plots + '/' + 'Marginal_costs (with CO2)' + str(test_year) + '.png', bbox_inches='tight',
                   dpi=300)
 
 
@@ -335,7 +345,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs16.set_title('IRRs, not including NAN results (capped to -10 %+ 20 %)')
-    # plt.ylim(-100,200)
+    plt.ylim(-100,300)
     fig16 = axs16.get_figure()
     fig16.savefig(path_to_plots + '/' + 'IRRs per year per technology.png', bbox_inches='tight', dpi=300)
 
@@ -622,7 +632,7 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
 
     axs24 = sorted_prices.plot(color=colors)
     axs24.set_axisbelow(True)
-    plt.ylim([-5, 200])
+    plt.ylim([-5, 300])
     plt.xlabel('hours', fontsize='medium')
     plt.ylabel('Wholesale market price (Eur/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -639,10 +649,10 @@ def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
     for label in axs25.get_xticklabels(which='major'):
         label.set(rotation=45, horizontalalignment='right')
     plt.xlabel('hours', fontsize='medium')
-    plt.ylim([-5, 200])
+    plt.ylim([-5, 300])
     plt.ylabel('Wholesale market price (Eur/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs25.set_title('Hourly electricity prices [prices limited to 200 Eur/MWh]')
+    axs25.set_title('Hourly electricity prices [prices limited to 300 Eur/MWh]')
     fig25 = axs25.get_figure()
     fig25.savefig(path_to_plots + '/' + 'Hourly Electricity prices boxplot.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -693,10 +703,10 @@ def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
     plt.grid()
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
     axs33.set_title('Market based cost recovery ')
-    axs33.annotate('(Revenues - Costs) Include Capacity Mechanisms',
-                   xy=(1, 1.1), xycoords='figure fraction',
-                   horizontalalignment='right', verticalalignment='bottom',
-                   fontsize='small')
+    # axs33.annotate('(Revenues - Costs) Include Capacity Mechanisms',
+    #                xy=(1, 1.1), xycoords='figure fraction',
+    #                horizontalalignment='right', verticalalignment='bottom',
+    #                fontsize='small')
     fig33 = axs33.get_figure()
     fig33.savefig(path_to_plots + '/' + 'Cost recovery.png', bbox_inches='tight', dpi=300)
     plt.close()
@@ -842,7 +852,11 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, unique_technologies):
     if reps.decommission_from_input == True: # the initial power plants have negative age to avoid all to be commmissioned in one year
-        years_to_generate_and_build = list(range(reps.start_simulation_year - reps.lookAhead , 2051))
+        if reps.current_year + 1 + reps.max_permit_build_time > 2050:
+            until = reps.current_year + 1 + reps.max_permit_build_time
+        else:
+            until = 2050
+        years_to_generate_and_build = list(range(reps.start_simulation_year - reps.lookAhead , until ))
     else:
         years_to_generate_and_build = list(
         range(reps.start_simulation_year - reps.lookAhead , reps.current_year + 1 + reps.max_permit_build_time))
@@ -1015,7 +1029,6 @@ def prepare_revenues_per_iteration(reps, future_tick, last_year, future_year):
     grouped_revenues = future_operational_profit_per_iteration.groupby('tech').mean()
     sorted_average_revenues_per_tech_test_tick = grouped_revenues.T.sort_index()
 
-    # tech_age = list(zip(age, capacity, efficiency))
     future_operational_profit_per_iteration_with_age["tech"] = tech
     future_operational_profit_per_iteration_with_age["tech-commissionedYear"] = capacity_efficiency_commissionyear
     expected_future_operational_profit = future_operational_profit_per_iteration_with_age.loc[
@@ -1084,7 +1097,6 @@ def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simu
     if test_tech == None:
         new_pp_profits_for_tech = 0
     return average_profits_per_tech_per_year_perMW, new_pp_profits_for_tech
-
 
 def prepare_cash_per_agent(reps, simulation_ticks):
     # the cash includes the loans of installed power plants
@@ -1195,6 +1207,7 @@ def prepare_screening_curves(reps, year):
     wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate \
            + agent.debtRatioOfInvestments * agent.loanInterestRate
     yearly_costs = pd.DataFrame(index=hours)
+    marginal_costs_per_hour =  pd.DataFrame()
     CO2prices_future_prices = reps.substances["CO2"].simulatedPrice.to_dict()
     values = [float(i[1]) for i in CO2prices_future_prices["data"]]
     index = [int(i[0]) for i in CO2prices_future_prices["data"]]
@@ -1214,20 +1227,18 @@ def prepare_screening_curves(reps, year):
                 fuel_price = df.at[str(year), 1]
                 # Co2EmissionsInTperMWH / efficiency = CO2 emissions per MWh
                 co2_TperMWh = tech.fuel.co2_density  # TperMWH
-
                 # uncomment this if it is the old amiris prices
                 # fuel_price = AMIRIS_temporal_fuel[tech.fuel.name]
                 # co2price = AMIRIS_temporal_fuel["CO2"]
                 # co2_TperMWh = SpecificCo2EmissionsInTperMWH[tech.fuel.name]
-
             opex = (tech.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) / tech.efficiency) * hours
-
             total = annual_cost_capital + opex + tech.fixed_operating_costs
             yearly_costs[tech_name] = total
+            # Eur/Mwh * h = Eur/MW
+            marginal_costs_per_hour.at[tech_name, 0] =tech.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) / tech.efficiency
         else:
             pass
-            # print("dont graph renewables", tech_name)
-    return yearly_costs
+    return yearly_costs, marginal_costs_per_hour
 
 
 def prepare_screening_curves_candidates(reps, year):
@@ -1347,6 +1358,7 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
         totalproduction = 0
         for technology_name in unique_technologies:
             generation_per_tech = 0
+           # generation_per_tech_charge = 0
             market_value_per_tech = []
             capacity_factor_per_tech = []
             full_load_hours = []
@@ -1354,11 +1366,17 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
                 power_plant = reps.get_power_plant_by_id(id)
                 if power_plant is not None:
                     if power_plant.technology.name == technology_name:
-                        generation_per_tech += pp_production_in_MWh
-                        capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
-                        full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
-                        totalproduction += pp_production_in_MWh
-                        totalrevenues += dispatch_per_year.revenues[id]
+                        if pp_production_in_MWh > 0:
+                            generation_per_tech += pp_production_in_MWh
+                            capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
+                            full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
+                            totalproduction += pp_production_in_MWh
+                            totalrevenues += dispatch_per_year.revenues[id]
+                        else:
+                            totalrevenues += dispatch_per_year.revenues[id]
+                            # generation_per_tech_charge -= pp_production_in_MWh
+                            # totalrevenues += dispatch_per_year.revenues[id]
+
                         if pp_production_in_MWh > 0:
                             market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
                         else:
@@ -1369,6 +1387,10 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
             all_techs_capacity_factor.loc[technology_name, year] = mean(capacity_factor_per_tech)
             all_techs_market_value.loc[technology_name, year] = mean(market_value_per_tech)
             all_techs_generation.loc[technology_name, year] = generation_per_tech
+
+            # if technology_name == "Lithium_ion_battery":
+            #     all_techs_generation.loc["Lithium_ion_battery_charge", year] = generation_per_tech_charge
+
         average_electricity_price.loc[year, "wholesale price"] = totalrevenues / totalproduction
         total_demand = yearly_load[year].sum()
         share_RES.loc[year, 0] = 100 * (sum(all_techs_generation.loc[renewable_technologies, year]) / total_demand)
@@ -1510,12 +1532,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     renewable_technologies = ["Biomass_CHP_wood_pellets_DH", "Hydropower_reservoir_medium", "PV_utility_systems",
                               "WTG_onshore", "WTG_offshore", "Hydropower_ROR"]
     unique_candidate_power_plants = reps.get_unique_candidate_technologies_names()
-
+    unique_candidate_power_plants += ["Lithium_ion_battery_charge"] # adding technology for negative production
     start_tick = 0
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
     ticks_to_generate = list(range(start_tick, reps.current_tick + 1))
     years_to_generate_and_build = list(
-        range(reps.start_simulation_year, reps.current_year + 1 + reps.max_permit_build_time))
+        range(reps.start_simulation_year, reps.current_year  + 1 + reps.max_permit_build_time))
     years_ahead_to_generate = [x + reps.lookAhead for x in years_to_generate]
     df_zeros = np.zeros(shape=(len(years_to_generate), len(unique_technologies)))
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
@@ -1603,7 +1625,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     '''
     decommissioning is plotted according to the year when it is decided to get decommissioned
     '''
-    if calculate_investments != False:
+    if calculate_investments_per_iteration != False:
         candidates_profits_per_iteration = prepare_profits_candidates_per_iteration(reps)
     # this is already graphed in plot_expected_candidate_profits_real_profits
     # plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots,
@@ -1655,11 +1677,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
-    yearly_costs = prepare_screening_curves(reps, test_year)
+    yearly_costs, marginal_costs_per_hour = prepare_screening_curves(reps, test_year)
     if calculate_investments != False:
         yearly_costs_candidates = prepare_screening_curves_candidates(reps, future_year)
         plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, test_year + reps.lookAhead)
-    plot_screening_curve(yearly_costs, path_to_plots, test_year)
+    plot_screening_curve(yearly_costs, marginal_costs_per_hour, path_to_plots, test_year)
     future_fuel_prices = prepare_future_fuel_prices(reps, years_to_generate)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
 
@@ -1830,9 +1852,9 @@ technology_colors = {
     "Nuclear": "mediumorchid",
     "Hydropower_ROR": "aquamarine",
     "Lithium_ion_battery": "hotpink",
+    "Lithium_ion_battery_charge": "hotpink",
     "Pumped_hydro": "darkcyan",
     "CCGT_CHP_backpressure_DH": "orange",
-
 }
 
 fuel_colors = {
@@ -1891,15 +1913,16 @@ results_excel = "investment_initialization.xlsx"
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments_interrupted",
 #              ]
-SCENARIOS = ["NL2040_SD3_PH3_MI15000_totalProfits_future1installed1-increasing_investment_cost_planned_plants"
+SCENARIOS = ["NL2060_SD3_PH3_MI1000000_totalProfits_-2050_with_short_investments"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 9
+test_tick = 1
 # write None is no investment is expected,
-test_tech = None
+test_tech = "WTG_onshore" #"CCGT"#  None
 calculate_investments = True
+calculate_investments_per_iteration = False
 existing_scenario = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
@@ -1967,7 +1990,7 @@ for scenario_name in SCENARIOS:
             scenario_name = splitname[1]
 
         for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps)
+            power_plant.specifyPowerPlantsInstalled(reps, True)
 
 
         print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_tick_dismantling) + "_PH" + str(
@@ -2014,7 +2037,7 @@ print('===== End Generating Plots =====')
 #     axs4.set_ylabel('Capacity (MW)', fontsize='medium')
 #     # plt.ylim([-4.3e5, 5.5e5])
 #     axs4.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-#     axs4.set_title('Capacity per Technology to be decommissioned')
+#     axs4.set_title('Capacity per Technology to be decommissioned')\
 #     # fig4 = a.get_figure()
 #     fig4.savefig(path_to_plots + '/' + 'Capacity to be decommissioned.png', bbox_inches='tight', dpi=300)
 #     plt.show()
