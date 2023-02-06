@@ -25,18 +25,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def __init__(self, reps):
         super().__init__(reps)
-        self.newPowerPlant = None
-        self.newTechnologies = None
-        self.lastrenewableId = 0
-        self.lastconventionalId = 0
-        self.laststorageId = 0
         self.simulation_year = 0  # future investment year
         self.powerPlantsinFutureToBeOperational = []
         self.RESLabel = "VariableRenewableOperator"
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
-
         if reps.current_tick == 0 and reps.testing_future_year < reps.lookAhead and reps.testing_future_year > 0:
             print("initialization investments for year  " + str(reps.testing_future_year))
             self.power_plants_list = reps.get_investable_candidate_power_plants()
@@ -75,9 +69,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
     def filter_power_plants_to_be_operational(self):
         """
         This function assign a fictional future status to power plants
-        For plants that have passed their liftime
+        For plants that have passed their lifetime
             If the decommission year is specified in input file, these plants are decommissioned.
-
         :return:
         """
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.reps.agent)

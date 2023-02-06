@@ -160,8 +160,8 @@ try:  # Try statement to always close DB properly
         paying_loans.act_and_commit()
         financial_report = CreatingFinancialReports(reps)
         financial_report.act_and_commit()
-        # short_investing = ShortInvestmentdecision(reps)
-        # short_investing.act_and_commit()
+        short_investing = ShortInvestmentdecision(reps)
+        short_investing.act_and_commit()
         logging.info('End saving Financial Results')
 
     if run_prepare_next_year_market_clearing:
