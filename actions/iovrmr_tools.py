@@ -202,7 +202,11 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
         for marketer in marketers:
             marketer["Type"] = SUPPORT_SCHEMES[marketer["Type"]]
             if marketer["Type"] in ["RenewableTrader", "NoSupportTrader"]:
-                marketer["Attributes"] = {"ShareOfRevenues": 0}
+                marketer["Attributes"] = {
+                    "ShareOfRevenues": 0,
+                }
+            if marketer["Type"] == "RenewableTrader":
+                marketer["Attributes"]["MarketValueForecastMethod"] = "PREVIOUS_MONTH"
         res_operators_and_marketers = []
         for operator in operators:
             res_operators_and_marketers.append(add_trader_mapping(operator))
