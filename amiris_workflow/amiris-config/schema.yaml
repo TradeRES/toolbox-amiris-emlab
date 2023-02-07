@@ -165,7 +165,7 @@ AgentTypes:
             Mandatory: true
             List: false
           ValueOfLostLoad:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: true
             List: false
     Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward' ]
@@ -676,6 +676,25 @@ AgentTypes:
           Variance:
             AttributeType: double
             Mandatory: false
+            List: false
+      MarketValueForecastMethod:
+        AttributeType: enum
+        List: false
+        Mandatory: true
+        Values: [ 'PREVIOUS_MONTH', 'FROM_FILE' ]
+      MarketValueForecasts:
+        AttributeType: block
+        List: true
+        Mandatory: false
+        NestedAttributes:
+          EnergyCarrier:
+            AttributeType: enum
+            Mandatory: true
+            List: false
+            Values: [ 'PV', 'WindOn', 'WindOff', 'RunOfRiver', 'Other' ]
+          Forecast:
+            AttributeType: time_series
+            Mandatory: true
             List: false
     Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward' ]
 

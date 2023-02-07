@@ -1,3 +1,6 @@
+Variables:
+  - &tradersuffix 10000
+
 Agents:
   # PVRooftop
   - column: Set
@@ -12,13 +15,22 @@ Agents:
       - attribute: Attributes/EnergyCarrier
         value: PV
       - attribute: Attributes/SupportInstrument
-        value: FIT
+        column: SupportInstrument
       - attribute: Attributes/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/pv.csv"
+
+  - column: Set
+    target: PVRooftop
+    create:
+      - attribute: Type
+        column: SupportInstrument  # Use support instrument to derive trader and overwrite by map lookup
+      - attribute: Id
+        column: identifier
+        suffix: *tradersuffix
 
   # OtherPV
   - column: Set
@@ -33,13 +45,22 @@ Agents:
       - attribute: Attributes/EnergyCarrier
         value: PV
       - attribute: Attributes/SupportInstrument
-        value: FIT
+        column: SupportInstrument
       - attribute: Attributes/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/pv.csv"
+
+  - column: Set
+    target: OtherPV
+    create:
+      - attribute: Type
+        column: SupportInstrument  # Use support instrument to derive trader and overwrite by map lookup
+      - attribute: Id
+        column: identifier
+        suffix: *tradersuffix
 
   # WindOn
   - column: Set
@@ -54,13 +75,22 @@ Agents:
       - attribute: Attributes/EnergyCarrier
         value: WindOn
       - attribute: Attributes/SupportInstrument
-        value: FIT
+        column: SupportInstrument
       - attribute: Attributes/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/windon.csv"
+
+  - column: Set
+    target: WindOn
+    create:
+      - attribute: Type
+        column: SupportInstrument  # Use support instrument to derive trader and overwrite by map lookup
+      - attribute: Id
+        column: identifier
+        suffix: *tradersuffix
 
   # WindOff
   - column: Set
@@ -75,13 +105,22 @@ Agents:
       - attribute: Attributes/EnergyCarrier
         value: WindOff
       - attribute: Attributes/SupportInstrument
-        value: FIT
+        column: SupportInstrument
       - attribute: Attributes/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/windoff.csv"
+
+  - column: Set
+    target: WindOff
+    create:
+      - attribute: Type
+        column: SupportInstrument  # Use support instrument to derive trader and overwrite by map lookup
+      - attribute: Id
+        column: identifier
+        suffix: *tradersuffix
 
   # RunOfRiver
   - column: Set
@@ -96,13 +135,22 @@ Agents:
       - attribute: Attributes/EnergyCarrier
         value: RunOfRiver
       - attribute: Attributes/SupportInstrument
-        value: FIT
+        column: SupportInstrument
       - attribute: Attributes/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/OpexVarInEURperMWH
         column: OpexVarInEURperMWH
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/runofriver.csv"
+
+  - column: Set
+    target: RunOfRiver
+    create:
+      - attribute: Type
+        column: SupportInstrument  # Use support instrument to derive trader and overwrite by map lookup
+      - attribute: Id
+        column: identifier
+        suffix: *tradersuffix
 
   # Other RES (Undefined)
   - column: Set
@@ -123,8 +171,17 @@ Agents:
       - attribute: Attributes/YieldProfile
         value: "amiris-config/data/otherres.csv"
 
+  - column: Set
+    target: Undefined
+    create:
+      - attribute: Type
+        column: SupportInstrument  # Use support instrument to derive trader and overwrite by map lookup
+      - attribute: Id
+        column: identifier
+        suffix: *tradersuffix
+
 AgentGroups:
-  - &marketer 2
+  - &marketer 11
 
 Contracts:
 #################################
