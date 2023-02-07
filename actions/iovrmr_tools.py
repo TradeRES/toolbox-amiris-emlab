@@ -27,6 +27,15 @@ CONVENTIONAL_AGENT_RESULTS = {
     "ConventionalPlantOperator_DispatchedPowerInMWHperPlant": "DispatchedPowerInMWHperPlant",
 }
 CONVENTIONAL_RESULTS_GROUPED = ["ConventionalPlantOperator"]
+SUPPORT_SCHEMES = {
+    "NONE": "NoSupportTrader",
+    "MPVAR": "RenewableTrader",
+    "MPFIX": "RenewableTrader",
+    "CFD": "RenewableTrader",
+    "CP": "RenewableTrader",
+    "FIT": "SystemOperatorTrader",
+}
+TRADER_SUFFIX = 10000
 
 
 class FilterType(Enum):
@@ -169,6 +178,8 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
                                 append_operation["below"],
                                 nest_flattened_items(items_to_append),
                             )
+                            if append_operation["agent"] == 90 and "SupportPolicy" not in registered_agents_per_plant:
+                                registered_agents_per_plant["SupportPolicy"] = 90
                     else:
                         raise_and_log_critical_error(
                             "Missing either `create` or `append` key for {}".format(translation)
@@ -180,9 +191,25 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
             else:
                 raise_and_log_critical_error("Failed creating agent specified as {}".format(translation))
         if registered_agents_per_plant:
-            all_registered_agents.append(registered_agents_per_plant)
+            if registered_agents_per_plant not in all_registered_agents:
+                all_registered_agents.append(registered_agents_per_plant)
 
     agent_list = nest_flattened_items(agent_list)
+
+    if len(agent_list) > 0 and agent_list[0]["Type"] in "VariableRenewableOperator":
+        marketers = [agent for agent in agent_list if agent["Type"] in SUPPORT_SCHEMES]
+        operators = [agent for agent in agent_list if agent not in marketers]
+        for marketer in marketers:
+            marketer["Type"] = SUPPORT_SCHEMES[marketer["Type"]]
+            if marketer["Type"] in ["RenewableTrader", "NoSupportTrader"]:
+                marketer["Attributes"] = {"ShareOfRevenues": 0}
+        res_operators_and_marketers = []
+        for operator in operators:
+            res_operators_and_marketers.append(add_trader_mapping(operator))
+
+        template["Agents"].extend(agent_list)
+
+        return template, all_registered_agents, res_operators_and_marketers
 
     if not template["Agents"]:
         template["Agents"] = agent_list
@@ -260,23 +287,72 @@ def get_elements_from_list(value: List, row) -> List[Dict]:
     return list(attr_dict.values())
 
 
-def get_id_or_derive_from_type(contract, unit, param):
-    """
-    Returns Id derived from `param`+`id` in given `contract` dict or derived from `param`+`Type` in unit dictionary.
-    Raises error if Id cannot be found either in `contract` or `unit`.
-    """
-    if param + "Id" in contract:
-        return get_field(contract, param + "Id")
-    else:
-        return unit[get_field(contract, param + "Type")]
+def add_trader_mapping(operator: Dict):
+    """Add mapping between operator and trader and remove SupportInstrument attribute in case of no support"""
+    try:
+        support_instrument = operator["Attributes"]["SupportInstrument"]
+        if support_instrument == "NONE":
+            operator["Attributes"].pop("SupportInstrument")
+    except KeyError:
+        raise ValueError("Missing support instrument specification!")
+    return {
+        "Operator": operator["Id"],
+        "Trader": int(str(operator["Id"]) + str(TRADER_SUFFIX)),
+    }
 
 
-def insert_contracts_from_map(data, translation_map, template):
+def add_trader_by_support_instrument(agent: Dict, template: Dict):
+    """Retrieve support instrument for VariableRenewableOperator and map Operator to Trader"""
+    if agent["Type"] != "VariableRenewableOperator":
+        raise ValueError(
+            f"Malspecified AgentType: It should be 'VariableRenewableOperator'. You specified '{agent['Type']}'."
+        )
+    try:
+        support_instrument = agent["Attributes"]["SupportInstrument"]
+        if support_instrument in ["MPVAR", "MPFIX", "CFD", "CP"]:
+            trader_id = retrieve_trader_id(template, "RenewableTrader")
+        elif support_instrument == "FIT":
+            trader_id = retrieve_trader_id(template, "SystemOperatorTrader")
+        else:
+            trader_id = retrieve_trader_id(template, "NoSupportTrader")
+            agent["Attributes"].pop("SupportInstrument")
+    except KeyError:
+        trader_id = retrieve_trader_id(template, "NoSupportTrader")
+
+    return {"Operator": agent["Id"], "Trader": trader_id}
+
+
+def retrieve_trader_id(template: Dict, trader_type: str):
+    """Retrieve Id for given type of Trader from template"""
+    for template_agent in template["Agents"]:
+        if template_agent["Type"] == trader_type:
+            return template_agent["Id"]
+
+
+def insert_contracts_from_map(data, translation_map, template, res_operators_and_traders, raw_data):
     """
     Appends list of contracts to the given `template` as specified in `translation_map`.
     'SenderId' and 'ReceiverId' are derived either from `translation_map` if specified or from given 'data' which
     stores all inserted agents. Returns filled `template`.
     """
+    if not res_operators_and_traders:
+        if not list(data[0].keys())[0] == "SupportPolicy":
+            contract_list = fill_contracts_list(data, translation_map)
+        else:
+            contract_list = fill_contracts_list_for_policy(data, translation_map, raw_data)
+    else:
+        contract_list = fill_contracts_list_for_res(data, translation_map, res_operators_and_traders)
+
+    if not template["Contracts"]:
+        template["Contracts"] = contract_list
+    else:
+        template["Contracts"].extend(contract_list)
+
+    return template
+
+
+def fill_contracts_list(data: list, translation_map: list):
+    """Insert contracts and return contract list using standard approach"""
     contract_list = []
     for unit in data:
         for translation in translation_map:
@@ -293,12 +369,103 @@ def insert_contracts_from_map(data, translation_map, template):
                 contract.update({field: value})
             contract_list.append(contract)
 
-    if not template["Contracts"]:
-        template["Contracts"] = contract_list
-    else:
-        template["Contracts"].extend(contract_list)
+    return contract_list
 
-    return template
+
+def fill_contracts_list_for_res(data: list, translation_map: list, res_operators_and_traders: list):
+    """Insert contracts and return contract list using approach for RES (check for corresponding trader)"""
+    contract_list = []
+    for unit in data:
+        # Only one dictionary entry
+        unit_id = list(unit.values())[0]
+        for translation in translation_map:
+            contract = {}
+            for field in translation:
+                if "sender" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Sender")
+                    # Replace placeholder marketer
+                    if value != unit_id:
+                        for entry in res_operators_and_traders:
+                            if entry["Operator"] == unit_id:
+                                value = entry["Trader"]
+                                break
+                    field = "SenderId"
+                elif "receiver" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Receiver")
+                    # Replace placeholder marketer
+                    if value != unit_id:
+                        for entry in res_operators_and_traders:
+                            if entry["Operator"] == unit_id:
+                                value = entry["Trader"]
+                                break
+                    field = "ReceiverId"
+                else:
+                    value = get_field(translation, field)
+                contract.update({field: value})
+            contract_list.append(contract)
+
+    return contract_list
+
+
+def fill_contracts_list_for_policy(data: list, translation_map: list, raw_data: pd.DataFrame):
+    """Insert contracts and return contract list using approach for policy (add traders)"""
+    all_traders, supported_traders = obtain_traders_from_renewables_data(raw_data)
+    contract_list = []
+    support_contracts = [
+        "SupportInfoRequest",
+        "SupportInfo",
+        "SupportPayoutRequest",
+        "SupportPayout",
+    ]
+    for unit in data:
+        for translation in translation_map:
+            contract = {}
+            for field in translation:
+                if "sender" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Sender")
+                    if not value:
+                        if translation["ProductName"] in support_contracts:
+                            value = supported_traders
+                        else:
+                            value = all_traders
+                    field = "SenderId"
+                elif "receiver" in field.lower():
+                    value = get_id_or_derive_from_type(translation, unit, "Receiver")
+                    if not value:
+                        if translation["ProductName"] in support_contracts:
+                            value = supported_traders
+                        else:
+                            value = all_traders
+                    field = "ReceiverId"
+                else:
+                    value = get_field(translation, field)
+                contract.update({field: value})
+            contract_list.append(contract)
+
+    return contract_list
+
+
+def obtain_traders_from_renewables_data(raw_data: pd.DataFrame):
+    """Extract renewable traders for simulation based on support information from raw data for renewables"""
+    all_traders = list((raw_data["identifier"].astype(str) + str(TRADER_SUFFIX)).values)
+    supported_traders = list(
+        (raw_data.loc[raw_data["SupportInstrument"] != "NONE", "identifier"].astype(str) + str(TRADER_SUFFIX)).values
+    )
+    all_traders = [int(trader_id) for trader_id in all_traders]
+    supported_traders = [int(trader_id) for trader_id in supported_traders]
+
+    return all_traders, supported_traders
+
+
+def get_id_or_derive_from_type(contract, unit, param):
+    """
+    Returns Id derived from `param`+`id` in given `contract` dict or derived from `param`+`Type` in unit dictionary.
+    Raises error if Id cannot be found either in `contract` or `unit`.
+    """
+    if param + "Id" in contract:
+        return get_field(contract, param + "Id")
+    else:
+        return unit[get_field(contract, param + "Type")]
 
 
 def get_all_csv_files_in_folder(folder: str) -> List[str]:
@@ -365,7 +532,9 @@ def get_all_csv_files_in_folder_except(folder: str, exceptions: List[str] = None
 
 
 def calculate_residual_load(
-    residual_load_results: Dict[str, pd.DataFrame], operators_offset: int = 5, demand_offset: int = 1
+    residual_load_results: Dict[str, pd.DataFrame],
+    operators_offset: int = 5,
+    demand_offset: int = 1,
 ) -> pd.Series:
     """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
     res_generation_to_aggregate = []
@@ -396,7 +565,9 @@ def calculate_residual_load(
 
 
 def calculate_overall_res_infeed(
-    residual_load_results: Dict[str, pd.DataFrame], biogas_results: pd.DataFrame, operators_offset: int = 5
+    residual_load_results: Dict[str, pd.DataFrame],
+    biogas_results: pd.DataFrame,
+    operators_offset: int = 5,
 ) -> pd.Series:
     """Calculate the overall RES infeed"""
     res_generation = []
@@ -442,7 +613,13 @@ def evaluate_dispatch_per_group(
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
         elif key == "StorageTrader":
             storage_results = val[
-                ["TimeStep", "AgentId", "AwardedDischargePowerInMWH", "AwardedChargePowerInMWH", "StoredEnergyInMWH"]
+                [
+                    "TimeStep",
+                    "AgentId",
+                    "AwardedDischargePowerInMWH",
+                    "AwardedChargePowerInMWH",
+                    "StoredEnergyInMWH",
+                ]
             ].dropna()
             storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
             storage_results = storage_results.set_index("new_time_step")
@@ -450,7 +627,8 @@ def evaluate_dispatch_per_group(
                 dispatch = initialize_dispatch(storage_results)
 
             final_storage_levels = pd.DataFrame(
-                index=[group[0] for group in storage_results.groupby("AgentId")], columns=["value"]
+                index=[group[0] for group in storage_results.groupby("AgentId")],
+                columns=["value"],
             )
             for group in storage_results.groupby("AgentId"):
                 dispatch["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]

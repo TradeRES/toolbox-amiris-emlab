@@ -20,8 +20,9 @@ Agents:
       DistributionMethod: SAME_SHARES
       GateClosureInfoOffsetInSeconds: 11
 
+  # Used only for biogas
   - Type: NoSupportTrader
-    Id: 2
+    Id: 11
     Attributes:
       ShareOfRevenues: 0.0
 
@@ -36,6 +37,15 @@ Agents:
       DistributionMethod: SAME_SHARES
       ForecastPeriodInHours: 168
       ForecastRequestOffsetInSeconds: 27
+
+  - Type: SupportPolicy
+    Id: 90
+    Attributes:
+      SetSupportData:
+        # Add first dummy list entry since FAME does not allow for empty lists (in case no support is considered)
+        - Set: Undefined
+          FIT:
+            TsFit: 0
 
   - Type: IndividualPlantBuilder
     Id: 2000
