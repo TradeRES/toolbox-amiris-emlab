@@ -146,6 +146,9 @@ class PowerGeneratingTechnology(ImportObject):
         if 2020 in self.investment_cost_eur_MW.index.values: # Attention! there should be for all
             self.investment_cost_time_series.start = self.investment_cost_eur_MW[2020]
             self.investment_cost_time_series.growth_rate = 0.00
+        elif 2030 in self.investment_cost_eur_MW.index.values:
+            self.investment_cost_time_series.start = self.investment_cost_eur_MW[2030]
+            self.investment_cost_time_series.growth_rate = 0.00
         else:
             print("missing investment cost for " + self.name)
 

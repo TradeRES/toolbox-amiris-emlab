@@ -264,7 +264,6 @@ class Investmentdecision(DefaultModule):
             technology) * candidatepowerplant.capacity  # candidate power plants only have 1MW installed
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
-        interestRate = technology.interest_rate
         buildingTime = technology.expected_leadtime
         operatingProfit = candidatepowerplant.get_Profit()
         fixed_costs = technology.fixed_operating_costs * candidatepowerplant.capacity

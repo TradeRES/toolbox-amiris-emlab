@@ -89,14 +89,16 @@
             "Coupling Parameters": {
                 "read_until_row": true
             },
-            "Import Priorities": {}
+            "Import Priorities": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "Coupling Parameters": {
                 "0": "string",
                 "1": "float",
-                "2": "string",
-                "3": "string"
+                "2": "string"
             },
             "Import Priorities": {
                 "0": "string",
