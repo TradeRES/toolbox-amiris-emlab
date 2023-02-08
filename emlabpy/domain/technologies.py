@@ -133,6 +133,9 @@ class PowerGeneratingTechnology(ImportObject):
     def get_investment_costs_perMW_by_year(self, year):
         if year in self.investment_cost_eur_MW.index.values:  # value is present
             return self.investment_cost_eur_MW[year]
+        elif self.investment_cost_eur_MW.index.min() > year:
+            self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
+            return self.investment_cost_eur_MW.iloc[0]
         else: # interpolate years
             self.investment_cost_eur_MW.at[year] = np.nan
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
@@ -144,8 +147,8 @@ class PowerGeneratingTechnology(ImportObject):
         if 2020 in self.investment_cost_eur_MW.index.values: # Attention! there should be for all
             self.investment_cost_time_series.start = self.investment_cost_eur_MW[2020]
         else:
-            #pass
-            print("missing investment cost for " + self.name)
+            #print("missing investment cost for 2020 for technology" + self.name)
+            pass
         self.investment_cost_time_series.growth_rate = 0.00
 
     def getInvestmentCostbyTimeSeries(self, time):

@@ -172,10 +172,9 @@ class PowerPlant(EMLabAgent):
             #print(self.actualFixedOperatingCost)
         if reps.decommission_from_input == True and self.decommissionInYear is not None:
             self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year)  # set in terms of tick
-
+        self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INITIAL investment cost by time series = 2020
         if run_initialize_power_plants == True:  # only run this in the initialization step and while plotting
             self.setPowerPlantsStatusforInstalledPowerPlants() # the status for each year is set in dismantle module
-            self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INITIAL investment cost by time series = 2020
         return
 
     def set_loans_installed_pp(self, reps):

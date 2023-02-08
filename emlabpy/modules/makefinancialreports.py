@@ -127,7 +127,9 @@ class CreatingFinancialReports(DefaultModule):
             investmentCashFlow_with_loans[i] = - equalTotalDownPaymentInstallment
         for i in range(buildingTime, depreciationTime + buildingTime):
             investmentCashFlow_with_loans[i] = operational_profit_withFixedCosts - loans
-
+        # print(pp.name)
+        # print(operational_profit_withFixedCosts)
+        # print(loans)
         IRR = npf.irr(investmentCashFlow_with_loans)
         if pd.isna(IRR):
             return -100, npv

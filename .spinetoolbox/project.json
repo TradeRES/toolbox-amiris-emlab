@@ -779,8 +779,8 @@
         "import AMIRIS": {
             "type": "Importer",
             "description": "",
-            "x": -262.5888917547254,
-            "y": -481.7778572450718,
+            "x": -306.9029818026674,
+            "y": -481.77785724507186,
             "specification": "import amiris results",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -935,8 +935,8 @@
         "AMIRIS": {
             "type": "Tool",
             "description": "",
-            "x": -566.257919417621,
-            "y": -471.29526956882506,
+            "x": -566.2579194176211,
+            "y": -472.8779156419659,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
