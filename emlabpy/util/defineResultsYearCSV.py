@@ -28,10 +28,10 @@ hourly_generation_group_path = sys.argv[6]
 df_hourly_generation_raw = pd.read_csv( hourly_generation_group_path, sep =",")
 
 grandparentpath =  os.path.join(os.path.dirname(os.path.dirname(os.getcwd())))
-storage_level_path = sys.argv[7]
-df_storage_levels = pd.read_csv( storage_level_path, sep =",")
-df_storage_levels['year'] = current_year
-df_storage_levels.to_csv(storage_level_path, index=False)
+# storage_level_path = sys.argv[7]
+# df_storage_levels = pd.read_csv( storage_level_path, sep =",")
+# df_storage_levels['year'] = current_year
+# df_storage_levels.to_csv(storage_level_path, index=False)
 # new_storage_level_path = os.path.join(grandparentpath,'amiris_workflow\\output\\'+str(tick) +'.csv')
 #Renaming the file
 #os.rename(storage_level_path, new_storage_level_path)

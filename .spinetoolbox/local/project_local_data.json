@@ -38,12 +38,6 @@
         },
         "years": {
             "db_credentials": {}
-        },
-        "Emlab3": {
-            "url": {
-                "username": "",
-                "password": ""
-            }
         }
     }
 }

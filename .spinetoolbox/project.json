@@ -516,39 +516,6 @@
                     "AMIRIS DB",
                     "left"
                 ]
-            },
-            {
-                "name": "from specify year to storage_levels",
-                "from": [
-                    "specify year",
-                    "right"
-                ],
-                "to": [
-                    "storage_levels",
-                    "left"
-                ]
-            },
-            {
-                "name": "from storage_levels to Emlab3",
-                "from": [
-                    "storage_levels",
-                    "right"
-                ],
-                "to": [
-                    "Emlab3",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Emlab3 to import AMIRIS",
-                "from": [
-                    "Emlab3",
-                    "right"
-                ],
-                "to": [
-                    "import AMIRIS",
-                    "left"
-                ]
             }
         ],
         "jumps": [
@@ -717,7 +684,7 @@
         "EmlabDB": {
             "type": "Data Store",
             "description": "",
-            "x": -1218.5038635474227,
+            "x": -1220.6057148269538,
             "y": -467.9366722918406,
             "url": {
                 "dialect": "sqlite",
@@ -847,18 +814,14 @@
                 [
                     "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv",
                     false
-                ],
-                [
-                    "db_url@Emlab3",
-                    false
                 ]
             ]
         },
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -881.4010535781907,
-            "y": -235.04951648390576,
+            "x": -883.5029048577219,
+            "y": -232.9476652043747,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1042,41 +1005,6 @@
                     "type": "literal",
                     "arg": "run_financial_results"
                 }
-            ]
-        },
-        "Emlab3": {
-            "type": "Data Store",
-            "description": "",
-            "x": -226.6577568070207,
-            "y": -669.651146518389,
-            "url": {
-                "dialect": "sqlite",
-                "host": "",
-                "port": "",
-                "database": {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/items/emlabdb/EmlabDB.sqlite"
-                }
-            }
-        },
-        "storage_levels": {
-            "type": "Importer",
-            "description": "",
-            "x": -390.03412298027155,
-            "y": -674.4195837106791,
-            "specification": "storage_levels_2",
-            "cancel_on_error": false,
-            "on_conflict": "merge",
-            "file_selection": [
-                [
-                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
-                    false
-                ],
-                [
-                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv",
-                    true
-                ]
             ]
         }
     }
