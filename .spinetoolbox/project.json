@@ -564,18 +564,6 @@
         ]
     },
     "items": {
-        "TraderesDB": {
-            "type": "Data Store",
-            "description": "",
-            "x": -1187.6810845520904,
-            "y": -1003.2163648247025,
-            "url": {
-                "dialect": "mysql",
-                "host": "localhost",
-                "port": "44999",
-                "database": "traderes"
-            }
-        },
         "EmlabParameters": {
             "type": "Data Connection",
             "description": "",
@@ -696,16 +684,6 @@
                     "path": ".spinetoolbox/items/emlabdb/EmlabDB.sqlite"
                 }
             }
-        },
-        "exporterTraderes": {
-            "type": "Exporter",
-            "description": "",
-            "x": -925.6351274472852,
-            "y": -998.3439627648642,
-            "output_time_stamps": false,
-            "cancel_on_error": true,
-            "output_labels": [],
-            "specification": "Exporter Traderes"
         },
         "Prepare Data Amiris": {
             "type": "Tool",

@@ -1,11 +1,5 @@
 {
     "items": {
-        "TraderesDB": {
-            "url": {
-                "username": "ingridSanchez",
-                "password": "mpLBrBaCHyuEt3rpiRnavBc_vPwYqS2I"
-            }
-        },
         "EmlabParameters": {
             "db_credentials": {}
         },

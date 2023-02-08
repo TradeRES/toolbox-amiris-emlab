@@ -72,10 +72,9 @@ class PowerGeneratingTechnology(ImportObject):
         # elif parameter_name == 'annuity':
         #     self.annuity = float(parameter_value)
         elif parameter_name == 'lifetime_technical':
-            pass
+            self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'lifetime_economic':
             self.depreciation_time = int(parameter_value) # depreciation time is used to calculate the loans
-            self.expected_lifetime = int(parameter_value)
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
