@@ -109,9 +109,13 @@ def write_amiris_config(data_manager, config, params):
         except IndexError:
             res_operators_and_traders = None
         if "Contracts" in translation_map:
-            config_file = insert_contracts_from_map(
-                inserted_agents, translation_map["Contracts"], config_file, res_operators_and_traders, data
-            )
+            # If not support is modelled, SupportPolicy agent and attributed contracts are missing
+            if not inserted_agents and amiris_map == "amiris-config/supportPolicyFieldMap.yaml":
+                inserted_agents = [{"SupportPolicy": 90}]
+            if inserted_agents:
+                config_file = insert_contracts_from_map(
+                    inserted_agents, translation_map["Contracts"], config_file, res_operators_and_traders, data
+                )
 
     write_yaml(config_file, output_file_path)
 

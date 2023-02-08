@@ -371,7 +371,8 @@ def fill_contracts_list(data: list, translation_map: list):
                 else:
                     value = get_field(translation, field)
                 contract.update({field: value})
-            contract_list.append(contract)
+            if contract["SenderId"] and contract["ReceiverId"]:
+                contract_list.append(contract)
 
     return contract_list
 
@@ -406,7 +407,8 @@ def fill_contracts_list_for_res(data: list, translation_map: list, res_operators
                 else:
                     value = get_field(translation, field)
                 contract.update({field: value})
-            contract_list.append(contract)
+            if contract["SenderId"] and contract["ReceiverId"]:
+                contract_list.append(contract)
 
     return contract_list
 
@@ -444,7 +446,8 @@ def fill_contracts_list_for_policy(data: list, translation_map: list, raw_data: 
                 else:
                     value = get_field(translation, field)
                 contract.update({field: value})
-            contract_list.append(contract)
+            if contract["SenderId"] and contract["ReceiverId"]:
+                contract_list.append(contract)
 
     return contract_list
 
