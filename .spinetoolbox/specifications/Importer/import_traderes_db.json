@@ -479,7 +479,7 @@
                             {
                                 "map_type": "Alternative",
                                 "position": "hidden",
-                                "value": "2030"
+                                "value": "2050"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -525,7 +525,10 @@
             "unit2030-noneWRONG": {},
             "unit2030-none": {},
             "screening curve": {},
-            "unit2050": {}
+            "unit2050": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "flow": {
@@ -840,10 +843,7 @@
                 "9": "float",
                 "10": "float",
                 "11": "float",
-                "12": "float",
-                "13": "float",
-                "14": "float",
-                "15": "float"
+                "12": "float"
             }
         },
         "table_default_column_type": {},

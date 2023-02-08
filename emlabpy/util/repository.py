@@ -46,6 +46,7 @@ class Repository:
         self.time_step = 0
         self.start_simulation_year = 0
         self.end_simulation_year = 0
+        self.earliest_investment_data_available = 2020
         self.short_term_investment_minimal_irr = 0
         self.lookAhead = 0
         self.pastTimeHorizon = 0
@@ -77,7 +78,8 @@ class Repository:
         self.realistic_candidate_capacities_for_future = False
         self.maximum_investment_capacity_per_year = 0
         self.dummy_capacity = 1
-        self.earliest_investment_data_year = 2020 - self.start_simulation_year
+        self.run_quick_investments = False
+        self.limit_investments = True
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

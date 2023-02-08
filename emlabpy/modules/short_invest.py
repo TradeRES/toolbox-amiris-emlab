@@ -28,6 +28,12 @@ class ShortInvestmentdecision(Investmentdecision):
         #     self.calculateandCheckFutureCapacityExpectation(self.reps.power_generating_technologies[quick_technology])
 
          # the list is updated in the step before!!!!!!!!!!!
+        if self.reps.limit_investments == True:
+            # todo check future capacity
+            pass
+        else:
+            pass
+
         technologies_highreturns =[]
         for quick_technology in self.quickInvestabletechnologies:
             operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,

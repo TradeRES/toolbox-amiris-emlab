@@ -56,8 +56,7 @@ class Investmentdecision(DefaultModule):
             self.look_ahead_years = reps.lookAhead
         print("Look ahead year " + str(self.look_ahead_years))
 
-        self.wacc = (
-                                1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
+        self.wacc = (1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
         reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
         # new id = last installed id, plus the iteration
@@ -128,8 +127,12 @@ class Investmentdecision(DefaultModule):
                     cp_profits.append(candidatepowerplant.operationalProfit)
                     # calculate which is the power plant (technology) with the highest NPV
                     candidatepowerplant.specifyCandidatePPCapacity(self.reps, self.agent)
-                    investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant
+                    if self.reps.limit_investments == True:
+                        investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant
                                                                                  )
+                    else:
+                        investable = True
+
                     if investable == False:
                         candidatepowerplant.setViableInvestment(False)
                         print(

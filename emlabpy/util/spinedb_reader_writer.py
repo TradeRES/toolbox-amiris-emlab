@@ -121,7 +121,7 @@ class SpineDBReaderWriter:
                 reps.fix_profiles_to_initial_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_demand_to_initial_year':
                 reps.fix_demand_to_initial_year = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'Power_plants_from_year':
+            elif row['parameter_name'] == 'Power plants year':
                 reps.Power_plants_from_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'install_at_look_ahead_year':
                 reps.install_at_look_ahead_year = bool(row['parameter_value'])
@@ -131,6 +131,10 @@ class SpineDBReaderWriter:
                 reps.testing_future_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'decommission_from_input':
                 reps.decommission_from_input = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'Quick investment decisions':
+                reps.run_quick_investments = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'Limit investment to potentials':
+                reps.limit_investments = bool(row['parameter_value'])
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
