@@ -85,9 +85,8 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
-           # self.investment_cost_eur_MW = float(parameter_value)
             self.investment_cost_eur_MW.at[int(alternative)] = parameter_value
-            self.initializeInvestmenttrend()
+            self.initializeInvestmenttrend() # this is needed for the initialization
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
         elif parameter_name == 'co2CaptureEfficiency':
@@ -145,27 +144,28 @@ class PowerGeneratingTechnology(ImportObject):
         self.investment_cost_time_series = GeometricTrend("geometrictrend" + self.name)
         if 2020 in self.investment_cost_eur_MW.index.values: # Attention! there should be for all
             self.investment_cost_time_series.start = self.investment_cost_eur_MW[2020]
-            self.investment_cost_time_series.growth_rate = 0.00
-        elif 2030 in self.investment_cost_eur_MW.index.values:
-            self.investment_cost_time_series.start = self.investment_cost_eur_MW[2030]
-            self.investment_cost_time_series.growth_rate = 0.00
         else:
+            #pass
             print("missing investment cost for " + self.name)
+        self.investment_cost_time_series.growth_rate = 0.00
+
+    def getInvestmentCostbyTimeSeries(self, time):
+        return self.investment_cost_time_series.get_value(time)
 
     def get_fixed_operating_cost_trend(self, tick):
         return self.fixed_operating_cost_time_series.get_value(tick)
 
-    # --------------------------------------------------------------------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------------------
 
     def getDepreciationTime(self):
         return self.depreciation_time
 
     #     * assumption: the first is the main fuel
-    def getMainFuel(self):
-        if self.getFuels().size() > 0:
-            return self.getFuels().iterator().next()
-        else:
-            return None
+    # def getMainFuel(self):
+    #     if self.getFuels().size() > 0:
+    #         return self.getFuels().iterator().next()
+    #     else:
+    #         return None
 
 
     def getEfficiency(self, time):
@@ -186,10 +186,6 @@ class PowerGeneratingTechnology(ImportObject):
     def getExpectedPermittime(self):
         return self.expected_permittime
 
-    def getFuels(self):
-        return self.fuels
 
-    def getInvestmentCostbyTimeSeries(self, time):
-        return self.investment_cost_time_series.get_value(time)
 
 

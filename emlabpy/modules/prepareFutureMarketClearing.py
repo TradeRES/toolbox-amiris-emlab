@@ -5,22 +5,18 @@ from modules.prepareMarketClearing import PrepareMarket
 class PrepareFutureMarketClearing(PrepareMarket):
     """
     This module prepares the information for the future market.
-
     In the first simulation year,
         In the first iteration the market is prepared for user-defined look-ahead years without candidate power plants
         In the next iteration, the initialization investment is prepared. The market prices and laod is prepared for next year,
         then 2 years ahead and so on until the user-defined look-ahead year is reached.
         Investable Candidate power plants are added to the market.
-
     1. the fuel prices are calculated by interpolation and
         after a year X (specified by the user), fuel prices are stochastically simulated with a geometric trend regression
     2. if the simulation year has reached the user-defined pastTimeHorizon, then
         power plants that have passed their lifetime and that presented negative operational profits in the
         last pastTimeHorizon years are then set to de decommissioned, otherwise they are set to be operational
-
     2. demand and yield profiles are saved to files to be read by dispatch-model(AMIRIS)
     3. power plants are saved in excel to be read by dispatch-model(AMIRIS), as well as the fuel and CO2 prices.
-
     """
 
     def __init__(self, reps):

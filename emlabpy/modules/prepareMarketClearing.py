@@ -240,7 +240,7 @@ class PrepareMarket(DefaultModule):
                 else:
                     OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
                 Set.append(self.reps.dictionaryTechSet[pp.technology.name])
-                SupportInstrument.append("-")
+                SupportInstrument.append("NONE")
                 FIT.append("-")
                 Premium.append("-")
                 Lcoe.append("-")

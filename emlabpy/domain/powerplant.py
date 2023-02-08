@@ -232,8 +232,9 @@ class PowerPlant(EMLabAgent):
     def calculateAndSetActualInvestedCapital(self, reps, technology, commissionedTick):
         # if the price is available
         investment_year = commissionedTick + reps.start_simulation_year
-        if investment_year <= reps.earliest_investment_data_year:
-            # Fins investment cost by time series = 2020 price
+        if investment_year <= reps.earliest_investment_data_available:
+            # Finds investment cost by time series = 2020 price
+            # for commission year earlier than 2020 then 2020 is taken
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
                 commissionedTick) * self.get_actual_nominal_capacity())
         else:  # by year

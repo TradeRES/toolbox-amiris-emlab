@@ -58,25 +58,24 @@ class Substance(ImportObject):
                 self.newPrice = self.get_CO2_yearly_price(year)
             else:
                 self.newPrice = self.interpolate_year(reps.fix_price_year)
-
-        if self.name == "CO2" and reps.yearly_CO2_prices == True:
-            self.newPrice = self.get_CO2_yearly_price(year)
-
-        elif reps.current_tick >= reps.start_tick_fuel_trends:
-            if simulating_future_market == True:
-                self.initializeGeometricTrendRegression(reps)
-                self.newPrice = self.geometricRegression.predict(year)
-            else:
-                # simulating next year prices from past results and random
-                calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(self.name, "simulatedPrice")
-                df = pd.DataFrame(calculatedPrices['data'])
-                df.set_index(0, inplace=True)
-                last_value = df.loc[str(year - 1)][1]
-                random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
-                self.newPrice = last_value * random_number
-
         else:
-            self.newPrice = self.interpolate_year(year)
+            # dont fix prices to first year
+            if self.name == "CO2" and reps.yearly_CO2_prices == True:
+                self.newPrice = self.get_CO2_yearly_price(year)
+            elif reps.current_tick >= reps.start_tick_fuel_trends:
+                if simulating_future_market == True:
+                    self.initializeGeometricTrendRegression(reps)
+                    self.newPrice = self.geometricRegression.predict(year)
+                else:
+                    # simulating next year prices from past results and random
+                    calculatedPrices = reps.dbrw.get_calculated_simulated_fuel_prices(self.name, "simulatedPrice")
+                    df = pd.DataFrame(calculatedPrices['data'])
+                    df.set_index(0, inplace=True)
+                    last_value = df.loc[str(year - 1)][1]
+                    random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
+                    self.newPrice = last_value * random_number
+            else:
+                self.newPrice = self.interpolate_year(year)
 
         if self.newPrice < 0:
             raise Exception("negative price")
@@ -92,7 +91,7 @@ class Substance(ImportObject):
         return self.newPrice
 
     def interpolate_year(self, year):
-        if year < self.initialPrice.min() and self.name == "CO2":
+        if year < self.initialPrice.index.min() and self.name == "CO2":
             interpolated_price = self.initialPrice.values.min()
         else:
             c = np.polyfit(self.initialPrice.index, self.initialPrice.values, 2)
