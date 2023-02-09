@@ -76,7 +76,7 @@ AgentTypes:
             AttributeType: enum
             List: false
             Mandatory: true
-            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS']
+            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER', 'MIXED']
           Price:
             AttributeType: time_series
             List: false
@@ -85,7 +85,7 @@ AgentTypes:
             AttributeType: double
             List: false
             Mandatory: true
-    Products: [ 'FuelPriceForecast', 'FuelPrice', 'FuelsBill' ]
+    Products: [ 'FuelPriceForecast', 'FuelPrice', 'FuelsBill', 'FuelsReward' ]
   
   SupportPolicy:
     Attributes:
@@ -284,6 +284,108 @@ AgentTypes:
             Mandatory: false
             List: false                                
     Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
+
+  ElectrolysisTrader:
+    Attributes:
+      ForecastRequestOffsetInSeconds:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+      Device:
+        AttributeType: block
+        Mandatory: true
+        List: false
+        NestedAttributes:
+          PeakConsumptionInMW:
+            AttributeType: time_series
+            Mandatory: true
+            List: false
+          ConversionFactor:
+            AttributeType: double
+            Mandatory: true
+            List: false
+            help: "Factor < 1 to convert electric energy to hydrogen's thermal energy equivalent"
+      Strategy:
+        AttributeType: block
+        Mandatory: true
+        List: false
+        NestedAttributes:
+          StrategistType:
+            AttributeType: enum
+            Mandatory: true
+            List: false
+            Values: [ 'DISPATCH_FILE', 'SINGLE_AGENT_SIMPLE' ]
+          ForecastPeriodInHours:
+            AttributeType: integer
+            Mandatory: true
+            List: false
+          ScheduleDurationInHours:
+            AttributeType: integer
+            Mandatory: true
+            List: false
+          FixedDispatch:
+            AttributeType: block
+            Mandatory: false
+            List: false
+            NestedAttributes:
+              HourlySchedule:
+                AttributeType: time_series
+                Mandatory: true
+                List: false
+              Mode:
+                AttributeType: enum
+                Mandatory: true
+                List: false
+                Values: [ 'ABSOLUTE', 'RELATIVE' ]
+                help: "Whether schedule is absolute or relative to installed converter power"
+              Target:
+                AttributeType: enum
+                Mandatory: true
+                List: false
+                Values: [ 'ELECTRICITY', 'HYDROGEN' ]
+                help: "Whether the schedule represent hydrogen production or electricity consumption"
+          Simple:
+            AttributeType: block
+            Mandatory: false
+            List: false
+            NestedAttributes:
+              HydrogenProductionTargetInMWH:
+                AttributeType: time_series
+                Mandatory: true
+                List: false
+                help: "How much hydrogen to produce per production interval"
+              ProductionTargetIntervalInHours:
+                AttributeType: integer
+                Mandatory: true
+                List: false
+                help: "How many hours a production interval spans"
+              PriceSensitivityFunction:
+                AttributeType: double
+                Mandatory: true
+                List: true
+                help: "Price delta per additional load in EUR per MWH per MWH"
+              PowerStepInMW:
+                AttributeType: double
+                Mandatory: true
+                List: false
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport', 'HydrogenOffer' ]
 
   LoadShiftingTrader:
     Attributes:

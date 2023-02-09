@@ -1,0 +1,110 @@
+AgentGroups:
+  - &exchange 1
+  - &forecaster 6
+  - &fuelsmarket 4
+
+Times:
+  - &hourly 3600
+  - &yearly 31536000
+
+Agents:
+  - column: ElectrolyserType
+    target: ELECTROLYSIS
+    create:
+      - attribute: Type
+        value: ElectrolysisTrader
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/ForecastRequestOffsetInSeconds
+        value: 22
+      - attribute: Attributes/Device/PeakConsumptionInMW
+        column: PeakConsumptionInMW
+      - attribute: Attributes/Device/ConversionFactor
+        column: ConversionFactor
+      - attribute: Attributes/Strategy/StrategistType
+        value: SINGLE_AGENT_SIMPLE
+      - attribute: Attributes/Strategy/ForecastPeriodInHours
+        value: 168
+      - attribute: Attributes/Strategy/ScheduleDurationInHours
+        value: 24
+      - attribute: Attributes/Strategy/Simple/HydrogenProductionTargetInMWH
+        column: HydrogenProductionTargetInMWH
+      - attribute: Attributes/Strategy/Simple/ProductionTargetIntervalInHours
+        value: 168
+      - attribute: Attributes/Strategy/Simple/PriceSensitivityFunction
+        value: [0.0, 0.01]
+      - attribute: Attributes/Strategy/Simple/PowerStepInMW
+        value: 10
+
+
+Contracts:
+##########################
+## use with FILE-strategy#
+##########################
+#  - SenderId: *forecaster
+#    ReceiverType: ElectrolysisTrader
+#    ProductName: ForecastRequest
+#    FirstDeliveryTime: -26
+#    DeliveryIntervalInSteps: *hourly
+#
+#  - SenderType: ElectrolysisTrader
+#    ReceiverId: *forecaster
+#    ProductName: BidsForecast
+#    FirstDeliveryTime: -21
+#    DeliveryIntervalInSteps: *hourly
+
+###############################
+## use with SIMPLE strategy   #
+###############################
+  - SenderType: ElectrolysisTrader
+    ReceiverId: *forecaster
+    ProductName: PriceForecastRequest
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderId: *forecaster
+    ReceiverType: ElectrolysisTrader
+    ProductName: PriceForecast
+    FirstDeliveryTime: -19
+    DeliveryIntervalInSteps: *hourly
+###############################
+## required for all strategies#
+###############################
+  - SenderId: *exchange
+    ReceiverType: ElectrolysisTrader
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderType: ElectrolysisTrader
+    ReceiverId: *exchange
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderId: *exchange
+    ReceiverType: ElectrolysisTrader
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderType: ElectrolysisTrader
+    ReceiverId: *fuelsmarket
+    ProductName: HydrogenOffer
+    FirstDeliveryTime: 5
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderId: *fuelsmarket
+    ReceiverType: ElectrolysisTrader
+    ProductName: FuelsReward
+    FirstDeliveryTime: 6
+    DeliveryIntervalInSteps: *hourly
+
+####################
+#   -- Output --   #
+####################
+#  - SenderType: ElectrolysisTrader
+#    ReceiverType: ElectrolysisTrader
+#    ProductName: AnnualCostReport
+#    FirstDeliveryTime: 1
+#    DeliveryIntervalInSteps: *yearly
