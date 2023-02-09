@@ -30,7 +30,7 @@ Agents:
       - attribute: Attributes/Strategy/Simple/HydrogenProductionTargetInMWH
         column: HydrogenProductionTargetInMWH
       - attribute: Attributes/Strategy/Simple/ProductionTargetIntervalInHours
-        value: 168
+        value: 730
       - attribute: Attributes/Strategy/Simple/PriceSensitivityFunction
         value: [0.0, 0.01]
       - attribute: Attributes/Strategy/Simple/PowerStepInMW
