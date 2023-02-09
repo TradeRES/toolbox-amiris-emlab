@@ -17,6 +17,7 @@ OPERATOR_AGENTS = [
     "VariableRenewableOperator",
     "Biogas",
     "StorageTrader",
+    "ElectrolysisTrader",
 ]
 SUPPORTED_AGENTS = ["RenewableTrader", "SystemOperatorTrader"]
 EXCHANGE = ["EnergyExchangeMulti"]
@@ -53,6 +54,7 @@ class AmirisOutputs(Enum):
     VARIABLE_COSTS_IN_EURO = auto()
     CONTRIBUTION_MARGIN_IN_EURO = auto()
     PRODUCTION_IN_MWH = auto()
+    CONSUMPTION_IN_MWH = auto()
 
 
 def raise_and_log_critical_error(error_message: str) -> NoReturn:
@@ -642,6 +644,23 @@ def evaluate_dispatch_per_group(
                 dispatch["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
                 dispatch["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
                 final_storage_levels.at[group[0], "value"] = group[1]["StoredEnergyInMWH"].iloc[-1]
+        elif key == "ElectrolysisTrader":
+            electrolysis_results = val[
+                [
+                    "TimeStep",
+                    "AgentId",
+                    "AwardedEnergyInMWH",
+                    "ProducedHydrogenInMWH"
+                ]
+            ].dropna()
+            electrolysis_results["new_time_step"] = electrolysis_results["TimeStep"] - trader_offset
+            electrolysis_results = electrolysis_results.set_index("new_time_step")
+            if dispatch.empty:
+                dispatch = initialize_dispatch(electrolysis_results)
+
+            for group in electrolysis_results.groupby("AgentId"):
+                dispatch["electrolysis_power_consumption"] += group[1]["AwardedEnergyInMWH"]
+                dispatch["electrolysis_hydrogen_generation"] += group[1]["ProducedHydrogenInMWH"]
 
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
     conventional_generation["new_time_step"] = conventional_generation["TimeStep"] - operators_offset
@@ -675,6 +694,8 @@ def initialize_dispatch(dispatch_df) -> pd.DataFrame:
             "storages_charging",
             "storages_aggregated_level",
             "load_shedding",
+            "electrolysis_power_consumption",
+            "electrolysis_hydrogen_generation",
         ],
         data=0,
     )
