@@ -1837,25 +1837,7 @@ def writeInfo(reps, path_to_plots, scenario_name):
 
 print('===== Start Generating Plots =====')
 
-technology_colors = {
-    'Biomass_CHP_wood_pellets_DH': "green",
-    "Biomass_CHP_wood_pellets_PH": "greenyellow",
-    'Coal PSC': "black",
-    "Fuel oil PGT": "gray",
-    'Lignite PSC': "darkgoldenrod",
-    'CCGT': "indianred",
-    'OCGT': "darkred",
-    'Hydropower_reservoir_medium': "darkcyan",
-    'PV_utility_systems': "gold",
-    'WTG_onshore': "cornflowerblue",
-    "WTG_offshore": "navy",
-    "Nuclear": "mediumorchid",
-    "Hydropower_ROR": "aquamarine",
-    "Lithium_ion_battery": "hotpink",
-    "Lithium_ion_battery_charge": "hotpink",
-    "Pumped_hydro": "darkcyan",
-    "CCGT_CHP_backpressure_DH": "orange",
-}
+
 
 fuel_colors = {
     'CO2': "black",
@@ -1907,23 +1889,48 @@ SpecificCo2EmissionsInTperMWH = {
     "wood_pellets": 0
 }
 
+technology_colors = {
+    'Biomass_CHP_wood_pellets_DH': "green",
+    "Biomass_CHP_wood_pellets_PH": "greenyellow",
+    'Coal PSC': "black",
+    "Fuel oil PGT": "gray",
+    'Lignite PSC': "darkgoldenrod",
+    'CCGT': "indianred",
+    'OCGT': "darkred",
+    'Hydropower_reservoir_medium': "darkcyan",
+    'PV_utility_systems': "gold",
+    'WTG_onshore': "cornflowerblue",
+    "WTG_offshore": "navy",
+    "Nuclear": "mediumorchid",
+    "Hydropower_ROR": "aquamarine",
+    "Lithium_ion_battery": "hotpink",
+    "Lithium_ion_battery_charge": "hotpink",
+    "Pumped_hydro": "darkcyan",
+    "CCGT_CHP_backpressure_DH": "orange",
+    "fuel_cell": "gold",
+    "electrolyzer": "khaki",
+    "hydrogen_turbine": "lime",
+    "hydrogen_CHP": "lightgreen",
+    "hydrogen_combined_cycle": "limegreen"
+}
+
 results_excel = "investment_initialization.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments_interrupted",
 #              ]
-SCENARIOS = ["NL2060_SD3_PH3_MI1000000_totalProfits_-2050_with_short_investments"
+SCENARIOS = ["dummy_initial_power_plants"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 1
+test_tick = 0
 # write None is no investment is expected,
-test_tech = "WTG_onshore" #"CCGT"#  None
+test_tech = "Lithium_ion_battery" #"CCGT"#  None
 calculate_investments = True
-calculate_investments_per_iteration = False
-existing_scenario = True
+calculate_investments_per_iteration = True
+existing_scenario = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False

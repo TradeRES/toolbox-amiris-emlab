@@ -7,22 +7,32 @@ import sys
 from functools import reduce
 import pandas as pd
 import math
+a = 365/12*24
+mylist = []
+for i in list(range(1,13)):
+    temporal = [i] * int(a)
+    mylist.extend(temporal)
+    print(i)
+df = pd.DataFrame(mylist)
+writer = pd.ExcelWriter('test.xlsx')
+df.to_excel(writer, sheet_name='welcome', index=False)
+writer.save()
 
 xp = [1, 2, 3]
-fp = [3, 2, 0]
-a = np.interp(5, xp, fp)
-b = np.interp([0, 1, 1.5, 2.72, 3.14], xp, fp)
-
-c = np.polyfit(xp, fp, 1)
-f = np.poly1d(c)
-y_new = f(5).astype(int)
-print(y_new)
-
-df = pd.DataFrame(np.random.randn(1, 4),
-                  index=[1],
-                  columns=list(range(0, 8, 2)))
-df1 = df.transpose()
-df1.reset_index().plot.scatter( x = "index" , y = 1)
+# fp = [3, 2, 0]
+# a = np.interp(5, xp, fp)
+# b = np.interp([0, 1, 1.5, 2.72, 3.14], xp, fp)
+#
+# c = np.polyfit(xp, fp, 1)
+# f = np.poly1d(c)
+# y_new = f(5).astype(int)
+# print(y_new)
+#
+# df = pd.DataFrame(np.random.randn(1, 4),
+#                   index=[1],
+#                   columns=list(range(0, 8, 2)))
+# df1 = df.transpose()
+# df1.reset_index().plot.scatter( x = "index" , y = 1)
 # df = pd.DataFrame(np.random.randint(0,10,size=(10,2)), columns=["costs", "size"])
 #
 # years = [2020,"test",2022]
