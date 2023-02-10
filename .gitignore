@@ -66,3 +66,5 @@ amiris_workflow/amiris-config/data/hoho_cluster_shedding_timeseries.csv
 amiris_workflow/amiris-config/data/ind_cluster-2_shedding_timeseries.csv
 amiris_workflow/amiris-config/data/tcs_hoho_cluster_shedding_timeseries.csv
 data/archiv/*
+emlabpy/years.txt
+emlabpy/continue.txt
