@@ -263,7 +263,7 @@ def aggregate_results(data_manager, config, params):
         file_name = file.rsplit("/", 1)[1].rsplit(".", 1)[0]
         if file_name in OPERATOR_AGENTS:
             type_df = pd.read_csv(file, sep=";")
-            if file_name != "StorageTrader":
+            if file_name not in ["StorageTrader", "ElectrolysisTrader"]:
                 column_names = {
                     "VariableCostsInEUR": AmirisOutputs.VARIABLE_COSTS_IN_EURO.name,
                     "ReceivedMoneyInEUR": AmirisOutputs.REVENUES_IN_EURO.name,
@@ -271,19 +271,30 @@ def aggregate_results(data_manager, config, params):
                 }
                 outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
                 outputs_per_agent.rename(columns=column_names, inplace=True)
-            # For storage units, production equals their discharging
-            else:
+
+            # For storage units, production equals their discharging; consumption their charging
+            elif file_name == "StorageTrader":
                 column_names = {
                     "VariableCostsInEUR": AmirisOutputs.VARIABLE_COSTS_IN_EURO.name,
                     "ReceivedMoneyInEUR": AmirisOutputs.REVENUES_IN_EURO.name,
                     "AwardedDischargePowerInMWH": AmirisOutputs.PRODUCTION_IN_MWH.name,
+                    "AwardedChargePowerInMWH": AmirisOutputs.CONSUMPTION_IN_MWH.name,
+                }
+                outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
+                outputs_per_agent.rename(columns=column_names, inplace=True)
+
+            elif file_name == "ElectrolysisTrader":
+                column_names = {
+                    "VariableCostsInEUR": AmirisOutputs.VARIABLE_COSTS_IN_EURO.name,
+                    "ReceivedMoneyInEUR": AmirisOutputs.REVENUES_IN_EURO.name,
+                    "AwardedEnergyInMWH": AmirisOutputs.CONSUMPTION_IN_MWH.name,
                 }
                 outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
                 outputs_per_agent.rename(columns=column_names, inplace=True)
 
             to_concat.append(outputs_per_agent)
 
-            if file_name not in ["StorageTrader", "Biogas"]:
+            if file_name not in ["StorageTrader", "ElectrolysisTrader", "Biogas"]:
                 residual_load_results[file_name] = type_df
 
             if file_name == "Biogas":
