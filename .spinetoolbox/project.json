@@ -364,17 +364,6 @@
                 ]
             },
             {
-                "name": "from EmlabDB to decommission",
-                "from": [
-                    "EmlabDB",
-                    "right"
-                ],
-                "to": [
-                    "decommission",
-                    "right"
-                ]
-            },
-            {
                 "name": "from EmlabDB to Initialize Clock",
                 "from": [
                     "EmlabDB",
@@ -404,17 +393,6 @@
                 ],
                 "to": [
                     "Initialize power plants",
-                    "left"
-                ]
-            },
-            {
-                "name": "from Initialize power plants to decommission",
-                "from": [
-                    "Initialize power plants",
-                    "right"
-                ],
-                "to": [
-                    "decommission",
                     "left"
                 ]
             },
@@ -516,6 +494,28 @@
                     "AMIRIS DB",
                     "left"
                 ]
+            },
+            {
+                "name": "from EmlabDB to decommission",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
+                    "left"
+                ]
+            },
+            {
+                "name": "from Initialize power plants to decommission",
+                "from": [
+                    "Initialize power plants",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -554,12 +554,7 @@
                     "type": "python-script",
                     "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.txt\")\nprint(\"sys argument\", int(sys.argv[1]))  # Loop counter is supplied as first \n\nf = open(years_file, \"r\")\nyears_str = f.read()\nyears = years_str.split(\"/\")\ncurrent_year = int(years[0])\nstart_year = int(years[1])\nfinal_year = int(years[2])\nfuture_year = int(years[3])\n\nprint(1 if current_year >= final_year else 0)\nexit(1 if current_year >= final_year else 0)\n"
                 },
-                "cmd_line_args": [
-                    {
-                        "type": "resource",
-                        "arg": "<project_dir>years.csv"
-                    }
-                ]
+                "cmd_line_args": []
             }
         ]
     },
@@ -654,8 +649,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1090.817051259103,
-            "y": -688.4795443402223,
+            "x": -1135.4607238327678,
+            "y": -647.46819848826,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -710,8 +705,8 @@
         "decommission": {
             "type": "Tool",
             "description": "",
-            "x": -770.788881147188,
-            "y": -686.2769117552139,
+            "x": -820.7014426596876,
+            "y": -552.5425934406902,
             "specification": "Decommission",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -788,18 +783,14 @@
                 [
                     "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv",
                     true
-                ],
-                [
-                    "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv",
-                    false
                 ]
             ]
         },
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -883.5029048577219,
-            "y": -232.9476652043747,
+            "x": -1056.3392600658472,
+            "y": -276.156754006406,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -861,8 +852,8 @@
         "years": {
             "type": "Data Connection",
             "description": "",
-            "x": -582.4767960642442,
-            "y": -646.8205626342298,
+            "x": -524.2411637288557,
+            "y": -364.16468861612395,
             "file_references": [
                 {
                     "type": "path",
@@ -875,8 +866,8 @@
         "specify year": {
             "type": "Tool",
             "description": "",
-            "x": -434.19119450969544,
-            "y": -475.7313130163511,
+            "x": -435.79007363051534,
+            "y": -475.73131301635107,
             "specification": "define AMIRIS results year",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -903,10 +894,6 @@
                 {
                     "type": "resource",
                     "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv"
-                },
-                {
-                    "type": "resource",
-                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\final_storage_levels.csv"
                 }
             ]
         },
@@ -944,8 +931,8 @@
         "Initialize power plants": {
             "type": "Tool",
             "description": "run_initialize_power_plants",
-            "x": -934.4211671785145,
-            "y": -688.0757727675372,
+            "x": -983.3884992713845,
+            "y": -607.3248748156255,
             "specification": "Initialize Power plants",
             "execute_in_work": false,
             "cmd_line_args": [

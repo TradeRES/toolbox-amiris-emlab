@@ -9,9 +9,9 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": 5,
+                                "position": 6,
                                 "skip_columns": [
-                                    4
+                                    5
                                 ]
                             },
                             {
@@ -64,9 +64,10 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "string"
+                "5": "float"
             }
         },
+        "table_default_column_type": {},
         "table_row_types": {},
         "source_type": "CSVConnector"
     },
