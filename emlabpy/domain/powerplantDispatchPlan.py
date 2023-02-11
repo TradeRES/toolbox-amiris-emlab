@@ -3,12 +3,16 @@ from domain.import_object import *
 from domain.energyproducer import *
 
 class PowerPlantDispatchPlan(ImportObject):
+    """"
+    This module is read for each year, not all years are needed
+    """
     def __init__(self, name):
         super().__init__(name)
         self.power_plant_id = None
         self.accepted_amount = 0
         self.revenues = 0
         self.variable_costs = 0
+        self.consumed_amount = 0
         self.plant = None
         self.tick = 0
         self.status = 'Awaiting confirmation'
@@ -23,13 +27,20 @@ class PowerPlantDispatchPlan(ImportObject):
         if parameter_name == 'VARIABLE_COSTS_IN_EURO':
             self.variable_costs = float(parameter_value)
             self.power_plant_id = self.name
+        if parameter_name == 'CONSUMPTION_IN_MWH':
+            self.consumed_amount = float(parameter_value)
+            self.power_plant_id = self.name
         # the CONTRIBUTION_MARGIN_IN_EURO is equal to revenues - variable costs in euro
 
 
 class PowerPlantDispatchPlansALL(ImportObject):
+    """"
+    This module is read for plotting
+    """
     def __init__(self, name):
         super().__init__(name)
         self.accepted_amount = dict()
+        self.consumed_amount = dict()
         self.revenues = dict()
         self.variable_costs = dict()
 
@@ -41,3 +52,5 @@ class PowerPlantDispatchPlansALL(ImportObject):
             self.revenues[plant_id] = float(parameter_value)
         if parameter_name == 'VARIABLE_COSTS_IN_EURO':
             self.variable_costs[plant_id] = float(parameter_value)
+        if parameter_name == 'CONSUMPTION_IN_MWH':
+            self.consumed_amount[plant_id] = float(parameter_value)

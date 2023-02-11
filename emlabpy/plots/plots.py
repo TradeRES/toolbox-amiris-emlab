@@ -464,9 +464,12 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
     plt.close('all')
 
 
-def plot_annual_generation(all_techs_generation, path_to_plots, technology_colors, scenario_name):
+def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_plots, technology_colors, scenario_name):
     all_techs_generation_nozeroes = all_techs_generation[all_techs_generation > 0]
     all_techs_generation_nozeroes.dropna(how='all', axis=1, inplace=True)
+    all_techs_consumption_nozeroes = all_techs_consumption[all_techs_consumption > 0]
+    all_techs_consumption_nozeroes.dropna(how='all', axis=1, inplace=True)
+
     colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
     if calculate_investments == False:
         all_techs_generation_nozeroes = pd.concat([all_techs_generation_nozeroes]*2, ignore_index=True)
@@ -482,6 +485,16 @@ def plot_annual_generation(all_techs_generation, path_to_plots, technology_color
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
+    axs19 = all_techs_consumption_nozeroes.plot.area(color=colors)
+    axs19.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Annual Consumption [MWh]', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.grid()
+    axs19.set_title(scenario_name + ' \n Annual Consumption')
+    fig19 = axs19.get_figure()
+    fig19.savefig(path_to_plots + '/' + 'Annual Consumption per technology.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots):
     print("load and residual load = (minimum of hourly supplied /demand)")
@@ -632,7 +645,7 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
 
     axs24 = sorted_prices.plot(color=colors)
     axs24.set_axisbelow(True)
-    plt.ylim([-5, 300])
+   # plt.ylim([-5, 300])
     plt.xlabel('hours', fontsize='medium')
     plt.ylabel('Wholesale market price (Eur/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -1345,6 +1358,7 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
 
 def prepare_capacity_and_generation_per_technology(reps, unique_technologies, renewable_technologies, yearly_load,
                                                    years_to_generate):
+    all_techs_consumption = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     all_techs_generation = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     all_techs_full_load_hours = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     all_techs_market_value = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
@@ -1358,7 +1372,7 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
         totalproduction = 0
         for technology_name in unique_technologies:
             generation_per_tech = 0
-           # generation_per_tech_charge = 0
+            consumption_per_tech = 0
             market_value_per_tech = []
             capacity_factor_per_tech = []
             full_load_hours = []
@@ -1366,36 +1380,40 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
                 power_plant = reps.get_power_plant_by_id(id)
                 if power_plant is not None:
                     if power_plant.technology.name == technology_name:
-                        if pp_production_in_MWh > 0:
-                            generation_per_tech += pp_production_in_MWh
-                            capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
-                            full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
-                            totalproduction += pp_production_in_MWh
-                            totalrevenues += dispatch_per_year.revenues[id]
-                        else:
-                            totalrevenues += dispatch_per_year.revenues[id]
-                            # generation_per_tech_charge -= pp_production_in_MWh
-                            # totalrevenues += dispatch_per_year.revenues[id]
+                        generation_per_tech += pp_production_in_MWh
+                        capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
+                        full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
+                        totalproduction += pp_production_in_MWh
+                        totalrevenues += dispatch_per_year.revenues[id]
 
-                        if pp_production_in_MWh > 0:
-                            market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
-                        else:
-                            market_value_per_tech.append(-1)
-                else:
-                    print("power plant is none", id)
+                    if pp_production_in_MWh > 0:
+                        market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
+                    else:
+                        market_value_per_tech.append(-1)
+                # else:
+                #     print("power plant is none", id)
+
+            for id, pp_consumption_in_MWh in dispatch_per_year.consumed_amount.items():
+                power_plant = reps.get_power_plant_by_id(id)
+                if power_plant is not None:
+                    if power_plant.technology.name == technology_name:
+                        consumption_per_tech += pp_consumption_in_MWh
+                # else:
+                #     print("power plant is none", id)
+
             all_techs_full_load_hours.loc[technology_name, year] = mean(full_load_hours)
             all_techs_capacity_factor.loc[technology_name, year] = mean(capacity_factor_per_tech)
             all_techs_market_value.loc[technology_name, year] = mean(market_value_per_tech)
             all_techs_generation.loc[technology_name, year] = generation_per_tech
-
+            all_techs_consumption.loc[technology_name, year] = consumption_per_tech
             # if technology_name == "Lithium_ion_battery":
             #     all_techs_generation.loc["Lithium_ion_battery_charge", year] = generation_per_tech_charge
-
-        average_electricity_price.loc[year, "wholesale price"] = totalrevenues / totalproduction
+        if totalproduction != 0:
+            average_electricity_price.loc[year, "wholesale price"] = totalrevenues / totalproduction
         total_demand = yearly_load[year].sum()
         share_RES.loc[year, 0] = 100 * (sum(all_techs_generation.loc[renewable_technologies, year]) / total_demand)
     #   production_per_year.loc[year, 1] = totalproduction
-    return all_techs_generation, all_techs_market_value.replace(np.nan, 0), \
+    return all_techs_generation, all_techs_consumption, all_techs_market_value.replace(np.nan, 0), \
            all_techs_capacity_factor.replace(np.nan, 0), average_electricity_price, all_techs_full_load_hours, share_RES
 
 
@@ -1564,7 +1582,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     yearly_load = reading_original_load(years_to_generate)
     # # section -----------------------------------------------------------------------------------------------capacities
-    all_techs_generation, all_techs_market_value, all_techs_capacity_factor, \
+    all_techs_generation, all_techs_consumption, all_techs_market_value, all_techs_capacity_factor, \
     average_electricity_price, all_techs_full_load_hours, share_RES = prepare_capacity_and_generation_per_technology(
         reps, unique_technologies, renewable_technologies, yearly_load,
         years_to_generate)
@@ -1572,7 +1590,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                              colors_unique_techs)
     plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
     plot_yearly_average_electricity_prices_and_RES_share(average_electricity_price, share_RES, path_to_plots)
-    plot_annual_generation(all_techs_generation.T, path_to_plots, technology_colors, scenario_name)
+    plot_annual_generation(all_techs_generation.T, all_techs_consumption.T, path_to_plots, technology_colors, scenario_name)
 
     # section ---------------------------------------------------------------Cash energy producer
     cash_flows_energy_producer, cost_recovery, cumulative_cost_recovery, new_plants_loans = prepare_cash_per_agent(reps,
@@ -1920,16 +1938,16 @@ results_excel = "investment_initialization.xlsx"
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments_interrupted",
 #              ]
-SCENARIOS = ["dummy_initial_power_plants"
+SCENARIOS = ["Initialization"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
 test_tick = 0
 # write None is no investment is expected,
-test_tech = "Lithium_ion_battery" #"CCGT"#  None
+test_tech = None #"WTG_offshore" #"WTG_offshore" #"CCGT"#  None
 calculate_investments = True
-calculate_investments_per_iteration = True
+calculate_investments_per_iteration = False
 existing_scenario = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
