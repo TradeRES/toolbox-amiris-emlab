@@ -127,14 +127,16 @@ class SpineDBReaderWriter:
                 reps.install_at_look_ahead_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'target_investments_done':
                 reps.target_investments_done = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'testing_future_year':
-                reps.testing_future_year = int(row['parameter_value'])
+            elif row['parameter_name'] == 'investment_initialization_years':
+                reps.investment_initialization_years = int(row['parameter_value'])
             elif row['parameter_name'] == 'decommission_from_input':
                 reps.decommission_from_input = bool(row['parameter_value'])
             elif row['parameter_name'] == 'Quick investment decisions':
                 reps.run_quick_investments = bool(row['parameter_value'])
             elif row['parameter_name'] == 'Limit investment to potentials':
                 reps.limit_investments = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'initialization_investment':
+                reps.initialization_investment = bool(row['parameter_value'])
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
@@ -445,10 +447,18 @@ class SpineDBReaderWriter:
 
     def stage_testing_future_year(self, reps):
         self.stage_object_class(self.configuration_object_classname)
-        self.stage_object_parameter(self.configuration_object_classname, "testing_future_year")
+        self.stage_object_parameter(self.configuration_object_classname, "investment_initialization_years")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [("testing_future_year", reps.testing_future_year)], "0")
+                                           [("investment_initialization_years", reps.investment_initialization_years)], "0")
+
+    def stage_initialization_investment(self,  initialization_investment):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "initialization_investment")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [("initialization_investment", initialization_investment)], "0")
+
 
     def stage_future_total_profits_installed_plants(self, reps, pp_dispatched_names, pp_dispatched_ids,
                                                     pp_total_profits, available_plants_ids):

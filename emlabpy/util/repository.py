@@ -54,7 +54,8 @@ class Repository:
         self.simulation_length = 0
         self.start_tick_fuel_trends = 0
         self.start_tick_dismantling = 0
-        self.testing_future_year = 0  # testing the future market from the next year during initialization
+        self.initialization_investment = True
+        self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
         self.runningModule = ""

@@ -43,14 +43,17 @@ class Investmentdecision(DefaultModule):
         self.now = now.strftime("%H:%M:%S")
         self.setAgent(reps.agent)
         self.ids_of_future_installed_and_dispatched_pp = []
-        self.initialization_investments = False
+        self.first_run = False
 
-        if reps.current_tick == 0 and reps.testing_future_year > 0 and reps.testing_future_year < reps.lookAhead \
-                and reps.runningModule != "run_short_investment_module":
-            # Adding the investments as an initialization
-            self.initialization_investments = True
-            self.setTimeHorizon(reps.testing_future_year)
-            self.look_ahead_years = reps.testing_future_year
+        if self.reps.initialization_investment == True and reps.runningModule != "run_short_investment_module":
+            if self.reps.investmentIteration == 0:
+                self.first_run = True
+                self.setTimeHorizon(reps.lookAhead)
+                self.look_ahead_years = reps.lookAhead
+            else:
+                # Adding the investments as an initialization
+                self.setTimeHorizon(reps.investment_initialization_years)
+                self.look_ahead_years = reps.investment_initialization_years
         else:
             self.setTimeHorizon(reps.lookAhead)
             self.look_ahead_years = reps.lookAhead
@@ -89,17 +92,16 @@ class Investmentdecision(DefaultModule):
         # todo: these variables could be removed once the model is validated
         self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
 
-        if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
+        if self.first_run == True:
+            self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
             # the first iteration on the first year, no investments are done, it is only to check the old power plants profits in a future market
             print(" FIRST RUN ONLY TO TEST THE MARKET")
             self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_dispatched_names, pp_dispatched_ids , pp_profits, self.future_installed_plants_ids)
             print("increasing testing year by one")
-            self.reps.testing_future_year += 1
-            self.reps.dbrw.stage_testing_future_year(self.reps)
+
             self.continue_iteration()
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
             print("Investing according to TARGETS")
-            self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
                 self.reps.dbrw.stage_new_power_plant(newplant)
@@ -111,8 +113,8 @@ class Investmentdecision(DefaultModule):
             self.reps.dbrw.stage_target_investments_done(True)
             self.continue_iteration()
             return
-        else:
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+        else:
             print("Investing according to market results")
             highestNPVCandidatePP = None
             highestNPV = 0
@@ -173,20 +175,28 @@ class Investmentdecision(DefaultModule):
                     self.reps.dbrw.stage_investment_decisions(highestNPVCandidatePP.name, newplant.name,
                                                               self.reps.investmentIteration,
                                                               self.futureInvestmentyear, self.reps.current_tick)
+                    self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
                     self.continue_iteration()
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
-                    if self.initialization_investments == True:
+                    if self.reps.initialization_investment == True:
                         print("increasing testing year by one")
-                        self.reps.testing_future_year += 1
+                        self.reps.investment_initialization_years += 1
+                        if self.reps.investment_initialization_years == self.reps.lookAhead:
+                            self.reps.initialization_investment = False
+                            self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
+
+
                         self.reps.dbrw.stage_testing_future_year(self.reps)
-                        self.reps.dbrw.stage_iteration(0)
-                        self.continue_iteration()
+
                         # reset all candidate power plants to investable
                         candidates_names = self.reps.get_unique_candidate_names()
                         self.reps.dbrw.stage_candidate_status_to_investable(candidates_names)
                         if self.reps.targetinvestment_per_year == True:
                             self.reps.dbrw.stage_target_investments_done(False)
+                        self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+                        self.continue_iteration()
+
                     else:
                         self.stop_iteration()
                         # saving iteration number back to zero for next year

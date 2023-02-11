@@ -110,7 +110,7 @@ class PrepareMarket(DefaultModule):
                                 print("dont update demand, nor profiles")
                             elif self.reps.fix_demand_to_initial_year == False:
                                 # ================================================================== Updating demand
-                                if self.reps.current_tick == 0 and self.reps.testing_future_year < self.reps.lookAhead and self.reps.testing_future_year > 0:
+                                if self.reps.current_tick == 0 and self.reps.initialization_investment == True:
                                     # do update during initialization investment
                                     self.update_demand_file()
                                 else:
@@ -122,7 +122,7 @@ class PrepareMarket(DefaultModule):
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles")
                                 else:
-                                    if self.reps.current_tick == 0 and self.reps.testing_future_year < self.reps.lookAhead and self.reps.testing_future_year > 0:
+                                    if self.reps.current_tick == 0 and self.reps.initialization_investment == True:
                                         # do update during initialization investment
                                         self.update_profiles_files()
                                     else:

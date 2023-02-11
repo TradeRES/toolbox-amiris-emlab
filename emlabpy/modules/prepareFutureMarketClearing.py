@@ -27,20 +27,23 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
-        if reps.current_tick == 0 and reps.testing_future_year < reps.lookAhead and reps.testing_future_year > 0:
-            print("initialization investments for year  " + str(reps.testing_future_year))
-            self.power_plants_list = reps.get_investable_candidate_power_plants()
-            self.look_ahead_years = reps.testing_future_year
-        else:
-            if reps.current_tick == 0 and reps.testing_future_year == 0:
-                # In the first round it is not necessary to test with these power plants
+        if reps.current_tick == 0 and reps.initialization_investment == True:
+            if reps.investmentIteration > 0:
+                print("initialization investments for year  " + str(reps.investment_initialization_years))
+                self.power_plants_list = reps.get_investable_candidate_power_plants()
+                self.look_ahead_years = reps.investment_initialization_years
+            else:
+                print("first run")
                 self.power_plants_list = []
-            elif reps.targetinvestment_per_year == True and reps.target_investments_done == False:
+                self.look_ahead_years = reps.lookAhead
+        else:
+            if reps.targetinvestment_per_year == True and reps.target_investments_done == False:
                 # investing in target technologies
                 self.power_plants_list = []
+                self.look_ahead_years = reps.lookAhead
             else:  # no target investments, test as normal
                 self.power_plants_list = reps.get_investable_candidate_power_plants()
-            self.look_ahead_years = reps.lookAhead
+                self.look_ahead_years = reps.lookAhead
 
     def act(self):
         self.setTimeHorizon()
@@ -91,7 +94,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
-                if self.reps.current_tick == 0 and self.reps.testing_future_year == 0:
+                if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == 0:
                     #  In the first iteration test the future market with all power plants, except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational(powerplant)
 
@@ -106,7 +109,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     else:  # power plants in pipeline are also considered to be operational in the future
                         self.set_power_plant_as_operational(powerplant)
 
-                else:  # there are not enough past simulations
+                else:  # there are not enough past simulations calculate profits if there are any. can be 1, 2 or 3 results
                     profit = powerplant.expectedTotalProfits.mean()
                     if profit <= requiredProfit:
                         powerplant.status = globalNames.power_plant_status_decommissioned
