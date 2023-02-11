@@ -362,12 +362,13 @@ class Repository:
                 i.technology.name in target_technologies and i.technology.name not in already_investable]
 
     def update_candidate_plant_results(self, results):
-        try:
-            for index, result in results.iterrows():
+        for index, result in results.iterrows():
+            try:
                 candidate = next(i for i in self.candidatePowerPlants.values() if i.id == result.identifier)
-                candidate.add_values_from_df(result)
-        except StopIteration:
-            logging.warning('candidate technology not found' + str(result.identifier))
+                if candidate is not None:
+                    candidate.add_values_from_df(result)
+            except StopIteration:
+                logging.warning('candidate technology not found' + str(result.identifier))
         return None
 
     def get_unique_candidate_technologies_names(self):
