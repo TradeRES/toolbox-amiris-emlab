@@ -605,6 +605,7 @@ def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_uniq
     axs21 = all_techs_capacity.plot(color=colors_unique_techs)
     axs21.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
+    plt.ylim([-5, 300])
     plt.ylabel('Market value (Euro/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
@@ -877,7 +878,7 @@ def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, uniq
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
         for year, year_investments in investments.invested_in_iteration.items():
-            number_investments_per_technology[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
+            number_investments_per_technology.at[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
                 year_investments)
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies,
                                                   index=years_to_generate_and_build).fillna(0)
@@ -902,7 +903,7 @@ def prepare_pp_status(years_to_generate, years_to_generate_and_build, reps, uniq
         # if the age at the start was larger than zero then they count as being installed.
         elif pp.age > (reps.current_year - reps.start_simulation_year):
             initial_power_plants.loc[:, pp.technology.name] += pp.capacity
-        elif pp.age < reps.current_tick:
+        elif pp.age <= reps.current_tick:
             # graphed according to commissioned year which is determined by age.
 
             if reps.install_at_look_ahead_year == True:
@@ -1938,7 +1939,7 @@ results_excel = "investment_initialization.xlsx"
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2050_SD3_PH3_MI15000_totalProfits_future1installed1-target_investments_interrupted",
 #              ]
-SCENARIOS = ["Initialization"
+SCENARIOS = ["H2Optimalscenario"
              ] # add a dash before!
 
 save_excel = False

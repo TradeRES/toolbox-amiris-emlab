@@ -28,8 +28,9 @@ class Dismantle(DefaultModule):
         else:
             # add one year to the age of power plants
             self.add_one_year_to_age()
+            self.decommision_by_profit()
+
         self.set_powerplants_status()  # set status according to operational time
-        self.decommision_by_profit()
         self.save_powerplants_status_and_age()
         self.save_decommissioned_list()
 
@@ -62,14 +63,14 @@ class Dismantle(DefaultModule):
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
                 if profit <= requiredProfit:
                     # operating loss (incl O&M cost)
-                    print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
-                          .format(plant.name, horizon, profit, requiredProfit))
+                    # print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                    #       .format(plant.name, horizon, profit, requiredProfit))
                     plant.dismantlePowerPlant(self.reps.current_year)
                     self.reps.dbrw.stage_decommission_year(plant.name, self.reps.current_year)
                     plant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(plant.name)
                 else:
-                    print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
+                    #print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
                     ModifiedOM = plant.getActualFixedOperatingCost() * (
                             1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
                     plant.setActualFixedOperatingCost(ModifiedOM)

@@ -223,6 +223,7 @@ try:
             if targetinvestment_per_year ==True:
                 reset_target_investments_done()
                 print(" target investments status")
+
             step = next(int(i['parameter_value']) for i
                         in
                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
