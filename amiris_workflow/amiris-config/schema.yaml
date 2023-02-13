@@ -1011,7 +1011,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN' ]
+            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'OTHER' ]
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true
@@ -1074,7 +1074,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS' ]
+            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER' ]
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true

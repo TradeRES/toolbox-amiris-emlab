@@ -215,5 +215,53 @@ Agents:
   - Type: ConventionalPlantOperator
     Id: 506
 
+  - Type: IndividualPlantBuilder
+    Id: 2007
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'HYDROGEN'
+        SpecificCo2EmissionsInTperMWH: 0
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 3.0
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1007
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 508
+
+  - Type: IndividualPlantBuilder
+    Id: 2008
+    Attributes:
+      PortfolioBuildingOffsetInSeconds: *portfolioBuildingOffset
+      Prototype:
+        FuelType: 'OTHER'
+        SpecificCo2EmissionsInTperMWH: 0
+        PlannedAvailability: 1.0
+        UnplannedAvailabilityFactor: 1.0
+        OpexVarInEURperMWH: 3.0
+        CyclingCostInEURperMW: 0.0
+      Plants:
+        - Efficiency: 1.0 # First element required to initialise list
+          NetCapacityInMW: 0.0
+
+  - Type: ConventionalTrader
+    Id: 1008
+    Attributes:
+      minMarkup: 0
+      maxMarkup: 0
+
+  - Type: ConventionalPlantOperator
+    Id: 507
+
 Contracts: !include ["yaml/contracts/*.yaml", "Contracts"]
 
