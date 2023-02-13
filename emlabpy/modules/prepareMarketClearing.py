@@ -110,29 +110,32 @@ class PrepareMarket(DefaultModule):
                             if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
                             else:
-                                # ================================================================== Updating demand
+                                # ========================================================= Updating demand for investment
                                 if self.reps.fix_demand_to_initial_year == True:
                                     print("dont update demand ")
                                 else:
                                     if self.reps.fix_demand_to_initial_year == False:
                                         if self.reps.initialization_investment == True:
                                             # update demand during initialization investment
-                                            print("updating demand file with 2019-based data" + str(self.simulation_year))
+                                            print("updating demand file data of year" + str(self.simulation_year))
                                             self.update_demand_file()
                                         else:
                                             print("updated demand for year " + str(self.simulation_year))
                                             # copying future demand (prepared in clock) file to be current demand
                                             wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris,
                                                                                   header=False, sep=';', index=False)
-                                # ================================================================== Updating profiles
+
+                                # ======================================================== Updating profiles for investment
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles ")
                                 else:
                                     if self.reps.initialization_investment == True:
-                                        # do update during initialization investment to the first simulation year.
-                                        self.update_profiles_files(self.reps.current_tick + self.reps.start_simulation_year)
+                                        # do update during initialization investment to the the profiles based on 2019
+                                        # but for previous years
+                                        self.update_profiles_files(self.reps.current_year + \
+                                                                   self.reps.investment_initialization_years)
                                     else:
-                                        print("update profiles")
+                                        print("copy profiles prepared in clock") # same year every year
                                         shutil.copy(globalNames.future_windoff_file_for_amiris,
                                                     globalNames.windoff_file_for_amiris)
                                         shutil.copy(globalNames.future_windon_file_for_amiris,
