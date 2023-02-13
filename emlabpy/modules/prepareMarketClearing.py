@@ -101,17 +101,19 @@ class PrepareMarket(DefaultModule):
                         # the load was already updated in the clock step
                         pass
                     elif self.reps.runningModule == "run_prepare_next_year_market_clearing" and self.reps.current_tick == 0:
-                        self.update_demand_file()
-                        self.update_profiles_files()
-                    else:  # runnning   "run_future_market":
-                        if self.reps.investmentIteration == 0:
-                            # only update data in first iteration of each year
+                        pass
+                        # self.update_demand_file() todo # in the first tick all needs to be updated??
+                        # self.update_profiles_files()
+
+                    elif self.reps.runningModule == "run_future_market":
+                        if self.reps.investmentIteration == 0: # only update data in first iteration of each year
                             if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
                             elif self.reps.fix_demand_to_initial_year == False: # = Update demand
                                 # ================================================================== Updating demand
-                                if self.reps.current_tick == 0 and self.reps.initialization_investment == True:
+                                if self.reps.initialization_investment == True:
                                     # update demand during initialization investment
+                                    print("updating demand file with 2019-based data")
                                     self.update_demand_file()
                                 else:
                                     print("updated demand for year " + str(self.simulation_year))
@@ -122,8 +124,9 @@ class PrepareMarket(DefaultModule):
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles ")
                                 else:
-                                    if self.reps.current_tick == 0 and self.reps.initialization_investment == True:
+                                    if self.reps.initialization_investment == True:
                                         # do update during initialization investment
+                                        print("updating profiles with 2019-based data")
                                         self.update_profiles_files()
                                     else:
                                         print("update profiles")

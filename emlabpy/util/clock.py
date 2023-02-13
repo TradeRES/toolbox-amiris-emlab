@@ -93,7 +93,7 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
             future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
 
             if modality == "initialize":
-                print("preparing profiles")
+                print("preparing profiles NOT random")
                 wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
                 wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
                 wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
@@ -102,6 +102,7 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
 
         elif fix_demand_to_initial_year == True and fix_profiles_to_initial_year == True:
+            print("fix demand and profiles")
             if modality == "initialize":
                 demand = excel_NL['Load Profile'][year]
                 demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
@@ -115,7 +116,6 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 pass
 
         elif fix_demand_to_initial_year == True and fix_profiles_to_initial_year == False:
-            print("preparing profiles from random years")
             iteration = next(i['parameter_value'] for i in
                              db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                     object_name) \
@@ -123,6 +123,8 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
             weatherYears_data = next(i['parameter_value'] for i in
                                      db_emlab.query_object_parameter_values_by_object_class_and_object_name(
                                          "weatherYears", "weatherYears") if i['alternative'] == iteration)
+
+            print("preparing year profiles to RANDOM year from tick " + str(new_tick))
             weatherYears = pd.DataFrame(weatherYears_data.values, index=weatherYears_data.indexes)
             new_weather_tick = weatherYears.values[new_tick]
             more_years_profiles = pd.read_excel(input_weather_years, index_col=0, skiprows=[0],
@@ -138,10 +140,10 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
             pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
 
             if modality == "initialize":
-                print("initializing demand")
+                print("Initializing demand to year and future profiles to" + str(year))
                 demand = excel_NL['Load Profile'][year]
                 demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-                print("initializing future profiles")
+
                 # for the future the year is not changing it is always the same
                 future_wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
                 future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
