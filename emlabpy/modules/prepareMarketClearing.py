@@ -109,25 +109,28 @@ class PrepareMarket(DefaultModule):
                         if self.reps.investmentIteration == 0: # only update data in first iteration of each year
                             if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
-                            elif self.reps.fix_demand_to_initial_year == False: # = Update demand
+                            else:
                                 # ================================================================== Updating demand
-                                if self.reps.initialization_investment == True:
-                                    # update demand during initialization investment
-                                    print("updating demand file with 2019-based data")
-                                    self.update_demand_file()
+                                if self.reps.fix_demand_to_initial_year == True:
+                                    print("dont update demand ")
                                 else:
-                                    print("updated demand for year " + str(self.simulation_year))
-                                    # copying future demand (prepared in clock) file to be current demand
-                                    wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris,
-                                                                          header=False, sep=';', index=False)
+                                    if self.reps.fix_demand_to_initial_year == False:
+                                        if self.reps.initialization_investment == True:
+                                            # update demand during initialization investment
+                                            print("updating demand file with 2019-based data" + str(self.simulation_year))
+                                            self.update_demand_file()
+                                        else:
+                                            print("updated demand for year " + str(self.simulation_year))
+                                            # copying future demand (prepared in clock) file to be current demand
+                                            wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris,
+                                                                                  header=False, sep=';', index=False)
                                 # ================================================================== Updating profiles
                                 if self.reps.fix_profiles_to_initial_year == True:
                                     print("dont update profiles ")
                                 else:
                                     if self.reps.initialization_investment == True:
-                                        # do update during initialization investment
-                                        print("updating profiles with 2019-based data")
-                                        self.update_profiles_files()
+                                        # do update during initialization investment to the first simulation year.
+                                        self.update_profiles_files(self.reps.current_tick + self.reps.start_simulation_year)
                                     else:
                                         print("update profiles")
                                         shutil.copy(globalNames.future_windoff_file_for_amiris,
@@ -136,10 +139,6 @@ class PrepareMarket(DefaultModule):
                                                     globalNames.windon_file_for_amiris)
                                         shutil.copy(globalNames.future_pv_file_for_amiris,
                                                     globalNames.pv_file_for_amiris)
-                            elif self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == False:
-                                raise Exception  # so far no option to fix demand but not profiles
-                            else:
-                                raise Exception
 
                         else:
                             # next iterations have same market conditions, no need to update the demand or profile
@@ -163,6 +162,7 @@ class PrepareMarket(DefaultModule):
 
         dict_fuels['AgentType'] = "FuelsMarket"
         fuels = pd.DataFrame.from_dict(dict_fuels, orient='index', columns=[1])
+        fuels.loc["OTHER"] = 0
         co2 = pd.DataFrame.from_dict(d2, orient='index')
 
         result = pd.concat(
@@ -180,17 +180,17 @@ class PrepareMarket(DefaultModule):
         demand = excel_NL['Load Profile'][self.simulation_year]
         demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
 
-    def update_profiles_files(self):
-        print("Update profiles " + str(self.simulation_year))
+    def update_profiles_files(self, year):
+        print("Update profiles to year" + str(year))
         excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
                                  sheet_name=["NL Wind Onshore profiles",
                                              "NL Wind Offshore profiles",
                                              "NL Sun PV profiles"])
-        wind_onshore = excel_NL['NL Wind Onshore profiles'][self.simulation_year]
+        wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
         wind_onshore.to_csv(globalNames.windon_file_for_amiris, header=False, sep=';', index=True)
-        wind_offshore = excel_NL['NL Wind Offshore profiles'][self.simulation_year]
+        wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
         wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
-        pv = excel_NL['NL Sun PV profiles'][self.simulation_year]
+        pv = excel_NL['NL Sun PV profiles'][year]
         pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
 
     def write_conventionals(self):

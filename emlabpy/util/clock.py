@@ -100,6 +100,8 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
                 pv = excel_NL['NL Sun PV profiles'][year]
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
+            else:
+                pass
 
         elif fix_demand_to_initial_year == True and fix_profiles_to_initial_year == True:
             print("fix demand and profiles")
@@ -151,7 +153,8 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
                 future_pv = excel_NL['NL Sun PV profiles'][year]
                 future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
-
+            else:
+                pass
         elif fix_demand_to_initial_year == False and fix_profiles_to_initial_year == False:
             print("demand and profiles change every year")
             raise Exception # profiles would only change year to year but not multiple weather years
