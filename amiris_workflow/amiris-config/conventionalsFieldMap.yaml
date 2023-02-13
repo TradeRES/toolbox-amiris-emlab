@@ -110,3 +110,19 @@ Agents:
              column: identifier
            - attribute: Override/OpexVarInEURperMWH
              column: OpexVarInEURperMWH
+
+  # HYDROGEN
+  - column: FuelType
+    target: HYDROGEN
+    append:
+      - agent: 2007
+        below: Attributes/Plants
+        elements:
+           - attribute: Efficiency
+             column: Efficiency
+           - attribute: NetCapacityInMW
+             column: InstalledPowerInMW
+           - attribute: Id
+             column: identifier
+           - attribute: Override/OpexVarInEURperMWH
+             column: OpexVarInEURperMWH
