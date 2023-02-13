@@ -105,22 +105,22 @@ class PrepareMarket(DefaultModule):
                         self.update_profiles_files()
                     else:  # runnning   "run_future_market":
                         if self.reps.investmentIteration == 0:
-                            # only update data in first iteration
+                            # only update data in first iteration of each year
                             if self.reps.fix_demand_to_initial_year == True and self.reps.fix_profiles_to_initial_year == True:
                                 print("dont update demand, nor profiles")
-                            elif self.reps.fix_demand_to_initial_year == False:
+                            elif self.reps.fix_demand_to_initial_year == False: # = Update demand
                                 # ================================================================== Updating demand
                                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True:
-                                    # do update during initialization investment
+                                    # update demand during initialization investment
                                     self.update_demand_file()
                                 else:
                                     print("updated demand for year " + str(self.simulation_year))
-                                    # copying future demand file to be load.csv
+                                    # copying future demand (prepared in clock) file to be current demand
                                     wholesale_market.future_demand.to_csv(globalNames.load_file_for_amiris,
                                                                           header=False, sep=';', index=False)
                                 # ================================================================== Updating profiles
                                 if self.reps.fix_profiles_to_initial_year == True:
-                                    print("dont update profiles")
+                                    print("dont update profiles ")
                                 else:
                                     if self.reps.current_tick == 0 and self.reps.initialization_investment == True:
                                         # do update during initialization investment

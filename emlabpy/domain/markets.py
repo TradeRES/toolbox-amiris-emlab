@@ -39,7 +39,7 @@ class ElectricitySpotMarket(Market):
         if parameter_name == 'substance':
             self.substance = str(parameter_value)
         if parameter_name == 'demand':
-            load_path =globalNames.load_file_for_amiris
+            load_path = globalNames.load_file_for_amiris
             if reps.country =="DE":
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = self.hourlyDemand # no dynamic load for other cases yet

@@ -6,6 +6,9 @@ Ingrid Sanchez 16-2-2022
 """
 from datetime import datetime
 from typing import Optional, Dict, List
+
+import pandas as pd
+
 from domain.actors import *
 from domain.cashflow import CashFlow
 from domain.powerplantDispatchPlan import *
@@ -86,7 +89,7 @@ class Repository:
         self.dictionaryFuelNumbers = dict()
         self.dictionaryTechNumbers = dict()
         self.dictionaryTechSet = dict()
-        # --------------------------------------------------------------------------------------------------
+        # -----------------------------------------------------------------------------------------------Objects
         self.newTechnology = dict()
         self.energy_producers = dict()
         self.target_investors = dict()
@@ -134,6 +137,9 @@ class Repository:
         self.powerPlantsForAgent = {}
         self.loanList = dict()
         self.financialPowerPlantReports = dict()
+
+        self.weatherYears = dict()
+
         self.profits = dict()
         # Create list of plants in SR
         self.plants_in_SR = []

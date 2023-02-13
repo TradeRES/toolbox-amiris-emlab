@@ -26,7 +26,8 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": 6
+                                "position": "hidden",
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -621,26 +622,6 @@
                     }
                 }
             ],
-            "not chosen technologies": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "dictTech": [
                 {
                     "Mapping 1": {
@@ -1072,26 +1053,6 @@
                     }
                 }
             ],
-            "Sheet1": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "graphs": [
                 {
                     "Mapping 1": {
@@ -1150,19 +1111,39 @@
                     }
                 }
             ],
-            "yearlytechnologyPotentials": [
+            "yearlytechnologyPotentials2": [
                 {
                     "Mapping 1": {
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Technologies",
-                                "read_start_row": 1
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "Object",
-                                "position": 0
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "weatherYears": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "weatherYears"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "table_name",
+                                "value": "weatherYears"
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -1170,11 +1151,12 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": 2
+                                "position": "table_name",
+                                "value": "weatherYears"
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": 1
+                                "position": 0
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
@@ -1183,19 +1165,19 @@
                             {
                                 "map_type": "ParameterValueType",
                                 "position": "hidden",
-                                "value": "map"
+                                "value": "array"
                             },
                             {
                                 "map_type": "IndexName",
-                                "position": "hidden"
+                                "position": -1
                             },
                             {
                                 "map_type": "ParameterValueIndex",
-                                "position": 3
+                                "position": "hidden"
                             },
                             {
                                 "map_type": "ExpandedValue",
-                                "position": 4
+                                "position": "hidden"
                             }
                         ]
                     }
@@ -1203,7 +1185,6 @@
             ]
         },
         "selected_tables": [
-            "CapacityMarkets",
             "ElectricitySpotMarkets",
             "EnergyConsumers",
             "EnergyProducers",
@@ -1216,12 +1197,12 @@
             "dictTech",
             "dictFuel",
             "CandidatePowerPlants",
-            "StrategicReserveOperator",
             "Dismantled",
             "YearlyTargets",
             "yearlyCO2",
             "technologyPotentials",
-            "yearlytechnologyPotentials"
+            "yearlytechnologyPotentials2",
+            "weatherYears"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1261,7 +1242,6 @@
                 "read_until_row": true
             },
             "NewTechnologies": {},
-            "not chosen technologies": {},
             "dictTech": {},
             "dictFuel": {
                 "read_until_col": true
@@ -1271,7 +1251,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "StrategicReserveOperator": {},
+            "StrategicReserveOperator": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
             "Dismantled": {},
             "backup": {},
             "YearlyTargets": {
@@ -1286,13 +1269,13 @@
                 "read_until_row": true
             },
             "sources": {},
-            "Sheet1": {},
             "graphs": {},
             "technologyPotentials": {
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "yearlytechnologyPotentials": {
+            "yearlytechnologyPotentials2": {},
+            "weatherYears": {
                 "read_until_col": true,
                 "read_until_row": true
             }
@@ -1439,16 +1422,6 @@
                 "7": "float",
                 "8": "float"
             },
-            "not chosen technologies": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string"
-            },
             "dictFuel": {
                 "0": "string",
                 "1": "float",
@@ -1551,12 +1524,38 @@
                 "2": "string",
                 "3": "float"
             },
-            "yearlytechnologyPotentials": {
+            "weatherYears": {
                 "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "float"
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float",
+                "11": "float",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float",
+                "24": "float",
+                "25": "float",
+                "26": "float",
+                "27": "float",
+                "28": "float",
+                "29": "float",
+                "30": "float"
             }
         },
         "table_default_column_type": {},
