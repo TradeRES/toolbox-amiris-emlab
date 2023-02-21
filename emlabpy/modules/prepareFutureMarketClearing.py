@@ -87,6 +87,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
                     self.set_power_plant_as_operational(powerplant)
+            elif fictional_age > powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension :
+                powerplant.fictional_status = globalNames.power_plant_status_decommissioned
 
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")

@@ -127,9 +127,8 @@ class PowerPlant(EMLabAgent):
 
     def specifyPowerPlantforInvest(self, reps, energyProducer, capacity, pgt, look_ahead_years):
         """"
-        specify power plant invested by NPV or target
+        specify power plant invested by NPV or target invest
         """
-        self.dischargingEfficiency = 0
         self.setCapacity(capacity)
         self.setTechnology(pgt)
         self.setOwner(energyProducer)
@@ -149,9 +148,8 @@ class PowerPlant(EMLabAgent):
             self.setEndOfLife(
                 reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.status = globalNames.power_plant_status_inPipeline
-        self.calculateAndSetActualEfficiency(commissionedTick)
-        self.calculateAndSetActualFixedOperatingCosts(
-            commissionedTick)  # by GeometricTrend by tick --- > negative exponential value
+        self.calculateAndSetActualEfficiency(0) # efficiency is set according to geometric trend but growth is 0
+        self.calculateAndSetActualFixedOperatingCosts(0)  # by GeometricTrend by tick --- > negative exponential value
         self.calculateAndSetActualInvestedCapital(reps, pgt, commissionedTick)  # INVEST
 
     def specifyPowerPlantsInstalled(self, reps, run_initialize_power_plants):
@@ -164,12 +162,9 @@ class PowerPlant(EMLabAgent):
         self.setConstructionStartTick()  # minus age, permit and lead time
         commissionedTick = - self.age
         if self.actualEfficiency == None:  # if there is not initial efficiency, then assign the efficiency by the technology
-            self.calculateAndSetActualEfficiency(commissionedTick)
-            #print(self.actualEfficiency)
+            self.calculateAndSetActualEfficiency(0)
         if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
-            self.calculateAndSetActualFixedOperatingCosts(
-                commissionedTick)  # by GeometricTrend by tick --- > positive exponential value
-            #print(self.actualFixedOperatingCost)
+            self.calculateAndSetActualFixedOperatingCosts(0)  # if plant passed its lifetime then it should have higher costs
         if reps.decommission_from_input == True and self.decommissionInYear is not None:
             self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year)  # set in terms of tick
         self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INITIAL investment cost by time series = 2020

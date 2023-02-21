@@ -67,27 +67,27 @@ class Dismantle(DefaultModule):
                     plant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(plant.name)
                 else:
-                    #print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
-                    ModifiedOM = plant.getActualFixedOperatingCost() * (
-                            1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
-                    plant.setActualFixedOperatingCost(ModifiedOM)
-                    ModifiedEfficiency = plant.actualEfficiency * (
-                            1 - plant.technology.efficiency_modifier_after_lifetime)
-                    plant.setActualEfficiency(ModifiedEfficiency)
-                    self.reps.dbrw.stage_fixed_operating_costs_and_efficiency(plant)
+                    self.increase_fixed_costs_and_decrease_efficiency( plant)
+
             else:
                 # if the plants cannot be deommmissioned yet, decrease efficiency
                 # print("first years. Dont dismantle but increase fixed OPEX of {}".format(plant.name))
                 if plant.age < plant.technology.getExpectedLifetime():
                     print("Age is less than expected life time!!! shouldnt be")
                 else:
-                    ModifiedOM = plant.getActualFixedOperatingCost() * (
-                            1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
-                    plant.setActualFixedOperatingCost(ModifiedOM)
-                    ModifiedEfficiency = plant.actualEfficiency * (
-                                1 - plant.technology.efficiency_modifier_after_lifetime)
-                    plant.setActualEfficiency(ModifiedEfficiency)
-                    self.reps.dbrw.stage_fixed_operating_costs_and_efficiency(plant)
+                    self.increase_fixed_costs_and_decrease_efficiency( plant)
+
+    def increase_fixed_costs_and_decrease_efficiency(self, plant):
+        print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
+        passed_years = plant.age - plant.technology.getExpectedLifetime()
+        ModifiedOM = plant.getTechnology().get_fixed_operating_cost_trend(passed_years) * plant.getActualNominalCapacity()
+        # ModifiedOM = plant.getActualFixedOperatingCost() * (
+        #         1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
+        plant.setActualFixedOperatingCost(ModifiedOM)
+        ModifiedEfficiency = plant.actualEfficiency * (
+                1 - plant.technology.efficiency_modifier_after_lifetime)
+        plant.setActualEfficiency(ModifiedEfficiency)
+        self.reps.dbrw.stage_fixed_operating_costs_and_efficiency(plant)
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():
@@ -117,9 +117,10 @@ class Dismantle(DefaultModule):
                     powerplant.status = globalNames.power_plant_status_decommissioned
                     self.decommissioned_list.append(powerplant.name)
                     print(powerplant.name + "decommissioned from input")
+            elif powerplant.age > technology.expected_lifetime + technology.maximumLifeExtension:
+                powerplant.status = globalNames.power_plant_status_decommissioned
             elif powerplant.age > technology.expected_lifetime:
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
-               # print(powerplant.name + " " + str(powerplant.age) + " to be decomm")
             elif powerplant.commissionedYear <= self.reps.current_year:
                 powerplant.status = globalNames.power_plant_status_operational
             elif powerplant.commissionedYear > self.reps.current_year:

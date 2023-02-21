@@ -23,7 +23,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.efficiency = 0
         self.depreciation_time = 0
         self.minimum_running_hours = 0
-        self.fixed_operating_cost_modifier_after_lifetime = 0
+
         self.efficiency_modifier_after_lifetime = 0
         self.expected_lifetime = 0
         self.expected_leadtime = 0
@@ -58,8 +58,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_permittime = int(parameter_value)
         elif parameter_name == 'expectedLeadtime':
             self.expected_leadtime = int(parameter_value)
-        elif parameter_name == 'FixedOperatingCostModifierAfterLifetime':
-            self.fixed_operating_cost_modifier_after_lifetime = float(parameter_value)
+        elif parameter_name == 'MaximumLifeExtension':
+            self.maximumLifeExtension = int(parameter_value)
         elif parameter_name == 'EfficiencyModifierAfterLifetime':
             self.efficiency_modifier_after_lifetime = float(parameter_value)
         elif parameter_name == 'PeakSegmentDependentAvailability':
@@ -155,7 +155,7 @@ class PowerGeneratingTechnology(ImportObject):
         return self.investment_cost_time_series.get_value(time)
 
     def get_fixed_operating_cost_trend(self, tick):
-        return self.fixed_operating_cost_time_series.get_value(tick)
+        return self.fixed_operating_cost_time_series.get_value(tick) # geometric trend
 
     # --------------------------------------------------------------------------------------------------------
 
@@ -176,8 +176,8 @@ class PowerGeneratingTechnology(ImportObject):
     def getCo2CaptureEffciency(self):
         return self.co2CaptureEffciency
 
-    def getFixedOperatingCostModifierAfterLifetime(self):
-        return self.fixed_operating_cost_modifier_after_lifetime
+    # def getFixedOperatingCostModifierAfterLifetime(self):
+    #     return self.fixed_operating_cost_modifier_after_lifetime
 
     def getExpectedLifetime(self):
         return self.expected_lifetime
