@@ -51,7 +51,7 @@ close this command prompt
 ### spinetoolbox
 Having git installed
 download spinetoolbox and install all requirements as their webpage indicated in :
-https://github.com/Spine-project/Spine-Toolbox
+https://github.com/spine-tools/Spine-Toolbox
 !!! Make a new environment called spinetoolbox. 
 
 In the toolbox-amiris-emlab folder activate  the environment spinetoolbox. 
@@ -67,6 +67,7 @@ make kernel specification > ok
 
 Also change the path on the (Amiris future tool > basic console) to the emlabEnv conda enviroment
 
+Finally in Settings specify the path to toolbox-amiris-emlab
 
 ###  kernel
 after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool

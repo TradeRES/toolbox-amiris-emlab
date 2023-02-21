@@ -700,7 +700,7 @@
             "y": -282.01586067954366,
             "specification": "import traderes db",
             "cancel_on_error": false,
-            "on_conflict": "merge",
+            "on_conflict": "replace",
             "file_selection": [
                 [
                     "<project>/data/exported_Traderes.xlsx",
