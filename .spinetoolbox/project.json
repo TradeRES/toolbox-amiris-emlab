@@ -1,6 +1,6 @@
 {
     "project": {
-        "version": 9,
+        "version": 10,
         "description": "",
         "specifications": {
             "Tool": [
@@ -103,6 +103,21 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/capacity_mechanisms.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/initialization_future_market.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/initialization_amiris.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/initialization_invest.json"
                 }
             ],
             "Importer": [
@@ -507,13 +522,68 @@
                 ]
             },
             {
-                "name": "from Initialize power plants to decommission",
+                "name": "from EmlabDB to initialization future market",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "initialization future market",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from Initialize power plants to initialization future market",
                 "from": [
                     "Initialize power plants",
                     "right"
                 ],
                 "to": [
+                    "initialization future market",
+                    "left"
+                ]
+            },
+            {
+                "name": "from intialization Invest to decommission",
+                "from": [
+                    "intialization Invest",
+                    "right"
+                ],
+                "to": [
                     "decommission",
+                    "left"
+                ]
+            },
+            {
+                "name": "from initialization future market to initialization AMIRIS",
+                "from": [
+                    "initialization future market",
+                    "right"
+                ],
+                "to": [
+                    "initialization AMIRIS",
+                    "left"
+                ]
+            },
+            {
+                "name": "from initialization AMIRIS to intialization Invest",
+                "from": [
+                    "initialization AMIRIS",
+                    "bottom"
+                ],
+                "to": [
+                    "intialization Invest",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB to intialization Invest",
+                "from": [
+                    "EmlabDB",
+                    "right"
+                ],
+                "to": [
+                    "intialization Invest",
                     "left"
                 ]
             }
@@ -555,6 +625,27 @@
                     "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.txt\")\nprint(\"sys argument\", int(sys.argv[1]))  # Loop counter is supplied as first \n\nf = open(years_file, \"r\")\nyears_str = f.read()\nyears = years_str.split(\"/\")\ncurrent_year = int(years[0])\nstart_year = int(years[1])\nfinal_year = int(years[2])\nfuture_year = int(years[3])\n\nprint(1 if current_year >= final_year else 0)\nexit(1 if current_year >= final_year else 0)\n"
                 },
                 "cmd_line_args": []
+            },
+            {
+                "name": "from intialization Invest to initialization future market",
+                "from": [
+                    "intialization Invest",
+                    "bottom"
+                ],
+                "to": [
+                    "initialization future market",
+                    "bottom"
+                ],
+                "condition": {
+                    "type": "python-script",
+                    "script": "import os\nimport sys\n\ncontinue_file = os.path.join(os.getcwd(),\"emlabpy\",  \"continue.txt\")\nprint(\"current\",os.getcwd(), \"file\" , continue_file)\n\nf = open(continue_file, \"r\")\ncontinue_str = f.read()\nprint(continue_str)\nexit(1 if continue_str == \"False\" else 0) # Exit code 0 = continue,\n\n"
+                },
+                "cmd_line_args": [
+                    {
+                        "type": "resource",
+                        "arg": "<project_dir>continue.txt"
+                    }
+                ]
             }
         ]
     },
@@ -649,8 +740,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1135.4607238327678,
-            "y": -647.46819848826,
+            "x": -1233.3645537510276,
+            "y": -702.3357368406685,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -931,8 +1022,8 @@
         "Initialize power plants": {
             "type": "Tool",
             "description": "run_initialize_power_plants",
-            "x": -983.3884992713845,
-            "y": -607.3248748156255,
+            "x": -1121.3886714910784,
+            "y": -788.5540166463082,
             "specification": "Initialize Power plants",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -971,6 +1062,59 @@
                     "arg": "run_financial_results"
                 }
             ]
+        },
+        "initialization future market": {
+            "type": "Tool",
+            "description": "",
+            "x": -999.2542590847742,
+            "y": -871.2300029291545,
+            "specification": "Initialization Future Market",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_future_market"
+                }
+            ]
+        },
+        "intialization Invest": {
+            "type": "Tool",
+            "description": "",
+            "x": -815.4879406813483,
+            "y": -728.2418726774224,
+            "specification": "Initialization Invest",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_investment_module"
+                }
+            ]
+        },
+        "initialization AMIRIS": {
+            "type": "Tool",
+            "description": "",
+            "x": -832.9889913502029,
+            "y": -877.8806136385374,
+            "specification": "Amiris future",
+            "execute_in_work": false,
+            "cmd_line_args": []
         }
     }
 }

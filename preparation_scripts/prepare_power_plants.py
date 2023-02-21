@@ -45,13 +45,14 @@ a = dictionary.set_index('Competes').to_dict()['traderes']
 dataframe.replace(a, inplace=True)
 dataframe["Age"] = year - dataframe.Year
 
-min_capacity_to_group = 150
+min_capacity_to_group = 200
 
 dataframe.rename(columns={"Technology traderes": "Technology"}, inplace=True)
 dataframe.sort_values(by=['Age'], ascending=True)
 techs = dataframe["Technology"].unique()
 weighted_eff = lambda x: np.average(x, weights=dataframe.loc[x.index, "Capacity"])
 weighted_avail = lambda x: np.average(x, weights=dataframe.loc[x.index, "Availability"])
+weighted_decommission_year = lambda x: np.average(x, weights=dataframe.loc[x.index, "DecommissionInYear"])
 
 for t in techs:
     print("---------------------"+t)
@@ -97,16 +98,20 @@ print("Added decommission year according to plan")
 plants_without_decommission_date = dataframe[dataframe['DecommissionInYear'] == 3000]
 # Group the filtered DataFrame by columns
 # group all power plants of same age and technology together
-df = plants_without_decommission_date.groupby(["Technology", 'Age', ], as_index=False).agg(
+df = dataframe.groupby(["Technology", 'Age' ], as_index=False).agg(
     total_capacity=("Capacity", "sum"),
     efficiency_weighted_mean=("Efficiency", weighted_eff),
     availability_weighted_mean=(
-        "Availability", weighted_avail))
+        "Availability", weighted_avail),
+    decommissionInYear_mean=(
+        "DecommissionInYear", weighted_decommission_year)
+
+)
 # drop all power plants after year
 # attention!  comment this line if plan power plants are not wanted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # df = df[df["Age"]>=0]
 
-# grouping power plants with negative capacity installed before year !
+# grouping power plants with negative capacity installed before year!
 for t in techs:
     negative = df.loc[(df['total_capacity'] < 0) & (df['Technology'] == t)]
     if negative.size > 0:
@@ -144,6 +149,7 @@ for t in techs:
         big.at[0, "Age"] = round(np.average(a=small["Age"], weights=small["total_capacity"]), 0)
         big.at[0, "total_capacity"] = np.sum(small["total_capacity"])
         big.at[0, "Technology"] = t
+
     else:
         for index, row in small.iterrows():
             # find the row with the nearest age
@@ -203,4 +209,4 @@ plt.ylabel("Efficiency", fontsize="large")
 fig1.savefig('../data/' + 'Initial_power_plants_NL.png', bbox_inches='tight', dpi=300)
 plt.close('all')
 
-final.to_excel("../data/" + country + str(year) + "planned_RES_datapower_plants.xlsx")
+final.to_excel("../data/" + country + str(year) + "planned_RES_datapower_plants_grouped.xlsx")

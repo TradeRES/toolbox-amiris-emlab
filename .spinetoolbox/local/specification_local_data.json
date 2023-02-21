@@ -172,6 +172,30 @@
                 "use_jupyter_console": true,
                 "executable": ""
             }
+        },
+        "Initialization Future Market": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
+        },
+        "initialization AMIRIS": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": false,
+                "executable": "C:/Programs/Anaconda3/envs/emlabEnv/python.exe"
+            }
+        },
+        "Initialization Invest": {
+            "execution_settings": {
+                "env": "",
+                "kernel_spec_name": "emlabpy",
+                "use_jupyter_console": true,
+                "executable": ""
+            }
         }
     }
 }

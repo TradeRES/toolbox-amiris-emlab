@@ -142,11 +142,13 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
             pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
 
             if modality == "initialize":
-                print("Initializing demand to year and future profiles to" + str(year))
+                """"
+                The investments are done for the same future "representative" year.
+                The future the profiles and the demand are not changing       
+                """
+                print("Initializing demand to " + str(year) + " and future profiles to" + str(year))
                 demand = excel_NL['Load Profile'][year]
                 demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-
-                # for the future the year is not changing it is always the same
                 future_wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
                 future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
                 future_wind_onshore = excel_NL['NL Wind Onshore profiles'][year]

@@ -28,7 +28,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
         if reps.current_tick == 0 and reps.initialization_investment == True:
-            if reps.investmentIteration > 0:
+            if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))
                 self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.investment_initialization_years
@@ -58,11 +58,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.write_conventionals()
         self.write_biogas()
         self.write_scenario_data_emlab("futurePrice")
-        # This is only for debugging
-        # path = os.path.join(os.path.dirname(os.getcwd()), str(self.reps.current_year) + ".xlsx"  )
-        # shutil.copy(globalNames.amiris_data_path, path)
         self.write_times()
-        self.writer.save()
         self.writer.close()
 
     def filter_power_plants_to_be_operational(self):
@@ -94,7 +90,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
-                if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == 0:
+                if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants, except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational(powerplant)
 
