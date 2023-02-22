@@ -449,21 +449,6 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("PowerPlantsC", pp_numbers)], "0")
 
-    def stage_testing_future_year(self, reps):
-        self.stage_object_class(self.configuration_object_classname)
-        self.stage_object_parameter(self.configuration_object_classname, "investment_initialization_years")
-        self.stage_object(self.configuration_object_classname, "SimulationYears")
-        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [("investment_initialization_years", reps.investment_initialization_years)], "0")
-
-    def stage_initialization_investment(self,  initialization_investment):
-        self.stage_object_class(self.configuration_object_classname)
-        self.stage_object_parameter(self.configuration_object_classname, "initialization_investment")
-        self.stage_object(self.configuration_object_classname, "SimulationYears")
-        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [("initialization_investment", initialization_investment)], "0")
-
-
     def stage_future_total_profits_installed_plants(self, reps, pp_dispatched_names, pp_dispatched_ids,
                                                     pp_total_profits, available_plants_ids):
         tick = reps.current_tick + reps.lookAhead
@@ -486,6 +471,20 @@ class SpineDBReaderWriter:
                     self.stage_object(self.powerplant_installed_classname, str(pp.name))
                     self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
                                                        [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
+
+    def stage_testing_future_year(self, reps):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "investment_initialization_years")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [("investment_initialization_years", reps.investment_initialization_years)], "0")
+
+    def stage_initialization_investment(self,  initialization_investment):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "initialization_investment")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [("initialization_investment", initialization_investment)], "0")
 
     def get_last_iteration(self):
         return self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(

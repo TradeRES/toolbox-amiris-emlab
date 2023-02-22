@@ -87,13 +87,14 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
                     self.set_power_plant_as_operational(powerplant)
-            elif fictional_age > powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension :
+            elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                 powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-
+                print("passed maximum life extension" + powerplant.name)
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
-                    #  In the first iteration test the future market with all power plants, except the ones that should be decommissioned by then
+                    #  In the first iteration test the future market with all power plants,
+                    #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational(powerplant)
 
                 elif self.reps.current_tick >= horizon:  # there are enough past simulations
@@ -108,13 +109,17 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         self.set_power_plant_as_operational(powerplant)
 
                 else:  # there are not enough past simulations calculate profits if there are any. can be 1, 2 or 3 results
-                    profit = powerplant.expectedTotalProfits.mean()
-                    if profit <= requiredProfit:
-                        powerplant.status = globalNames.power_plant_status_decommissioned
-                        print("{} expected operating loss {} : was {} which is less than required:  {} " \
-                              .format(powerplant.name, horizon, profit, requiredProfit))
+                    if isinstance(powerplant.expectedTotalProfits,pd.Series):
+                        profit = powerplant.expectedTotalProfits.mean()
+                        if profit <= requiredProfit:
+                            powerplant.status = globalNames.power_plant_status_decommissioned
+                            print("{} expected operating loss {} : was {} which is less than required:  {} " \
+                                  .format(powerplant.name, horizon, profit, requiredProfit))
+                        else:
+                            self.set_power_plant_as_operational(powerplant)
                     else:
-                        self.set_power_plant_as_operational(powerplant)
+                        print("decommissioned " + powerplant.name)
+                        powerplant.fictional_status = globalNames.power_plant_status_decommissioned
 
                 # todo better to make decisions according to expected participation in capacity market/strategic reserve?
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
@@ -172,7 +177,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         try:
             past_operating_profit = plant.expectedTotalProfits.loc[indices].values
             averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
-        except:
+        except: # there are not enough information
             averagePastOperatingProfit = -1
         return averagePastOperatingProfit
 

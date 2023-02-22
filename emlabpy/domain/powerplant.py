@@ -318,7 +318,7 @@ class PowerPlant(EMLabAgent):
     def setActualInvestedCapital(self, actualInvestedCapital):
         self.actualInvestedCapital = actualInvestedCapital
 
-    def dismantlePowerPlant(self, dismantleTime):
+    def setdismantleYear(self, dismantleTime):
         self.decommissionInYear = dismantleTime
 
     def setEndOfLife(self, endOfLife):

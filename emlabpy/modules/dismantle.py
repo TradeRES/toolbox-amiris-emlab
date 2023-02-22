@@ -62,25 +62,22 @@ class Dismantle(DefaultModule):
                    # operating loss (incl O&M cost)
                     print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                           .format(plant.name, horizon, profit, requiredProfit))
-                    plant.dismantlePowerPlant(self.reps.current_year)
-                    self.reps.dbrw.stage_decommission_year(plant.name, self.reps.current_year)
-                    plant.status = globalNames.power_plant_status_decommissioned
-                    self.decommissioned_list.append(plant.name)
+                    self.set_plant_dismantled(plant)
                 else:
                     self.increase_fixed_costs_and_decrease_efficiency( plant)
 
             else:
                 # if the plants cannot be deommmissioned yet, decrease efficiency
-                # print("first years. Dont dismantle but increase fixed OPEX of {}".format(plant.name))
                 if plant.age < plant.technology.getExpectedLifetime():
                     print("Age is less than expected life time!!! shouldnt be")
                 else:
                     self.increase_fixed_costs_and_decrease_efficiency( plant)
 
     def increase_fixed_costs_and_decrease_efficiency(self, plant):
-        print("dont dismantle but increase fixed OPEX of  {} ".format(plant.name))
+        print("dont dismantle but increase fom of  {} ".format(plant.name))
         passed_years = plant.age - plant.technology.getExpectedLifetime()
         ModifiedOM = plant.getTechnology().get_fixed_operating_cost_trend(passed_years) * plant.getActualNominalCapacity()
+        print(ModifiedOM)
         # ModifiedOM = plant.getActualFixedOperatingCost() * (
         #         1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
         plant.setActualFixedOperatingCost(ModifiedOM)
@@ -94,7 +91,7 @@ class Dismantle(DefaultModule):
             powerplant.age += 1
 
     def calculateAveragePastOperatingProfit(self, plant, horizon):
-        averagePastOperatingProfit = 0
+        averagePastOperatingProfit = -1
         rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
         # self.reps.typeofProfitforPastHorizon is defined in the config exce and can be "totalProfits" or "irr"
         if rep is not None:
@@ -114,11 +111,11 @@ class Dismantle(DefaultModule):
             technology = self.reps.power_generating_technologies[powerplant.technology.name]
             if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:
                 if  self.reps.current_tick >= powerplant.endOfLife :
-                    powerplant.status = globalNames.power_plant_status_decommissioned
-                    self.decommissioned_list.append(powerplant.name)
+                    self.set_plant_dismantled(powerplant)
                     print(powerplant.name + "decommissioned from input")
-            elif powerplant.age > technology.expected_lifetime + technology.maximumLifeExtension:
-                powerplant.status = globalNames.power_plant_status_decommissioned
+            elif powerplant.age >= technology.expected_lifetime + technology.maximumLifeExtension:
+                self.set_plant_dismantled(powerplant)
+                print("decommissioned cause of passed age"  + powerplant.name)
             elif powerplant.age > technology.expected_lifetime:
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
             elif powerplant.commissionedYear <= self.reps.current_year:
@@ -128,8 +125,19 @@ class Dismantle(DefaultModule):
             else:
                 print("status not set", powerplant.name)
 
+    def set_plant_dismantled(self, plant):
+        """
+        Decommissioned power plants are saved in a list, and this list is read in every module.
+        Power plants in this list are then not read.
+        """
+        plant.status = globalNames.power_plant_status_decommissioned
+        plant.setdismantleYear(self.reps.current_year)
+        self.reps.dbrw.stage_decommission_year(plant.name, self.reps.current_year)
+        self.decommissioned_list.append(plant.name)
+
     def save_powerplants_status_and_age(self):
         self.reps.dbrw.stage_power_plant_status_and_age(self.reps.power_plants)
 
     def save_decommissioned_list(self):
         self.reps.dbrw.stage_list_decommissioned_plants(self.decommissioned_list)
+
