@@ -9,7 +9,7 @@ from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import Investments, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
-from domain.weatherYears import WeatherYears
+#from domain.weatherYears import WeatherYears
 from modules.profits import Profits
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
@@ -869,8 +869,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
-    elif object_class_name == 'weatherYears' and reps.runningModule == "run_prepare_next_year_market_clearing":
-        add_parameter_value_to_repository(reps, db_line, reps.weatherYears, WeatherYears)
+    # elif object_class_name == 'weatherYears' and reps.runningModule == "run_prepare_next_year_market_clearing":
+    #     add_parameter_value_to_repository(reps, db_line, reps.weatherYears, WeatherYears) # this data is prepared in clock.py
     elif object_class_name == "Profits" and reps.runningModule == "plotting":
         # db investment with the object name "tick - iteration"
         object_name = db_line[1]

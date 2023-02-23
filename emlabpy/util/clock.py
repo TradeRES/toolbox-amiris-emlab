@@ -122,13 +122,14 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                              db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                     object_name) \
                              if i['parameter_name'] == 'iteration')
+
             weatherYears_data = next(i['parameter_value'] for i in
                                      db_emlab.query_object_parameter_values_by_object_class_and_object_name(
                                          "weatherYears", "weatherYears") if i['alternative'] == iteration)
 
-            print("preparing year profiles to RANDOM year from tick " + str(new_tick))
             weatherYears = pd.DataFrame(weatherYears_data.values, index=weatherYears_data.indexes)
             new_weather_tick = weatherYears.values[new_tick]
+            print("preparing year profiles to RANDOM year " + str(new_weather_tick))
             more_years_profiles = pd.read_excel(input_weather_years, index_col=0, skiprows=[0],
                                                 sheet_name=["NL Wind Onshore profiles",
                                                             "NL Wind Offshore profiles",

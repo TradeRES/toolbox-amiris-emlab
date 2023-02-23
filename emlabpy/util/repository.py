@@ -139,7 +139,7 @@ class Repository:
         self.loanList = dict()
         self.financialPowerPlantReports = dict()
 
-        self.weatherYears = dict()
+   #     self.weatherYears = dict()
 
         self.profits = dict()
         # Create list of plants in SR
