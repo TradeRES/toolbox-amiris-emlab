@@ -79,12 +79,15 @@ class PowerGeneratingTechnology(ImportObject):
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
             self.fixed_operating_costs = float(parameter_value)
-            self.fixed_operating_cost_time_series = reps.trends[self.name + "FixedOperatingCostTimeSeries"]
+            self.fixed_operating_cost_time_series = reps.trends[self.name + "FixedOperatingCostTimeSeries"] # geometric Trends
             self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
-            self.investment_cost_eur_MW.at[int(alternative)] = parameter_value
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.investment_cost_eur_MW = pd.Series(values, index=index)
             self.initializeInvestmenttrend() # this is needed for the initialization
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)

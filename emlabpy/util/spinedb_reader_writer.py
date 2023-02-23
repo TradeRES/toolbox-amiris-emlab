@@ -477,9 +477,10 @@ class SpineDBReaderWriter:
         self.stage_object_parameter(self.configuration_object_classname, "investment_initialization_years")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [("investment_initialization_years", reps.investment_initialization_years)], "0")
+                                           [("investment_initialization_years", reps.investment_initialization_years)],
+                                           "0")
 
-    def stage_initialization_investment(self,  initialization_investment):
+    def stage_initialization_investment(self, initialization_investment):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "initialization_investment")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
@@ -820,14 +821,13 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
             add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
                                               PowerGeneratingTechnology)
         # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ data from Traderes
-            # From here are the inputs from TechnologyEmlab
-    elif object_class_name == 'unit':
-        # according to the scenario.yaml, if is has energy carrier then it is intermittent
-        if db_line[1] in reps.used_technologies:
-            add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
-                                              PowerGeneratingTechnology)
-        else:
-            pass
+    #     # From here are the inputs from TechnologyEmlab
+    # elif object_class_name == 'unit':
+    #     # according to the scenario.yaml, if is has energy carrier then it is intermittent
+    #     if db_line[1] in reps.used_technologies:
+    #         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
+    #                                           PowerGeneratingTechnology)
+
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # Substances and CO2 costs
@@ -845,7 +845,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line[1] = "SRO_" + reps.country  # object name
         new_db_line[4] = int(db_line[1])  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.sr_operator, StrategicReserveOperator)
-    elif object_class_name == 'InvestmentDecisions':  # needed fo "run_financial_results", "plotting", investment
+    elif object_class_name == 'InvestmentDecisions' and reps.runningModule in ["run_financial_results", "plotting",
+                                                                               "run_investment_module"]:
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
     elif object_class_name == "InstalledDispatchableCapacity" and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.installedCapacity, InstalledCapacity)

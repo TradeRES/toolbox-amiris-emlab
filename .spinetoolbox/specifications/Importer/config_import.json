@@ -87,7 +87,8 @@
         ],
         "table_options": {
             "Coupling Parameters": {
-                "read_until_row": true
+                "read_until_row": true,
+                "column": 0
             },
             "Import Priorities": {
                 "read_until_col": true,

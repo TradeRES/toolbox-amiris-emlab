@@ -1237,7 +1237,7 @@
                 "row": 0,
                 "column": 0,
                 "read_until_col": true,
-                "read_until_row": false
+                "read_until_row": true
             },
             "Fuels": {
                 "read_until_col": true,
@@ -1398,7 +1398,9 @@
                 "5": "float",
                 "6": "float",
                 "7": "float",
-                "8": "float"
+                "8": "float",
+                "9": "string",
+                "10": "string"
             },
             "Fuels": {
                 "0": "string",

@@ -682,7 +682,7 @@
         "Traderes CommonDB": {
             "type": "Data Connection",
             "description": "",
-            "x": -1478.5123471942795,
+            "x": -1476.6017902603885,
             "y": -277.67896545966835,
             "file_references": [
                 {
@@ -696,11 +696,11 @@
         "traderesCommon to Amiris": {
             "type": "Importer",
             "description": "",
-            "x": -1319.885295496335,
-            "y": -282.01586067954366,
+            "x": -1313.7596655732577,
+            "y": -282.0158606795436,
             "specification": "import traderes db",
-            "cancel_on_error": false,
-            "on_conflict": "replace",
+            "cancel_on_error": true,
+            "on_conflict": "merge",
             "file_selection": [
                 [
                     "<project>/data/exported_Traderes.xlsx",
@@ -759,7 +759,7 @@
             "type": "Data Store",
             "description": "",
             "x": -1220.6057148269538,
-            "y": -467.9366722918406,
+            "y": -465.63215623654577,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -880,8 +880,8 @@
         "Next year": {
             "type": "Tool",
             "description": "",
-            "x": -1056.3392600658472,
-            "y": -276.156754006406,
+            "x": -1056.339260065847,
+            "y": -278.4612700617009,
             "specification": "clock",
             "execute_in_work": false,
             "cmd_line_args": [
