@@ -125,14 +125,11 @@ class PowerPlant(EMLabAgent):
         self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
         self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
-    def specifyPowerPlantforInvest(self, reps, energyProducer, capacity, pgt, look_ahead_years):
+    def specifyPowerPlantforInvest(self, reps,  look_ahead_years):
         """"
         specify power plant invested by NPV or target invest
         """
-        self.setCapacity(capacity)
-        self.setTechnology(pgt)
-        self.setOwner(energyProducer)
-        self.setLocation(reps.country)
+        self.setCapacity(self.capacityTobeInstalled)
         self.setActualLeadtime(self.technology.getExpectedLeadtime())
         self.setActualPermittime(self.technology.getExpectedPermittime())
         if reps.install_at_look_ahead_year == True:
@@ -142,15 +139,15 @@ class PowerPlant(EMLabAgent):
             self.setEndOfLife(
                 reps.current_year + reps.lookAhead + self.getTechnology().getExpectedLifetime())  # for dismantling decision
         else:
-            self.age = - pgt.getExpectedLeadtime() - pgt.getExpectedPermittime()
-            self.commissionedYear = reps.current_year + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
-            commissionedTick = reps.current_tick + pgt.getExpectedLeadtime() + pgt.getExpectedPermittime()
+            self.age = - self.getExpectedLeadtime() - self.getExpectedPermittime()
+            self.commissionedYear = reps.current_year + self.getExpectedLeadtime() + self.getExpectedPermittime()
+            commissionedTick = reps.current_tick + self.getExpectedLeadtime() + self.getExpectedPermittime()
             self.setEndOfLife(
                 reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
         self.status = globalNames.power_plant_status_inPipeline
         self.calculateAndSetActualEfficiency(0) # efficiency is set according to geometric trend but growth is 0
         self.calculateAndSetActualFixedOperatingCosts(0)  # by GeometricTrend by tick --- > negative exponential value
-        self.calculateAndSetActualInvestedCapital(reps, pgt, commissionedTick)  # INVEST
+        self.calculateAndSetActualInvestedCapital(reps, self.technology, commissionedTick)  # INVEST
 
     def specifyPowerPlantsInstalled(self, reps, run_initialize_power_plants):
         """"
