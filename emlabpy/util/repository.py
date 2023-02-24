@@ -251,6 +251,14 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_total_profits_for_plant(self, plant_name):
+        try:
+            return next(i.totalProfits for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
+
+
+
     def getCashFlowsForEnergyProducer(self, energyproducer):
         try:
             return next(i for i in self.energy_producers.values() if i.name == energyproducer)

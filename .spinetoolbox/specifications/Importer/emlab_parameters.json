@@ -1182,6 +1182,58 @@
                         ]
                     }
                 }
+            ],
+            "weatherYears40": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "weatherYears"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden",
+                                "value": "weatherYears"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "weatherYears"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "array"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1204,7 +1256,7 @@
             "yearlyCO2",
             "technologyPotentials",
             "yearlytechnologyPotentials2",
-            "weatherYears"
+            "weatherYears40"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1280,7 +1332,8 @@
             "weatherYears": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "weatherYears40": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1560,6 +1613,49 @@
                 "28": "float",
                 "29": "float",
                 "30": "float"
+            },
+            "weatherYears40": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float",
+                "10": "float",
+                "11": "float",
+                "12": "float",
+                "13": "float",
+                "14": "float",
+                "15": "float",
+                "16": "float",
+                "17": "float",
+                "18": "float",
+                "19": "float",
+                "20": "float",
+                "21": "float",
+                "22": "float",
+                "23": "float",
+                "24": "float",
+                "25": "float",
+                "26": "float",
+                "27": "float",
+                "28": "float",
+                "29": "float",
+                "30": "float",
+                "31": "float",
+                "32": "float",
+                "33": "float",
+                "34": "float",
+                "35": "float",
+                "36": "float",
+                "37": "float",
+                "38": "float",
+                "39": "float",
+                "40": "float"
             }
         },
         "table_default_column_type": {},
@@ -1569,6 +1665,9 @@
                 "0": "string"
             },
             "dictFuel": {
+                "0": "string"
+            },
+            "weatherYears40": {
                 "0": "string"
             }
         },

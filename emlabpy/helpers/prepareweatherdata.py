@@ -11,7 +11,7 @@ df_solar = pd.read_csv( current_pv_data_path, sep =",", index_col = 'time', pars
 """
 from DNV
  onshore wind from 26% now to 34%, and from 38% to 43% for offshore wind by 2050.
- offshoreCF_increase =  round(43/38,2)
+ offshoreCF_increase =  round(43/38,2) in 2018 Renewable Power Generation Costs in 201
  onshoreCF_increase =  round(34/26,2)
 """
 

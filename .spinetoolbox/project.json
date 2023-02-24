@@ -544,17 +544,6 @@
                 ]
             },
             {
-                "name": "from intialization Invest to decommission",
-                "from": [
-                    "intialization Invest",
-                    "right"
-                ],
-                "to": [
-                    "decommission",
-                    "left"
-                ]
-            },
-            {
                 "name": "from initialization future market to initialization AMIRIS",
                 "from": [
                     "initialization future market",
@@ -584,6 +573,17 @@
                 ],
                 "to": [
                     "intialization Invest",
+                    "left"
+                ]
+            },
+            {
+                "name": "from intialization Invest to decommission",
+                "from": [
+                    "intialization Invest",
+                    "right"
+                ],
+                "to": [
+                    "decommission",
                     "left"
                 ]
             }
@@ -740,8 +740,8 @@
         "Initialize Clock": {
             "type": "Tool",
             "description": "",
-            "x": -1233.3645537510276,
-            "y": -702.3357368406685,
+            "x": -1235.4221573718269,
+            "y": -702.3357368406686,
             "specification": "Initialize clock",
             "execute_in_work": false,
             "cmd_line_args": [

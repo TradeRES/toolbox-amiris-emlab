@@ -254,7 +254,7 @@ class Investmentdecision(DefaultModule):
                                                                              newplant.technology.name,
                                                                              self.reps.current_tick, newid))
         # --------------------------------------------------------------------------------------Payments
-        print(newplant.getActualInvestedCapital() / 1000000)
+        print(newplant.getActualInvestedCapital() / (1000000*newplant.capacity))
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
         totalDownPayment = investmentCostPayedByEquity
