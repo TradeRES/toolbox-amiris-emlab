@@ -466,6 +466,10 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
 
 def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_plots, technology_colors
                            ):
+    """
+    ALl technologies after the current simulation year are wrong (capacity limits can be passed)
+    because decommissions are not considered.
+    """
     all_techs_generation_nozeroes = all_techs_generation[all_techs_generation > 0]
     all_techs_generation_nozeroes.dropna(how='all', axis=1, inplace=True)
     all_techs_consumption_nozeroes = all_techs_consumption[all_techs_consumption > 0]
@@ -919,7 +923,7 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
         if pp.status == globalNames.power_plant_status_decommissioned:
             year = pp.decommissionInYear
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-            if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_year):
+            if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_tick):
                 initial_power_plants.loc[:, pp.technology.name] += pp.capacity
         # if the age at the start was larger than zero then they count as being installed.
         elif pp.age > (reps.current_year - reps.start_simulation_year):
@@ -975,7 +979,7 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
     all_techs_capacity = np.subtract(commissioned, decommissioned)
     all_techs_capacity = initial_power_plants.add(all_techs_capacity, axis=0)
 
-    return initial_power_plants, annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned_capacity, \
+    return annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned_capacity, \
            all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
            last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
            last_year_strategic_reserve_capacity, number_per_status, number_per_status_last_year
@@ -1157,16 +1161,16 @@ def prepare_cash_per_agent(reps, simulation_ticks):
           + all_info.CF_DOWNPAYMENT_NEW_PLANTS + all_info.CF_LOAN_NEW_PLANTS)
         )
 
-    new_index = cost_recovery_in_eur.index.values + reps.start_simulation_year
-    cash_per_agent["years"] = new_index
+    #new_index = cost_recovery_in_eur.index.values + reps.start_simulation_year
+    cash_per_agent["years"] = cash_per_agent.index.values + reps.start_simulation_year
     cash_per_agent.set_index('years', inplace=True)
 
-    cost_recovery.index = new_index
-    cost_recovery_in_eur.index = new_index
+    cost_recovery.index = cost_recovery.index + reps.start_simulation_year
+    cost_recovery_in_eur.index = cost_recovery_in_eur.index + reps.start_simulation_year
     cost_recovery.sort_index(inplace = True)
-    cost_recovery_in_eur.sort_index(inplace = True)
-
+  #  cost_recovery_in_eur.sort_index(inplace = True)
     cumulative_cost_recovery = cost_recovery_in_eur.cumsum()
+
     return cash_per_agent, cost_recovery, cumulative_cost_recovery, new_plants_loans
 
 
@@ -1649,7 +1653,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_cash_flows(cash_flows_energy_producer, new_plants_loans, calculate_capacity_mechanisms, path_to_plots)
 
     # #section -----------------------------------------------------------------------------------------------capacities installed
-    initial_power_plants, annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
+    annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
     last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
     last_year_strategic_reserve_capacity, capacity_per_status, number_per_status_last_year = \
@@ -1990,15 +1994,15 @@ results_excel = "ITERATIONS.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-#SCENARIOS = ["NL2091_SD3_PH3_MI100000000_totalProfits-WeatherAnalysis"]
-SCENARIOS = ["-WeatherAnalysis2"
+# SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
+SCENARIOS = ["-equilibrium2"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech = None  # "WTG_onshore" #"WTG_offshore" #"CCGT"#  None
+test_tech = None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 calculate_investments = True
 calculate_investments_per_iteration = True  # ProfitsC
 existing_scenario = False
@@ -2084,7 +2088,7 @@ for scenario_name in SCENARIOS:
         writeInfo(reps, path_to_plots, scenario_name)
 
         generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
-                       capacity_mechanisms, calculate_vres_support, scenario_name)
+                       capacity_mechanisms, calculate_vres_support)
 
     except Exception as e:
         logging.error('Exception occurred: ' + str(e))

@@ -1,5 +1,5 @@
 # Python-and IDE-related
-#*.idea
+*.idea
 *.vscode
 **/__pycache__
 *.pyc
