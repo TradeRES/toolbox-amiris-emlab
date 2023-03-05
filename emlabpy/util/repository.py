@@ -56,7 +56,7 @@ class Repository:
         self.current_year = 0
         self.simulation_length = 0
         self.start_tick_fuel_trends = 0
-        self.start_tick_dismantling = 0
+        self.start_profit_based_dismantling_tick = 0
         self.initialization_investment = True
 
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
@@ -80,9 +80,10 @@ class Repository:
         self.install_missing_capacity_as_one_pp = True
         self.decommission_from_input = False
         self.realistic_candidate_capacities_tobe_installed = False
-        self.realistic_candidate_capacities_for_future = False
+        self.realistic_candidate_capacities_to_test = False
         self.maximum_investment_capacity_per_year = 0
-        self.dummy_capacity = 1
+        self.dummy_capacity_to_be_installed = 1000
+        self.dummy_capacity_to_test = 1
         self.run_quick_investments = False
         self.limit_investments = True
         # section --------------------------------------------------------------------------------------configuration
@@ -426,7 +427,11 @@ class Repository:
             return next(i.name for i in self.power_plants.values() if i.id == int(id))
         except StopIteration:
             return None
-
+    def get_power_plant_by_name(self, name):
+        try:
+            return next(i for i in self.power_plants.values() if i.name == name)
+        except StopIteration:
+            return None
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 

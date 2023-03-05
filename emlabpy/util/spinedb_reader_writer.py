@@ -92,8 +92,8 @@ class SpineDBReaderWriter:
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] in ['start_tick_fuel_trends', 'start_year_fuel_trends']:
                 reps.start_tick_fuel_trends = int(row['parameter_value'])
-            elif row['parameter_name'] in ['start_tick_dismantling', 'start_year_dismantling']:
-                reps.start_tick_dismantling = int(row['parameter_value'])
+            elif row['parameter_name'] == 'start_profit_based_dismantling_tick':
+                reps.start_profit_based_dismantling_tick = int(row['parameter_value'])
             elif row['parameter_name'] == 'maximum_investment_capacity_per_year':
                 reps.maximum_investment_capacity_per_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'typeofProfitforPastHorizon':
@@ -110,8 +110,10 @@ class SpineDBReaderWriter:
                 reps.realistic_candidate_capacities_tobe_installed = bool(row['parameter_value'])
             elif row['parameter_name'] == 'realistic_candidate_capacities_for_future':
                 reps.realistic_candidate_capacities_for_future = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'dummy_capacity':
-                reps.dummy_capacity = int(row['parameter_value'])
+            elif row['parameter_name'] == 'dummy_capacity_to_be_installed':
+                reps.dummy_capacity_to_be_installed = int(row['parameter_value'])
+            elif row['parameter_name'] == 'dummy_capacity_to_test':
+                reps.dummy_capacity_to_test = int(row['parameter_value'])
             elif row['parameter_name'] == 'npv_with_annuity':
                 reps.npv_with_annuity = bool(row['parameter_value'])
             elif row['parameter_name'] == 'targetinvestment_per_year':
@@ -360,9 +362,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameters("Decommissioned", ['Decommissioned'])
         self.db.import_object_parameter_values(
             [("Decommissioned", "Decommissioned", "Decommissioned", decommissioned_list, '0')])
-
+    def stage_list_decommissioned_expected_plants(self, decommissioned_list, future_year):
+        self.stage_object("Decommissioned", str(future_year))
+        self.db.import_object_parameter_values(
+            [("Decommissioned", "Expectation" , str(future_year),  decommissioned_list, "0" )])
     def stage_decommission_year(self, powerplant_name, tick):
-        self.stage_object_parameters(self.powerplant_installed_classname, ['DecommissionInYear'])
+        #self.stage_object_parameters(self.powerplant_installed_classname, ['DecommissionInYear'])
         self.db.import_object_parameter_values(
             [(self.powerplant_installed_classname, powerplant_name, "DecommissionInYear", tick, '0')])
 
@@ -792,8 +797,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.trends, StepTrend)
     elif object_class_name == 'Decommissioned':  # this decommissioned is to avoid reading the decommissioned plants
         add_parameter_value_to_repository(reps, db_line, reps.decommissioned, Decommissioned)
-    # Ignore decommissioned power plants # todo: this anyways shouldnt be imported
-    # reps.power_plants = {p : power_plant for p, power_plant in reps.power_plants.items() if power_plant.name not in }
     elif object_class_name == 'PowerPlantsInstalled':
         if reps.runningModule == "plotting":
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)

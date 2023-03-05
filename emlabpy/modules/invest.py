@@ -130,7 +130,7 @@ class Investmentdecision(DefaultModule):
             highestNPV = 0
             # power plants are investable when they havent passed the capacity limits
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
-            if self.investable_candidate_plants:  # check if the are investable power plants
+            if self.investable_candidate_plants:  # check if there are investable power plants
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants)
 

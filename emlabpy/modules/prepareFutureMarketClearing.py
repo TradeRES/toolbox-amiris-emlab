@@ -78,6 +78,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerPlantsinSR = i.list_of_plants
                 SR_price = i.reservePriceSR
 
+        decommissioned_list = []
+
         for powerplant in powerPlantsfromAgent:
             fictional_age = powerplant.age + self.look_ahead_years
             # for plants that have passed their lifetime, assume that these will be decommissioned
@@ -90,6 +92,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                 powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 print("passed maximum life extension" + powerplant.name)
+                decommissioned_list.append(powerplant.name)
             elif fictional_age > powerplant.technology.expected_lifetime:
                 # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
@@ -140,6 +143,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
                 # power plants in pipeline are also considered to be operational in the future
                 self.set_power_plant_as_operational(powerplant)
+
+        self.save_decommissioned_expected_list(decommissioned_list)
+
+    def save_decommissioned_expected_list(self, decommissioned_list):
+        print("decommission in year " + str(self.simulation_year))
+        print(decommissioned_list)
+        self.reps.dbrw.stage_list_decommissioned_expected_plants(decommissioned_list, self.simulation_year)
 
     def set_power_plant_as_operational(self, powerplant):
         powerplant.fictional_status = globalNames.power_plant_status_operational

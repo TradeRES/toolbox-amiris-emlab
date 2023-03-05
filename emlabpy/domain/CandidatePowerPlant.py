@@ -36,25 +36,18 @@ class CandidatePowerPlant(PowerPlant):
         #     self.owner = parameter_value
         elif parameter_name == 'ViableInvestment':
             self.viableInvestment = bool(parameter_value)
-
-        # capacity is the one being tested
         # capacityTobeInstalled is the one being really installed, after the test of dummy capacity has been tested
-        elif reps.realistic_candidate_capacities_tobe_installed == True and parameter_name == "Realistic_capacity":
-            # this is the capacity that will be in reality installed
-            self.capacityTobeInstalled = int(parameter_value)
-            if reps.realistic_candidate_capacities_for_future == True:
-                # this is the capacity that will be tested
+
+        elif parameter_name == "Realistic_capacity":
+            if reps.realistic_candidate_capacities_tobe_installed == True:
+                self.capacityTobeInstalled = int(parameter_value)
+            elif reps.realistic_candidate_capacities_tobe_installed == False:
+                self.capacityTobeInstalled = reps.dummy_capacity_to_be_installed
+        # capacity is the one being tested
+            if reps.realistic_candidate_capacities_to_test == True :
                 self.capacity = int(parameter_value)
-            else:
-                self.capacity = reps.dummy_capacity
-        elif reps.realistic_candidate_capacities_tobe_installed == False and parameter_name == "Realistic_capacity":
-            # this is the capacity that will be in reality installed
-            self.capacityTobeInstalled = reps.dummy_capacity
-            if reps.realistic_candidate_capacities_for_future == True:
-                # this is the capacity that will be tested
-                self.capacity = int(parameter_value)
-            else:
-                self.capacity = reps.dummy_capacity
+            elif reps.realistic_candidate_capacities_to_test == False:
+                self.capacity = reps.dummy_capacity_to_test
 
     def specifyCandidatePPCapacityLocationOwner(self, reps, energyProducer):
         self.setOwner(energyProducer)

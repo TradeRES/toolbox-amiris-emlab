@@ -876,7 +876,6 @@ def plot_initial_power_plants(path_to_plots, sheetname):
     df = pd.read_excel(globalNames.power_plants_path,
                        sheet_name=sheetname)
     colors = [technology_colors[tech] for tech in df["Technology"].unique()]
-
     fig1 = sns.relplot(x="Age", y="Efficiency", hue="Technology", size="Capacity",
                        sizes=(40, 400), alpha=.5, palette=colors,
                        height=6, data=df)
@@ -887,7 +886,38 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 
 # section -----------------------------------------------------------------------------------------------data preparation
+def prepare_pp_decommissioned(reps):
+    years_to_generate_and_build = list(
+        range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.max_permit_build_time))
+    plants_decommissioned_per_year = pd.DataFrame(columns=["PPname", "decommissionInYear","technology", "Capacity"])
+    plants_expected_decommissioned_per_year = pd.DataFrame(columns=["PPname", "decommissionInYear","technology", "Capacity"])
+    for pp in reps.get_power_plants_by_status([globalNames.power_plant_status_decommissioned]):
+        plants_decommissioned_per_year.loc[len(plants_decommissioned_per_year)] = [pp.name, pp.decommissionInYear,  pp.technology.name, pp.capacity]
 
+    #colors = [technology_colors[tech] for tech in plants_expected_decommissioned_per_year["technology"].unique()]
+    fig1 = sns.relplot( x="decommissionInYear", y="Capacity", hue="technology",
+                       sizes=(40, 400), alpha=.5,
+                       height=6, data=plants_decommissioned_per_year)
+    for row in plants_decommissioned_per_year.iterrows():
+        print(str(row[1].PPname))
+        plt.text(x=row[1].decommissionInYear+0.3, y=row[1].Capacity+0.3, s=str(row[1].PPname), color='black', weight='semibold')
+    plt.xlabel("decommissionYear", fontsize="large")
+    plt.ylabel("Capacity", fontsize="large")
+    plt.show()
+    fig1.savefig(path_to_plots + '/' + 'Decommissioned.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
+
+    # for expected_decomm_year, pp_name in reps.decommissioned.Expectation.items():
+    #     pp = reps.get_power_plant_by_name(pp_name)
+    #     plants_expected_decommissioned_per_year.loc[len(plants_decommissioned_per_year)] = [pp.name, expected_decomm_year,  pp.technology.name, pp.capacity]
+    #
+    # fig2 = sns.relplot( x="decommissionYear", y="Capacity", hue="technology",
+    #                     sizes=(40, 400), alpha=.5,
+    #                     height=6, data=plants_expected_decommissioned_per_year)
+    # plt.xlabel("decommissionYear", fontsize="large")
+    # plt.ylabel("Capacity", fontsize="large")
+    # fig2.savefig(path_to_plots + '/' + 'DecommissionedExpected.png', bbox_inches='tight', dpi=300)
+    # plt.close('all')
 
 def prepare_pp_status(years_to_generate, reps, unique_technologies):
     if reps.decommission_from_input == True:  # the initial power plants have negative age to avoid all to be commmissioned in one year
@@ -899,6 +929,8 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
     else:
         years_to_generate_and_build = list(
             range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.max_permit_build_time))
+
+
     number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
                                                      index=years_to_generate_and_build).fillna(0)
     for pp, investments in reps.investmentDecisions.items():
@@ -930,7 +962,6 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
             initial_power_plants.loc[:, pp.technology.name] += pp.capacity
         elif pp.age <= reps.current_tick:
             # graphed according to commissioned year which is determined by age.
-
             if reps.install_at_look_ahead_year == True:
                 year_investment_decision = pp.commissionedYear - reps.lookAhead
             else:
@@ -1633,6 +1664,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         raise Exception("Test other technology, this is not installed until year" + str(years_to_generate[-1]))
 
     yearly_load = reading_original_load(years_to_generate)
+
+    prepare_pp_decommissioned(reps)
+
     # # section -----------------------------------------------------------------------------------------------capacities
     all_techs_generation, all_techs_consumption, all_techs_market_value, all_techs_capacity_factor, \
     average_electricity_price, all_techs_full_load_hours, share_RES = prepare_capacity_and_generation_per_technology(
@@ -1850,11 +1884,11 @@ def writeInfo(reps, path_to_plots, scenario_name):
     print("Test_tick " + str(test_tick) + " Test tech " + str(test_tech))
     file.write("Test_tick " + str(test_tick) + " Test tech " + str(test_tech) + "\n")
     info.append("Test_tick " + str(test_tick) + " Test tech " + str(test_tech))
-    print("pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling" + str(reps.start_tick_dismantling))
+    print("pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling" + str(reps.start_profit_based_dismantling_tick))
     file.write(
-        "pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling " + str(reps.start_tick_dismantling))
+        "pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling " + str(reps.start_profit_based_dismantling_tick))
     info.append("pastTimeHorizon " + str(reps.pastTimeHorizon) + "\n")
-    info.append("start_tick_dismantling" + str(reps.start_tick_dismantling) + "\n")
+    info.append("start_tick_dismantling" + str(reps.start_profit_based_dismantling_tick) + "\n")
     file.write("look ahead " + str(reps.lookAhead) + "\n")
     info.append("look ahead " + str(reps.lookAhead) + "\n")
     file.write("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends) + "\n")
@@ -2000,9 +2034,9 @@ SCENARIOS = ["-equilibrium2"
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 0
+test_tick = 6
 # write None is no investment is expected,g
-test_tech = None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = "PV_utility_systems" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 calculate_investments = True
 calculate_investments_per_iteration = True  # ProfitsC
 existing_scenario = False
@@ -2038,13 +2072,13 @@ for scenario_name in SCENARIOS:
             reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 
             pre_name = reps.country + str(reps.end_simulation_year) \
-                       + "_SD" + str(reps.start_tick_dismantling) \
+                       + "_SD" + str(reps.start_profit_based_dismantling_tick) \
                        + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                        + "_" + reps.typeofProfitforPastHorizon + "_"
-            if reps.realistic_candidate_capacities_for_future == True:
-                pre_name = pre_name + "future1"
+            if reps.realistic_candidate_capacities_to_test == True:
+                pre_name = pre_name + "testRealC"
             if reps.realistic_candidate_capacities_tobe_installed == True:
-                pre_name = pre_name + "installed1"
+                pre_name = pre_name + "instalRealC"
             complete_name = pre_name + scenario_name
 
             if read_electricity_prices == True:
@@ -2076,7 +2110,7 @@ for scenario_name in SCENARIOS:
         for p, power_plant in reps.power_plants.items():
             power_plant.specifyPowerPlantsInstalled(reps, True)
 
-        print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_tick_dismantling) + "_PH" + str(
+        print(reps.country + str(reps.end_simulation_year) + "_SD" + str(reps.start_profit_based_dismantling_tick) + "_PH" + str(
             reps.pastTimeHorizon) + "_MI" + str(
             reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
         path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", complete_name)
@@ -2086,7 +2120,6 @@ for scenario_name in SCENARIOS:
         # plot_initial_power_plants(path_to_plots, "futureDecarbonizedNL") # other options are "extendedDE" extendedNL, groupedNL, groupedNLprePP
 
         writeInfo(reps, path_to_plots, scenario_name)
-
         generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
                        capacity_mechanisms, calculate_vres_support)
 

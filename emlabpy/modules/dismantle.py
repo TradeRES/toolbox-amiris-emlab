@@ -55,7 +55,7 @@ class Dismantle(DefaultModule):
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
-            if self.reps.current_tick >= self.reps.start_tick_dismantling:
+            if self.reps.current_tick >= self.reps.start_profit_based_dismantling_tick:
                 profit = self.calculateAveragePastOperatingProfit(plant, horizon)
 
                 if profit <= requiredProfit:
