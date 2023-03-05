@@ -59,7 +59,7 @@ class PowerPlant(EMLabAgent):
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if reps.runningModule != "plotting" and self.name in (
                 # do not import decommissioned power plants to the repository if it is not the plotting step
-                reps.decommissioned["Decommissioned"]).Decommissioned:
+                reps.decommissioned["Decommissioned"]).Done:
             return
         elif parameter_name == 'Status':
             self.status = str(parameter_value)
@@ -387,12 +387,12 @@ class PowerPlant(EMLabAgent):
 class Decommissioned(ImportObject):
     def __init__(self, name):
         super().__init__(name)
-        self.Decommissioned = []
+        self.Done = []
         self.Expectation = dict()
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
-        if parameter_name == 'Decommissioned':
-            self.Decommissioned = parameter_value
+        if parameter_name == 'Done':
+            self.Done = parameter_value
         elif parameter_name == 'Expectation':
             self.Expectation[alternative] = parameter_value
 

@@ -858,7 +858,7 @@
                             },
                             {
                                 "map_type": "Object",
-                                "position": 0
+                                "position": -1
                             },
                             {
                                 "map_type": "ObjectMetadata",
@@ -866,7 +866,7 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": -1
+                                "position": 0
                             },
                             {
                                 "map_type": "Alternative",
@@ -1308,7 +1308,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "Dismantled": {},
+            "Dismantled": {
+                "read_until_row": true,
+                "read_until_col": false
+            },
             "backup": {},
             "YearlyTargets": {
                 "read_until_col": true
@@ -1518,7 +1521,8 @@
             },
             "Dismantled": {
                 "0": "string",
-                "1": "float"
+                "1": "float",
+                "2": "string"
             },
             "backup": {
                 "0": "string",

@@ -359,13 +359,14 @@ class SpineDBReaderWriter:
                                            "0")
 
     def stage_list_decommissioned_plants(self, decommissioned_list):
-        self.stage_object_parameters("Decommissioned", ['Decommissioned'])
+        self.stage_object_parameters("Decommissioned", ['Done'])
         self.db.import_object_parameter_values(
-            [("Decommissioned", "Decommissioned", "Decommissioned", decommissioned_list, '0')])
+            [("Decommissioned",  "Decommissioned", "Done", decommissioned_list, '0')])
     def stage_list_decommissioned_expected_plants(self, decommissioned_list, future_year):
+        #self.stage_object_parameters("Decommissioned", ['Expectation'])
         self.stage_object("Decommissioned", str(future_year))
         self.db.import_object_parameter_values(
-            [("Decommissioned", "Expectation" , str(future_year),  decommissioned_list, "0" )])
+            [("Decommissioned",  str(future_year), "Expectation" ,  decommissioned_list, "0" )])
     def stage_decommission_year(self, powerplant_name, tick):
         #self.stage_object_parameters(self.powerplant_installed_classname, ['DecommissionInYear'])
         self.db.import_object_parameter_values(
@@ -801,7 +802,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         if reps.runningModule == "plotting":
             add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
         else:
-            if object_name not in (reps.decommissioned["Decommissioned"]).Decommissioned:
+            if object_name not in (reps.decommissioned["Decommissioned"]).Done:
                 add_parameter_value_to_repository(reps, db_line, reps.power_plants, PowerPlant)
     elif object_class_name == "Storage" and reps.runningModule == "run_prepare_next_year_market_clearing":
         if str(object_name)[0: 4] != "9999":  # Read the state of charge of storages, but not of candidate storage.
@@ -857,7 +858,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.installedFuturePowerPlants, InstalledFuturePowerPlants)
     elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting",
                                                                                    "run_investment_module"]:
-        if db_line[1] in (reps.decommissioned["Decommissioned"]).Decommissioned and reps.runningModule != "plotting":
+        if db_line[1] in (reps.decommissioned["Decommissioned"].Done) and reps.runningModule != "plotting":
             pass
         else:
             object_name = db_line[1]

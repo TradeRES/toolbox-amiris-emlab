@@ -16,7 +16,7 @@ class Dismantle(DefaultModule):
 
     def __init__(self, reps: Repository):
         super().__init__('Dismantle decisions', reps)
-        self.decommissioned_list = (self.reps.decommissioned["Decommissioned"]).Decommissioned
+        self.decommissioned_list = (self.reps.decommissioned["Decommissioned"]).Done
         reps.dbrw.stage_init_power_plants_status()
         reps.dbrw.stage_init_power_plants_fixed_costs()
         self.check_ids(reps)
