@@ -363,12 +363,12 @@ class SpineDBReaderWriter:
         self.db.import_object_parameter_values(
             [("Decommissioned",  "Decommissioned", "Done", decommissioned_list, '0')])
     def stage_list_decommissioned_expected_plants(self, decommissioned_list, future_year):
-        #self.stage_object_parameters("Decommissioned", ['Expectation'])
+        self.stage_object_parameters("Decommissioned", ['Expectation'])
         self.stage_object("Decommissioned", str(future_year))
         self.db.import_object_parameter_values(
             [("Decommissioned",  str(future_year), "Expectation" ,  decommissioned_list, "0" )])
     def stage_decommission_year(self, powerplant_name, tick):
-        #self.stage_object_parameters(self.powerplant_installed_classname, ['DecommissionInYear'])
+        self.stage_object_parameters(self.powerplant_installed_classname, ['DecommissionInYear'])
         self.db.import_object_parameter_values(
             [(self.powerplant_installed_classname, powerplant_name, "DecommissionInYear", tick, '0')])
 
