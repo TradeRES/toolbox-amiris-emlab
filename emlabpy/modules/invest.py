@@ -66,7 +66,7 @@ class Investmentdecision(DefaultModule):
         self.wacc = (
                                 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
-        reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration, self.futureInvestmentyear)
+        reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration , self.reps.current_tick)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + 1
         self.investable_candidate_plants = []
@@ -116,9 +116,9 @@ class Investmentdecision(DefaultModule):
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)
                 self.reps.dbrw.stage_downpayments(newplant)
-                self.reps.dbrw.stage_investment_decisions(newplant.candidate_name, newplant.name,
+                self.reps.dbrw.stage_investment_decisions( newplant.id,
                                                           self.reps.investmentIteration,
-                                                          self.futureInvestmentyear, self.reps.current_tick)
+                                                          self.reps.current_tick)
             self.reps.dbrw.stage_target_investments_done(True)
             self.continue_iteration()
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
@@ -152,27 +152,26 @@ class Investmentdecision(DefaultModule):
                             "set to non investable " + candidatepowerplant.technology.name)
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
-                        break
-
-                    cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
-                    projectvalue = self.npv(cashflow)
-
-                    # saving the list of power plants values that have been candidates per investmentIteration.
-                    self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
-                                                                      self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear,
-                                                                      )
-                    if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
-                        highestNPV = projectvalue / candidatepowerplant.capacity  # capacity is anyways 1
-                        highestNPVCandidatePP = candidatepowerplant
-
-                    elif projectvalue < 0:
-                        # the power plant should not be investable in next rounds
-                        # saving if the candidate power plant remains or not as investable
-                        candidatepowerplant.setViableInvestment(False)
-                        self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
-                        logging.info("dont invest in this technology%s", candidatepowerplant.technology)
+                        cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
+                        projectvalue = self.npv(cashflow)
+
+                        # saving the list of power plants values that have been candidates per investmentIteration.
+                        self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
+                                                                          self.reps.investmentIteration,
+                                                                          self.futureInvestmentyear,
+                                                                          )
+                        if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
+                            highestNPV = projectvalue / candidatepowerplant.capacity  # capacity is anyways 1
+                            highestNPVCandidatePP = candidatepowerplant
+
+                        elif projectvalue < 0:
+                            # the power plant should not be investable in next rounds
+                            # saving if the candidate power plant remains or not as investable
+                            candidatepowerplant.setViableInvestment(False)
+                            self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+                        else:
+                            logging.info("technology%s negative NPV", candidatepowerplant.technology)
 
                 # saving: operational profits from candidate plants
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
@@ -184,9 +183,9 @@ class Investmentdecision(DefaultModule):
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_loans(newplant)
                     self.reps.dbrw.stage_downpayments(newplant)
-                    self.reps.dbrw.stage_investment_decisions(highestNPVCandidatePP.name, newplant.name,
+                    self.reps.dbrw.stage_investment_decisions(newplant.id,
                                                               self.reps.investmentIteration,
-                                                              self.futureInvestmentyear, self.reps.current_tick)
+                                                              self.reps.current_tick)
                     self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
                     self.continue_iteration()
                 else:
@@ -264,15 +263,12 @@ class Investmentdecision(DefaultModule):
         # self.createSpreadOutDownPayments(self.agent, manufacturer, totalDownPayment, newplant)
         buildingTime = newplant.getActualLeadtime() # the plant is built after permit time.
 
-        #         cash flows are kept only at the financial results module
-        # self.reps.createCashFlow(self.agent, manufacturer, totalDownPayment / buildingTime, globalNames.CF_DOWNPAYMENT,
-        #                           self.reps.current_tick, newplant)
-        # todo: check  buildingTime - 1 because one payment is already done
         # from_agent: str, to: str, amount, numberOfPayments, loanStartTime, donePayments, plant
         downpayment = self.reps.createDownpayment(self.agent.name, manufacturer.name, totalDownPayment / buildingTime,
                                                   buildingTime,
                                                   self.reps.current_tick, 0, newplant)
         """
+        Cash flows are kept only at the financial results module
         Downpayments start from next year
         """
         # the rest of downpayments are scheduled. Are saved to the power plant
@@ -347,14 +343,11 @@ class Investmentdecision(DefaultModule):
             technology)
         self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
         self.capacityInPipeline = self.reps.calculateCapacityOfPowerPlantsInPipeline()
-        investable = self.check(technology, candidatepowerplant, expectedInstalledCapacityOfTechnology)
-        return investable
 
-    def check(self, technology, candidatepowerplant, expectedInstalledCapacityOfTechnology):
         technologyCapacityLimit = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
 
         # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
-        if self.capacityOfTechnologyInPipeline >= self.reps.maximum_investment_capacity_per_year:
+        if self.capacityInPipeline >= self.reps.maximum_investment_capacity_per_year:
             print(
                 " will not invest in " + technology.name + " because there's too much capacity in the pipeline ")
             candidatepowerplant.setViableInvestment(False)
@@ -371,7 +364,6 @@ class Investmentdecision(DefaultModule):
         # TODO: add the maxExpected Load
         # if self.capacityInPipeline > 0.2 * marketInformation.maxExpectedLoad:
         #     logging.info( "Not investing because more than 20% of demand in pipeline.")
-
         #     logging.info(Lagent +" will not invest in {} technology as he does not have enough money for downpayment" + self.technology)
         else:
             logging.info("%s passes capacity limit.  will now calculate financial viability.", technology)

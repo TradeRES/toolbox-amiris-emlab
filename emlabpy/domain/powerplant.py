@@ -387,12 +387,13 @@ class PowerPlant(EMLabAgent):
 class Decommissioned(ImportObject):
     def __init__(self, name):
         super().__init__(name)
+        self.name = name
         self.Done = []
         self.Expectation = dict()
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         if parameter_name == 'Done':
             self.Done = parameter_value
-        elif parameter_name == 'Expectation':
-            self.Expectation[alternative] = parameter_value
+        elif len(parameter_name) ==4:
+            self.Expectation[int(parameter_name)] = parameter_value
 

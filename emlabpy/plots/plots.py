@@ -894,30 +894,31 @@ def prepare_pp_decommissioned(reps):
     for pp in reps.get_power_plants_by_status([globalNames.power_plant_status_decommissioned]):
         plants_decommissioned_per_year.loc[len(plants_decommissioned_per_year)] = [pp.name, pp.decommissionInYear,  pp.technology.name, pp.capacity]
 
-    #colors = [technology_colors[tech] for tech in plants_expected_decommissioned_per_year["technology"].unique()]
+    colors = [technology_colors[tech] for tech in plants_decommissioned_per_year["technology"].unique()]
     fig1 = sns.relplot( x="decommissionInYear", y="Capacity", hue="technology",
-                       sizes=(40, 400), alpha=.5,
+                       sizes=(40, 400), alpha=.5, palette=colors,
                        height=6, data=plants_decommissioned_per_year)
     for row in plants_decommissioned_per_year.iterrows():
-        print(str(row[1].PPname))
         plt.text(x=row[1].decommissionInYear+0.3, y=row[1].Capacity+0.3, s=str(row[1].PPname), color='black', weight='semibold')
     plt.xlabel("decommissionYear", fontsize="large")
     plt.ylabel("Capacity", fontsize="large")
-    plt.show()
     fig1.savefig(path_to_plots + '/' + 'Decommissioned.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
-    # for expected_decomm_year, pp_name in reps.decommissioned.Expectation.items():
-    #     pp = reps.get_power_plant_by_name(pp_name)
-    #     plants_expected_decommissioned_per_year.loc[len(plants_decommissioned_per_year)] = [pp.name, expected_decomm_year,  pp.technology.name, pp.capacity]
-    #
-    # fig2 = sns.relplot( x="decommissionYear", y="Capacity", hue="technology",
-    #                     sizes=(40, 400), alpha=.5,
-    #                     height=6, data=plants_expected_decommissioned_per_year)
-    # plt.xlabel("decommissionYear", fontsize="large")
-    # plt.ylabel("Capacity", fontsize="large")
-    # fig2.savefig(path_to_plots + '/' + 'DecommissionedExpected.png', bbox_inches='tight', dpi=300)
-    # plt.close('all')
+    for expected_decomm_year, power_plants in reps.decommissioned["Expectation"].Expectation.items():
+        for pp_name in power_plants:
+            pp = reps.get_power_plant_by_name(pp_name)
+            plants_expected_decommissioned_per_year.loc[len(plants_expected_decommissioned_per_year)] = [pp.name, expected_decomm_year,  pp.technology.name, pp.capacity]
+
+    fig2 = sns.relplot( x="decommissionInYear", y="Capacity", hue="technology",
+                        sizes=(40, 400), alpha=.5, palette=colors,
+                        height=6, data=plants_expected_decommissioned_per_year)
+    for row in plants_expected_decommissioned_per_year.iterrows():
+        plt.text(x=row[1].decommissionInYear+0.3, y=row[1].Capacity+0.3, s=str(row[1].PPname), color='black', weight='semibold')
+    plt.xlabel("decommissionYear", fontsize="large")
+    plt.ylabel("Capacity", fontsize="large")
+    fig2.savefig(path_to_plots + '/' + 'DecommissionedExpected.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def prepare_pp_status(years_to_generate, reps, unique_technologies):
     if reps.decommission_from_input == True:  # the initial power plants have negative age to avoid all to be commmissioned in one year
@@ -931,12 +932,12 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
             range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.max_permit_build_time))
 
 
-    number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
-                                                     index=years_to_generate_and_build).fillna(0)
-    for pp, investments in reps.investmentDecisions.items():
-        for year, year_investments in investments.invested_in_iteration.items():
-            number_investments_per_technology.at[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
-                year_investments)
+    # number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
+    #                                                  index=years_to_generate_and_build).fillna(0)
+    # for pp, investments in reps.investmentDecisions.items():
+    #     for year, year_investments in investments.invested_in_iteration.items():
+    #         number_investments_per_technology.at[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
+    #             year_investments)
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies,
                                                   index=years_to_generate_and_build).fillna(0)
     annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
@@ -953,7 +954,7 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
 
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_decommissioned:
-            year = pp.decommissionInYear
+            year = 2051 # pp.decommissionInYear
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
             if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_tick):
                 initial_power_plants.loc[:, pp.technology.name] += pp.capacity
@@ -1017,14 +1018,9 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
 
 
 def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_plants):
-    max_iteration = 0
     # preparing empty df
-    for name, investment in reps.investments.items():
-        if str(future_year) in investment.project_value_year.keys():
-            if len(investment.project_value_year[str(future_year)]) > max_iteration:
-                max_iteration = len(investment.project_value_year[str(future_year)])
-                # for i in investment.project_value_year[str(future_year)]:
-
+    investment = reps.get_power_plants_invested_in_tick(test_tick)
+    max_iteration = len(investment)
     # for the years in which there are no other investments than this.
     if reps.targetinvestment_per_year == True:
         max_iteration += 1
@@ -1038,18 +1034,18 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
                 a = pd.Series(dict(investment.project_value_year[str(future_year)]))
                 candidate_plants_project_value_perMW[reps.candidatePowerPlants[name].technology.name] = a.divide(
                     reps.candidatePowerPlants[name].capacityTobeInstalled)
-                # preparing investments per iteration
 
     installed_capacity_per_iteration = pd.DataFrame(index=list(range(0, max_iteration)),
                                                     columns=unique_candidate_power_plants).fillna(0)
 
-    for invest_name, investment in reps.investmentDecisions.items():
-        if len(investment.invested_in_iteration) > 0:
-            if str(future_year) in investment.invested_in_iteration.keys():
-                index_invested_iteration = list(map(int, investment.invested_in_iteration[str(future_year)]))
-                installed_capacity_per_iteration.loc[
-                    index_invested_iteration, reps.candidatePowerPlants[invest_name].technology.name] = \
-                    reps.candidatePowerPlants[invest_name].capacityTobeInstalled
+    investment = reps.get_power_plants_invested_in_tick_per_iteration(test_tick)
+    if len(investment.invested_in_iteration) > 0:
+        #installed_capacity_per_iteration = pd.DataFrame.from_dict(investment.invested_in_iteration)
+        for iteration, pp_id in  investment.invested_in_iteration.items():
+            power_plant = reps.get_power_plant_by_id(pp_id)
+            candidate = reps.get_candidate_by_technology(power_plant.technology.name)
+            installed_capacity_per_iteration.loc[
+                iteration, power_plant.technology.name] = candidate.capacityTobeInstalled
 
     installed_capacity_per_iteration.replace(to_replace=0, value=np.nan, inplace=True)
     return installed_capacity_per_iteration, candidate_plants_project_value_perMW
@@ -1588,11 +1584,17 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
         years_to_generate]  # todo mine produced hourly energy . hourly generation is wrong
     ENS = ENS_in_simulated_years_filtered - TotalAwardedPowerInMW
     ENS_in_simulated_years = ENS.sum(axis=0)
+    """
+    supply ratio: hour when load is the highest 
+    """
     installedCapacity = pd.Series(reps.installedCapacity['All'].yearly)
-    maxload = yearly_load.max()
-    a = maxload.loc[installedCapacity.index.values]
+    maxload = yearly_load.max() # hour where load is the highest
+    a = maxload.loc[installedCapacity.index.values] # capacity when load is the highest
     supply_ratio = installedCapacity.divide(a, fill_value=np.nan)  # available supply at peak over peak demand.
-
+    """
+    reserve margin 
+    available generation capacty - peak demand / peak demand
+    """
     # supply_ratio = dispatched_demand[years_to_generate].min()
 
     # total_capacity = all_techs_capacity.sum(axis=0)
@@ -1625,10 +1627,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                    calculate_capacity_mechanisms, calculate_vres_support):
     print("Databases read")
     unique_technologies = reps.get_unique_technologies_names()
-    convetional_technologies = ['Coal PSC', "Fuel oil PGT", 'Lignite PSC', "CCGT_CHP_backpressure_DH", \
-                                'CCGT', 'OCGT', 'Nuclear', 'fuel_cell', "Pumped_hydro"]
-    for i in convetional_technologies:
-        unique_technologies.remove(i)
+    # conventional_technologies = ['Coal PSC', "Fuel oil PGT", 'Lignite PSC', "CCGT_CHP_backpressure_DH", \
+    #                             'CCGT', 'OCGT', 'Nuclear', 'fuel_cell', "Pumped_hydro"]
+    # for i in conventional_technologies:
+    #     unique_technologies.remove(i)
 
     renewable_technologies = ["Biomass_CHP_wood_pellets_DH", "Hydropower_reservoir_medium", "PV_utility_systems",
                               "WTG_onshore", "WTG_offshore", "Hydropower_ROR"]
@@ -2029,12 +2031,12 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-equilibrium2"
+SCENARIOS = ["-equilibrium4"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 6
+test_tick = 1
 # write None is no investment is expected,g
 test_tech = "PV_utility_systems" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 calculate_investments = True

@@ -147,8 +147,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.save_decommissioned_expected_list(decommissioned_list)
 
     def save_decommissioned_expected_list(self, decommissioned_list):
-        print("decommission in year " + str(self.simulation_year))
-        print(decommissioned_list)
         self.reps.dbrw.stage_list_decommissioned_expected_plants(decommissioned_list, self.simulation_year)
 
     def set_power_plant_as_operational(self, powerplant):

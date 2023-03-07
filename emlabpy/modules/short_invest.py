@@ -58,9 +58,9 @@ class ShortInvestmentdecision(Investmentdecision):
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)
                 self.reps.dbrw.stage_downpayments(newplant)
-                self.reps.dbrw.stage_investment_decisions(PowerPlantstoInvest.name, newplant.name,
+                self.reps.dbrw.stage_investment_decisions( newplant.id,
                                                           self.reps.investmentIteration,
-                                                          self.futureInvestmentyear,  self.reps.current_tick)
+                                                          self.reps.current_tick)
         else:
             print("no Investment in quick technologies ")
 

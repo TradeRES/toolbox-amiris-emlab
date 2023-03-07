@@ -362,11 +362,13 @@ class SpineDBReaderWriter:
         self.stage_object_parameters("Decommissioned", ['Done'])
         self.db.import_object_parameter_values(
             [("Decommissioned",  "Decommissioned", "Done", decommissioned_list, '0')])
+        
     def stage_list_decommissioned_expected_plants(self, decommissioned_list, future_year):
-        self.stage_object_parameters("Decommissioned", ['Expectation'])
-        self.stage_object("Decommissioned", str(future_year))
+        self.stage_object("Decommissioned", "Expectation")
+        self.stage_object_parameters("Decommissioned", [str(future_year)])
         self.db.import_object_parameter_values(
-            [("Decommissioned",  str(future_year), "Expectation" ,  decommissioned_list, "0" )])
+            [("Decommissioned", "Expectation" ,  str(future_year), decommissioned_list, "0" )])
+
     def stage_decommission_year(self, powerplant_name, tick):
         self.stage_object_parameters(self.powerplant_installed_classname, ['DecommissionInYear'])
         self.db.import_object_parameter_values(
@@ -422,16 +424,14 @@ class SpineDBReaderWriter:
         # self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
         #                                    [(year_iteration, revenues)], "revenues")
 
-    def stage_init_investment_decisions(self, iteration, futureYear):
-        year_iteration = str(futureYear) + "-" + str(iteration)
+    def stage_init_investment_decisions(self, iteration, tick):
         self.stage_object_class(self.investment_decisions_classname)
-        self.stage_object_parameters(self.investment_decisions_classname, [year_iteration])
+        self.stage_object_parameters(self.investment_decisions_classname, [str(iteration)])
 
-    def stage_investment_decisions(self, Candidatenumber, power_plant_id, iteration, futureYear, tick):
-        year_and_iteration = str(futureYear) + "-" + str(iteration)
-        self.stage_object(self.investment_decisions_classname, Candidatenumber)
-        self.stage_object_parameter_values(self.investment_decisions_classname, Candidatenumber,
-                                           [(year_and_iteration, power_plant_id)], str(tick))
+    def stage_investment_decisions(self, power_plant_id, iteration, tick):
+        self.stage_object(self.investment_decisions_classname, str(tick))
+        self.stage_object_parameter_values(self.investment_decisions_classname, str(tick),
+                                           [(str(iteration), power_plant_id)], "0" )
 
     def stage_init_future_operational_profits(self):
         self.stage_object_class(self.powerplantprofits_classname)
@@ -849,8 +849,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         new_db_line[1] = "SRO_" + reps.country  # object name
         new_db_line[4] = int(db_line[1])  # alternative
         add_parameter_value_to_repository(reps, new_db_line, reps.sr_operator, StrategicReserveOperator)
-    elif object_class_name == 'InvestmentDecisions' and reps.runningModule in ["run_financial_results", "plotting",
-                                                                               "run_investment_module"]:
+    elif object_class_name == 'InvestmentDecisions' and reps.runningModule in ["plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.investmentDecisions, InvestmentDecisions)
     elif object_class_name == "InstalledDispatchableCapacity" and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.installedCapacity, InstalledCapacity)

@@ -110,7 +110,8 @@ class Repository:
                                   "WTG_offshore", "PV_utility_systems", "Lignite PSC", "Fuel oil PGT", "Pumped_hydro",
                                   "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH",
                                   "CCGT_CHP_backpressure_DH", "Biomass_CHP_wood_pellets_PH",
-                                  "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP" ,"hydrogen_combined_cycle"]
+                                  "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP",
+                                  "hydrogen_combined_cycle"]
 
         self.market_clearing_points = dict()
         self.power_grid_nodes = dict()
@@ -140,7 +141,7 @@ class Repository:
         self.loanList = dict()
         self.financialPowerPlantReports = dict()
 
-   #     self.weatherYears = dict()
+        #     self.weatherYears = dict()
 
         self.profits = dict()
         # Create list of plants in SR
@@ -257,8 +258,6 @@ class Repository:
             return next(i.totalProfits for i in self.financialPowerPlantReports.values() if i.name == plant_name)
         except StopIteration:
             return None
-
-
 
     def getCashFlowsForEnergyProducer(self, energyproducer):
         try:
@@ -427,11 +426,13 @@ class Repository:
             return next(i.name for i in self.power_plants.values() if i.id == int(id))
         except StopIteration:
             return None
+
     def get_power_plant_by_name(self, name):
         try:
             return next(i for i in self.power_plants.values() if i.name == name)
         except StopIteration:
             return None
+
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 
@@ -448,18 +449,22 @@ class Repository:
         return expectedOperationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
+        """ in the market preparation file, the plants that are decommissioned are filtered out,
+        so there should not be any left as to be decommissioned"""
         plantsoftechnology = [i.capacity for i in self.power_plants.values() if i.technology.name == technology.name
-                              and i.status == globalNames.power_plant_status_operational]
+                              and i.status in [globalNames.power_plant_status_operational,
+                                               globalNames.power_plant_status_to_be_decommissioned,
+                                               globalNames.power_plant_status_strategic_reserve]]
         return sum(plantsoftechnology)
 
-    def calculateCapacityOfOperationalPlantsforallTechnologies(self):
-        uniquetechnologies = self.get_unique_technologies_names()
-        start_capacity = dict.fromkeys(uniquetechnologies, 0)
-        for pp in self.power_plants.values():
-            if pp.status not in [globalNames.power_plant_status_inPipeline,
-                                 globalNames.power_plant_status_decommissioned]:
-                start_capacity[pp.technology.name] += pp.capacity
-        return start_capacity
+    # def calculateCapacityOfOperationalPlantsforallTechnologies(self):
+    #     uniquetechnologies = self.get_unique_technologies_names()
+    #     start_capacity = dict.fromkeys(uniquetechnologies, 0)
+    #     for pp in self.power_plants.values():
+    #         if pp.status not in [globalNames.power_plant_status_inPipeline,
+    #                              globalNames.power_plant_status_decommissioned]:
+    #             start_capacity[pp.technology.name] += pp.capacity
+    #     return start_capacity
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
@@ -530,11 +535,10 @@ class Repository:
                 if i.status == globalNames.power_plant_status_operational]
 
     def get_power_plants_invested_in_tick(self, tick) -> List[PowerPlant]:
-        plants = []
-        for k, v in self.investmentDecisions.items():
-            if str(tick) in v.invested_in_tick.keys():
-                plants.extend(v.invested_in_tick[str(tick)])
-        return plants
+        return self.investmentDecisions[str(tick)].invested_in_iteration.values()
+
+    def get_power_plants_invested_in_tick_per_iteration(self, tick) -> List[PowerPlant]:
+        return self.investmentDecisions[str(tick)]
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
