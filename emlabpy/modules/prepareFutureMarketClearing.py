@@ -63,7 +63,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def filter_power_plants_to_be_operational(self):
         """
-        This function assign a fictional future status to power plants
+        This function assign a fictional future status to power plants by adding the look ahead years to the age of the power plants
         For plants that have passed their lifetime
             If the decommission year is specified in input file, these plants are decommissioned.
         :return:
@@ -81,6 +81,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         decommissioned_list = []
 
         for powerplant in powerPlantsfromAgent:
+
             fictional_age = powerplant.age + self.look_ahead_years
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:

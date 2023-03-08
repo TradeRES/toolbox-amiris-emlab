@@ -89,6 +89,7 @@ class Dismantle(DefaultModule):
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():
             powerplant.age += 1
+            powerplant.commissionedYear = self.reps.current_year - powerplant.age
 
     def calculateAveragePastOperatingProfit(self, plant, horizon):
         averagePastOperatingProfit = -1
@@ -115,12 +116,12 @@ class Dismantle(DefaultModule):
                     print(powerplant.name + "decommissioned from input")
             elif powerplant.age >= technology.expected_lifetime + technology.maximumLifeExtension:
                 self.set_plant_dismantled(powerplant)
-                print("decommissioned cause of passed age"  + powerplant.name)
+                print("decommissioned cause of passed age "  + powerplant.name)
             elif powerplant.age > technology.expected_lifetime:
                 powerplant.status = globalNames.power_plant_status_to_be_decommissioned
-            elif powerplant.commissionedYear <= self.reps.current_year:
+            elif powerplant.age >= 0:
                 powerplant.status = globalNames.power_plant_status_operational
-            elif powerplant.commissionedYear > self.reps.current_year:
+            elif powerplant.age < 0:
                 powerplant.status = globalNames.power_plant_status_inPipeline
             else:
                 print("status not set", powerplant.name)

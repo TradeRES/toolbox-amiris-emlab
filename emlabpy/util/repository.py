@@ -436,16 +436,21 @@ class Repository:
     def get_average_profits(self, powerplants):
         return mean([pp.get_Profit() for pp in powerplants])
 
-    def calculateCapacityExpectedofListofPlants(self, future_installed_plants_ids, investable_candidate_plants):
-        investable_technologies = [i.technology.name for i in investable_candidate_plants]
+    def calculateCapacityExpectedofListofPlants(self, future_installed_plants_ids, investable_candidate_plants,
+                                                investbyTarget):
         expectedOperationalcapacity = dict()
-        for tech in investable_technologies:
+        for candidate in investable_candidate_plants:
             capacity = 0
             for plant in self.power_plants.values():
-                if plant.id in future_installed_plants_ids:
-                    if plant.technology.name == tech:
+                if plant.id in future_installed_plants_ids: # this list was kept in the future expected power plants
+                    if plant.technology.name == candidate.technology.name :
                         capacity += plant.capacity
-            expectedOperationalcapacity[tech] = capacity
+
+            if investbyTarget == True and self.install_missing_capacity_as_one_pp == True:
+                pass
+            else:
+                capacity += candidate.capacityTobeInstalled
+            expectedOperationalcapacity[candidate.technology.name ] = capacity
         return expectedOperationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):

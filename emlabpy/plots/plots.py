@@ -910,6 +910,7 @@ def prepare_pp_decommissioned(reps):
             pp = reps.get_power_plant_by_name(pp_name)
             plants_expected_decommissioned_per_year.loc[len(plants_expected_decommissioned_per_year)] = [pp.name, expected_decomm_year,  pp.technology.name, pp.capacity]
 
+    colors = [technology_colors[tech] for tech in plants_expected_decommissioned_per_year["technology"].unique()]
     fig2 = sns.relplot( x="decommissionInYear", y="Capacity", hue="technology",
                         sizes=(40, 400), alpha=.5, palette=colors,
                         height=6, data=plants_expected_decommissioned_per_year)
@@ -954,7 +955,7 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
 
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_decommissioned:
-            year = 2051 # pp.decommissionInYear
+            year = pp.decommissionInYear
             annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
             if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_tick):
                 initial_power_plants.loc[:, pp.technology.name] += pp.capacity
@@ -1100,7 +1101,6 @@ def prepare_revenues_per_iteration(reps, future_tick, last_year, future_year):
     expected_future_operational_profit = future_operational_profit_per_iteration_with_age.loc[
         future_operational_profit_per_iteration_with_age.tech == test_tech]
     expected_future_operational_profit.drop(["tech"], axis=1, inplace=True)
-    # TOdo check this all_future_operational_profit not properly sorted from 1:10
     all_future_operational_profit = expected_future_operational_profit.set_index('tech-commissionedYear').T.sort_index(
         level=0)
 
@@ -2008,7 +2008,7 @@ technology_colors = {
     "Fuel oil PGT": "gray",
     'Lignite PSC': "darkgoldenrod",
     'CCGT': "indianred",
-    'OCGT': "darkred",
+    'OCGT': "gray",
     'Hydropower_reservoir_medium': "darkcyan",
     'PV_utility_systems': "gold",
     'WTG_onshore': "cornflowerblue",
@@ -2031,14 +2031,14 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-equilibrium4"
+SCENARIOS = ["-equilibrium6"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 1
+test_tick = 7
 # write None is no investment is expected,g
-test_tech = "PV_utility_systems" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 calculate_investments = True
 calculate_investments_per_iteration = True  # ProfitsC
 existing_scenario = False

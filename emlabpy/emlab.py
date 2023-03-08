@@ -3,7 +3,6 @@
 This is the main file that activates the different EMLabpy module depending on the arguments.
 In the initialization run, a unique id is assigned to each power plant and saved in the DB.
 The investments are calculated and the loans to be paid are stored in the DB.
-
 If no intialization is run, then only the
 efficiency, fixed costs, end of life and status are assigned to each power plant
 

@@ -8,7 +8,7 @@ from util import globalNames
 
 class CreatingFinancialReports(DefaultModule):
     """
-    for operational power plants calculate and save:
+    for for non decommissioned power plants calculate and save:
     spot market revenue, overall revenue, production, total costs, fixed costs,
     total profits, total profits with loans, irr, npv (considering results of current year)
     per agent also save
@@ -29,6 +29,7 @@ class CreatingFinancialReports(DefaultModule):
 
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
+        # for non decommissioned power plants
         for powerplant in self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
                                                                 globalNames.power_plant_status_to_be_decommissioned,
                                                                 globalNames.power_plant_status_strategic_reserve,

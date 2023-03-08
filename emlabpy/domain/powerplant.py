@@ -180,7 +180,7 @@ class PowerPlant(EMLabAgent):
                         startpayments, done_payments, self)
 
     def setPowerPlantsStatusforInstalledPowerPlants(self):
-        # the strategiv reserve status is better kept through the list of power plants
+        # the strategic reserve status is kept through the list of power plants
         if self.age is not None:
             if self.status == globalNames.power_plant_status_decommissioned:
                 pass

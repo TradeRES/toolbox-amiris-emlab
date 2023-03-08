@@ -132,7 +132,7 @@ class Investmentdecision(DefaultModule):
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if self.investable_candidate_plants:  # check if there are investable power plants
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
-                    self.future_installed_plants_ids, self.investable_candidate_plants)
+                    self.future_installed_plants_ids, self.investable_candidate_plants, False)
 
                 for candidatepowerplant in self.investable_candidate_plants:
                     cp_numbers.append(candidatepowerplant.name)
@@ -379,7 +379,7 @@ class Investmentdecision(DefaultModule):
             already_investable.append(i.technology.name)
         target_candidate_power_plants = self.reps.get_target_candidate_power_plants(already_investable)
         expectedInstalledCapacityperTechnology = self.reps.calculateCapacityExpectedofListofPlants(
-            self.future_installed_plants_ids, target_candidate_power_plants)
+            self.future_installed_plants_ids, target_candidate_power_plants, True)
 
         for target in targetInvestors:
             target_tech = self.reps.power_generating_technologies[target.targetTechnology]
