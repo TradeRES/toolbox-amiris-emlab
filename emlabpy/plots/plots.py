@@ -345,7 +345,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs16.set_title('IRRs, not including NAN results')
-    plt.ylim(-100, 300)
+    #plt.ylim(-100, 300)
     fig16 = axs16.get_figure()
     fig16.savefig(path_to_plots + '/' + 'IRRs per year per technology.png', bbox_inches='tight', dpi=300)
 
@@ -418,10 +418,10 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, path_to_plots, color
     plt.close('all')
 
 
-def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors
+def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, technology_colors
                             ):
     print('plotting installed Capacity per technology ')
-    installed_capacity = all_techs_capacity.loc[years_to_generate_and_build]
+    installed_capacity = all_techs_capacity.loc[years_to_generate]
     all_techs_capacity_nozeroes = installed_capacity[installed_capacity > 0]
     all_techs_capacity_nozeroes.dropna(how='all', axis=1, inplace=True)
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
@@ -1198,7 +1198,7 @@ def prepare_cash_per_agent(reps, simulation_ticks):
   #  cost_recovery_in_eur.sort_index(inplace = True)
     cumulative_cost_recovery = cost_recovery_in_eur.cumsum()
 
-    return cash_per_agent, cost_recovery, cumulative_cost_recovery, new_plants_loans
+    return cash_per_agent, cost_recovery*100, cumulative_cost_recovery, new_plants_loans
 
 
 def prepare_extension_lifetime_per_tech(reps, unique_technologies):
@@ -1473,7 +1473,8 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
                         if technology_name == "electrolyzer":
                             consumption_per_tech = pp_consumption_in_MWh
                             capacity_factor_per_tech.append(pp_consumption_in_MWh / (30000 * 8760))
-                            market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_consumption_in_MWh)
+                            if pp_consumption_in_MWh > 0:
+                                market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_consumption_in_MWh)
 
             all_techs_full_load_hours.loc[technology_name, year] = mean(full_load_hours)
             all_techs_capacity_factor.loc[technology_name, year] = mean(capacity_factor_per_tech)
@@ -1697,7 +1698,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     if calculate_investments != False:
         plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
                          path_to_plots, colors_unique_techs)
-    plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors)
+    plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, technology_colors)
     plot_power_plants_status(capacity_per_status, path_to_plots)
     plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
@@ -2031,17 +2032,17 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-equilibrium6"
+SCENARIOS = ["NL2090_SD3_PH3_MI100000000_totalProfits_-grouped_equilibrium_less_demand_NOelectrolyser"
              ] # add a dash before!
 
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 7
+test_tick = 24
 # write None is no investment is expected,g
-test_tech = None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = None #'PV_utility_systems' # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 calculate_investments = True
 calculate_investments_per_iteration = True  # ProfitsC
-existing_scenario = False
+existing_scenario = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False
