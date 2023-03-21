@@ -142,6 +142,14 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
             pv = more_years_profiles['NL Sun PV profiles'][new_weather_tick]
             pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
 
+            """
+            Demand is not increasing but the load is changing in every weather year due to heat demand
+            """
+            load = more_years_profiles['load'][new_weather_tick]
+            load.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
+            print("total load for present year")
+            print(sum(load))
+
             if modality == "initialize":
                 """"
                 The investments are done for the same future "representative" year.
@@ -156,6 +164,12 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
                 future_pv = excel_NL['NL Sun PV profiles'][year]
                 future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
+                future_load = excel_NL['load'][year]
+                future_load.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
+                print("total load for investment year")
+                print(sum(future_load))
+
+
             else:
                 pass
         elif fix_demand_to_initial_year == False and fix_profiles_to_initial_year == False:
