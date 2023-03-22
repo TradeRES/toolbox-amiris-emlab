@@ -67,14 +67,14 @@ class PowerPlant(EMLabAgent):
             self.actualEfficiency = float(parameter_value)
         elif parameter_name == 'Location':
             self.location = parameter_value
+            owner = "Producer" + parameter_value
+            self.owner = reps.energy_producers[owner]
         elif parameter_name == 'Id':
             self.id = int(parameter_value)
         if parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'Capacity':
             self.capacity = parameter_value
-        elif parameter_name == 'Owner':
-            self.owner = reps.energy_producers[parameter_value]
         elif parameter_name == 'Age':
             if reps.current_tick == 0 and reps.runningModule == "run_decommission_module":
                 # In the first decommission step,the year of the power plants list is added to the age of power plants

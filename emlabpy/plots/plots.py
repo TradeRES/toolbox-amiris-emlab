@@ -1548,16 +1548,16 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
 
 def reading_original_load(years_to_generate):
     if reps.country == "NL" and reps.fix_demand_to_initial_year == True:
-        input_yearly_profiles_demand = globalNames.input_data_nl
-        allyears_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load Profile")
+        input_yearly_profiles_demand = globalNames.input_data
+        allyears_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
         print("start year ", str(years_to_generate[0]))
         one_year_load = allyears_load[years_to_generate[0]]
         yearly_load = pd.DataFrame()
         for y in years_to_generate:
             yearly_load[y] = one_year_load
     elif reps.country == "NL":
-        input_yearly_profiles_demand = globalNames.input_data_nl
-        yearly_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load Profile")
+        input_yearly_profiles_demand = globalNames.input_data
+        yearly_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
 
     elif reps.country == "DE":
         input_yearly_profiles_demand = globalNames.input_load_de
@@ -2032,17 +2032,17 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["NL2090_SD3_PH3_MI100000000_totalProfits_-grouped_equilibrium_less_demand_NOelectrolyser"
+SCENARIOS = ["equilibrium13TWhH2"
              ] # add a dash before!
-
+existing_scenario = False
 save_excel = False
 #  None if no specific technology shold be tested
-test_tick = 24
+test_tick = 26
 # write None is no investment is expected,g
 test_tech = None #'PV_utility_systems' # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+
 calculate_investments = True
 calculate_investments_per_iteration = True  # ProfitsC
-existing_scenario = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False

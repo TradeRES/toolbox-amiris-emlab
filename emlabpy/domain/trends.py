@@ -59,8 +59,8 @@ class StepTrend(Trend):
         self.min_value = 0
         self.increment = 0
 
-    # def get_value(self, time ):
-    #     return max(self.min_value, self.start + math.floor(time / self.duration) * self.increment)
+    def get_linear_increment_value(self, time ):
+        return max(self.min_value, self.start + math.floor(time / self.duration) * self.increment)
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'duration':

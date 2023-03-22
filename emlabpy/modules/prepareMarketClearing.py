@@ -177,22 +177,22 @@ class PrepareMarket(DefaultModule):
 
     def update_demand_file(self):
         print("updated demand file" + str(self.reps.current_year + self.reps.investment_initialization_years))
-        excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
-                                 sheet_name=["Load Profile"])
-        demand = excel_NL['Load Profile'][self.reps.current_year + self.reps.investment_initialization_years]
+        excel = pd.read_excel(globalNames.input_data, index_col=0,
+                                 sheet_name=["Load"])
+        demand = excel['Load'][self.reps.current_year + self.reps.investment_initialization_years]
         demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
 
     def update_profiles_files(self, year):
         print("Update profiles to year" + str(year))
-        excel_NL = pd.read_excel(globalNames.input_data_nl, index_col=0,
-                                 sheet_name=["NL Wind Onshore profiles",
-                                             "NL Wind Offshore profiles",
-                                             "NL Sun PV profiles"])
-        wind_onshore = excel_NL['NL Wind Onshore profiles'][year]
+        excel = pd.read_excel(globalNames.input_data, index_col=0,
+                                 sheet_name=["Wind Onshore profiles",
+                                             "Wind Offshore profiles",
+                                             "Sun PV profiles"])
+        wind_onshore = excel['Wind Onshore profiles'][year]
         wind_onshore.to_csv(globalNames.windon_file_for_amiris, header=False, sep=';', index=True)
-        wind_offshore = excel_NL['NL Wind Offshore profiles'][year]
+        wind_offshore = excel['Wind Offshore profiles'][year]
         wind_offshore.to_csv(globalNames.windoff_file_for_amiris, header=False, sep=';', index=True)
-        pv = excel_NL['NL Sun PV profiles'][year]
+        pv = excel['Sun PV profiles'][year]
         pv.to_csv(globalNames.pv_file_for_amiris, header=False, sep=';', index=True)
 
     def write_conventionals(self):

@@ -25,25 +25,19 @@ class ElectricitySpotMarket(Market):
         self.future_demand = None
         self.demandGrowthTrend = 0.0
         self.country = ""
-    #    self.substance = ""
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'valueOfLostLoad':
             self.valueOfLostLoad = int(parameter_value)
+        if parameter_name == 'country':
+            self.country = str(parameter_value)
         if parameter_name == 'growthTrend':
             self.demandGrowthTrend = str(parameter_value)
-        # if parameter_name == 'referencePrice':
-        #     self.referencePrice = parameter_value
-        if parameter_name == 'zone':
-            self.country = str(parameter_value)
-        if parameter_name == 'substance':
-            self.substance = str(parameter_value)
-        if parameter_name == 'demand':
             load_path = globalNames.load_file_for_amiris
-            if reps.country =="DE":
+            if reps.available_years_data == False:
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = self.hourlyDemand # no dynamic load for other cases yet
-            elif reps.country =="NL":
+            else:
                 future_load_path =globalNames.future_load_file_for_amiris
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None)

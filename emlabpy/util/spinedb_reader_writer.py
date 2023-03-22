@@ -142,6 +142,10 @@ class SpineDBReaderWriter:
                 reps.initialization_investment = bool(row['parameter_value'])
             elif row['parameter_name'] == 'iteration':
                 reps.iteration_weather = str(row['parameter_value'])
+            elif row['parameter_name'] == 'available_years_data':
+                reps.available_years_data = bool(row['parameter_value'])
+
+
 
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year

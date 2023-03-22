@@ -667,8 +667,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1335.759514084871,
-            "y": -497.42091580586964,
+            "x": -1335.7595140848712,
+            "y": -502.5730911704076,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "on_conflict": "merge",

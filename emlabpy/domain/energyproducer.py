@@ -11,8 +11,8 @@ class EnergyProducer(EMLabAgent):
         self.investmentRole = None
         self.investorMarket = None
         self.priceMarkUp = None
-        self.longTermContractMargin = None
-        self.longTermContractPastTimeHorizon = None
+        # self.longTermContractMargin = None
+        # self.longTermContractPastTimeHorizon = None
         self.equityInterestRate = None
         self.downpaymentFractionOfCash = None  # this is to establish if there is enough money for downpayment in investment algorithm
         self.debtRatioOfInvestments = None
@@ -54,10 +54,10 @@ class EnergyProducer(EMLabAgent):
             self.investorMarket = parameter_value
         elif parameter_name == 'loanInterestRate':
             self.loanInterestRate = float(parameter_value)
-        elif parameter_name == 'longTermContractMargin':
-            self.longTermContractMargin = float(parameter_value)
-        elif parameter_name == 'longTermContractPastTimeHorizon':
-            self.longTermContractPastTimeHorizon = int(parameter_value)
+        # elif parameter_name == 'longTermContractMargin':
+        #     self.longTermContractMargin = float(parameter_value)
+        # elif parameter_name == 'longTermContractPastTimeHorizon':
+        #     self.longTermContractPastTimeHorizon = int(parameter_value)
         elif parameter_name == 'priceMarkUp':
             self.priceMarkUp = float(parameter_value)
         elif parameter_name == 'willingToInvest':
