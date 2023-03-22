@@ -158,8 +158,8 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 The future the profiles and the demand are not changing       
                 """
                 print("Initializing demand to " + str(year) + " and future profiles to" + str(year))
-                demand = excel['Load'][year]
-                demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
+                future_demand = excel['Load'][year]
+                future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
                 future_wind_offshore = excel['Wind Offshore profiles'][year]
                 future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
                 future_wind_onshore = excel['Wind Onshore profiles'][year]
@@ -167,7 +167,7 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 future_pv = excel['Sun PV profiles'][year]
                 future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
                 print("total load for investment year")
-                print(sum(demand))
+                print(sum(future_demand))
 
             else:
                 pass
