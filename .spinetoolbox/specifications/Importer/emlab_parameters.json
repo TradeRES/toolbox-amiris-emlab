@@ -155,44 +155,6 @@
                     }
                 }
             ],
-            "GeometricTrends": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "table_name",
-                                "value": "GeometricTrends"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "StepTrends": [
                 {
                     "Mapping 1": {
@@ -1067,13 +1029,50 @@
                         ]
                     }
                 }
+            ],
+            "TechnologyTrends": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "GeometricTrends"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "CapacityMarkets",
             "ElectricitySpotMarkets",
             "EnergyProducers",
-            "GeometricTrends",
             "StepTrends",
             "FuelPriceTrends",
             "TechnologiesEmlab",
@@ -1087,7 +1086,8 @@
             "yearlyCO2",
             "technologyPotentials",
             "weatherYears40",
-            "TechnologyTargets"
+            "TechnologyTargets",
+            "TechnologyTrends"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1099,10 +1099,6 @@
             "EnergyProducers": {
                 "read_until_col": true,
                 "read_until_row": true
-            },
-            "GeometricTrends": {
-                "read_until_row": true,
-                "read_until_col": true
             },
             "StepTrends": {
                 "read_until_row": true,
@@ -1172,6 +1168,10 @@
             "TechnologyTargets": {
                 "read_until_col": true,
                 "read_until_row": true
+            },
+            "TechnologyTrends": {
+                "read_until_col": true,
+                "read_until_row": true
             }
         },
         "table_types": {
@@ -1209,10 +1209,6 @@
                 "10": "float",
                 "11": "float"
             },
-            "GeometricTrends": {
-                "0": "string",
-                "1": "float"
-            },
             "StepTrends": {
                 "0": "string",
                 "1": "float",
@@ -1237,7 +1233,7 @@
                 "6": "float",
                 "7": "float",
                 "8": "float",
-                "9": "string",
+                "9": "float",
                 "10": "string"
             },
             "Fuels": {
@@ -1456,6 +1452,16 @@
                 "0": "string",
                 "1": "string",
                 "2": "string"
+            },
+            "TechnologyTrends": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float"
             }
         },
         "table_default_column_type": {},

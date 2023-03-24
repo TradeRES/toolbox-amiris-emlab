@@ -8,11 +8,11 @@ The optimization either produce H2 or electric boiler
 # amiris requires input raw (not electric)
 electrolyzer_efficiency = 0.74
 boilerefficiency = 0.99
-year = 2019 # all data in amiris has this dataseries
+year = 2030 # all data in amiris has this dataseries
 
 parentpath = dirname(realpath(os.getcwd()))
-competes_results_path = os.path.join(parentpath,  "data", "competes_ENTSOE","GA_TradeRES_Output_Dynamic_Gen&Trans_2050.xlsx")
-monthly_demand_path = os.path.join(parentpath,  "data", "competes_ENTSOE","monthly_H2_heat_demand.xlsx" )
+competes_results_path = os.path.join(parentpath,  "data", "competes","GA_TradeRES_Output_Dynamic_Gen&Trans_2050.xlsx")
+monthly_demand_path = os.path.join(parentpath,  "data", "competes","monthly_H2_heat_demand.xlsx" )
 
 """
 making hourly electricity demand to monthly
@@ -36,15 +36,23 @@ converting 6 hourly H2 prices to monthly
 """
 df_prices = pd.read_excel(competes_results_path,  sheet_name = "Hourly Hydrogen Prices", usecols = "K", skiprows =[0])
 hours = pd.Series(pd.date_range(start=f'{year}-01-01', end=f'{year}-12-31 23:00:00', freq='6H'))
+
 df_prices.dropna(inplace=True)
 df_prices['hours'] = hours
 df_prices.set_index('hours', inplace=True)
 dfprices = df_prices.resample('730H').mean()
-
 dfprices.index = dfprices.index.strftime('%Y-%m-%d_%H:%M:%S')
+
+
+dates = pd.Series(pd.date_range(start=f'{year}-01-01', end=f'{year}-12-31 23:00:00', freq='1H'))
+datesdf = pd.DataFrame()
+datesdf['hours'] = dates
+datesdf.set_index('hours', inplace=True)
+datesdf.index = datesdf.index.strftime('%Y-%m-%d_%H:%M:%S')
 
 with pd.ExcelWriter(monthly_demand_path) as writer:
     dfdemand.to_excel(writer, sheet_name ="demand")
     dfprices.to_excel(writer, sheet_name = "prices")
+    datesdf.to_excel(writer, sheet_name = "dates")
 
 print("done")

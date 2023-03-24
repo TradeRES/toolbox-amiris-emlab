@@ -8,7 +8,6 @@ class Substance(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.co2_density = 0
-     #   self.energy_density = 1
         self.quality = 0
         self.price = 0
         self.trend = None
@@ -51,8 +50,7 @@ class Substance(ImportObject):
 
     def get_price_for_tick(self, reps, year, simulating_future_market):
         # first consider prices if these are supposed to be fix
-        if reps.fix_fuel_prices_to_year == True: # attention this shouldnt be neede once all data is there
-            # fixing prices to year
+        if reps.fix_fuel_prices_to_year == True:  # fixing prices to year
             if  self.name == "CO2" and reps.yearly_CO2_prices == True:
                 # but dont fix yearly prices
                 self.newPrice = self.get_CO2_yearly_price(year)

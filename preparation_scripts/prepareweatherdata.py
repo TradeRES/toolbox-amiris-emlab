@@ -1,9 +1,19 @@
 import os
 import pandas as pd
 from os.path import dirname, realpath
-
+import numpy as np
 grandparentpath = dirname(dirname(realpath(os.getcwd())))
 parentpath = dirname(os.getcwd())
+# competes = os.path.join(parentpath,'data\\competes\\NLVREprofilesandload2019-2050_ricardo.xlsx')
+# competesexcel = pd.read_excel(competes, index_col=0,
+#                       sheet_name=["NL Wind Onshore profiles",
+#                                   "NL Wind Offshore profiles",
+#                                   "NL Sun PV profiles"])
+# # WindOffshore_increase = competesexcel['NL Wind Offshore profiles'][2050] /competesexcel['NL Wind Offshore profiles'][2019]
+# # WindOffshore_increase.replace([np.inf, -np.inf], 1, inplace=True)
+# sum_offshore = competesexcel['NL Wind Offshore profiles'].sum()
+# offshoreCF_increase = sum_offshore[2050]/sum_offshore[2050]
+
 current_wind_data_path = os.path.join(parentpath,  "data", "renewableninja","ninja_wind_country_NL_current-merra-2_corrected.csv")
 df_wind = pd.read_csv( current_wind_data_path, sep =",", index_col = 'time', parse_dates = True ,skiprows = [0,1])
 current_pv_data_path = os.path.join(parentpath, "data", "renewableninja", "ninja_pv_country_NL_merra-2_corrected.csv")
@@ -13,12 +23,15 @@ from DNV
  onshore wind from 26% now to 34%, and from 38% to 43% for offshore wind by 2050.
  offshoreCF_increase =  round(43/38,2) in 2018 Renewable Power Generation Costs in 201
  onshoreCF_increase =  round(34/26,2)
+IRENA
+ with capacity factors in the range of 36% to 58% in 2030 and 43% to 60% in 2050, compared to an average of 43% in 2018.
+ 
 """
 
 """
 Average from dividing the weather years given by TNO
 """
-offshoreCF_increase =  1.66
+offshoreCF_increase =  1.66 #increase from
 onshoreCF_increase =  1.42
 #=================================================================================================== offshore
 df_wind['Year'] = df_wind.index.year

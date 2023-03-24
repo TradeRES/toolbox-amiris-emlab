@@ -555,17 +555,6 @@
                 ]
             },
             {
-                "name": "from initialization AMIRIS to intialization Invest",
-                "from": [
-                    "initialization AMIRIS",
-                    "bottom"
-                ],
-                "to": [
-                    "intialization Invest",
-                    "left"
-                ]
-            },
-            {
                 "name": "from EmlabDB to intialization Invest",
                 "from": [
                     "EmlabDB",
@@ -584,6 +573,17 @@
                 ],
                 "to": [
                     "decommission",
+                    "left"
+                ]
+            },
+            {
+                "name": "from initialization AMIRIS to intialization Invest",
+                "from": [
+                    "initialization AMIRIS",
+                    "bottom"
+                ],
+                "to": [
+                    "intialization Invest",
                     "left"
                 ]
             }

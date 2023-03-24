@@ -50,7 +50,7 @@ class Repository:
         self.time_step = 0
         self.start_simulation_year = 0
         self.end_simulation_year = 0
-        self.earliest_investment_data_available = 2020
+        #self.earliest_investment_data_available = 2020
         self.short_term_investment_minimal_irr = 0
         self.lookAhead = 0
         self.pastTimeHorizon = 0
@@ -66,7 +66,6 @@ class Repository:
         self.runningModule = ""
         self.npv_with_annuity = False
         self.fix_fuel_prices_to_year = False
-
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = False
         self.fix_profiles_to_initial_year = True
