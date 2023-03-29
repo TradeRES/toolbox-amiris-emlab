@@ -203,7 +203,7 @@ workflow:
       args:
         input: "amiris-config/config.pb"
         model:
-          jar: 'amiris/amiris-core_1.2.7-jar-with-dependencies.jar'
+          jar: 'amiris/amiris-core_1.2.10-jar-with-dependencies.jar'
           vm: '-ea -Xmx2000M'
           fame_args: '-Dlog4j.configuration=file:amiris/log4j.properties'
           runner: 'de.dlr.gitlab.fame.setup.FameRunner'
