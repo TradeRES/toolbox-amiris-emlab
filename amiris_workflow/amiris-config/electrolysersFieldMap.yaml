@@ -67,6 +67,18 @@ Contracts:
     ProductName: PriceForecast
     FirstDeliveryTime: -19
     DeliveryIntervalInSteps: *hourly
+
+  - SenderType: ElectrolysisTrader
+    ReceiverId: *fuelsmarket
+    ProductName: HydrogenPriceForecastRequest
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderId: *fuelsmarket
+    ReceiverType: ElectrolysisTrader
+    ProductName: HydrogenPriceForecast
+    FirstDeliveryTime: -19
+    DeliveryIntervalInSteps: *hourly
 ###############################
 ## required for all strategies#
 ###############################
