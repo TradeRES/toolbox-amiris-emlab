@@ -85,7 +85,7 @@ AgentTypes:
             AttributeType: double
             List: false
             Mandatory: true
-    Products: [ 'FuelPriceForecast', 'FuelPrice', 'FuelsBill', 'FuelsReward' ]
+    Products: [ 'FuelPriceForecast', 'FuelPrice', 'FuelsBill', 'FuelsReward', 'HydrogenPriceForecast' ]
   
   SupportPolicy:
     Attributes:
@@ -101,7 +101,7 @@ AgentTypes:
             Values: [ 'PVRooftop', 'WindOn', 'WindOff', 'RunOfRiver', 'OtherPV', 'Biogas', 'Undefined',
                       'PvFit', 'PvMpvarCluster1', 'PvMpvarCluster2', 'PvMpvarCluster3', 'PvMpvarCluster4', 'PvMpvarCluster5',
                       'WindOnFit', 'WindOnMpvarCluster1', 'WindOnMpvarCluster2', 'WindOnMpvarCluster3', 'WindOnMpvarCluster4', 'WindOnMpvarCluster5',
-                      'WindOffMpvarCluster1', 'WindOffMpvarCluster2', 'WindOffMpvarCluster3', 'WindOffMpvarCluster4']
+                      'WindOffFit', 'WindOffMpvarCluster1', 'WindOffMpvarCluster2', 'WindOffMpvarCluster3', 'WindOffMpvarCluster4']
           FIT:
             AttributeType: block
             Mandatory: false
@@ -226,7 +226,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'SINGLE_AGENT_MAX_PROFIT', 'SINGLE_AGENT_MIN_SYSTEM_COST', 'MULTI_AGENT_SIMPLE', 'DISPATCH_FILE' ]          
+            Values: [ 'SINGLE_AGENT_MAX_PROFIT', 'SINGLE_AGENT_MIN_SYSTEM_COST', 'MULTI_AGENT_SIMPLE', 'DISPATCH_FILE' ]
           ForecastPeriodInHours:
             AttributeType: integer
             Mandatory: true
@@ -256,7 +256,7 @@ AgentTypes:
               AssessmentFunctionPrefactors:
                 AttributeType: double
                 Mandatory: false
-                List: true                
+                List: true
           FixedDispatch:
             AttributeType: block
             Mandatory: false
@@ -282,7 +282,7 @@ AgentTypes:
           FixedCostsInEURperYearMW:
             AttributeType: double
             Mandatory: false
-            List: false                                
+            List: false
     Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
 
   ElectrolysisTrader:
@@ -385,7 +385,7 @@ AgentTypes:
                 AttributeType: double
                 Mandatory: true
                 List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport', 'HydrogenOffer' ]
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport', 'HydrogenOffer', 'HydrogenPriceForecastRequest' ]
 
   LoadShiftingTrader:
     Attributes:
@@ -446,6 +446,14 @@ AgentTypes:
             AttributeType: double
             Mandatory: true
             List: false
+          Efficiency:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          InterferenceTimeInHours:
+            AttributeType: integer
+            Mandatory: false
+            List: false
       Strategy:
         AttributeType: block
         Mandatory: true
@@ -455,7 +463,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'SINGLE_AGENT_MAX_PROFIT', 'SINGLE_AGENT_MIN_SYSTEM_COST', 'MULTI_AGENT_SIMPLE', 'DISPATCH_FILE', 'SINGLE_AGENT_MAX_PROFIT_TARIFFS' ]          
+            Values: [ 'SINGLE_AGENT_MAX_PROFIT', 'SINGLE_AGENT_MIN_SYSTEM_COST', 'MULTI_AGENT_SIMPLE', 'DISPATCH_FILE', 'SINGLE_AGENT_MAX_PROFIT_TARIFFS', 'SINGLE_AGENT_MAX_PROFIT_EXTERNAL' ]
           ForecastPeriodInHours:
             AttributeType: integer
             Mandatory: true
@@ -473,15 +481,6 @@ AgentTypes:
                 AttributeType: double
                 Mandatory: false
                 List: false
-          MultiAgent:
-            AttributeType: block
-            Mandatory: false
-            List: false
-            NestedAttributes:
-              AssessmentFunctionPrefactors:
-                AttributeType: double
-                Mandatory: false
-                List: true          
           FixedDispatch:
             AttributeType: block
             Mandatory: false
@@ -495,25 +494,43 @@ AgentTypes:
                 AttributeType: time_series
                 Mandatory: false
                 List: false
+          Api:
+            AttributeType: block
+            Mandatory: true
+            List: false
+            NestedAttributes:
+              ServiceUrl:
+                AttributeType: string
+                Mandatory: false
+                List: false
+              UseAnnualLimit:
+                AttributeType: integer
+                Mandatory: false
+                List: false
+              Solver:
+                AttributeType: enum
+                Mandatory: false
+                List: false
+                Values: [ 'gurobi', 'cplex', 'cbc' ]
       Policy:
         AttributeType: block
         Mandatory: false
         List: false
         NestedAttributes:
           EEGSurchargeInEURPerMWH:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false
           VolumetricNetworkChargeInEURPerMWH:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false
           ElectricityTaxInEURPerMWH:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false
           OtherSurchargesInEURPerMWH:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false            
           DynamicTariffComponents:
@@ -527,7 +544,7 @@ AgentTypes:
                 List: false
                 Values: [ 'POWER_PRICE', 'EEG_SURCHARGE', 'VOLUMETRIC_NETWORK_CHARGE', 'OTHER_COMPONENTS', 'DUMMY' ]  
               Multiplier:
-                AttributeType: double
+                AttributeType: time_series
                 Mandatory: true
                 List: false
               LowerBound:
@@ -543,11 +560,11 @@ AgentTypes:
             Mandatory: false
             List: false
           CapacityBasedNetworkChargesInEURPerMW:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false
           FixedNetworkChargesInEURPerYear:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false
       BusinessModel:
@@ -560,7 +577,7 @@ AgentTypes:
             Mandatory: false
             List: false
           AverageMarketPriceInEURPerMWH:
-            AttributeType: double
+            AttributeType: time_series
             Mandatory: false
             List: false
     Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward' ]
@@ -686,19 +703,19 @@ AgentTypes:
               Mandatory: false
               List: false
             EEGSurchargeInEuroPerMWh:
-              AttributeType: double
+              AttributeType: time_series
               Mandatory: false
               List: false
             VolumetricNetworkChargeInEuroPerMWh:
-              AttributeType: double
+              AttributeType: time_series
               Mandatory: false
               List: false
             ElectricityTaxInEuroPerMWh:
-              AttributeType: double
+              AttributeType: time_series
               Mandatory: false
               List: false
             OtherSurchargesInEuroPerMWh:
-              AttributeType: double
+              AttributeType: time_series
               Mandatory: false
               List: false            
             FeedInTariffScheme: 
@@ -717,7 +734,7 @@ AgentTypes:
                   List: false
                   Values: [ 'POWER_PRICE', 'EEG_SURCHARGE', 'VOLUMETRIC_NETWORK_CHARGE', 'OTHER_COMPONENTS', 'DUMMY' ]  
                 Multiplier:
-                  AttributeType: double
+                  AttributeType: time_series
                   Mandatory: true
                   List: false
                 LowerBound:
@@ -733,7 +750,7 @@ AgentTypes:
               Mandatory: false
               List: false
             FixedNetworkChargesInEuroPerYear:
-              AttributeType: double
+              AttributeType: time_series
               Mandatory: false
               List: false
         BusinessModel:
@@ -746,18 +763,21 @@ AgentTypes:
               Mandatory: false
               List: false
             AverageMarketPriceInEuroPerMWh:
-              AttributeType: double
+              AttributeType: time_series
               Mandatory: false
               List: false
         PriceForecastRequestOffsetInSeconds:
           AttributeType: integer
           Mandatory: true
+          List: false
         EndUserRequestOffsetInSeconds:
           AttributeType: integer
-          Mandatory: true          
+          Mandatory: true
+          List: false
         DeviceUpdateRequestOffsetInSeconds:
           AttributeType: integer
           Mandatory: true
+          List: false
       Products: [ 'AggregatorPricesInEURperMWH', 'GridInteractionRequest', 'Bids', 'PriceForecastRequest', 'DeviceUpdateRequest', 'ForecastPeriodAndSceduleDuration' ]
 
   RenewableTrader:
@@ -783,7 +803,7 @@ AgentTypes:
         AttributeType: enum
         List: false
         Mandatory: true
-        Values: [ 'PREVIOUS_MONTH', 'FROM_FILE' ]
+        Values: ['PREVIOUS_MONTH', 'FROM_FILE']
       MarketValueForecasts:
         AttributeType: block
         List: true
@@ -871,6 +891,14 @@ AgentTypes:
         Mandatory: true
         List: false
     Products: [ 'ForecastRequest', 'PriceForecast' ]
+
+  PriceForecasterFile:
+    Attributes:
+      PriceForecastInEURperMWH:
+        AttributeType: time_series
+        Mandatory: true
+        List: false
+    Products: [ 'PriceForecast' ]
 
   ConventionalPlantOperator:
     Attributes:
@@ -1011,7 +1039,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'OTHER' ]
+            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER', 'MIXED' ]
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true
@@ -1074,7 +1102,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER' ]
+            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER', 'MIXED' ]
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true
