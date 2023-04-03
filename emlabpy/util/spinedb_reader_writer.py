@@ -292,7 +292,7 @@ class SpineDBReaderWriter:
     def stage_init_power_plant_structure(self):
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameters(self.powerplant_installed_classname,
-                                     ["Id", "Age", "Efficiency", "DischargingEfficiency", "Capacity", "Location",
+                                     ["Id", "Age", "actualEfficiency", "DischargingEfficiency", "Capacity", "Location",
                                       "Owner", "Status", "Cash"
                                                          "Technology"])
 
@@ -302,7 +302,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.powerplant_installed_classname, object_name,
                                            [("Id", object_name),
                                             ('Age', powerplant.age),
-                                            ('Efficiency', powerplant.actualEfficiency),
+                                            ('actualEfficiency', powerplant.actualEfficiency),
                                             ('Capacity', powerplant.capacity),
                                             ('Location', powerplant.location),
                                             ('Owner', powerplant.owner.name),
@@ -355,11 +355,16 @@ class SpineDBReaderWriter:
     def stage_init_power_plants_fixed_costs(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['actualFixedOperatingCost'])
 
-    def stage_fixed_operating_costs_and_efficiency(self, pp):
+    def stage_fixed_operating_costs(self, pp):
         self.stage_object(self.powerplant_installed_classname, pp.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
-                                           [('actualFixedOperatingCost', pp.actualFixedOperatingCost),
-                                            ('Efficiency', pp.actualEfficiency)],
+                                           [('actualFixedOperatingCost', pp.actualFixedOperatingCost)],
+                                           "0")
+    def stage_variable_costs_and_efficiency(self, pp):
+        self.stage_object(self.powerplant_installed_classname, pp.name)
+        self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
+                                           [('actualVariableCost', pp.actualFixedOperatingCost),
+                                            ('actualEfficiency', pp.actualEfficiency)],
                                            "0")
 
     def stage_list_decommissioned_plants(self, decommissioned_list):

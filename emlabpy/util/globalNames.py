@@ -39,6 +39,7 @@ modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "r
 modules_need_bids = [ "run_financial_results", "run_capacity_market" , "run_strategic_reserve" , "run_strategic_reserve_swe" ,
                      "run_strategic_reserve_ger" , "run_forward_market" , "run_create_results", "plotting"]
 
+vRES = ["WTG_onshore", "WTG_offshore", "PV_utility_systems"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
 
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)

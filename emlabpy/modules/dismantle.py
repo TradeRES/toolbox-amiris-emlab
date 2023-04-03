@@ -18,13 +18,14 @@ class Dismantle(DefaultModule):
         super().__init__('Dismantle decisions', reps)
         self.decommissioned_list = (self.reps.decommissioned["Decommissioned"]).Done
         reps.dbrw.stage_init_power_plants_status()
-        reps.dbrw.stage_init_power_plants_fixed_costs()
+       # reps.dbrw.stage_init_power_plants_fixed_costs()
         self.check_ids(reps)
 
     def act(self):
         if self.reps.current_tick > 0: # on the first year the age shouldnt be increased
             # add one year to the age of power plants
             self.add_one_year_to_age()
+            self.decrease_variable_costs_and_efficiency()
         self.set_powerplants_status()  # set status according to operational time
         self.decommision_by_profit() # this should go after setting the status
         self.save_powerplants_status_and_age()
@@ -64,27 +65,28 @@ class Dismantle(DefaultModule):
                           .format(plant.name, horizon, profit, requiredProfit))
                     self.set_plant_dismantled(plant)
                 else:
-                    self.increase_fixed_costs_and_decrease_efficiency( plant)
+                    self.increase_fixed_cost(plant)
 
             else:
                 # if the plants cannot be deommmissioned yet, decrease efficiency
                 if plant.age < plant.technology.getExpectedLifetime():
                     print("Age is less than expected life time!!! shouldnt be")
                 else:
-                    self.increase_fixed_costs_and_decrease_efficiency( plant)
+                    self.increase_fixed_cost(plant)
 
-    def increase_fixed_costs_and_decrease_efficiency(self, plant):
-        print("dont dismantle but increase fom of  {} ".format(plant.name))
+    def increase_fixed_cost(self, plant):
+        print("dont dismantle but increase FOM of  {} ".format(plant.name))
         passed_years = plant.age - plant.technology.getExpectedLifetime()
         ModifiedOM = plant.getTechnology().get_fixed_operating_cost_trend(passed_years) * plant.getActualNominalCapacity()
-        print(ModifiedOM)
-        # ModifiedOM = plant.getActualFixedOperatingCost() * (
-        #         1 + plant.technology.getFixedOperatingCostModifierAfterLifetime())
         plant.setActualFixedOperatingCost(ModifiedOM)
-        ModifiedEfficiency = plant.actualEfficiency * (
-                1 - plant.technology.efficiency_modifier_after_lifetime)
+        self.reps.dbrw.stage_fixed_operating_costs(plant)
+
+    def decrease_variable_costs_and_efficiency(self, plant):
+        new_variable_costs = plant.getTechnology().get_variable_operating_cost_trend(self.age)
+        ModifiedEfficiency = plant.actualEfficiency * (1 - plant.technology.efficiency_modifier)
         plant.setActualEfficiency(ModifiedEfficiency)
-        self.reps.dbrw.stage_fixed_operating_costs_and_efficiency(plant)
+        plant.setActualVariableCosts(new_variable_costs)
+        self.reps.dbrw.stage_variable_costs_and_efficiency(plant)
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():

@@ -109,7 +109,7 @@ class Investmentdecision(DefaultModule):
             self.continue_iteration()
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
             # todo: these variables could be removed once the model is validated
-            self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
+            # self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
             print("Investing according to TARGETS")
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
@@ -124,7 +124,7 @@ class Investmentdecision(DefaultModule):
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         else:
             # todo: these variables could be removed once the model is validated
-            self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
+            # self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
             print("Investing according to market results")
             highestNPVCandidatePP = None
             highestNPV = 0
@@ -173,7 +173,8 @@ class Investmentdecision(DefaultModule):
                         else:
                             logging.info("technology%s negative NPV", candidatepowerplant.technology)
 
-                # saving: operational profits from candidate plants
+                # saving: operational profits from candidate plant
+                # todo: this can be avoid, saving for debugging
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
                 # if the power plant is correctly saved
                 if highestNPVCandidatePP is not None:

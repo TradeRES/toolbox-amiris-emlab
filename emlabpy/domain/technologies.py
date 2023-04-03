@@ -24,7 +24,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.depreciation_time = 0
         self.minimum_running_hours = 0
 
-        self.efficiency_modifier_after_lifetime = 0
+        self.efficiency_modifier = 0
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
@@ -45,6 +45,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.efficiency_time_series = None
         self.investment_cost_time_series = None
         self.fixed_operating_cost_time_series = None
+        self.variable_operating_cost_time_series = None
         self.minimum_fuel_quality = 0
         self.maximum_installed_capacity_fraction_per_agent = 0
         self.base_segment_dependent_availability = 0
@@ -60,8 +61,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_leadtime = int(parameter_value)
         elif parameter_name == 'MaximumLifeExtension':
             self.maximumLifeExtension = int(parameter_value)
-        elif parameter_name == 'EfficiencyModifierAfterLifetime':
-            self.efficiency_modifier_after_lifetime = float(parameter_value)
+        elif parameter_name == 'EfficiencyModifier':
+            self.efficiency_modifier = float(parameter_value)
         elif parameter_name == 'PeakSegmentDependentAvailability':
             self.peak_segment_dependent_availability = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':
@@ -81,6 +82,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
+            self.variable_operating_cost_time_series = reps.trends[self.name + "VariableCostTimeSeries"] # geometric Trends
+            self.variable_operating_cost_time_series.start = self.variable_operating_costs
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
@@ -104,6 +107,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.yearlyPotential = pd.Series(values, index=index)
         elif parameter_name == 'efficiency_full_load':
             self.efficiency = float(parameter_value)
+            self.efficiency_time_series = reps.trends[self.name + "EfficiencyTimeSeries"] # geometric Trends
+            self.efficiency_time_series.start = self.efficiency
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
         elif parameter_name == 'SelfDischargeRatePerHour':
@@ -144,8 +149,15 @@ class PowerGeneratingTechnology(ImportObject):
     def getInvestmentCostbyTimeSeries(self, time):
         return self.investment_cost_time_series.get_value(time)
 
-    def get_fixed_operating_cost_trend(self, commissionedTick):
-        return self.fixed_operating_cost_time_series.get_value(commissionedTick) # geometric trend
+    def get_fixed_operating_cost_trend(self, time):
+        # time = passed years in dismantle
+        # time = commissioned tick in initialization
+        return self.fixed_operating_cost_time_series.get_value(time) # geometric trend
+
+    def get_variable_operating_cost_trend(self, time):
+        print(self.name)
+        return self.variable_operating_cost_time_series.get_value(time) # geometric trend
+
 
     # --------------------------------------------------------------------------------------------------------
 
@@ -153,8 +165,11 @@ class PowerGeneratingTechnology(ImportObject):
         return self.depreciation_time
 
 
-    def getEfficiency(self, time):
+    def getEfficiencyTimeSeries(self, time):
         return self.efficiency_time_series.get_value(time)
+
+    def getVariableCostsTimeSeries(self, time):
+        return self.variable_operating_cost_time_series.get_value(time)
 
     def getCo2CaptureEffciency(self):
         return self.co2CaptureEffciency

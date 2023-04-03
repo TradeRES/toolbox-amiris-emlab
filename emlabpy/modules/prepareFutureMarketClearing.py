@@ -61,6 +61,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.write_times()
         self.writer.close()
 
+
     def filter_power_plants_to_be_operational(self):
         """
         This function assign a fictional future status to power plants by adding the look ahead years to the age of the power plants
@@ -190,24 +191,48 @@ class PrepareFutureMarketClearing(PrepareMarket):
             averagePastOperatingProfit = -1
         return averagePastOperatingProfit
 
-    # def calculateAveragePastOperatingProfit_OLD(self, plant, horizon):
-    #     # "totalProfits" or "irr"
-    #     averagePastOperatingProfit = 0
-    #     # typeofProfitforPastHorizon are the total Profits which exclude the loans
-    #     rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
-    #     if rep is not None:
-    #         # if there is data than the one needed for the horizon then an average of those years are taken
-    #         if self.reps.current_tick >= horizon -1:
-    #             past_operating_profit_all_years = pd.Series(dict(rep["data"]))
-    #             # before year 3 there is no dismantling considered.
-    #             # in year 3 it looks for profits from tick  0 to tick 3
-    #             # but the dismantling in tick 7 (when the plants should be installed) there are more plants installed
-    #             # the ignored decomission in years 2024, 2025 made the plant more profitable and not to be dismantled
-    #             # also it looks for the profits from tick 5 to tick 8. So the profits are different
-    #             indices = list(range(self.reps.current_tick - horizon + 1, self.reps.current_tick + 1))
-    #             past_operating_profit = past_operating_profit_all_years.loc[ list(map(str,indices))].values
-    #             averagePastOperatingProfit =  sum(list(map(float,past_operating_profit))) / len(indices)
-    #         else:  # Attention for now, for the first years the availble past data is taken
-    #             print("no past profits for plant", plant.name)
-    #             pass
-    #     return averagePastOperatingProfit
+    # this function is to pass the renewables grouped. Amiris_Results would then have to be reassigned to each id.
+    # the profits of the installed power plants are saved to account for expected future profits.
+    # if no futur
+    def write_renewables_together(self):
+        identifier = []
+        InstalledPowerInMW = []
+        OpexVarInEURperMWH = []
+        Set = []
+        SupportInstrument = []
+        FIT = []
+        Premium = []
+        Lcoe = []
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+        for pp in self.power_plants_list:
+            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
+                pp.technology.name] != "Biogas":
+                identifier.append(pp.id)
+                InstalledPowerInMW.append(pp.capacity)
+                # todo: make exception for forward Capacity market.
+                if pp.name in operator.list_of_plants:
+                    OpexVarInEURperMWH.append(operator.reservePriceSR)
+                else:
+                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                Set.append(self.reps.dictionaryTechSet[pp.technology.name])
+                SupportInstrument.append("NONE")
+                FIT.append("-")
+                Premium.append("-")
+                Lcoe.append("-")
+
+        d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
+             'OpexVarInEURperMWH': OpexVarInEURperMWH,
+             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
+
+        df = pd.DataFrame(data=d)
+        chosenset = [self.reps.dictionaryTechSet[ren] for ren in globalNames.vRES]
+        # grouping installed  renewables for amiris faster dispatch
+        renewables = df[df['Set'].isin(chosenset)]
+        df.drop(df['Set'].isin(chosenset).index, inplace=True)
+        renewables = renewables.groupby('Set').agg({'identifier': 'first', 'InstalledPowerInMW':'sum', 'SupportInstrument': 'first',
+                                                    'FIT': 'first', 'Premium': 'first','Lcoe': 'first',
+                                                    'OpexVarInEURperMWH':'mean'})
+        renewables = renewables.reset_index()
+        groupedres = pd.concat([df, renewables])
+        groupedres.to_excel(self.writer, sheet_name="renewables")
+
