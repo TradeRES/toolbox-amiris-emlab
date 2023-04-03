@@ -23,8 +23,6 @@ class PowerGeneratingTechnology(ImportObject):
         self.efficiency = 0
         self.depreciation_time = 0
         self.minimum_running_hours = 0
-
-        self.efficiency_modifier = 0
         self.expected_lifetime = 0
         self.expected_leadtime = 0
         self.expected_permittime = 0
@@ -61,8 +59,10 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_leadtime = int(parameter_value)
         elif parameter_name == 'MaximumLifeExtension':
             self.maximumLifeExtension = int(parameter_value)
-        elif parameter_name == 'EfficiencyModifier':
-            self.efficiency_modifier = float(parameter_value)
+        elif parameter_name == 'efficiency_full_load':
+            self.efficiency = float(parameter_value)
+            self.efficiency_time_series = reps.trends[self.name + "EfficiencyTimeSeries"] # geometric Trends
+            self.efficiency_time_series.start = self.efficiency
         elif parameter_name == 'PeakSegmentDependentAvailability':
             self.peak_segment_dependent_availability = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':
@@ -105,10 +105,6 @@ class PowerGeneratingTechnology(ImportObject):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.yearlyPotential = pd.Series(values, index=index)
-        elif parameter_name == 'efficiency_full_load':
-            self.efficiency = float(parameter_value)
-            self.efficiency_time_series = reps.trends[self.name + "EfficiencyTimeSeries"] # geometric Trends
-            self.efficiency_time_series.start = self.efficiency
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
         elif parameter_name == 'SelfDischargeRatePerHour':
@@ -149,27 +145,21 @@ class PowerGeneratingTechnology(ImportObject):
     def getInvestmentCostbyTimeSeries(self, time):
         return self.investment_cost_time_series.get_value(time)
 
-    def get_fixed_operating_cost_trend(self, time):
+    def get_fixed_operating_by_time_series(self, time):
         # time = passed years in dismantle
         # time = commissioned tick in initialization
         return self.fixed_operating_cost_time_series.get_value(time) # geometric trend
 
-    def get_variable_operating_cost_trend(self, time):
-        print(self.name)
+    def get_variable_operating_by_time_series(self, time):
         return self.variable_operating_cost_time_series.get_value(time) # geometric trend
-
+    def get_efficiency_by_time_series(self, time):
+        return self.efficiency_time_series.get_value(time) # geometric trend
 
     # --------------------------------------------------------------------------------------------------------
 
     def getDepreciationTime(self):
         return self.depreciation_time
 
-
-    def getEfficiencyTimeSeries(self, time):
-        return self.efficiency_time_series.get_value(time)
-
-    def getVariableCostsTimeSeries(self, time):
-        return self.variable_operating_cost_time_series.get_value(time)
 
     def getCo2CaptureEffciency(self):
         return self.co2CaptureEffciency

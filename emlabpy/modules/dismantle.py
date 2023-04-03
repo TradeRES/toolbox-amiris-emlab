@@ -77,16 +77,21 @@ class Dismantle(DefaultModule):
     def increase_fixed_cost(self, plant):
         print("dont dismantle but increase FOM of  {} ".format(plant.name))
         passed_years = plant.age - plant.technology.getExpectedLifetime()
-        ModifiedOM = plant.getTechnology().get_fixed_operating_cost_trend(passed_years) * plant.getActualNominalCapacity()
+        ModifiedOM = plant.getTechnology().get_fixed_operating_by_time_series(passed_years) * plant.getActualNominalCapacity()
         plant.setActualFixedOperatingCost(ModifiedOM)
         self.reps.dbrw.stage_fixed_operating_costs(plant)
 
-    def decrease_variable_costs_and_efficiency(self, plant):
-        new_variable_costs = plant.getTechnology().get_variable_operating_cost_trend(self.age)
-        ModifiedEfficiency = plant.actualEfficiency * (1 - plant.technology.efficiency_modifier)
-        plant.setActualEfficiency(ModifiedEfficiency)
-        plant.setActualVariableCosts(new_variable_costs)
-        self.reps.dbrw.stage_variable_costs_and_efficiency(plant)
+    def decrease_variable_costs_and_efficiency(self):
+        for powerplantname, plant in self.reps.power_plants.items():
+            if plant.age < 0:
+                pass # dont change data of power plants in pipeline.
+            else:
+                new_variable_costs = plant.getTechnology().get_variable_operating_by_time_series(plant.age)
+                ModifiedEfficiency = plant.getTechnology().get_efficiency_by_time_series(plant.age) # same as geometric trend
+                plant.setActualEfficiency(ModifiedEfficiency)
+                plant.setActualVariableCosts(new_variable_costs)
+            # saving new variable and efficiency costs
+            self.reps.dbrw.stage_variable_costs_and_efficiency(self.reps.power_plants)
 
     def add_one_year_to_age(self):
         for powerplantname, powerplant in self.reps.power_plants.items():

@@ -90,7 +90,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     # decommissioned as specified by input
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
-                    self.set_power_plant_as_operational(powerplant)
+                    self.set_power_plant_as_operational(powerplant, fictional_age)
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                 powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 print("passed maximum life extension" + powerplant.name)
@@ -100,7 +100,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
-                    self.set_power_plant_as_operational(powerplant)
+                    self.set_power_plant_as_operational(powerplant, fictional_age)
 
                 elif self.reps.current_tick >= horizon:  # there are enough past simulations
                     profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
@@ -111,7 +111,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                             "{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                             .format(powerplant.name, horizon, profit, requiredProfit))
                     else:  # power plants in pipeline are also considered to be operational in the future
-                        self.set_power_plant_as_operational(powerplant)
+                        self.set_power_plant_as_operational(powerplant, fictional_age)
 
                 else:  # there are not enough past simulations calculate profits if there are any. can be 1, 2 or 3 results
                     if isinstance(powerplant.expectedTotalProfits,pd.Series):
@@ -121,7 +121,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                             print("{} expected operating loss {} : was {} which is less than required:  {} " \
                                   .format(powerplant.name, horizon, profit, requiredProfit))
                         else:
-                            self.set_power_plant_as_operational(powerplant)
+                            self.set_power_plant_as_operational(powerplant, fictional_age)
                     else:
                         print("decommissioned " + powerplant.name)
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
@@ -144,14 +144,18 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 # planned power plants further in the future should not be considered.
                 # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
                 # power plants in pipeline are also considered to be operational in the future
-                self.set_power_plant_as_operational(powerplant)
+                self.set_power_plant_as_operational(powerplant, fictional_age)
 
         self.save_decommissioned_expected_list(decommissioned_list)
 
     def save_decommissioned_expected_list(self, decommissioned_list):
         self.reps.dbrw.stage_list_decommissioned_expected_plants(decommissioned_list, self.simulation_year)
 
-    def set_power_plant_as_operational(self, powerplant):
+    def set_power_plant_as_operational(self, powerplant, fictional_age):
+        new_variable_costs = powerplant.getTechnology().get_variable_operating_by_time_series(fictional_age)
+        ModifiedEfficiency = powerplant.getTechnology().get_efficiency_by_time_series(fictional_age) # same as geometric trend
+        powerplant.setActualEfficiency(ModifiedEfficiency)
+        powerplant.setActualVariableCosts(new_variable_costs)
         powerplant.fictional_status = globalNames.power_plant_status_operational
         self.power_plants_list.append(powerplant)
 

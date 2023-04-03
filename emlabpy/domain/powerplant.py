@@ -147,10 +147,7 @@ class PowerPlant(EMLabAgent):
                 reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
 
         self.status = globalNames.power_plant_status_inPipeline
-
-        self.calculateAndSetActualEfficiency(0) # Invest
-        self.calculateAndSetActualFixedOperatingCosts(0)  # by GeometricTrend by tick --- > negative exponential value
-
+        self.calculateAndSetActualFixedOperatingCosts(0)  # Invest costs by GeometricTrend
         self.calculateAndSetActualInvestedCapitalbyinterpolate(reps, self.technology, self.commissionedYear)# INVEST
 
     def specifyPowerPlantsInstalled(self, reps, run_initialize_power_plants):
@@ -167,12 +164,13 @@ class PowerPlant(EMLabAgent):
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTick()  # minus age, permit and lead time
-        commissionedTick = - self.age
 
         if self.actualEfficiency == 'NOTSET':  # if there is not initial efficiency, then assign the efficiency by the technology
-            self.calculateAndSetActualEfficiency(commissionedTick) # initialDB
+            self.calculateAndSetActualEfficiency(self.age) # initialDB
+
         if self.actualVariableCost == 'NOTSET':
-            self.calculateAndSetActualVariableOperatingCosts(commissionedTick)
+            self.calculateAndSetActualVariableOperatingCosts(self.age)
+
         if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
             self.calculateAndSetActualFixedOperatingCosts(0)  # if plant passed its lifetime then it should have higher costs
 
@@ -181,6 +179,7 @@ class PowerPlant(EMLabAgent):
 
          # INITIAL investment cost by time series = 2020
         self.calculateAndSetActualInvestedCapital(reps, self.technology, self.age)
+
         if run_initialize_power_plants == True:  # only run this in the initialization step and while plotting
             self.setPowerPlantsStatusforInstalledPowerPlants() # the status for each year is set in dismantle module
         return
@@ -239,10 +238,9 @@ class PowerPlant(EMLabAgent):
     def calculateAndSetActualInvestedCapital(self, reps, technology, age):
         investment_year = - age + reps.start_simulation_year
         if investment_year <=  technology.investment_cost_eur_MW.index.min():
-            # Finds investment cost by time series = 2020 price
-            # for commission year earlier than 2020 then 2020 is increased according to commissioned Tick
+            # Finds investment cost by time series if there are no prices available
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
-                age) * self.get_actual_nominal_capacity())
+                - age) * self.get_actual_nominal_capacity())
         else:  # by year
             self.setActualInvestedCapital(technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity())
 
@@ -253,15 +251,14 @@ class PowerPlant(EMLabAgent):
     def calculateAndSetActualFixedOperatingCosts(self, tick):
         # get fixed costs by GeometricTrend by tick.
         # tick = 0 in initialization
-        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_cost_trend(tick) \
+        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_by_time_series(tick) \
                                          * self.getActualNominalCapacity())
 
     def calculateAndSetActualVariableOperatingCosts(self, tick):
-        # get fixed costs by GeometricTrend by tick.
-        # tick = 0 in initialization
-        self.actualVariableCost = (self.getTechnology().get_variable_operating_cost_trend(tick))
+        # get fixed costs by GeometricTrend by tick. Active in tick = 0 in initialization
+        self.actualVariableCost = (self.getTechnology().get_variable_operating_by_time_series(tick))
     def calculateAndSetActualEfficiency(self, age): # for initializatio
-        self.setActualEfficiency(self.getTechnology().getEfficiencyTimeSeries(age))
+        self.setActualEfficiency(self.getTechnology().get_efficiency_by_time_series(age))
 
     def calculateEmissionIntensity(self):
         emission = 0
