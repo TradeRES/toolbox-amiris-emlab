@@ -9,13 +9,13 @@ from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import Investments, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
-#from domain.weatherYears import WeatherYears
 from modules.profits import Profits
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
 from util.repository import *
 from util.spinedb import SpineDB
 from domain.powerplant import Decommissioned
+from domain.hydrogen_demand import HydrogenDemand
 
 
 class SpineDBReaderWriter:
@@ -144,7 +144,8 @@ class SpineDBReaderWriter:
                 reps.iteration_weather = str(row['parameter_value'])
             elif row['parameter_name'] == 'available_years_data':
                 reps.available_years_data = bool(row['parameter_value'])
-
+            elif row['parameter_name'] == 'monthly_hydrogen_demand':
+                reps.monthly_hydrogen_demand = bool(row['parameter_value'])
 
 
         # these are the years that need to be added to the power plants on the first simulation tick
@@ -831,8 +832,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     elif object_class_name == 'Targets':
         add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
+    elif object_class_name == 'HydrogenfromOptim':
+        add_parameter_value_to_repository(reps, db_line, reps.hydrogen_demand, HydrogenDemand)
     elif object_class_name == 'Technologies':
-        if db_line[1] in reps.used_technologies:
+        if db_line[1] in globalNames.used_technologies:
             add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
                                               PowerGeneratingTechnology)
         # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ data from Traderes

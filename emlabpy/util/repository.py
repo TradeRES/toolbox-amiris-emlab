@@ -38,7 +38,6 @@ class Repository:
         """
         Initialize all Repository variables
         """
-
         # section --------------------------------------------------------------------------------------configuration
         self.simulation_name = "test"
         self.country = ""
@@ -58,7 +57,7 @@ class Repository:
         self.start_tick_fuel_trends = 0
         self.start_profit_based_dismantling_tick = 0
         self.initialization_investment = True
-
+        self.monthly_hydrogen_demand = False
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
@@ -105,13 +104,7 @@ class Repository:
         self.power_plant_dispatch_plans_in_year = dict()
         self.bids = dict()
         self.power_generating_technologies = dict()
-        self.used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", "Nuclear", "WTG_onshore",
-                                  "WTG_offshore", "PV_utility_systems", "Lignite PSC", "Fuel oil PGT", "Pumped_hydro",
-                                  "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH",
-                                  "CCGT_CHP_backpressure_DH", "Biomass_CHP_wood_pellets_PH",
-                                  "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP",
-                                  "hydrogen_combined_cycle"]
-
+        self.hydrogen_demand = dict()
         self.market_clearing_points = dict()
         self.power_grid_nodes = dict()
         self.trends = dict()
@@ -139,9 +132,6 @@ class Repository:
         self.powerPlantsForAgent = {}
         self.loanList = dict()
         self.financialPowerPlantReports = dict()
-
-        #     self.weatherYears = dict()
-
         self.profits = dict()
         # Create list of plants in SR
         self.plants_in_SR = []

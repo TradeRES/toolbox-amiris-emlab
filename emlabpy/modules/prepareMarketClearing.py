@@ -41,6 +41,7 @@ class PrepareMarket(DefaultModule):
         self.write_renewables()
         self.write_storage()
         self.write_conventionals()
+        self.write_electrolysers()
         self.write_biogas()
         self.write_scenario_data_emlab("next_year_price")
         self.write_times()
@@ -181,7 +182,20 @@ class PrepareMarket(DefaultModule):
                                  sheet_name=["Load"])
         demand = excel['Load'][self.reps.current_year + self.reps.investment_initialization_years]
         demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
+    def write_electrolysers(self):
+        if self.reps.monthly_hydrogen_demand ==True:
+            hydrogen_demand = "amiris-config/data/hydrogen_demand.csv"
+        else:
+            hydrogen_demand = self.reps.hydrogen_demand["Hydrogen"].averagemonthlyConsumptionMWh
 
+        d = {'identifier': 99999999999,
+             'ElectrolyserType': "ELECTROLYSIS",
+             'PeakConsumptionInMW': self.reps.hydrogen_demand["Hydrogen"].peakConsumptionInMW,
+             'ConversionFactor': self.reps.power_generating_technologies['electrolyzer'].efficiency,
+             'HydrogenProductionTargetInMWH': hydrogen_demand
+             }
+        df = pd.DataFrame(data=d, index=[0])
+        df.to_excel(self.writer, sheet_name="electrolysers")
     def update_profiles_files(self, year):
         print("Update profiles to year" + str(year))
         excel = pd.read_excel(globalNames.input_data, index_col=0,
