@@ -210,7 +210,7 @@ class PrepareMarket(DefaultModule):
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                    OpexVarInEURperMWH.append(pp.actualVariableCost)
                 Efficiency.append(pp.actualEfficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
@@ -243,7 +243,7 @@ class PrepareMarket(DefaultModule):
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                    OpexVarInEURperMWH.append(pp.actualVariableCost)
                 Set.append(self.reps.dictionaryTechSet[pp.technology.name])
                 SupportInstrument.append("NONE")
                 FIT.append("-")
@@ -276,7 +276,7 @@ class PrepareMarket(DefaultModule):
                 if pp.name in operator.list_of_plants:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+                    OpexVarInEURperMWH.append(pp.actualVariableCost)
                 Set.append(self.reps.dictionaryTechSet[pp.technology.name])
                 SupportInstrument.append("-")
                 FIT.append("-")
@@ -302,8 +302,8 @@ class PrepareMarket(DefaultModule):
         for pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
-                ChargingEfficiency.append(pp.technology.chargingEfficiency)
-                DischargingEfficiency.append(pp.technology.dischargingEfficiency)
+                ChargingEfficiency.append(pp.actualEfficiency)
+                DischargingEfficiency.append(pp.technology.dischargingEfficiency) # todo modify also discarhging capacity
                 InitialEnergyLevelInMWH.append(pp.initialEnergyLevelInMWH)
                 EnergyToPowerRatio.append(pp.technology.energyToPowerRatio)
                 InstalledPowerInMW.append(pp.capacity)

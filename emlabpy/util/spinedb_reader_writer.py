@@ -361,10 +361,11 @@ class SpineDBReaderWriter:
                                            [('actualFixedOperatingCost', pp.actualFixedOperatingCost)],
                                            "0")
     def stage_variable_costs_and_efficiency(self, power_plants):
+        self.stage_object_parameters(self.powerplant_installed_classname, ['actualVariableCost', 'actualEfficiency'])
         for power_plant_name, pp in power_plants.items():
             self.stage_object(self.powerplant_installed_classname, pp.name)
             self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
-                                               [('actualVariableCost', pp.actualFixedOperatingCost),
+                                               [('actualVariableCost', pp.actualVariableCost),
                                                 ('actualEfficiency', pp.actualEfficiency)],
                                                "0")
 
