@@ -87,6 +87,29 @@ workflow:
         templateFile: amiris-config/scenario.yaml
         outputFile: scenario.yaml
 
+  # Add electrolysers (append to scenario)
+  - action:
+      project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: electrolysers
+      args:
+        excelFile: amiris_data_structure_storages_test.xlsx
+        excelSheet: electrolysers
+        excelHeader: True
+
+  - action:
+      project: general
+      call: write_amiris_config
+      data:
+        read_from_dmgr: electrolysers
+        write_to_dmgr: null
+      args:
+        AMIRISConfigFieldMap: amiris-config/electrolysersFieldMap.yaml
+        templateFile: amiris-config/scenario.yaml
+        outputFile: scenario.yaml
+
   # Add storages (append to scenario)
   - action:
       project: general
@@ -107,29 +130,6 @@ workflow:
         write_to_dmgr: null
       args:
         AMIRISConfigFieldMap: amiris-config/storagesFieldMap.yaml
-        templateFile: amiris-config/scenario.yaml
-        outputFile: scenario.yaml
-
-  # Add electrolysers (append to scenario)
-  - action:
-      project: general
-      call: parse_excel
-      data:
-        read_from_dmgr: null
-        write_to_dmgr: electrolysers
-      args:
-        excelFile: amiris_data_structure.xlsx
-        excelSheet: electrolysers
-        excelHeader: True
-
-  - action:
-      project: general
-      call: write_amiris_config
-      data:
-        read_from_dmgr: electrolysers
-        write_to_dmgr: null
-      args:
-        AMIRISConfigFieldMap: amiris-config/electrolysersFieldMap.yaml
         templateFile: amiris-config/scenario.yaml
         outputFile: scenario.yaml
 

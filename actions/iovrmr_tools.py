@@ -10,6 +10,7 @@ from typing import List, Callable, Dict, NoReturn, Any, Union, Hashable
 
 import pandas as pd
 import yaml
+from fameio.source.loader import load_yaml
 from ioproc.logger import mainlogger
 
 OUTPUT_FILE_ENDING = ".csv"
@@ -329,10 +330,82 @@ def add_trader_by_support_instrument(agent: Dict, template: Dict):
 
 
 def retrieve_trader_id(template: Dict, trader_type: str):
-    """Retrieve Id for given type of Trader from template"""
+    """Retrieve Id for first item of given type of Trader from template"""
     for template_agent in template["Agents"]:
         if template_agent["Type"] == trader_type:
             return template_agent["Id"]
+
+
+def get_storage_strategist_type(storage_traders: List[Dict], scenario: Dict) -> str:
+    """Return type of storage strategist for given scenario"""
+    strategist = None
+    previous_strategist = None
+    for storage_trader in storage_traders:
+        trader_id = storage_trader["StorageTrader"]
+        storage_attributes = retreive_agent_attributes_by_id(trader_id, scenario)
+        if strategist:
+            previous_strategist = strategist
+        strategist = storage_attributes["Strategy"]["StrategistType"]
+        if previous_strategist and previous_strategist != strategist:
+            raise ValueError(
+                "Working with different storage strategists is not implemented!\n"
+                "Please use uniform strategist, either 'MULTI_AGENT_SIMPLE', "
+                "'SINGLE_AGENT_MAX_PROFIT' or 'SINGLE_AGENT_MIN_SYSTEM_COST'."
+            )
+
+    return strategist
+
+
+def retreive_agent_attributes_by_id(agent_id: int, scenario: Dict):
+    """Return agent attributes for agent with given ID"""
+    for agent in scenario["Agents"]:
+        if agent["Id"] == agent_id:
+            return agent["Attributes"]
+
+
+def adjust_contracts_for_storages(
+    strategist_type: str, inserted_agents: List[Dict], scenario: Dict, data: pd.DataFrame
+):
+    """Adjust contracts in scenario.yaml based on given storage type"""
+    contracts_location = None
+    if strategist_type == "MULTI_AGENT_SIMPLE":
+        contracts_location = "./amiris-config/yaml/storage_contracts_multi/storage_contracts.yaml"
+    elif strategist_type in ["SINGLE_AGENT_MAX_PROFIT", "SINGLE_AGENT_MIN_SYSTEM_COST"]:
+        contracts_location = "./amiris-config/yaml/storage_contracts_single/storage_contracts.yaml"
+        if agent_in_scenario("ElectrolysisTrader", scenario):
+            raise ValueError(
+                "'ElectrolysisTrader' requires a 'PriceForecaster', a 'StorageTrader' with strategy "
+                "'SINGLE_AGENT_MAX_PROFIT' or 'SINGLE_AGENT_MIN_SYSTEM_COST' in turn requires a 'MeritOrderForecaster' "
+                "instead. The two cannot be combined.\n"
+                "Thus, you either can simulate an 'ElectrolysisTrader' in combination with a 'MULTI_AGENT_SIMPLE' "
+                "storage strategy, or you have to remove the 'ElectrolysisTrader' from your scenario if you want "
+                "to use the 'SINGLE_AGENT_MAX_PROFIT' or 'SINGLE_AGENT_MIN_SYSTEM_COST' strategy."
+            )
+    if not contracts_location:
+        raise ValueError(
+            "Invalid strategist type. Must be either 'MULTI_AGENT_SIMPLE', 'SINGLE_AGENT_MAX_PROFIT' "
+            "or 'SINGLE_AGENT_MIN_SYSTEM_COST'."
+        )
+
+    translation_map = load_yaml(contracts_location)
+    config_file = insert_contracts_from_map(
+        inserted_agents,
+        translation_map["Contracts"],
+        scenario,
+        res_operators_and_traders=None,
+        raw_data=data,
+    )
+
+    return config_file
+
+
+def agent_in_scenario(agent_type: str, scenario: Dict):
+    """Check whether agent of certain type is in scenario"""
+    for agent in scenario["Agents"]:
+        if agent["Type"] == agent_type:
+            return True
+
+    return False
 
 
 def insert_contracts_from_map(data, translation_map, template, res_operators_and_traders, raw_data):
@@ -645,14 +718,7 @@ def evaluate_dispatch_per_group(
                 dispatch["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
                 final_storage_levels.at[group[0], "value"] = group[1]["StoredEnergyInMWH"].iloc[-1]
         elif key == "ElectrolysisTrader":
-            electrolysis_results = val[
-                [
-                    "TimeStep",
-                    "AgentId",
-                    "AwardedEnergyInMWH",
-                    "ProducedHydrogenInMWH"
-                ]
-            ].dropna()
+            electrolysis_results = val[["TimeStep", "AgentId", "AwardedEnergyInMWH", "ProducedHydrogenInMWH"]].dropna()
             electrolysis_results["new_time_step"] = electrolysis_results["TimeStep"] - trader_offset
             electrolysis_results = electrolysis_results.set_index("new_time_step")
             if dispatch.empty:
