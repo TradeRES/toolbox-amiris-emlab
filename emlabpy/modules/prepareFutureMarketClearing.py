@@ -44,6 +44,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
             else:  # no target investments, test as normal
                 self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.lookAhead
+        # changing efficency and variable costs of candidate power plants
+        for pp in self.power_plants_list:
+            pp.actualVariableCost = pp.technology.variable_operating_costs
 
     def act(self):
         self.setTimeHorizon()
