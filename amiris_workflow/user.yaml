@@ -95,7 +95,7 @@ workflow:
         read_from_dmgr: null
         write_to_dmgr: electrolysers
       args:
-        excelFile: amiris_data_structure_storages_test.xlsx
+        excelFile: amiris_data_structure.xlsx
         excelSheet: electrolysers
         excelHeader: True
 

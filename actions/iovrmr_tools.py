@@ -317,22 +317,22 @@ def add_trader_by_support_instrument(agent: Dict, template: Dict):
     try:
         support_instrument = agent["Attributes"]["SupportInstrument"]
         if support_instrument in ["MPVAR", "MPFIX", "CFD", "CP"]:
-            trader_id = retrieve_trader_id(template, "RenewableTrader")
+            trader_id = retrieve_agent_id(template, "RenewableTrader")
         elif support_instrument == "FIT":
-            trader_id = retrieve_trader_id(template, "SystemOperatorTrader")
+            trader_id = retrieve_agent_id(template, "SystemOperatorTrader")
         else:
-            trader_id = retrieve_trader_id(template, "NoSupportTrader")
+            trader_id = retrieve_agent_id(template, "NoSupportTrader")
             agent["Attributes"].pop("SupportInstrument")
     except KeyError:
-        trader_id = retrieve_trader_id(template, "NoSupportTrader")
+        trader_id = retrieve_agent_id(template, "NoSupportTrader")
 
     return {"Operator": agent["Id"], "Trader": trader_id}
 
 
-def retrieve_trader_id(template: Dict, trader_type: str):
-    """Retrieve Id for first item of given type of Trader from template"""
+def retrieve_agent_id(template: Dict, agent_type: str):
+    """Retrieve Id for first item of given type of Agent from template"""
     for template_agent in template["Agents"]:
-        if template_agent["Type"] == trader_type:
+        if template_agent["Type"] == agent_type:
             return template_agent["Id"]
 
 
@@ -372,6 +372,7 @@ def adjust_contracts_for_storages(
         contracts_location = "./amiris-config/yaml/storage_contracts_multi/storage_contracts.yaml"
     elif strategist_type in ["SINGLE_AGENT_MAX_PROFIT", "SINGLE_AGENT_MIN_SYSTEM_COST"]:
         contracts_location = "./amiris-config/yaml/storage_contracts_single/storage_contracts.yaml"
+        scenario = change_to_merit_order_forecaster(scenario)
         if agent_in_scenario("ElectrolysisTrader", scenario):
             raise ValueError(
                 "'ElectrolysisTrader' requires a 'PriceForecaster', a 'StorageTrader' with strategy "
@@ -406,6 +407,19 @@ def agent_in_scenario(agent_type: str, scenario: Dict):
             return True
 
     return False
+
+
+def change_to_merit_order_forecaster(scenario: Dict):
+    """Change forecaster ID from price forecaster to merit order forecaster ID"""
+    price_forecaster_id = retrieve_agent_id(scenario, "PriceForecaster")
+    merit_order_forecaster_id = retrieve_agent_id(scenario, "MeritOrderForecaster")
+    for contract in scenario["Contracts"]:
+        if contract["ReceiverId"] == price_forecaster_id:
+            contract["ReceiverId"] = merit_order_forecaster_id
+        if contract["SenderId"] == price_forecaster_id:
+            contract["SenderId"] = merit_order_forecaster_id
+
+    return scenario
 
 
 def insert_contracts_from_map(data, translation_map, template, res_operators_and_traders, raw_data):
