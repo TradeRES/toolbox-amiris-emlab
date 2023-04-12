@@ -19,7 +19,7 @@ def readme():
 
 
 setup(
-    name="emlabpy",
+    name="Emlab-py",
     version="0.0.0",
     description="electricity markets ABM",
     long_description="""
