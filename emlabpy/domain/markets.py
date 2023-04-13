@@ -9,7 +9,6 @@ import os
 import pandas as pd
 from util import globalNames
 
-
 class Market(EMLabAgent):
     """
     The parent class of all markets.
@@ -42,6 +41,20 @@ class ElectricitySpotMarket(Market):
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None)
 
+class LoadShedder(ImportObject):
+    def __init__(self, name):
+        super().__init__(name)
+        self.VOLL = None
+        self.TimeSeriesFile = 0
+        self.shedder_capacity = 0
+
+    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+        if parameter_name == 'TimeSeriesFile':
+            self.TimeSeriesFile = parameter_value
+        if parameter_name == 'VOLL':
+            self.VOLL = int(parameter_value)
+        if parameter_name == 'Shedder_capacity':
+            self.shedder_capacity = int(parameter_value)
 
 class CapacityMarket(Market):
     """"""

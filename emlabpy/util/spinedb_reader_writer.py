@@ -792,6 +792,9 @@ def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationsh
             to_arr.append((unit[1][0], unit[1][1], unit[1][2]))
 
 
+
+
+
 def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     """
     Function used to translate an object_parameter_value from SpineDB to a Repository dict entry.
@@ -839,13 +842,6 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
             add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
                                               PowerGeneratingTechnology)
         # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ data from Traderes
-    #     # From here are the inputs from TechnologyEmlab
-    # elif object_class_name == 'unit':
-    #     # according to the scenario.yaml, if is has energy carrier then it is intermittent
-    #     if db_line[1] in reps.used_technologies:
-    #         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
-    #                                           PowerGeneratingTechnology)
-
     elif object_class_name == 'Fuels':  # Fuels contain CO2 density energy density, quality
         add_parameter_value_to_repository(reps, db_line, reps.substances, Substance)
     elif object_class_name == 'node':  # Substances and CO2 costs
@@ -856,6 +852,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.bids, Bid)
     elif object_class_name == 'MarketClearingPoints':
         add_parameter_value_to_repository(reps, db_line, reps.market_clearing_points, MarketClearingPoint)
+    elif object_class_name == 'LoadShedders':
+        add_parameter_value_to_repository(reps, db_line, reps.loadShedders, LoadShedder)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
     elif object_class_name == 'StrategicReserveResults':

@@ -106,6 +106,7 @@ class Repository:
         self.power_generating_technologies = dict()
         self.hydrogen_demand = dict()
         self.market_clearing_points = dict()
+        self.loadShedders = dict()
         self.power_grid_nodes = dict()
         self.trends = dict()
         self.zones = dict()
