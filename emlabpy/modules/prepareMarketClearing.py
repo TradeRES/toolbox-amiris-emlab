@@ -191,7 +191,8 @@ class PrepareMarket(DefaultModule):
         d = {'identifier': 99999999999,
              'ElectrolyserType': "ELECTROLYSIS",
              'PeakConsumptionInMW': self.reps.hydrogen_demand["Hydrogen"].peakConsumptionInMW,
-             'ConversionFactor': self.reps.power_generating_technologies['electrolyzer'].efficiency,
+             'ConversionFactor': 1,
+            # 'ConversionFactor': self.reps.power_generating_technologies['electrolyzer'].efficiency,
              'HydrogenProductionTargetInMWH': hydrogen_demand
              }
         df = pd.DataFrame(data=d, index=[0])

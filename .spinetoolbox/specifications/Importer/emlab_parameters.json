@@ -1251,7 +1251,10 @@
                 "read_until_row": true
             },
             "HydrogenfromOptim": {},
-            "LoadShedders": {}
+            "LoadShedders": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "CapacityMarkets": {
