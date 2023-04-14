@@ -904,18 +904,7 @@ def prepare_pp_decommissioned(reps):
     for pp in reps.get_power_plants_by_status([globalNames.power_plant_status_decommissioned]):
         plants_decommissioned_per_year.loc[len(plants_decommissioned_per_year)] = [pp.name, pp.decommissionInYear,
                                                                                    pp.technology.name, pp.capacity]
-
-    colors = [technology_colors[tech] for tech in plants_decommissioned_per_year["technology"].unique()]
-    fig1 = sns.relplot(x="decommissionInYear", y="Capacity", hue="technology",
-                       sizes=(40, 400), alpha=.5, palette=colors,
-                       height=6, data=plants_decommissioned_per_year)
-    for row in plants_decommissioned_per_year.iterrows():
-        plt.text(x=row[1].decommissionInYear + 0.3, y=row[1].Capacity + 0.3, s=str(row[1].PPname), color='black',
-                 weight='semibold')
-    plt.xlabel("decommissionYear", fontsize="large")
-    plt.ylabel("Capacity", fontsize="large")
-    fig1.savefig(path_to_plots + '/' + 'Decommissioned.png', bbox_inches='tight', dpi=300)
-    plt.close('all')
+    plants_decommissioned_per_year["color"] = plants_decommissioned_per_year['technology'].apply(lambda x: technology_colors[x])
 
     for expected_decomm_year, power_plants in reps.decommissioned["Expectation"].Expectation.items():
         for pp_name in power_plants:
@@ -929,8 +918,14 @@ def prepare_pp_decommissioned(reps):
     fig2 = sns.relplot(x="decommissionInYear", y="Capacity", hue="technology",
                        sizes=(40, 400), alpha=.5, palette=colors,
                        height=6, data=plants_expected_decommissioned_per_year)
-    for row in plants_expected_decommissioned_per_year.iterrows():
-        plt.text(x=row[1].decommissionInYear + 0.3, y=row[1].Capacity + 0.3, s=str(row[1].PPname), color='black',
+
+    for row in plants_decommissioned_per_year.iterrows():
+        if len(row[1].PPname)>4:
+            name = row[1].PPname[:3]
+        else:
+            name = row[1].PPname
+        plt.text(x=row[1].decommissionInYear + 0.1, y=row[1].Capacity + 0.4, s=str(name) ,
+                 color=row[1].color,
                  weight='semibold')
     plt.xlabel("decommissionYear", fontsize="large")
     plt.ylabel("Capacity", fontsize="large")
@@ -970,15 +965,8 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
     last_year_decommissioned = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
 
     for pp_name, pp in reps.power_plants.items():
-        if pp.status == globalNames.power_plant_status_decommissioned:
-            year = pp.decommissionInYear
-            annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
-            if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_tick):
-                initial_power_plants.loc[:, pp.technology.name] += pp.capacity
-        # if the age at the start was larger than zero then they count as being installed.
-        elif pp.age > (reps.current_year - reps.start_simulation_year):
-            initial_power_plants.loc[:, pp.technology.name] += pp.capacity
-        elif pp.age <= reps.current_tick:
+        # some power plants have age higher than tick becuase they were installed during initialization
+        if pp.age <= reps.current_tick or (pp.is_new_installed()) :
             # graphed according to commissioned year which is determined by age.
             if reps.install_at_look_ahead_year == True:
                 year_investment_decision = pp.commissionedYear - reps.lookAhead
@@ -990,6 +978,16 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
             annual_commissioned_capacity.at[pp.commissionedYear, pp.technology.name] += pp.capacity
             if last_year != pp.commissionedYear + pp.age:
                 print("the age and the commissioned year dont add up")
+        # if the age at the start was larger than zero then they count as being installed.
+        elif pp.age > (reps.current_year - reps.start_simulation_year):
+            initial_power_plants.loc[:, pp.technology.name] += pp.capacity
+
+        # power plants are commissioned and decommissioned
+        if pp.status == globalNames.power_plant_status_decommissioned:
+            year = pp.decommissionInYear
+            annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
+            # if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_tick):
+            #     initial_power_plants.loc[:, pp.technology.name] += pp.capacity
 
     for pp_name, pp in reps.power_plants.items():
         if pp.status == globalNames.power_plant_status_operational:  # this will be changed
@@ -1784,9 +1782,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     '''
     if calculate_investments_per_iteration != False:
         candidates_profits_per_iteration = prepare_profits_candidates_per_iteration(reps)
-        # this is already graphed in plot_expected_candidate_profits_real_profits
-        # plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots,
-        #                                      colors_unique_candidates)
+
         sorted_average_revenues_per_iteration_test_tick, all_future_operational_profit, operational_profits_commissioned = prepare_revenues_per_iteration(
             reps, future_tick, last_year, future_year)
         plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, path_to_plots, future_year
@@ -1798,6 +1794,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                                          path_to_plots, future_year,
                                                          )
 
+    if calculate_profits_candidates_per_iteration != False:
         plot_average_revenues_per_iteration(sorted_average_revenues_per_iteration_test_tick, path_to_plots, first_year,
                                             colors_unique_techs)
 
@@ -2084,7 +2081,7 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["hydrogen_and_industrial_as_load_shedders"
+SCENARIOS = ["validating battery"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
@@ -2095,10 +2092,11 @@ test_tech = 'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_off
 
 industrial_demand_as_electrolyzer = False
 industrial_demand_as_load_shedder = True
-load_shedding_plots = True
+load_shedding_plots = False
 
 calculate_investments = True
 calculate_investments_per_iteration = False  # ProfitsC
+calculate_profits_candidates_per_iteration = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False
@@ -2235,3 +2233,7 @@ print('===== End Generating Plots =====')
 #         a = pd.Series(i[1] for i in electricity_prices["data"])
 #         yearly_electricity_prices.at[:, year] = a
 #     return yearly_electricity_prices
+
+# this is already graphed in plot_expected_candidate_profits_real_profits
+# plot_candidate_profits_per_iteration(candidates_profits_per_iteration, path_to_plots,
+#                                      colors_unique_candidates)
