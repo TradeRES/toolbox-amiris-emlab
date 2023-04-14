@@ -82,11 +82,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
             if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
                 powerPlantsinSR = i.list_of_plants
                 SR_price = i.reservePriceSR
-
         decommissioned_list = []
 
         for powerplant in powerPlantsfromAgent:
-
             fictional_age = powerplant.age + self.look_ahead_years
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:
@@ -95,12 +93,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-            elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-                powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                print("passed maximum life extension" + powerplant.name)
-                decommissioned_list.append(powerplant.name)
-            elif fictional_age > powerplant.technology.expected_lifetime:
-                # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
+
+            elif fictional_age >= powerplant.technology.expected_lifetime+ powerplant.technology.maximumLifeExtension:
+
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
@@ -111,14 +106,16 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     if profit <= requiredProfit:
                         # dont add this plant to future scenario
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                        decommissioned_list.append(powerplant.name)
                         print(
                             "{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                             .format(powerplant.name, horizon, profit, requiredProfit))
                     else:  # power plants in pipeline are also considered to be operational in the future
                         self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+                        # fixed costs are increased if power plant is not decommissioned. But this is not relevant for future market
 
                 else:  # there are not enough past simulations calculate profits if there are any. can be 1, 2 or 3 results
-                    if isinstance(powerplant.expectedTotalProfits,pd.Series):
+                    if isinstance(powerplant.expectedTotalProfits, pd.Series):
                         profit = powerplant.expectedTotalProfits.mean()
                         if profit <= requiredProfit:
                             powerplant.status = globalNames.power_plant_status_decommissioned
