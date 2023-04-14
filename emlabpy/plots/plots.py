@@ -2081,9 +2081,9 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["validating battery"
+SCENARIOS = ["NL2090_SD3_PH3_MI100000000_totalProfits-H2_as_load_shedders_industrial_flexible"
              ]  # add a dash before!
-existing_scenario = False
+existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
