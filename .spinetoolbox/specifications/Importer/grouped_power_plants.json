@@ -608,14 +608,32 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "hidden"
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
                             },
                             {
                                 "map_type": "Object",
-                                "position": "hidden"
+                                "position": 0
                             },
                             {
                                 "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
                                 "position": "hidden"
                             }
                         ]
@@ -644,7 +662,7 @@
             ]
         },
         "selected_tables": [
-            "futureDecarbonizedNL"
+            "groupedDecarbonizedNLwithGas"
         ],
         "table_options": {
             "germany2019": {
@@ -693,7 +711,10 @@
             },
             "groupedDecarbonizedFLEXNET": {},
             "Readme": {},
-            "groupedDecarbonizedNLwithGas": {},
+            "groupedDecarbonizedNLwithGas": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
             "DecarbonizedNL": {}
         },
         "table_types": {
@@ -896,22 +917,12 @@
             },
             "groupedDecarbonizedNLwithGas": {
                 "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string",
-                "12": "string",
-                "13": "string",
-                "14": "string",
-                "15": "string",
-                "16": "string"
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float"
             },
             "DecarbonizedNL": {
                 "0": "string",
