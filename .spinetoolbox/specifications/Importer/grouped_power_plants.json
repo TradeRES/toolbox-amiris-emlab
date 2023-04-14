@@ -621,10 +621,30 @@
                         ]
                     }
                 }
+            ],
+            "DecarbonizedNL": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "groupedDecarbonizedNL"
+            "futureDecarbonizedNL"
         ],
         "table_options": {
             "germany2019": {
@@ -673,7 +693,8 @@
             },
             "groupedDecarbonizedFLEXNET": {},
             "Readme": {},
-            "groupedDecarbonizedNLwithGas": {}
+            "groupedDecarbonizedNLwithGas": {},
+            "DecarbonizedNL": {}
         },
         "table_types": {
             "germany2019": {
@@ -851,14 +872,12 @@
             },
             "futureDecarbonizedNL": {
                 "0": "string",
-                "1": "float",
+                "1": "string",
                 "2": "float",
                 "3": "float",
-                "4": "float",
+                "4": "string",
                 "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float"
+                "6": "float"
             },
             "groupedDecarbonizedFLEXNET": {
                 "0": "string",
@@ -893,6 +912,18 @@
                 "14": "string",
                 "15": "string",
                 "16": "string"
+            },
+            "DecarbonizedNL": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string"
             }
         },
         "table_default_column_type": {},

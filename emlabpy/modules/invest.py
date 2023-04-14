@@ -109,7 +109,7 @@ class Investmentdecision(DefaultModule):
             self.continue_iteration()
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
             # todo: these variables could be removed once the model is validated
-            # self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
+            self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
             print("Investing according to TARGETS")
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
@@ -123,8 +123,8 @@ class Investmentdecision(DefaultModule):
             self.continue_iteration()
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         else:
-            # todo: these variables could be removed once the model is validated
-            # self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
+            #todo: these variables could be removed once the model is validated
+            self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
             print("Investing according to market results")
             highestNPVCandidatePP = None
             highestNPV = 0

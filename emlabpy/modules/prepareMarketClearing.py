@@ -42,6 +42,7 @@ class PrepareMarket(DefaultModule):
         self.write_storage()
         self.write_conventionals()
         self.write_electrolysers()
+        self.write_load_shedders()
         self.write_biogas()
         self.write_scenario_data_emlab("next_year_price")
         self.write_times()
@@ -197,6 +198,22 @@ class PrepareMarket(DefaultModule):
              }
         df = pd.DataFrame(data=d, index=[0])
         df.to_excel(self.writer, sheet_name="electrolysers")
+    def write_load_shedders(self):
+        VOLLs = []
+        TimeSeries = []
+        Type_ls = []
+        for name, loadshedder in self.reps.loadShedders.items():
+            Type_ls.append("SHEDDING")
+            VOLLs.append(loadshedder.VOLL)
+            TimeSeries.append(loadshedder.TimeSeriesFile)
+
+        d = {'Type': Type_ls,
+             'VOLL': VOLLs,
+             'TimeSeries': TimeSeries
+             }
+        df = pd.DataFrame(data=d)
+        df.to_excel(self.writer, sheet_name="load_shedding",index=False)
+
     def update_profiles_files(self, year):
         print("Update profiles to year" + str(year))
         excel = pd.read_excel(globalNames.input_data, index_col=0,
