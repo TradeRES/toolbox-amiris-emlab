@@ -1074,7 +1074,8 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": "table_name"
+                                "position": "table_name",
+                                "value": "HydrogenfromOptim"
                             },
                             {
                                 "map_type": "Object",
@@ -1250,7 +1251,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "HydrogenfromOptim": {},
+            "HydrogenfromOptim": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
             "LoadShedders": {
                 "read_until_col": true,
                 "read_until_row": true
@@ -1547,7 +1551,10 @@
             },
             "HydrogenfromOptim": {
                 "0": "string",
-                "1": "float"
+                "1": "float",
+                "2": "string",
+                "3": "string",
+                "4": "string"
             },
             "LoadShedders": {
                 "0": "string",
