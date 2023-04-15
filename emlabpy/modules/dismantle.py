@@ -56,21 +56,13 @@ class Dismantle(DefaultModule):
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
-            if self.reps.current_tick >= self.reps.start_profit_based_dismantling_tick:
-                profit = self.calculateAveragePastOperatingProfit(plant, horizon)
-                if profit <= requiredProfit:
-                    print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
-                          .format(plant.name, horizon, profit, requiredProfit))
-                    self.set_plant_dismantled(plant)
-                else:
-                    self.increase_fixed_cost(plant)
+            profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+            if profit <= requiredProfit:
+                print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                      .format(plant.name, horizon, profit, requiredProfit))
+                self.set_plant_dismantled(plant)
             else:
-                # if the plants cannot be deommmissioned yet, decrease efficiency
-                if plant.age < plant.technology.getExpectedLifetime():
-                    print("Age is less than expected life time!!! shouldnt be")
-                else:
-                    self.increase_fixed_cost(plant)
-                    print("sssss")
+                self.increase_fixed_cost(plant)
 
     def increase_fixed_cost(self, plant):
         print("dont dismantle but increase FOM of  {} ".format(plant.name))
@@ -120,7 +112,12 @@ class Dismantle(DefaultModule):
                     self.set_plant_dismantled(powerplant)
                     print(powerplant.name + "decommissioned from input")
             elif powerplant.age >= technology.expected_lifetime + technology.maximumLifeExtension:
-                powerplant.status = globalNames.power_plant_status_to_be_decommissioned
+                if self.reps.current_tick >= self.reps.start_profit_based_dismantling_tick:
+                    powerplant.status = globalNames.power_plant_status_to_be_decommissioned
+                else:
+                    # dont decommission yet
+                    powerplant.status = globalNames.power_plant_status_operational
+                    self.increase_fixed_cost(powerplant)
             elif powerplant.age >= 0:
                 powerplant.status = globalNames.power_plant_status_operational
             elif powerplant.age < 0:
