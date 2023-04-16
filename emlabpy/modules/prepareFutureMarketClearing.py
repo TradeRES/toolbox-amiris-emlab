@@ -95,9 +95,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     decommissioned_list.append(powerplant.name)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-
+                powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                print("passed maximum life extension" + powerplant.name)
+                decommissioned_list.append(powerplant.name)
+            elif fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
@@ -130,7 +132,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         else:
                             self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
                     else:
-                        print("decommissioned " + powerplant.name)
+                        print("passed lifetime, no expected profits, decomission " + powerplant.name)
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                         decommissioned_list.append(powerplant.name)
 
