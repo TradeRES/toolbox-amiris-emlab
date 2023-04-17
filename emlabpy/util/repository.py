@@ -55,7 +55,7 @@ class Repository:
         self.current_year = 0
         self.simulation_length = 0
         self.start_tick_fuel_trends = 0
-        self.start_profit_based_dismantling_tick = 0
+        self.start_dismantling_tick = 0
         self.initialization_investment = True
         self.monthly_hydrogen_demand = False
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years

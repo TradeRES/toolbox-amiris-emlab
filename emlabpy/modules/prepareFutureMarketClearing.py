@@ -96,9 +96,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-                powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                print("passed maximum life extension" + powerplant.name)
-                decommissioned_list.append(powerplant.name)
+                if self.reps.current_tick >= self.reps.start_dismantling_tick:
+                    powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                    print("passed maximum life extension" + powerplant.name)
+                    decommissioned_list.append(powerplant.name)
+                else:
+                    self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+
             elif fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
@@ -106,7 +110,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
                 elif self.reps.current_tick >= horizon:
-                    if self.reps.current_tick >= self.reps.start_profit_based_dismantling_tick:  # there are enough past simulations
+                    if self.reps.current_tick >= self.reps.start_dismantling_tick:  # there are enough past simulations
                         profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
                         if profit <= requiredProfit:
                             # dont add this plant to future scenario

@@ -1940,12 +1940,12 @@ def writeInfo(reps, path_to_plots, scenario_name):
     file.write("Test_tick " + str(test_tick) + " Test tech " + str(test_tech) + "\n")
     info.append("Test_tick " + str(test_tick) + " Test tech " + str(test_tech))
     print("pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling" + str(
-        reps.start_profit_based_dismantling_tick))
+        reps.start_dismantling_tick))
     file.write(
         "pastTimeHorizon " + str(reps.pastTimeHorizon) + " start_tick_dismantling " + str(
-            reps.start_profit_based_dismantling_tick))
+            reps.start_dismantling_tick))
     info.append("pastTimeHorizon " + str(reps.pastTimeHorizon) + "\n")
-    info.append("start_tick_dismantling" + str(reps.start_profit_based_dismantling_tick) + "\n")
+    info.append("start_tick_dismantling" + str(reps.start_dismantling_tick) + "\n")
     file.write("look ahead " + str(reps.lookAhead) + "\n")
     info.append("look ahead " + str(reps.lookAhead) + "\n")
     file.write("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends) + "\n")
@@ -2135,7 +2135,7 @@ for scenario_name in SCENARIOS:
             reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 
             pre_name = reps.country + str(reps.end_simulation_year) \
-                       + "_SD" + str(reps.start_profit_based_dismantling_tick) \
+                       + "_SD" + str(reps.start_dismantling_tick) \
                        + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
                        + "_" + reps.typeofProfitforPastHorizon + "_"
             if reps.realistic_candidate_capacities_to_test == True:
@@ -2174,7 +2174,7 @@ for scenario_name in SCENARIOS:
             power_plant.specifyPowerPlantsInstalled(reps, True)
 
         print(reps.country + str(reps.end_simulation_year) + "_SD" + str(
-            reps.start_profit_based_dismantling_tick) + "_PH" + str(
+            reps.start_dismantling_tick) + "_PH" + str(
             reps.pastTimeHorizon) + "_MI" + str(
             reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
         path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", complete_name)

@@ -92,8 +92,8 @@ class SpineDBReaderWriter:
                 reps.short_term_investment_minimal_irr = row['parameter_value']
             elif row['parameter_name'] in ['start_tick_fuel_trends', 'start_year_fuel_trends']:
                 reps.start_tick_fuel_trends = int(row['parameter_value'])
-            elif row['parameter_name'] == 'start_profit_based_dismantling_tick':
-                reps.start_profit_based_dismantling_tick = int(row['parameter_value'])
+            elif row['parameter_name'] == 'start_dismantling_tick':
+                reps.start_dismantling_tick = int(row['parameter_value'])
             elif row['parameter_name'] == 'maximum_investment_capacity_per_year':
                 reps.maximum_investment_capacity_per_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'typeofProfitforPastHorizon':
