@@ -94,6 +94,10 @@ class PowerPlant(EMLabAgent):
                     raise Exception("age is higher than it should be " + str(self.id) + " Name " + str(self.name))
         elif parameter_name == 'DecommissionInYear':
             self.decommissionInYear = int(parameter_value)
+            self.commissionedYear = int(parameter_value) - self.age
+            self.age = self.age + int(self.decommissionInYear) - reps.start_simulation_year - 1
+            # the plant was added the age and immediately decommissioned.
+
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':
@@ -236,15 +240,15 @@ class PowerPlant(EMLabAgent):
             return False
 
     def calculateAndSetActualInvestedCapital(self, reps, technology, age):
-        investment_year = - age + reps.start_simulation_year
+        investment_year = - age + reps.current_year
         if investment_year <=  technology.investment_cost_eur_MW.index.min():
             # Finds investment cost by time series if there are no prices available
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
                 - age) * self.get_actual_nominal_capacity())
         else:  # by year
             self.setActualInvestedCapital(technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity())
-
     def calculateAndSetActualInvestedCapitalbyinterpolate(self, reps, technology, commissionedYear):
+
         self.setActualInvestedCapital(technology.get_investment_costs_perMW_by_year(commissionedYear) * self.get_actual_nominal_capacity())
 
 

@@ -142,7 +142,7 @@ class PowerGeneratingTechnology(ImportObject):
             return self.investment_cost_eur_MW[year]
 
 
-    def getInvestmentCostbyTimeSeries(self, time):
+    def getInvestmentCostbyTimeSeries(self, time): # geometric trend
         return self.investment_cost_time_series.get_value(time)
 
     def get_fixed_operating_by_time_series(self, time):

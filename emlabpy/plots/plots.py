@@ -182,6 +182,9 @@ def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteratio
                                                  ):
     plt.figure()
     axs11 = candidates_profits_per_iteration.plot(style="*")
+    # adding a new row, to shift series to right to be in line with candidate profits (thera re no results for first iteration)
+    new_row = pd.Series(0, index=['A'])
+    operational_profits_commissioned = new_row.append(operational_profits_commissioned)
     operational_profits_commissioned.plot(style=".", ax=axs11, label="REAL")
     for label in axs11.get_xticklabels(which='major'):
         label.set(rotation=30, horizontalalignment='right')
@@ -944,12 +947,6 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
         years_to_generate_and_build = list(
             range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.max_permit_build_time))
 
-    # number_investments_per_technology = pd.DataFrame(columns=unique_technologies,
-    #                                                  index=years_to_generate_and_build).fillna(0)
-    # for pp, investments in reps.investmentDecisions.items():
-    #     for year, year_investments in investments.invested_in_iteration.items():
-    #         number_investments_per_technology.at[int(year), reps.candidatePowerPlants[pp].technology.name] = len(
-    #             year_investments)
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies,
                                                   index=years_to_generate_and_build).fillna(0)
     annual_in_pipeline_capacity = pd.DataFrame(columns=unique_technologies, index=years_to_generate_and_build).fillna(0)
@@ -966,7 +963,7 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
 
     for pp_name, pp in reps.power_plants.items():
         # some power plants have age higher than tick becuase they were installed during initialization
-        if pp.age <= reps.current_tick or (pp.is_new_installed()) :
+        if pp.age <= reps.current_tick or (pp.is_new_installed()):
             # graphed according to commissioned year which is determined by age.
             if reps.install_at_look_ahead_year == True:
                 year_investment_decision = pp.commissionedYear - reps.lookAhead
@@ -977,6 +974,9 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
             #  the year when the investment entered in operation
             annual_commissioned_capacity.at[pp.commissionedYear, pp.technology.name] += pp.capacity
             if last_year != pp.commissionedYear + pp.age:
+                # print(pp.name)
+                # print(pp.age)
+                # print(pp.commissionedYear)
                 print("the age and the commissioned year dont add up")
         # if the age at the start was larger than zero then they count as being installed.
         elif pp.age > (reps.current_year - reps.start_simulation_year):
@@ -1075,10 +1075,15 @@ def prepare_profits_candidates_per_iteration(reps):
     for iteration, profit_per_iteration in list(profits.profits_per_iteration_candidates.items()):
         temporal = pd.Series(profit_per_iteration, index=profits.profits_per_iteration_names_candidates[iteration])
         profits_per_iteration[iteration] = temporal
+
     tech = []
+    capacity_to_be_installed = []
     for pp in profits_per_iteration.index.values:
         tech.append(
-            reps.candidatePowerPlants[pp].technology.name + "_" + str(reps.candidatePowerPlants[pp].capacity) + "MW")
+            reps.candidatePowerPlants[pp].technology.name + "_tested_" + str(reps.candidatePowerPlants[pp].capacity) + "MW")
+        capacity_to_be_installed.append(reps.candidatePowerPlants[pp].capacityTobeInstalled)
+
+    profits_per_iteration = profits_per_iteration.mul(capacity_to_be_installed, axis=0)
     profits_per_iteration["tech"] = tech
     profits_per_iteration = np.transpose(profits_per_iteration)
     profits_per_iteration.columns = profits_per_iteration.iloc[-1]
@@ -1125,7 +1130,7 @@ def prepare_revenues_per_iteration(reps, future_tick, last_year, future_year):
         profits_plants_commissioned = pd.DataFrame()
         for pp in plants_commissioned_in_future_year:
             # get operational profits
-            profits_plants_commissioned[pp] = reps.get_operational_profits_pp(pp)
+            profits_plants_commissioned[reps.power_plants[pp].technology.name] = reps.get_operational_profits_pp(pp)
         if profits_plants_commissioned.shape != (0, 0):
             operational_profits_commissioned = profits_plants_commissioned.loc[future_tick]
             operational_profits_commissioned.reset_index(drop=True)
@@ -2081,22 +2086,22 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["NL2090_SD3_PH3_MI100000000_totalProfits-H2_as_load_shedders_industrial_flexible"
+SCENARIOS = ["NL2090_SD3_PH3_MI100000000_totalProfits-hydrogen_and_industrial_as_load_shedders"
              ]  # add a dash before!
 existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech = 'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = None#'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
-industrial_demand_as_electrolyzer = False
-industrial_demand_as_load_shedder = True
+industrial_demand_as_electrolyzer = True
+industrial_demand_as_load_shedder = False
 load_shedding_plots = False
 
 calculate_investments = True
-calculate_investments_per_iteration = False  # ProfitsC
-calculate_profits_candidates_per_iteration = False
+calculate_investments_per_iteration = True  # ProfitsC
+calculate_profits_candidates_per_iteration = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False
