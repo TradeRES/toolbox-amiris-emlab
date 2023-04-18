@@ -96,7 +96,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-                if self.reps.current_tick >= self.reps.start_dismantling_tick:
+                if self.reps.current_tick >= (self.reps.start_dismantling_tick -reps.lookAhead):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                     print("passed maximum life extension" + powerplant.name)
                     decommissioned_list.append(powerplant.name)
@@ -110,7 +110,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
                 elif self.reps.current_tick >= horizon:
-                    if self.reps.current_tick >= self.reps.start_dismantling_tick:  # there are enough past simulations
+                    if self.reps.current_tick >= (self.reps.start_dismantling_tick -reps.lookAhead): # there are enough past simulations
                         profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
                         if profit <= requiredProfit:
                             # dont add this plant to future scenario

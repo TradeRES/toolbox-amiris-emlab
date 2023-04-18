@@ -95,7 +95,7 @@ class PowerPlant(EMLabAgent):
         elif parameter_name == 'DecommissionInYear':
             self.decommissionInYear = int(parameter_value)
             self.commissionedYear = int(parameter_value) - self.age
-            self.age = self.age + int(self.decommissionInYear) - reps.start_simulation_year - 1
+            self.age = reps.current_year - self.commissionedYear
             # the plant was added the age and immediately decommissioned.
 
         elif parameter_name == 'AwardedPowerInMWH':
