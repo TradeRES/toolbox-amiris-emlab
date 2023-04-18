@@ -96,7 +96,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-                if self.reps.current_tick >= (self.reps.start_dismantling_tick -reps.lookAhead):
+                if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                     print("passed maximum life extension" + powerplant.name)
                     decommissioned_list.append(powerplant.name)
