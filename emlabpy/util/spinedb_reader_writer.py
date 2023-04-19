@@ -152,6 +152,9 @@ class SpineDBReaderWriter:
                 reps.last_years_IRR_or_NPV = int(row['parameter_value'])
             elif row['parameter_name'] == 'minimal_last_years_NPV':
                 reps.minimal_last_years_NPV = row['parameter_value']
+            elif row['parameter_name'] == 'last_investable_technology':
+                reps.last_investable_technology = row['parameter_value']
+
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
@@ -347,6 +350,14 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(self.candidate_powerplant_installed_classname, candidate,
                                                [('ViableInvestment', True)], '0')
 
+    def stage_last_testing_technology(self, last_investable_technology ):
+        print("changing to last_investable_technology" )
+        print(last_investable_technology)
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "last_investable_technology")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [('last_investable_technology', last_investable_technology)], "0")
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 

@@ -938,14 +938,14 @@ def prepare_pp_decommissioned(reps):
 
 def prepare_pp_status(years_to_generate, reps, unique_technologies):
     if reps.decommission_from_input == True:  # the initial power plants have negative age to avoid all to be commmissioned in one year
-        if reps.current_year + 1 + reps.max_permit_build_time > 2050:
-            until = reps.current_year + 1 + reps.max_permit_build_time
+        if reps.current_year + 1 + reps.lookAhead > 2050:
+            until = reps.current_year + 1 + reps.lookAhead
         else:
             until = 2050
         years_to_generate_and_build = list(range(reps.start_simulation_year - reps.lookAhead, until))
     else:
         years_to_generate_and_build = list(
-            range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.max_permit_build_time))
+            range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.lookAhead))
 
     annual_decommissioned_capacity = pd.DataFrame(columns=unique_technologies,
                                                   index=years_to_generate_and_build).fillna(0)
@@ -974,9 +974,6 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
             #  the year when the investment entered in operation
             annual_commissioned_capacity.at[pp.commissionedYear, pp.technology.name] += pp.capacity
             if last_year != pp.commissionedYear + pp.age:
-                # print(pp.name)
-                # print(pp.age)
-                # print(pp.commissionedYear)
                 print("the age and the commissioned year dont add up")
         # if the age at the start was larger than zero then they count as being installed.
         elif pp.age > (reps.current_year - reps.start_simulation_year):
@@ -1674,6 +1671,7 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
 
 def generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
                    calculate_capacity_mechanisms, calculate_vres_support):
+
     print("Databases read")
     unique_technologies = reps.get_unique_technologies_names()
     # conventional_technologies = ['Coal PSC', "Fuel oil PGT", 'Lignite PSC', "CCGT_CHP_backpressure_DH", \
@@ -1691,11 +1689,13 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1))  # control the current year
 
     ticks_to_generate = list(range(start_tick, reps.current_tick + 1))
+
     years_to_generate_and_build = list(
         range(reps.start_simulation_year, reps.current_year + 1 + reps.max_permit_build_time))
     years_ahead_to_generate = [x + reps.lookAhead for x in years_to_generate]
     df_zeros = np.zeros(shape=(len(years_to_generate), len(unique_technologies)))
     ticks = [i - reps.start_simulation_year for i in years_to_generate]
+
     colors_unique_techs = []
     colors_unique_candidates = []
     for tech in unique_technologies:
@@ -2086,14 +2086,14 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["NL2090_SD3_PH3_MI100000000_totalProfits-hydrogen_and_industrial_as_load_shedders"
+SCENARIOS = ["testing"
              ]  # add a dash before!
-existing_scenario = True
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech = None#'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
 industrial_demand_as_electrolyzer = True
 industrial_demand_as_load_shedder = False

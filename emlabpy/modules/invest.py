@@ -95,7 +95,6 @@ class Investmentdecision(DefaultModule):
             pp_dispatched_ids.append(pp_id)
             pp_profits.append(pp.operationalProfit)
 
-
         if self.first_run == True:
             """
             the first iteration on the first year, no investments are done,
@@ -162,7 +161,7 @@ class Investmentdecision(DefaultModule):
                                                                           self.futureInvestmentyear,
                                                                           )
                         if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
-                            highestNPV = projectvalue / candidatepowerplant.capacity  # capacity is anyways 1
+                            highestNPV = projectvalue / candidatepowerplant.capacity
                             highestNPVCandidatePP = candidatepowerplant
 
                         elif projectvalue < 0:
@@ -193,12 +192,13 @@ class Investmentdecision(DefaultModule):
                     print("no more power plant to invest, saving loans, next iteration")
                     if self.reps.initialization_investment == True:
                         print("increasing testing year by one")
-
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
                             # look ahead = 4 should be executed in the workflow
                             self.reps.initialization_investment = False
                             self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
+                            self.reps.dbrw.stage_last_testing_technology(False)
                             self.stop_iteration()
+
                         else:
                             self.reps.investment_initialization_years += 1
                             self.continue_iteration()
@@ -212,6 +212,7 @@ class Investmentdecision(DefaultModule):
 
                     else:
                         # continue to next year in workflow
+                        self.reps.dbrw.stage_last_testing_technology(False)
                         self.stop_iteration()
                     # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)

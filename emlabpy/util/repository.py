@@ -60,6 +60,7 @@ class Repository:
         self.monthly_hydrogen_demand = False
         self.minimal_last_years_IRR = "NOTSET"
         self.minimal_last_years_NPV = "NOTSET"
+        self.last_investable_technology = False
         self.last_years_IRR_or_NPV = 0
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
@@ -496,7 +497,7 @@ class Repository:
             capacity = 0
             for plant in self.power_plants.values():
                 if plant.id in future_installed_plants_ids: # this list was kept in the future expected power plants
-                    if plant.technology.name == candidate.technology.name :
+                    if plant.technology.name == candidate.technology.name:
                         capacity += plant.capacity
 
             if investbyTarget == True and self.install_missing_capacity_as_one_pp == True:

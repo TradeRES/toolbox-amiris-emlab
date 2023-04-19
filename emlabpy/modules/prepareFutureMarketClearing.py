@@ -30,7 +30,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         if reps.current_tick == 0 and reps.initialization_investment == True:
             if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))
-                self.power_plants_list = reps.get_investable_candidate_power_plants_minimal_irr_or_npv()
+                # in the initialization round there are not past NPVs (calculated in financial results)
+                self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.investment_initialization_years
             else:
                 print("first run")
@@ -52,8 +53,15 @@ class PrepareFutureMarketClearing(PrepareMarket):
         # changing efficency and variable costs of candidate power plants
         for pp in self.power_plants_list:
             pp.actualVariableCost = pp.technology.variable_operating_costs
-        # if len(self.power_plants_list)<=1:
-        #     pp.capacity = pp.capacityRealistic
+
+        if len(self.power_plants_list) == 1: # if it is zero, then it is because of target investment or investment iteration 0
+            uniquepp = self.power_plants_list[0]
+            year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
+            NPV_last_investment_decision = next(i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
+                                                    "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration)
+            if NPV_last_investment_decision<100000:
+                uniquepp.capacity = uniquepp.capacityRealistic
+                self.reps.dbrw.stage_last_testing_technology(True)
 
     def act(self):
         self.setTimeHorizon()
@@ -105,7 +113,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                 if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                    print("passed maximum life extension" + powerplant.name)
                     decommissioned_list.append(powerplant.name)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
