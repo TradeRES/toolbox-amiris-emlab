@@ -30,7 +30,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         if reps.current_tick == 0 and reps.initialization_investment == True:
             if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))
-                self.power_plants_list = reps.get_investable_candidate_power_plants()
+                self.power_plants_list = reps.get_investable_candidate_power_plants_minimal_irr_or_npv()
                 self.look_ahead_years = reps.investment_initialization_years
             else:
                 print("first run")
@@ -42,11 +42,18 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 self.power_plants_list = []
                 self.look_ahead_years = reps.lookAhead
             else:  # no target investments, test as normal
-                self.power_plants_list = reps.get_investable_candidate_power_plants()
+                reps.investmentIteration =0
+                if reps.investmentIteration == 0:
+                    self.power_plants_list = reps.get_investable_candidate_power_plants_minimal_irr_or_npv()
+                else:
+                    self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.lookAhead
+
         # changing efficency and variable costs of candidate power plants
         for pp in self.power_plants_list:
             pp.actualVariableCost = pp.technology.variable_operating_costs
+        # if len(self.power_plants_list)<=1:
+        #     pp.capacity = pp.capacityRealistic
 
     def act(self):
         self.setTimeHorizon()
@@ -110,7 +117,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
                 elif self.reps.current_tick >= horizon:
-                    if self.reps.current_tick >= (self.reps.start_dismantling_tick -reps.lookAhead): # there are enough past simulations
+                    if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
                         profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
                         if profit <= requiredProfit:
                             # dont add this plant to future scenario

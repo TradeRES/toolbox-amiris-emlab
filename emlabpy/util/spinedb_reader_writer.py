@@ -146,8 +146,12 @@ class SpineDBReaderWriter:
                 reps.available_years_data = bool(row['parameter_value'])
             elif row['parameter_name'] == 'monthly_hydrogen_demand':
                 reps.monthly_hydrogen_demand = bool(row['parameter_value'])
-
-
+            elif row['parameter_name'] == 'minimal_last_years_IRR':
+                reps.minimal_last_years_IRR = row['parameter_value']
+            elif row['parameter_name'] == 'last_years_IRR_or_NPV':
+                reps.last_years_IRR_or_NPV = int(row['parameter_value'])
+            elif row['parameter_name'] == 'minimal_last_years_NPV':
+                reps.minimal_last_years_NPV = row['parameter_value']
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
@@ -880,7 +884,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
                 setattr(pp.loan, parameter_name, parameter_value)
             else:
                 setattr(pp.downpayment, parameter_name, parameter_value)
-    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "plotting"]:
+    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "run_future_market","plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)

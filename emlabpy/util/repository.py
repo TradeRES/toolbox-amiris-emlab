@@ -58,6 +58,9 @@ class Repository:
         self.start_dismantling_tick = 0
         self.initialization_investment = True
         self.monthly_hydrogen_demand = False
+        self.minimal_last_years_IRR = "NOTSET"
+        self.minimal_last_years_NPV = "NOTSET"
+        self.last_years_IRR_or_NPV = 0
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
@@ -358,6 +361,66 @@ class Repository:
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
+    def get_investable_candidate_power_plants_minimal_irr_or_npv(self) -> List[CandidatePowerPlant]:
+        investable_candidates = self.get_investable_candidate_power_plants()
+        if self.minimal_last_years_IRR != "NOTSET":
+            self.filter_candidates_by_minimal_irr(investable_candidates)
+            return self.get_investable_candidate_power_plants()
+        elif self.minimal_last_years_NPV != "NOTSET":
+            self.filter_candidates_by_minimal_npv(investable_candidates)
+            return self.get_investable_candidate_power_plants()
+        else:
+            return investable_candidates
+    def filter_candidates_by_minimal_irr(self, investable_candidates):
+        simulation_years = list(range(self.current_tick - self.last_years_IRR_or_NPV, self.current_tick + 1))
+        irrs_per_tech_per_year = pd.DataFrame(index=simulation_years).fillna(0)
+        for candidate in investable_candidates:
+            powerplants_per_tech = self.get_power_plants_by_technology(candidate.technology.name)
+            irrs_per_year = pd.DataFrame(index=simulation_years).fillna(0)
+            for plant in powerplants_per_tech:
+                irr_per_plant = self.get_irrs_for_plant(plant.name)
+                if irr_per_plant is None:
+                    pass
+                else:
+                    irrs_per_year[plant.name] = irr_per_plant
+            irrs_per_year.replace(to_replace=-100, value=np.nan,
+                                  inplace=True)# the -100 was hard coded in the financial reports
+            if irrs_per_year.size != 0:
+                irrs_per_tech_per_year[candidate.technology.name] = np.nanmean(irrs_per_year, axis=1)
+        meanirr = irrs_per_tech_per_year.mean()
+
+        for candidatepowerplant in investable_candidates:
+            if candidatepowerplant.technology.name in meanirr.index.values:
+                if meanirr[candidatepowerplant.technology.name]>=self.minimal_last_years_IRR:
+                    pass
+                else:
+                    candidatepowerplant.setViableInvestment(False)
+                    self.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+        return
+    def filter_candidates_by_minimal_npv(self, investable_candidates):
+        simulation_years = list(range(self.current_tick - self.last_years_IRR_or_NPV, self.current_tick + 1))
+        npvs_per_tech_per_MW = pd.DataFrame(index=simulation_years).fillna(0)
+        for candidate in investable_candidates:
+            powerplants_per_tech = self.get_power_plants_by_technology(candidate.technology.name)
+            npvs_per_year_perMW = pd.DataFrame(index=simulation_years).fillna(0)
+            for plant in powerplants_per_tech:
+                npv_per_plant = self.get_npvs_for_plant(plant.name)
+                if npv_per_plant is None:
+                    pass
+                else:
+                    npvs_per_year_perMW[plant.name] = npv_per_plant
+            if npvs_per_year_perMW.size != 0:
+                npvs_per_tech_per_MW[candidate.technology.name] = np.nanmean(npvs_per_year_perMW, axis=1)
+        mean_npv = npvs_per_tech_per_MW.mean()
+        for candidatepowerplant in investable_candidates:
+            if candidatepowerplant.technology.name in mean_npv.index.values:
+                if mean_npv[candidatepowerplant.technology.name]>=self.minimal_last_years_NPV:
+                    pass
+                else:
+                    print("due to last irrs not investable"+ candidatepowerplant.technology.name)
+                    candidatepowerplant.setViableInvestment(False)
+                    self.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+        return
     def get_target_technologies(self):
         return [i.targetTechnology for i in self.target_investors.values()]
 
