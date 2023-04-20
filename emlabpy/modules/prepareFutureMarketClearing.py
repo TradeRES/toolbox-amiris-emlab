@@ -43,7 +43,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 self.power_plants_list = []
                 self.look_ahead_years = reps.lookAhead
             else:  # no target investments, test as normal
-                reps.investmentIteration =0
                 if reps.investmentIteration == 0:
                     self.power_plants_list = reps.get_investable_candidate_power_plants_minimal_irr_or_npv()
                 else:
@@ -59,6 +58,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
             NPV_last_investment_decision = next(i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
                                                     "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration)
+            print(NPV_last_investment_decision)
             if NPV_last_investment_decision<100000:
                 uniquepp.capacity = uniquepp.capacityRealistic
                 self.reps.dbrw.stage_last_testing_technology(True)

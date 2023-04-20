@@ -124,7 +124,7 @@ class Investmentdecision(DefaultModule):
         else:
             #todo: these variables could be removed once the model is validated
             self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
-            print("Investing according to market results")
+            print("Investing according to market results. iteration" + str(self.reps.investmentIteration))
             highestNPVCandidatePP = None
             highestNPV = 0
             # power plants are investable when they havent passed the capacity limits
@@ -156,7 +156,7 @@ class Investmentdecision(DefaultModule):
                         projectvalue = self.npv(cashflow)
 
                         # saving the list of power plants values that have been candidates per investmentIteration.
-                        self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue,
+                        self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name, projectvalue / candidatepowerplant.capacity,
                                                                           self.reps.investmentIteration,
                                                                           self.futureInvestmentyear,
                                                                           )
