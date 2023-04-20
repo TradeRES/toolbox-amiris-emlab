@@ -115,9 +115,9 @@ class Investmentdecision(DefaultModule):
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)
                 self.reps.dbrw.stage_downpayments(newplant)
-                self.reps.dbrw.stage_investment_decisions( newplant.id,
-                                                          self.reps.investmentIteration,
-                                                          self.reps.current_tick)
+                # self.reps.dbrw.stage_investment_decisions( newplant.id,
+                #                                           self.reps.investmentIteration,
+                #                                           self.reps.current_tick)
             self.reps.dbrw.stage_target_investments_done(True)
             self.continue_iteration()
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
@@ -183,9 +183,9 @@ class Investmentdecision(DefaultModule):
                     self.reps.dbrw.stage_new_power_plant(newplant)
                     self.reps.dbrw.stage_loans(newplant)
                     self.reps.dbrw.stage_downpayments(newplant)
-                    self.reps.dbrw.stage_investment_decisions(newplant.id,
-                                                              self.reps.investmentIteration,
-                                                              self.reps.current_tick)
+                    # self.reps.dbrw.stage_investment_decisions(newplant.id,
+                    #                                           self.reps.investmentIteration,
+                    #                                           self.reps.current_tick)
                     self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
                     self.continue_iteration()
                 else:

@@ -116,7 +116,7 @@ class Repository:
         self.zones = dict()
         self.national_governments = dict()
         self.governments = dict()
-        self.investments = dict()
+        self.candidatesNPV = dict()
         self.investmentDecisions = dict()
         self.installedCapacity = dict()
         self.installedFuturePowerPlants = dict()
@@ -594,10 +594,12 @@ class Repository:
                 if i.status == globalNames.power_plant_status_operational]
 
     def get_power_plants_invested_in_tick(self, tick) -> List[PowerPlant]:
-        return self.investmentDecisions[str(tick)].invested_in_iteration.values()
+        year = tick + self.start_simulation_year + self.lookAhead
+        return [i for i in self.power_plants.values()
+                if i.name[:4] == str(year)]
 
-    def get_power_plants_invested_in_tick_per_iteration(self, tick) -> List[PowerPlant]:
-        return self.investmentDecisions[str(tick)]
+    # def get_power_plants_invested_in_tick_per_iteration(self, tick) -> List[PowerPlant]:
+    #     return self.investmentDecisions[str(tick)]
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

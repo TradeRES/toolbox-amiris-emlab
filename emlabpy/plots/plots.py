@@ -38,10 +38,10 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     candidate_plants_project_value_per_MW.plot(ax=ax1, color=colors_unique_candidates)
     installed_capacity_per_iteration.plot(ax=ax2, color=colors_unique_candidates, linestyle='None', marker='o')
     ax1.set_xlabel('Iterations', fontsize='medium')
-    ax1.set_ylabel('NPV [Eur/MW] (lines)', fontsize='medium')
+    ax1.set_ylabel('NPV [Eur] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per MW per iterations for future year ' + str(future_year))
-    ax1.set_ylim(bottom=0)
+   # ax1.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
                bbox_to_anchor=(1.2, 1.1))
@@ -1031,34 +1031,29 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
 
 def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_plants):
     # preparing empty df
-    investment = reps.get_power_plants_invested_in_tick(test_tick)
-    max_iteration = len(investment)
+    pps_invested_in_tick = reps.get_power_plants_invested_in_tick(test_tick)
+    max_iteration = len(pps_invested_in_tick)
     # for the years in which there are no other investments than this.
     if reps.targetinvestment_per_year == True:
         max_iteration += 1
 
     df_zeros = np.zeros(shape=(max_iteration, len(unique_candidate_power_plants)))
     candidate_plants_project_value_perMW = pd.DataFrame(df_zeros, columns=unique_candidate_power_plants)
+
     # preparing NPV per MW per iteration
-    for name, investment in reps.investments.items():
+    for name, investment in reps.candidatesNPV.items():
         if len(investment.project_value_year) > 0:
             if str(future_year) in investment.project_value_year.keys():
                 a = pd.Series(dict(investment.project_value_year[str(future_year)]))
-                candidate_plants_project_value_perMW[reps.candidatePowerPlants[name].technology.name] = a.divide(
-                    reps.candidatePowerPlants[name].capacityTobeInstalled)
+                candidate_plants_project_value_perMW[reps.candidatePowerPlants[name].technology.name] = a
 
-    installed_capacity_per_iteration = pd.DataFrame(index=list(range(0, max_iteration)),
+    installed_capacity_per_iteration = pd.DataFrame(
                                                     columns=unique_candidate_power_plants).fillna(0)
+    for pp in pps_invested_in_tick:
+        installed_capacity_per_iteration.at[int(str(pp.id)[-4:]), pp.technology.name] = pp.capacity
 
-    investment = reps.get_power_plants_invested_in_tick_per_iteration(test_tick)
-    if len(investment.invested_in_iteration) > 0:
-        # installed_capacity_per_iteration = pd.DataFrame.from_dict(investment.invested_in_iteration)
-        for iteration, pp_id in investment.invested_in_iteration.items():
-            power_plant = reps.get_power_plant_by_id(pp_id)
-            candidate = reps.get_candidate_by_technology(power_plant.technology.name)
-            installed_capacity_per_iteration.loc[
-                iteration, power_plant.technology.name] = candidate.capacityTobeInstalled
-
+    installed_capacity_per_iteration.sort_index(ascending=True, inplace=True)
+    installed_capacity_per_iteration.reset_index(drop=True, inplace=True)
     installed_capacity_per_iteration.replace(to_replace=0, value=np.nan, inplace=True)
     return installed_capacity_per_iteration, candidate_plants_project_value_perMW
 
@@ -2086,14 +2081,14 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["testing"
+SCENARIOS = ["-Install_test_realistic_capacities"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 0
+test_tick = 1
 # write None is no investment is expected,g
-test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = 'hydrogen_turbine' #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
 industrial_demand_as_electrolyzer = True
 industrial_demand_as_load_shedder = False

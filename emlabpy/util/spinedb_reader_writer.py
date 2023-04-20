@@ -8,7 +8,7 @@ import logging
 from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 from domain.financialReports import FinancialPowerPlantReport
-from domain.investments import Investments, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
+from domain.investments import CandidatesNPV, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
 from modules.profits import Profits
 from domain.newTechnology import NewTechnology
 from domain.targetinvestor import TargetInvestor
@@ -451,14 +451,14 @@ class SpineDBReaderWriter:
         # self.stage_object_parameter_values(self.candidate_plants_NPV_classname, powerplant,
         #                                    [(year_iteration, revenues)], "revenues")
 
-    def stage_init_investment_decisions(self, iteration, tick):
-        self.stage_object_class(self.investment_decisions_classname)
-        self.stage_object_parameters(self.investment_decisions_classname, [str(iteration)])
-
-    def stage_investment_decisions(self, power_plant_id, iteration, tick):
-        self.stage_object(self.investment_decisions_classname, str(tick))
-        self.stage_object_parameter_values(self.investment_decisions_classname, str(tick),
-                                           [(str(iteration), power_plant_id)], "0" )
+    # def stage_init_investment_decisions(self, iteration, tick):
+    #     self.stage_object_class(self.investment_decisions_classname)
+    #     self.stage_object_parameters(self.investment_decisions_classname, [str(iteration)])
+    #
+    # def stage_investment_decisions(self, power_plant_id, iteration, tick):
+    #     self.stage_object(self.investment_decisions_classname, str(tick))
+    #     self.stage_object_parameter_values(self.investment_decisions_classname, str(tick),
+    #                                        [(str(iteration), power_plant_id)], "0" )
 
     def stage_init_future_operational_profits(self):
         self.stage_object_class(self.powerplantprofits_classname)
@@ -898,7 +898,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "run_future_market","plotting"]:
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
-        add_parameter_value_to_repository(reps, db_line, reps.investments, Investments)
+        add_parameter_value_to_repository(reps, db_line, reps.candidatesNPV, CandidatesNPV)
     # elif object_class_name == 'weatherYears' and reps.runningModule == "run_prepare_next_year_market_clearing":
     #     add_parameter_value_to_repository(reps, db_line, reps.weatherYears, WeatherYears) # this data is prepared in clock.py
     elif object_class_name == "Profits" and reps.runningModule == "plotting":
