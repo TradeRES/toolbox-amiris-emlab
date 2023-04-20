@@ -59,7 +59,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             NPV_last_investment_decision = next(i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
                                                     "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration)
             print(NPV_last_investment_decision)
-            if NPV_last_investment_decision<100000:
+            if NPV_last_investment_decision< 10000:
                 uniquepp.capacity = uniquepp.capacityRealistic
                 self.reps.dbrw.stage_last_testing_technology(True)
 
