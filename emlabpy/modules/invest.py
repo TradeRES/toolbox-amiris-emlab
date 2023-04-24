@@ -66,7 +66,7 @@ class Investmentdecision(DefaultModule):
         self.wacc = (
                                 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
         reps.dbrw.stage_init_candidate_plants_value(self.reps.investmentIteration, self.futureInvestmentyear)
-        reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration , self.reps.current_tick)
+        # reps.dbrw.stage_init_investment_decisions(self.reps.investmentIteration , self.reps.current_tick)
         # new id = last installed id, plus the iteration
         self.new_id = int(reps.get_id_last_power_plant()) + 1
         self.investable_candidate_plants = []
@@ -462,11 +462,6 @@ class Investmentdecision(DefaultModule):
         f = open(file, "w")
         f.write(str(False))
         f.close()
-
-    def calculateNodeLimit(self):
-        pgtLimit = getReps().findOneByTechnologyAndNode(self.technology, self.node)
-        if pgtLimit is not None:
-            self.pgtNodeLimit = pgtLimit.getUpperCapacityLimit(futureTimePoint)
 
     def setAgent(self, agent):
         self.agent = self.reps.energy_producers[agent]

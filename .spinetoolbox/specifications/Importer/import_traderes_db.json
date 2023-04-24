@@ -3,86 +3,6 @@
     "item_type": "Importer",
     "mapping": {
         "table_mappings": {
-            "grid": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "flow": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "reserve_type": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "unittype": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "node": [
                 {
                     "Mapping 1": {
@@ -131,64 +51,6 @@
                             {
                                 "map_type": "ExpandedValue",
                                 "position": 3
-                            }
-                        ]
-                    }
-                }
-            ],
-            "flow__unit": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "grid__node__unit__io": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "unit",
-                                "read_start_row": 93
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": 2
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 3
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": 4
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": 5
                             }
                         ]
                     }
@@ -516,6 +378,46 @@
                         ]
                     }
                 }
+            ],
+            "danish": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "nodecostsgraph": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -526,16 +428,10 @@
             "unit2030"
         ],
         "table_options": {
-            "grid": {},
-            "flow": {},
-            "reserve_type": {},
-            "unittype": {},
             "node": {
                 "read_until_row": true,
                 "read_until_col": true
             },
-            "flow__unit": {},
-            "grid__node__unit__io": {},
             "explanation": {},
             "node2020": {},
             "unit2020": {
@@ -559,35 +455,22 @@
             "unit2030": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "danish": {},
+            "nodecostsgraph": {}
         },
         "table_types": {
-            "flow": {
-                "0": "string"
-            },
             "node": {
                 "0": "string",
                 "1": "float",
                 "2": "string",
                 "3": "float"
             },
-            "grid__node__unit__io": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "float"
-            },
             "node2020": {
                 "0": "string",
                 "1": "string",
                 "2": "string",
                 "3": "float"
-            },
-            "flow__unit": {
-                "0": "string",
-                "1": "string"
             },
             "unit2020": {
                 "0": "string",
@@ -732,9 +615,6 @@
                 "2": "float",
                 "3": "float"
             },
-            "reserve_type": {
-                "0": "string"
-            },
             "screening curve": {
                 "0": "string",
                 "1": "string",
@@ -771,7 +651,11 @@
             "investmentCosts": {
                 "0": "string",
                 "1": "string",
-                "2": "float"
+                "2": "float",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string"
             },
             "unit2030": {
                 "0": "string",
@@ -781,9 +665,20 @@
                 "4": "float",
                 "5": "float",
                 "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float"
+                "7": "float"
+            },
+            "nodecostsgraph": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string"
             }
         },
         "table_default_column_type": {},

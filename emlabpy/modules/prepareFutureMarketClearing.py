@@ -55,13 +55,17 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
         if len(self.power_plants_list) == 1: # if it is zero, then it is because of target investment or investment iteration 0
             uniquepp = self.power_plants_list[0]
-            year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
-            NPV_last_investment_decision = next(i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
-                                                    "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration)
-            print(NPV_last_investment_decision)
-            if NPV_last_investment_decision< 10000:
+            if reps.investmentIteration == 0 :
                 uniquepp.capacity = uniquepp.capacityRealistic
                 self.reps.dbrw.stage_last_testing_technology(True)
+            else:
+                year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
+                NPV_last_investment_decision = next(i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
+                                                        "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration)
+                print(NPV_last_investment_decision)
+                if NPV_last_investment_decision< 10000:
+                    uniquepp.capacity = uniquepp.capacityRealistic
+                    self.reps.dbrw.stage_last_testing_technology(True)
 
     def act(self):
         self.setTimeHorizon()
