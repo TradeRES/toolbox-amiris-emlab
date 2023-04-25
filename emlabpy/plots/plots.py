@@ -41,7 +41,7 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     ax1.set_ylabel('NPV [Eur] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per MW per iterations for future year ' + str(future_year))
-   # ax1.set_ylim(bottom=0)
+    ax1.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
                bbox_to_anchor=(1.2, 1.1))
@@ -1328,7 +1328,7 @@ def prepare_screening_curves(reps, year):
                 # co2price = AMIRIS_temporal_fuel["CO2"]
                 # co2_TperMWh = SpecificCo2EmissionsInTperMWH[tech.fuel.name]
             opex = (tech.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) / tech.efficiency) * hours
-            total = annual_cost_capital + opex + tech.fixed_operating_costs
+            total = annual_cost_capital + opex + tech.get_fixed_costs_by_commissioning_year(year)
             yearly_costs[tech_name] = total
             # Eur/Mwh * h = Eur/MW
             marginal_costs_per_hour.at[tech_name, 0] = tech.variable_operating_costs + (
@@ -1373,7 +1373,7 @@ def prepare_screening_curves_candidates(reps, year):
 
         # Eur / MWh * h = EUR/MW
         opex = (tech.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) / tech.efficiency) * hours
-        total = annual_cost_capital + opex + tech.fixed_operating_costs
+        total = annual_cost_capital + opex + tech.get_fixed_costs_by_commissioning_year(year)
         yearly_costs_candidates[tech.name] = total
     return yearly_costs_candidates
 
@@ -2081,14 +2081,14 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-Install_test_realistic_capacities"
+SCENARIOS = ["-Install_test_realistic_capacities_last3_NPV"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 1
+test_tick = 7
 # write None is no investment is expected,g
-test_tech = 'hydrogen_turbine' #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
 industrial_demand_as_electrolyzer = True
 industrial_demand_as_load_shedder = False

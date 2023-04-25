@@ -93,7 +93,7 @@ class ShortInvestmentdecision(Investmentdecision):
         technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
         # get average profits per technology
-        fixed_costs = technology.fixed_operating_costs
+        fixed_costs =  self.getActualFixedCostsperMW(technology)
         operatingProfit = average_profit
         equalTotalDownPaymentInstallment = (totalInvestment * agent.debtRatioOfInvestments) / buildingTime
         restPayment = totalInvestment * (1 - agent.debtRatioOfInvestments) / depreciationTime

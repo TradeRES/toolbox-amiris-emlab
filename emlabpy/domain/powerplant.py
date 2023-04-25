@@ -116,7 +116,7 @@ class PowerPlant(EMLabAgent):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             all_storages = pd.Series(values, index=index)
-            if (reps.current_year - 1)  in all_storages.index:
+            if (reps.current_year - 1) in all_storages.index:
                 self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
             else:
                 self.initialEnergyLevelInMWH = 0
@@ -132,7 +132,7 @@ class PowerPlant(EMLabAgent):
         self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO
         self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO
 
-    def specifyPowerPlantforInvest(self, reps,  look_ahead_years):
+    def specifyPowerPlantforInvest(self, reps, look_ahead_years):
         """"
         specify power plant invested by NPV or target invest
         """
@@ -151,8 +151,9 @@ class PowerPlant(EMLabAgent):
                 reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
 
         self.status = globalNames.power_plant_status_inPipeline
-        self.calculateAndSetActualFixedOperatingCosts(0)  # Invest costs by GeometricTrend
-        self.calculateAndSetActualInvestedCapitalbyinterpolate(reps, self.technology, self.commissionedYear)# INVEST
+        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_costs_by_commissioning_year(
+            self.commissionedYear) * self.get_actual_nominal_capacity())
+        self.calculateAndSetActualInvestedCapitalbyinterpolate(reps, self.technology, self.commissionedYear)  # INVEST
 
     def specifyPowerPlantsInstalled(self, reps, run_initialize_power_plants):
         """"
@@ -168,31 +169,32 @@ class PowerPlant(EMLabAgent):
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTick()  # minus age, permit and lead time
-
+        self.commissionedYear = reps.current_year - self.age
         if self.actualEfficiency == 'NOTSET':  # if there is not initial efficiency, then assign the efficiency by the technology
-            self.calculateAndSetActualEfficiency(self.age) # initialDB
+            self.calculateAndSetActualEfficiency(self.age)  # initialDB
 
         if self.actualVariableCost == 'NOTSET':
             self.calculateAndSetActualVariableOperatingCosts(self.age)
 
         if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
-            self.calculateAndSetActualFixedOperatingCosts(0)  # if plant passed its lifetime then it should have higher costs
+            self.setActualFixedOperatingCost(self.getTechnology().get_fixed_costs_by_commissioning_year(
+                self.commissionedYear) * self.get_actual_nominal_capacity())  # if plant passed its lifetime then it should have higher costs
 
         if reps.decommission_from_input == True and self.decommissionInYear is not None:
             self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year)  # set in terms of tick
 
-         # INITIAL investment cost by time series = 2020
+        # INITIAL investment cost by time series = 2020
         self.calculateAndSetActualInvestedCapital(reps, self.technology, self.age)
 
         if run_initialize_power_plants == True:  # only run this in the initialization step and while plotting
-            self.setPowerPlantsStatusforInstalledPowerPlants() # the status for each year is set in dismantle module
+            self.setPowerPlantsStatusforInstalledPowerPlants()  # the status for each year is set in dismantle module
         return
 
     def set_loans_installed_pp(self, reps):
         amountPerPayment = reps.determineLoanAnnuities(
             self.getActualInvestedCapital() * self.owner.getDebtRatioOfInvestments(),
             self.getTechnology().getDepreciationTime(), self.owner.getLoanInterestRate())
-        done_payments = self.age # the loan  is paid since it was constructed.
+        done_payments = self.age  # the loan  is paid since it was constructed.
         startpayments = - self.age
         reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment,
                         self.getTechnology().getDepreciationTime(),
@@ -241,27 +243,23 @@ class PowerPlant(EMLabAgent):
 
     def calculateAndSetActualInvestedCapital(self, reps, technology, age):
         investment_year = - age + reps.current_year
-        if investment_year <=  technology.investment_cost_eur_MW.index.min():
+        if investment_year <= technology.investment_cost_eur_MW.index.min():
             # Finds investment cost by time series if there are no prices available
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
                 - age) * self.get_actual_nominal_capacity())
         else:  # by year
-            self.setActualInvestedCapital(technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity())
+            self.setActualInvestedCapital(
+                technology.get_investment_costs_perMW_by_year(investment_year) * self.get_actual_nominal_capacity())
+
     def calculateAndSetActualInvestedCapitalbyinterpolate(self, reps, technology, commissionedYear):
-
-        self.setActualInvestedCapital(technology.get_investment_costs_perMW_by_year(commissionedYear) * self.get_actual_nominal_capacity())
-
-
-    def calculateAndSetActualFixedOperatingCosts(self, tick):
-        # get fixed costs by GeometricTrend by tick.
-        # tick = 0 in initialization
-        self.setActualFixedOperatingCost(self.getTechnology().get_fixed_operating_by_time_series(tick) \
-                                         * self.getActualNominalCapacity())
+        self.setActualInvestedCapital(
+            technology.get_investment_costs_perMW_by_year(commissionedYear) * self.get_actual_nominal_capacity())
 
     def calculateAndSetActualVariableOperatingCosts(self, tick):
         # get fixed costs by GeometricTrend by tick. Active in tick = 0 in initialization
         self.actualVariableCost = (self.getTechnology().get_variable_operating_by_time_series(tick))
-    def calculateAndSetActualEfficiency(self, age): # for initializatio
+
+    def calculateAndSetActualEfficiency(self, age):  # for initializatio
         self.setActualEfficiency(self.getTechnology().get_efficiency_by_time_series(age))
 
     def calculateEmissionIntensity(self):
@@ -332,8 +330,10 @@ class PowerPlant(EMLabAgent):
 
     def setActualEfficiency(self, actualEfficiency):
         self.actualEfficiency = actualEfficiency
+
     def setActualVariableCosts(self, actualVariableCost):
         self.actualVariableCost = actualVariableCost
+
     def getActualInvestedCapital(self):
         return self.actualInvestedCapital
 
@@ -419,6 +419,5 @@ class Decommissioned(ImportObject):
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         if parameter_name == 'Done':
             self.Done = parameter_value
-        elif len(parameter_name) ==4:
+        elif len(parameter_name) == 4:
             self.Expectation[int(parameter_name)] = parameter_value
-

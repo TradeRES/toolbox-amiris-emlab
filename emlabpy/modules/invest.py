@@ -298,7 +298,7 @@ class Investmentdecision(DefaultModule):
         technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
         operatingProfit = candidatepowerplant.get_Profit()
-        fixed_costs = technology.fixed_operating_costs * candidatepowerplant.capacity
+        fixed_costs = self.getActualFixedCostsperMW(technology) * candidatepowerplant.capacity
         equity = (1 - agent.debtRatioOfInvestments)
         equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
         debt = totalInvestment * agent.debtRatioOfInvestments
@@ -328,6 +328,11 @@ class Investmentdecision(DefaultModule):
     def getActualInvestedCapitalperMW(self, technology):
         investmentCostperTechnology = technology.get_investment_costs_perMW_by_year(self.futureInvestmentyear)
         return investmentCostperTechnology
+
+
+    def getActualFixedCostsperMW(self, technology):
+        fixedCostperTechnology = technology.get_fixed_costs_by_commissioning_year(self.futureInvestmentyear)
+        return fixedCostperTechnology
 
     def getinvestmentcosts(self, investmentCostperTechnology, time):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))

@@ -139,7 +139,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
                                 .format(powerplant.name, horizon, profit, requiredProfit))
                         else:  # power plants in pipeline are also considered to be operational in the future
                             self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-                            # fixed costs are increased if power plant is not decommissioned. But this is not relevant for future market
                     else:
                         self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 

@@ -351,8 +351,6 @@ class SpineDBReaderWriter:
                                                [('ViableInvestment', True)], '0')
 
     def stage_last_testing_technology(self, last_investable_technology ):
-        print("changing to last_investable_technology" )
-        print(last_investable_technology)
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "last_investable_technology")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
@@ -372,6 +370,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.powerplant_installed_classname, ['actualFixedOperatingCost'])
 
     def stage_fixed_operating_costs(self, pp):
+        self.stage_object_parameter(self.powerplant_installed_classname, 'actualFixedOperatingCost')
         self.stage_object(self.powerplant_installed_classname, pp.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, pp.name,
                                            [('actualFixedOperatingCost', pp.actualFixedOperatingCost)],
@@ -489,7 +488,9 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameter(self.powerplant_installed_classname, parametername)
         for i, pp_name in enumerate(pp_dispatched_names):
-            pp_profit = pp_total_profits[i] - reps.power_plants[pp_name].actualFixedOperatingCost
+            pp = reps.power_plants[pp_name]
+            self.update_fixed_costs(pp, reps.lookAhead)
+            pp_profit = pp_total_profits[i] - pp.actualFixedOperatingCost
             self.stage_object(self.powerplant_installed_classname, str(pp_name))
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
                                                [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
@@ -499,12 +500,18 @@ class SpineDBReaderWriter:
             for pp_id in available_plants_ids:
                 if pp_id not in pp_dispatched_ids:
                     pp = reps.get_power_plant_by_id(pp_id)
+                    self.update_fixed_costs(pp , reps.lookAhead)
                     print(pp.name + "was tested but not used - > no operational profits")
-                    pp_profit = - reps.power_plants[pp.name].actualFixedOperatingCost
+                    pp_profit = - pp.actualFixedOperatingCost
                     self.stage_object(self.powerplant_installed_classname, str(pp.name))
                     self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
                                                        [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
 
+    def update_fixed_costs(self, power_plant, lookAhead):
+        if power_plant.age >= power_plant.technology.expected_lifetime:
+            ModifiedOM = power_plant.getTechnology().get_fixed_operating_by_time_series((power_plant.age + lookAhead) ,
+                                                                                        power_plant.commissionedYear) * power_plant.get_actual_nominal_capacity()
+            power_plant.setActualFixedOperatingCost(ModifiedOM)
     def stage_testing_future_year(self, reps):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "investment_initialization_years")

@@ -66,8 +66,7 @@ class Dismantle(DefaultModule):
 
     def increase_fixed_cost(self, plant):
         print("dont dismantle but increase FOM of  {} ".format(plant.name))
-        passed_years = plant.age - plant.technology.getExpectedLifetime()
-        ModifiedOM = plant.getTechnology().get_fixed_operating_by_time_series(passed_years) * plant.getActualNominalCapacity()
+        ModifiedOM = plant.getTechnology().get_fixed_operating_by_time_series(plant.age, plant.commissionedYear) * plant.get_actual_nominal_capacity()
         plant.setActualFixedOperatingCost(ModifiedOM)
         self.reps.dbrw.stage_fixed_operating_costs(plant)
 
@@ -123,7 +122,7 @@ class Dismantle(DefaultModule):
                 if self.reps.current_tick >= self.reps.start_dismantling_tick:
                     powerplant.status = globalNames.power_plant_status_to_be_decommissioned
                 else:
-                    # dont decommission yet
+                    # dont decommission yet but increase costs
                     powerplant.status = globalNames.power_plant_status_operational
                     self.increase_fixed_cost(powerplant)
             elif powerplant.age >= 0:
