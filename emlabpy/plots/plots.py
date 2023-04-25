@@ -2050,7 +2050,8 @@ SpecificCo2EmissionsInTperMWH = {
     'light_oil': 0,
     "wood_pellets": 0
 }
-vRES = ['PV_utility_systems', 'WTG_onshore', 'WTG_offshore']
+vRES = ['PV_utility_systems', 'WTG_onshore', 'WTG_offshore', "PV"]
+
 technology_colors = {
     'Biomass_CHP_wood_pellets_DH': "green",
     "Biomass_CHP_wood_pellets_PH": "greenyellow",
@@ -2061,6 +2062,7 @@ technology_colors = {
     'OCGT': "gray",
     'Hydropower_reservoir_medium': "darkcyan",
     'PV_utility_systems': "gold",
+    'PV': "gold",
     'WTG_onshore': "cornflowerblue",
     "WTG_offshore": "navy",
     "Nuclear": "mediumorchid",

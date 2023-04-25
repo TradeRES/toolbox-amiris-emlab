@@ -42,7 +42,7 @@ used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", 
                           "WTG_offshore", "PV_utility_systems", "Lignite PSC", "Fuel oil PGT", "Pumped_hydro",
                           "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH",
                           "CCGT_CHP_backpressure_DH", "Biomass_CHP_wood_pellets_PH",
-                          "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP",
+                          "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP", "PV",
                           "hydrogen_combined_cycle"]
 vRES = ["WTG_onshore", "WTG_offshore", "PV_utility_systems"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
