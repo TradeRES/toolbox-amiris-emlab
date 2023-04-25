@@ -170,6 +170,7 @@ class PowerPlant(EMLabAgent):
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTick()  # minus age, permit and lead time
         self.commissionedYear = reps.current_year - self.age
+
         if self.actualEfficiency == 'NOTSET':  # if there is not initial efficiency, then assign the efficiency by the technology
             self.calculateAndSetActualEfficiency(self.age)  # initialDB
 
