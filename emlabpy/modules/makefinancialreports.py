@@ -133,7 +133,7 @@ class CreatingFinancialReports(DefaultModule):
         # print(loans)
         IRR = npf.irr(investmentCashFlow_with_loans)
         if pd.isna(IRR):
-            return -100, npv
+            return IRR, npv
         else:
             return round(IRR, 4), npv
 
