@@ -49,6 +49,10 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.lookAhead
 
+        # Test first intermittent technologies
+        # if reps.test_first_intermittent_technologies == True and reps.testing_intermittent_technologies == True:
+        #     self.power_plants_list = reps.filter_intermittent_candidate_power_plants(self.power_plants_list)
+        #     print([i.technology.name for i in self.power_plants_list ])
         # changing efficency and variable costs of candidate power plants
         for pp in self.power_plants_list:
             pp.actualVariableCost = pp.technology.variable_operating_costs
@@ -60,10 +64,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 self.reps.dbrw.stage_last_testing_technology(True)
             else:
                 year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
-                NPV_last_investment_decision = next(i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
-                                                        "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration)
+                NPV_last_investment_decision = next((i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
+                                                        "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration), 0)
                 print(NPV_last_investment_decision)
                 if NPV_last_investment_decision< 10000:
+                    print("last investment decision")
                     uniquepp.capacity = uniquepp.capacityRealistic
                     self.reps.dbrw.stage_last_testing_technology(True)
 

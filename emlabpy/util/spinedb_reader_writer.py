@@ -155,8 +155,11 @@ class SpineDBReaderWriter:
             elif row['parameter_name'] == 'last_investable_technology':
                 reps.last_investable_technology = row['parameter_value']
             elif row['parameter_name'] == 'groups power plants per installed year':
-                reps.groups_plants_per_installed_year = row['parameter_value']
-
+                reps.groups_plants_per_installed_year = bool(row['parameter_value'])
+            # elif row['parameter_name'] == 'testing_intermittent_technologies':
+            #     reps.testing_intermittent_technologies = bool(row['parameter_value'])
+            # elif row['parameter_name'] == 'Test first intermittent technologies':
+            #     reps.test_first_intermittent_technologies = bool(row['parameter_value'])
 
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
@@ -360,6 +363,7 @@ class SpineDBReaderWriter:
                                                [('ViableInvestment', True)], '0')
 
     def stage_last_testing_technology(self, last_investable_technology ):
+        # when testing last technolgy, candidate to be installed is tested with real capacity
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "last_investable_technology")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
@@ -707,6 +711,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameter(self.configuration_object_classname, "target_investments_done")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [("target_investments_done", done)], "0")
+
+    # def stage_testing_intermittent_technologies(self, status_testing):
+    #     self.stage_object_class(self.configuration_object_classname)
+    #     self.stage_object_parameter(self.configuration_object_classname, "testing_intermittent_technologies")
+    #     self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+    #                                        [("testing_intermittent_technologies", status_testing)], "0")
 
     def stage_simulated_fuel_prices(self, year, price, substance):
         object_name = substance.name

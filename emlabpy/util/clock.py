@@ -64,6 +64,10 @@ def reset_target_investments_done():
     db_emlab.import_object_parameter_values(
         [(class_name, "SimulationYears", "target_investments_done", bool(0), '0')])
 
+# def reset_testing_intermittent_technologies():
+#     class_name = "Configuration"
+#     db_emlab.import_object_parameter_values(
+#         [(class_name, "SimulationYears", "testing_intermittent_technologies", bool(1), '0')])
 
 def update_years_file(current_year, initial, final_year, lookAhead):
     print("updated years file")
@@ -224,6 +228,10 @@ try:
                                              class_name, object_name) \
                                          if i['parameter_name'] == 'targetinvestment_per_year')
 
+        # test_first_intermittent_technologies = next(i['parameter_value'] for i in
+        #                                  db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+        #                                      class_name, object_name) \
+        #                                  if i['parameter_name'] == 'Test first intermittent technologies')
         fix_demand_to_initial_year = False
         fix_demand_to_initial_year = next(i['parameter_value'] for i in
                                           db_emlab.query_object_parameter_values_by_object_class_and_object_name(
@@ -277,6 +285,8 @@ try:
                 reset_target_investments_done()
                 print(" target investments status")
 
+            # if test_first_intermittent_technologies == True:
+            #     reset_testing_intermittent_technologies()
             step = next(int(i['parameter_value']) for i
                         in
                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \

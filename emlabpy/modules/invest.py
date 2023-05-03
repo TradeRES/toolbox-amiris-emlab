@@ -125,6 +125,9 @@ class Investmentdecision(DefaultModule):
             # power plants are investable when they havent passed the capacity limits
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
             if self.investable_candidate_plants:  # check if there are investable power plants
+                # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
+                #     # filter out intermittent technologies
+                #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants, False)
 
@@ -162,6 +165,7 @@ class Investmentdecision(DefaultModule):
                         elif projectvalue < 0:
                             # the power plant should not be investable in next rounds
                             # saving if the candidate power plant remains or not as investable
+
                             candidatepowerplant.setViableInvestment(False)
                             self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         else:
@@ -176,28 +180,30 @@ class Investmentdecision(DefaultModule):
                     print("Investing in " + highestNPVCandidatePP.technology.name)
                     newplant = self.invest(highestNPVCandidatePP, False)
                     self.reps.dbrw.stage_new_power_plant(newplant)
-                    # self.reps.dbrw.stage_loans(newplant)
-                    # self.reps.dbrw.stage_downpayments(newplant)
-                    # self.reps.dbrw.stage_investment_decisions(newplant.id,
-                    #                                           self.reps.investmentIteration,
-                    #                                           self.reps.current_tick)
                     self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
                     self.continue_iteration()
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
+                    # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
+                    #     print("finished testing intermittent technologies")
+                    #     self.reps.dbrw.stage_testing_intermittent_technologies(False)
+                    #     self.continue_iteration()
+                    #     self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+
                     if self.reps.initialization_investment == True:
-                        print("increasing testing year by one")
+                        print("increasing initialization testing year by one")
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
                             # look ahead = 4 should be executed in the workflow
                             self.reps.initialization_investment = False
                             self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
                             self.reps.dbrw.stage_last_testing_technology(False)
                             self.stop_iteration()
-
                         else:
                             self.reps.investment_initialization_years += 1
                             self.continue_iteration()
                             self.reps.dbrw.stage_testing_future_year(self.reps)
+                            # if self.reps.test_first_intermittent_technologies == True:
+                            #     self.reps.dbrw.stage_testing_intermittent_technologies(True)
 
                         # reset all candidate power plants to investable
                         candidates_names = self.reps.get_unique_candidate_names()
@@ -220,7 +226,6 @@ class Investmentdecision(DefaultModule):
                     # saving profits of installed power plants.
                     print("saving future total profits")
                     self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps,self.pp_dispatched_names, self.pp_profits,
-
                                                                                self.future_installed_plants_ids)
             else:
                 print("all technologies are unprofitable")
@@ -257,11 +262,12 @@ class Investmentdecision(DefaultModule):
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
         newplant.specifyPowerPlantforInvest(self.reps,  self.look_ahead_years)
 
-        print("{0} invests in technology {1} at tick {2}, with id{3} and million eur:".format(self.agent.name,
+        print("{0} invests in technology {1} at tick {2}, with id{3} :".format(self.agent.name,
                                                                              newplant.technology.name,
                                                                              self.reps.current_tick, newid))
         # --------------------------------------------------------------------------------------Payments
         print(newplant.getActualInvestedCapital() / (1000000*newplant.capacity))
+        print(newplant.capacityTobeInstalled)
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
         totalDownPayment = investmentCostPayedByEquity

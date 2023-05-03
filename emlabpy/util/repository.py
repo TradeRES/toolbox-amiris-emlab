@@ -79,6 +79,8 @@ class Repository:
         # section --------------------------------------------------------------------------------------investments
         self.investmentIteration = 0
         self.targetinvestment_per_year = True
+        # self.testing_intermittent_technologies = True
+        # self.test_first_intermittent_technologies = False
         self.target_investments_done = False
         self.install_missing_capacity_as_one_pp = True
         self.decommission_from_input = False
@@ -354,6 +356,10 @@ class Repository:
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
+    # def filter_intermittent_candidate_power_plants(self, powerplant_list) -> List[CandidatePowerPlant]:
+    #     return [i for i in powerplant_list if i.viableInvestment is True
+    #             and i.technology.intermittent == True
+    #             ]
     def get_investable_candidate_power_plants_minimal_irr_or_npv(self) -> List[CandidatePowerPlant]:
         investable_candidates = self.get_investable_candidate_power_plants()
         if self.minimal_last_years_IRR != "NOTSET":
