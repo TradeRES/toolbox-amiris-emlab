@@ -61,6 +61,7 @@ class Repository:
         self.minimal_last_years_IRR = "NOTSET"
         self.minimal_last_years_NPV = "NOTSET"
         self.last_investable_technology = False
+        self.groups_plants_per_installed_year = True
         self.last_years_IRR_or_NPV = 0
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
@@ -247,12 +248,6 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_total_profits_for_plant(self, plant_name):
-        try:
-            return next(i.totalProfits for i in self.financialPowerPlantReports.values() if i.name == plant_name)
-        except StopIteration:
-            return None
-
     def getCashFlowsForEnergyProducer(self, energyproducer):
         try:
             return next(i for i in self.energy_producers.values() if i.name == energyproducer)
@@ -353,10 +348,7 @@ class Repository:
 
     def get_investable_and_targeted_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True and
-                i.technology.name in ["WTG_onshore",
-                                      "WTG_offshore",
-                                      "PV_utility_systems"
-                                      ]
+                i.technology.name in globalNames.vRES
                 ]
 
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
@@ -598,8 +590,10 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.name[:4] == str(year)]
 
-    # def get_power_plants_invested_in_tick_per_iteration(self, tick) -> List[PowerPlant]:
-    #     return self.investmentDecisions[str(tick)]
+    def get_power_plants_invested_in_tick_by_technology(self, commissionedYear, technology) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.name[:4] == str(commissionedYear) and i.technology.name == technology.name]
+
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

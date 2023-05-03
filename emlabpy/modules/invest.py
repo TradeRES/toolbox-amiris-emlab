@@ -1,14 +1,8 @@
-from domain.energyproducer import EnergyProducer
-from domain.technologies import PowerGeneratingTechnology
+
 from modules.defaultmodule import DefaultModule
-from domain.trends import GeometricTrendRegression
-from domain.targetinvestor import TargetInvestor
-from domain.powerplant import *
 from domain.CandidatePowerPlant import *
-from domain.cashflow import CashFlow
 import numpy_financial as npf
 import pandas as pd
-from domain.actors import *
 from util.repository import Repository
 import os
 import sys
@@ -61,6 +55,7 @@ class Investmentdecision(DefaultModule):
         else:
             self.setTimeHorizon(reps.lookAhead)
             self.look_ahead_years = reps.lookAhead
+
         print("Look ahead year " + str(self.look_ahead_years) + "/ future year" + str(self.futureInvestmentyear))
 
         self.wacc = (
@@ -83,17 +78,21 @@ class Investmentdecision(DefaultModule):
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
         self.read_csv_results_and_filter_candidate_plants()
-        pp_dispatched_names = []
+        self.pp_dispatched_names = []
+        self.pp_profits = pd.DataFrame()
         pp_dispatched_ids = []
         pp_profits = []
+        #pp_profits = pd.DataFrame()
         cp_numbers = []
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
-            pp_dispatched_names.append(pp.name)
+            self.pp_dispatched_names.append(pp.name)
+          #  pp_profits.at[0, pp.id] = pp.operationalProfit
             pp_dispatched_ids.append(pp_id)
             pp_profits.append(pp.operationalProfit)
+            self.pp_profits.at[0,pp_dispatched_ids] = pp_profits
 
         if self.first_run == True:
             """
@@ -102,28 +101,24 @@ class Investmentdecision(DefaultModule):
             """
             print(" FIRST RUN ONLY TO TEST THE MARKET")
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
-            self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_dispatched_names,
-                                                                       pp_dispatched_ids, pp_profits,
+            self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, self.pp_dispatched_names, self.pp_profits,
                                                                        self.future_installed_plants_ids)
             self.continue_iteration()
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
             # todo: these variables could be removed once the model is validated
-            self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
+           # self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
             print("Investing according to TARGETS")
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)
                 self.reps.dbrw.stage_downpayments(newplant)
-                # self.reps.dbrw.stage_investment_decisions( newplant.id,
-                #                                           self.reps.investmentIteration,
-                #                                           self.reps.current_tick)
             self.reps.dbrw.stage_target_investments_done(True)
             self.continue_iteration()
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
         else:
             #todo: these variables could be removed once the model is validated
-            self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
+         #   self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
             print("Investing according to market results. iteration" + str(self.reps.investmentIteration))
             highestNPVCandidatePP = None
             highestNPV = 0
@@ -181,8 +176,8 @@ class Investmentdecision(DefaultModule):
                     print("Investing in " + highestNPVCandidatePP.technology.name)
                     newplant = self.invest(highestNPVCandidatePP, False)
                     self.reps.dbrw.stage_new_power_plant(newplant)
-                    self.reps.dbrw.stage_loans(newplant)
-                    self.reps.dbrw.stage_downpayments(newplant)
+                    # self.reps.dbrw.stage_loans(newplant)
+                    # self.reps.dbrw.stage_downpayments(newplant)
                     # self.reps.dbrw.stage_investment_decisions(newplant.id,
                     #                                           self.reps.investmentIteration,
                     #                                           self.reps.current_tick)
@@ -217,13 +212,23 @@ class Investmentdecision(DefaultModule):
                     # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)
 
+                    if self.reps.groups_plants_per_installed_year == True:
+                        self.group_power_plants()
+                    else:
+                        self.stage_loans_and_downpayments()
+
                     # saving profits of installed power plants.
                     print("saving future total profits")
-                    self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, pp_dispatched_names,
-                                                                               pp_dispatched_ids, pp_profits,
+                    self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps,self.pp_dispatched_names, self.pp_profits,
+
                                                                                self.future_installed_plants_ids)
             else:
                 print("all technologies are unprofitable")
+    def stage_loans_and_downpayments(self):
+        for newplant in self.reps.get_power_plants_invested_in_tick(self.reps.current_tick):
+            self.reps.dbrw.stage_loans(newplant)
+            self.reps.dbrw.stage_downpayments(newplant)
+
 
     def invest(self, newplant, target_invest):
         if self.reps.install_at_look_ahead_year == True:
@@ -231,6 +236,7 @@ class Investmentdecision(DefaultModule):
         else:
             print("fix this if needed !!!!!") # todo fix this if needed
             commissionedYear = self.reps.current_year + newplant.technology.expected_permittime + newplant.technology.expected_leadtime
+
         if target_invest == False:
             newid = (int(str(commissionedYear) +
                          str("{:02d}".format(
@@ -368,10 +374,7 @@ class Investmentdecision(DefaultModule):
         # elif (self.expectedInstalledCapacityPerTechnology + self.candidatepowerplant.getActualNominalCapacity()) / (marketInformation.maxExpectedLoad + self.plant.getActualNominalCapacity()) >\
         #         self.technology.getMaximumInstalledCapacityFractionInCountry():
         #     logging.info(" will not invest in {} technology because there's too much of this type in the market" + technology)
-        # TODO: add the maxExpected Load
-        # if self.capacityInPipeline > 0.2 * marketInformation.maxExpectedLoad:
-        #     logging.info( "Not investing because more than 20% of demand in pipeline.")
-        #     logging.info(Lagent +" will not invest in {} technology as he does not have enough money for downpayment" + self.technology)
+
         else:
             logging.info("%s passes capacity limit.  will now calculate financial viability.", technology)
             candidatepowerplant.setViableInvestment(True)
@@ -441,6 +444,35 @@ class Investmentdecision(DefaultModule):
     #     plantMarginalCost = determineExpectedMarginalCost(plant, fuelPrices, co2price)
     #     marginalCostMap.put(plant, plantMarginalCost)
     #     capacitySum += targetDifference
+    def group_power_plants(self):
+        plants_to_delete = []
+        for candidate_technology in self.reps.get_unique_candidate_technologies():
+            commissionedYear = self.reps.current_year + self.look_ahead_years
+            new_plants_per_tech = self.reps.get_power_plants_invested_in_tick_by_technology(commissionedYear, candidate_technology)
+            if len(new_plants_per_tech)>1:
+                grouped_plant = CandidatePowerPlant("grouped")
+                for newplant in new_plants_per_tech:
+                    grouped_plant.capacityTobeInstalled += newplant.capacity
+                    plants_to_delete.append(str(newplant.id))
+                    self.ids_of_future_installed_and_dispatched_pp.remove(newplant.id)
+                    print("removing " + str(newplant.id))
+                    self.pp_dispatched_names.remove(str(newplant.id))
+                    self.pp_profits.drop(columns =newplant.id)
+                # self.reps.dbrw.stage_id_plant_to_delete(newplant)
+                grouped_plant.setActualEfficiency(newplant.actualEfficiency)
+                grouped_plant.setOwner(self.agent)
+                grouped_plant.setLocation(self.reps.country)
+                grouped_plant.setTechnology(candidate_technology)
+                grouped_plant = self.invest(grouped_plant, False)
+                self.reps.dbrw.stage_new_power_plant(grouped_plant)
+                self.reps.dbrw.stage_loans(grouped_plant)
+                self.reps.dbrw.stage_downpayments(grouped_plant)
+
+
+        # deleting plants that have been grouped
+        self.reps.dbrw.delete_rows_DB("Id", plants_to_delete)
+        # update power_plants_installed
+        self.reps.dbrw.stage_installed_pp_names(self.ids_of_future_installed_and_dispatched_pp, self.futureTick)
 
     # Returns the Node Limit by Technology or the max double numer if none was found
     def read_csv_results_and_filter_candidate_plants(self):
@@ -470,3 +502,4 @@ class Investmentdecision(DefaultModule):
 
     def setAgent(self, agent):
         self.agent = self.reps.energy_producers[agent]
+

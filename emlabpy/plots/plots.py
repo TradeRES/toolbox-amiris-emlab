@@ -1228,17 +1228,17 @@ def prepare_extension_lifetime_per_tech(reps, unique_technologies):
     return life_extension
 
 
-def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simulation_years):
-    irrs_per_tech_per_year = pd.DataFrame(index=simulation_years).fillna(0)
-    npvs_per_tech_per_MW = pd.DataFrame(index=simulation_years).fillna(0)
+def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate, years_to_generate):
+    irrs_per_tech_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
+    npvs_per_tech_per_MW = pd.DataFrame(index=ticks_to_generate).fillna(0)
     npvs_per_year_new_plants_perMW_all = dict()
     irrs_per_year_new_plants_all = dict()
     for technology_name in unique_technologies:
         powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
-        irrs_per_year = pd.DataFrame(index=simulation_years).fillna(0)
-        npvs_per_year_perMW = pd.DataFrame(index=simulation_years).fillna(0)
-        npvs_per_year_new_plants = pd.DataFrame(index=simulation_years).fillna(0)
-        irrs_per_year_new_plants = pd.DataFrame(index=simulation_years).fillna(0)
+        irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        npvs_per_year_perMW = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        npvs_per_year_new_plants = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        irrs_per_year_new_plants = pd.DataFrame(index=ticks_to_generate).fillna(0)
         for plant in powerplants_per_tech:
             irr_per_plant = reps.get_irrs_for_plant(plant.name)
             if irr_per_plant is None:
@@ -1265,6 +1265,10 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, simul
             irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
         if npvs_per_year_perMW.size != 0:
             npvs_per_tech_per_MW[technology_name] = np.nanmean(npvs_per_year_perMW, axis=1)
+    npvs_per_tech_per_MW['years'] = years_to_generate
+    npvs_per_tech_per_MW.set_index("years", inplace=True)
+    irrs_per_tech_per_year['years'] = years_to_generate
+    irrs_per_tech_per_year.set_index("years", inplace=True)
     return irrs_per_tech_per_year * 100, npvs_per_tech_per_MW, npvs_per_year_new_plants_perMW_all, irrs_per_year_new_plants_all
 
 
@@ -1750,7 +1754,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
     irrs_per_tech_per_year, npvs_per_tech_per_MW, npvs_per_year_new_plants_all, irrs_per_year_new_plants_all = \
-        prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate)
+        prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate, years_to_generate)
 
     plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, path_to_plots,
                                         technology_colors)
@@ -2050,7 +2054,7 @@ SpecificCo2EmissionsInTperMWH = {
     'light_oil': 0,
     "wood_pellets": 0
 }
-vRES = ['PV_utility_systems', 'WTG_onshore', 'WTG_offshore', "PV"]
+vRES = ['PV_utility_systems', 'WTG_onshore', 'WTG_offshore', 'PV' ]
 
 technology_colors = {
     'Biomass_CHP_wood_pellets_DH': "green",
@@ -2063,6 +2067,7 @@ technology_colors = {
     'Hydropower_reservoir_medium': "darkcyan",
     'PV_utility_systems': "gold",
     'PV': "gold",
+    'PV_residential': "khaki",
     'WTG_onshore': "cornflowerblue",
     "WTG_offshore": "navy",
     "Nuclear": "mediumorchid",
@@ -2083,12 +2088,12 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-Install_test_realistic_capacities_last3_NPV"
+SCENARIOS = ["-grouped"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 7
+test_tick = 29
 # write None is no investment is expected,g
 test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
@@ -2097,8 +2102,8 @@ industrial_demand_as_load_shedder = False
 load_shedding_plots = False
 
 calculate_investments = True
-calculate_investments_per_iteration = True  # ProfitsC
-calculate_profits_candidates_per_iteration = True
+calculate_investments_per_iteration = False  # ProfitsC
+calculate_profits_candidates_per_iteration = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 capacity_mechanisms = False
 calculate_vres_support = False

@@ -2,7 +2,7 @@ from util import globalNames
 from modules.defaultmodule import DefaultModule
 from util.repository import Repository
 import logging
-from spinedb_api import DatabaseMapping
+from domain.CandidatePowerPlant import *
 import pandas as pd
 
 class Dismantle(DefaultModule):
@@ -22,6 +22,7 @@ class Dismantle(DefaultModule):
         self.check_ids(reps)
 
     def act(self):
+
         if self.reps.current_tick > 0: # on the first year the age shouldnt be increased
             # add one year to the age of power plants
             self.add_one_year_to_age()

@@ -49,11 +49,11 @@ class FinancialPowerPlantReport(ImportObject):
                 self.npv = pd_series
             elif parameter_name == 'totalProfitswLoans':
                 self.totalProfitswLoans = pd_series
-            elif parameter_name == 'totalProfits':
+            elif parameter_name == 'totalProfits': # todo: can be deleted - > only for plots
                 self.totalProfits = pd_series
             elif  parameter_name == 'capacityMechanismRevenues':
                 self.capacityMarketRevenues = pd_series
-            elif parameter_name == 'variableCosts':
+            elif parameter_name == 'variableCosts': # todo: can be deleted - > only for plots real obtained operational profits
                 self.variableCosts = pd_series
             elif  parameter_name == 'spotMarketRevenue':
                 self.spotMarketRevenue = pd_series

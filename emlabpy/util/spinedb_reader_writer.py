@@ -154,6 +154,9 @@ class SpineDBReaderWriter:
                 reps.minimal_last_years_NPV = row['parameter_value']
             elif row['parameter_name'] == 'last_investable_technology':
                 reps.last_investable_technology = row['parameter_value']
+            elif row['parameter_name'] == 'groups power plants per installed year':
+                reps.groups_plants_per_installed_year = row['parameter_value']
+
 
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
@@ -318,6 +321,12 @@ class SpineDBReaderWriter:
                                             ('Cash', powerplant.cash),
                                             ('Technology', powerplant.technology.name)], "0")
 
+    def stage_id_plant_to_delete(self, powerplant):
+        object_name = str(powerplant.name)
+        self.stage_object_parameter_values(self.powerplant_installed_classname, object_name,
+                                           [("Id", "delete")], "0")
+
+
     def stage_peak_dispatchable_capacity(self, peak_dispatchable_capacity, year):
         object_name = "All"
         self.stage_object_class(self.total_capacity_classname)
@@ -481,7 +490,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("PowerPlantsC", pp_numbers)], "0")
 
-    def stage_future_total_profits_installed_plants(self, reps, pp_dispatched_names, pp_dispatched_ids,
+    def stage_future_total_profits_installed_plants(self, reps, pp_dispatched_names,
                                                     pp_total_profits, available_plants_ids):
         tick = reps.current_tick + reps.lookAhead
         parametername = "expectedTotalProfits"
@@ -490,7 +499,7 @@ class SpineDBReaderWriter:
         for i, pp_name in enumerate(pp_dispatched_names):
             pp = reps.power_plants[pp_name]
             self.update_fixed_costs(pp, reps.lookAhead)
-            pp_profit = pp_total_profits[i] - pp.actualFixedOperatingCost
+            pp_profit = pp_total_profits.loc[0,pp.id] - pp.actualFixedOperatingCost
             self.stage_object(self.powerplant_installed_classname, str(pp_name))
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
                                                [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
@@ -498,7 +507,7 @@ class SpineDBReaderWriter:
         if len(available_plants_ids) > len(pp_dispatched_names):
             # if there are less dispatched plants then assign their revenues as 0
             for pp_id in available_plants_ids:
-                if pp_id not in pp_dispatched_ids:
+                if pp_id not in pp_total_profits.columns.tolist():
                     pp = reps.get_power_plant_by_id(pp_id)
                     self.update_fixed_costs(pp , reps.lookAhead)
                     print(pp.name + "was tested but not used - > no operational profits")
@@ -556,11 +565,8 @@ class SpineDBReaderWriter:
                                                 ('latestTick', (fr.tick)),
                                                 ('spotMarketRevenue',
                                                  Map([str(fr.tick)], [float(fr.spotMarketRevenue)])),
-                                                ('overallRevenue', Map([str(fr.tick)], [float(fr.overallRevenue)])),
-                                                ('production', Map([str(fr.tick)], [float(fr.production)])),
                                                 ('powerPlantStatus', Map([str(fr.tick)], [str(fr.powerPlantStatus)])),
                                                 ('variableCosts', Map([str(fr.tick)], [float(fr.variableCosts)])),
-                                                ('fixedCosts', Map([str(fr.tick)], [float(fr.fixedCosts)])),
                                                 ('totalCosts', Map([str(fr.tick)], [float(fr.totalCosts)])),
                                                 ('totalProfits', Map([str(fr.tick)], [float(fr.totalProfits)])),
                                                 ('totalProfitswLoans',
@@ -765,6 +771,10 @@ class SpineDBReaderWriter:
                                       object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
         import_arr = [(object_class_name, object_name, i[0], i[1], str(alternative)) for i in arr_of_tuples]
         self.db.import_object_parameter_values(import_arr)
+
+
+    def delete_rows_DB(self, parametername, values):
+        self.db.delete_ids(parametername, values)
 
     # def stage_object_parameter_time_series(self,
     #                                   object_class_name: str, object_name: str, arr_of_tuples: list, alternative: int):
