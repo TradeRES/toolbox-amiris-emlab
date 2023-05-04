@@ -153,8 +153,7 @@ class PrepareMarket(DefaultModule):
             # ----------------------------------------------------------------------------preparing  other fuel prices
             else:
                 try:
-                    if self.reps.dictionaryFuelNames[k] in ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL",
-                                                            "HYDROGEN", "BIOMASS", "WASTE"]:
+                    if self.reps.dictionaryFuelNames[k] in globalNames.fuels_in_AMIRIS:
                         dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
                     else:
                         pass
@@ -166,7 +165,6 @@ class PrepareMarket(DefaultModule):
 
         dict_fuels['AgentType'] = "FuelsMarket"
         fuels = pd.DataFrame.from_dict(dict_fuels, orient='index', columns=[1])
-        fuels.loc["OTHER"] = 0
         co2 = pd.DataFrame.from_dict(d2, orient='index')
 
         result = pd.concat(

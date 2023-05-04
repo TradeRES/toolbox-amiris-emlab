@@ -135,6 +135,7 @@ class Investmentdecision(DefaultModule):
                 self.capacity_calculations()
 
                 for candidatepowerplant in self.investable_candidate_plants:
+                    print("Investable" + candidatepowerplant.technology.name)
                     cp_numbers.append(candidatepowerplant.name)
                     cp_profits.append(candidatepowerplant.operationalProfit)
                     # calculate which is the power plant (technology) with the highest NPV
@@ -200,7 +201,7 @@ class Investmentdecision(DefaultModule):
                             self.reps.initialization_investment = False
                             self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
                             self.reps.dbrw.stage_last_testing_technology(False)
-                            self.stop_iteration()
+                            self.stop_iteration() # continue to main workflow
                         else:
                             self.reps.investment_initialization_years += 1
                             self.continue_iteration()

@@ -840,8 +840,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": -20.135719522299112,
-            "y": -132.56815230848827,
+            "x": -24.43289373813419,
+            "y": -132.5681523084883,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []

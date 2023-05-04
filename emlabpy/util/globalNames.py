@@ -45,6 +45,7 @@ used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", 
                           "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP", "PV", "PV_residential", "PV_utility_systems",
                           "hydrogen_combined_cycle"]
 vRES = ["WTG_onshore", "WTG_offshore", "PV_utility_systems" ,"PV", "PV_residential"]
+fuels_in_AMIRIS = ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "OTHER", "HYDROGEN", "BIOMASS", "WASTE"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
 
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)
