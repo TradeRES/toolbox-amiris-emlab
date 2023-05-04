@@ -83,14 +83,12 @@ class Investmentdecision(DefaultModule):
         self.pp_profits = pd.DataFrame()
         pp_dispatched_ids = []
         pp_profits = []
-        #pp_profits = pd.DataFrame()
         cp_numbers = []
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
             self.pp_dispatched_names.append(pp.name)
-          #  pp_profits.at[0, pp.id] = pp.operationalProfit
             pp_dispatched_ids.append(pp_id)
             pp_profits.append(pp.operationalProfit)
             self.pp_profits.at[0,pp_dispatched_ids] = pp_profits
@@ -135,7 +133,7 @@ class Investmentdecision(DefaultModule):
                 self.capacity_calculations()
 
                 for candidatepowerplant in self.investable_candidate_plants:
-                    print("Investable" + candidatepowerplant.technology.name)
+                    print("..............." + candidatepowerplant.technology.name)
                     cp_numbers.append(candidatepowerplant.name)
                     cp_profits.append(candidatepowerplant.operationalProfit)
                     # calculate which is the power plant (technology) with the highest NPV
@@ -188,14 +186,8 @@ class Investmentdecision(DefaultModule):
                     self.continue_iteration()
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
-                    # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
-                    #     print("finished testing intermittent technologies")
-                    #     self.reps.dbrw.stage_testing_intermittent_technologies(False)
-                    #     self.continue_iteration()
-                    #     self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
-
                     if self.reps.initialization_investment == True:
-                        print("increasing initialization testing year by one")
+                        print("Initialization investment loop")
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
                             # look ahead = 4 should be executed in the workflow
                             self.reps.initialization_investment = False
@@ -211,7 +203,9 @@ class Investmentdecision(DefaultModule):
 
                         # reset all candidate power plants to investable
                         candidates_names = self.reps.get_unique_candidate_names()
+                        print("RESET candidates to investable")
                         self.reps.dbrw.stage_candidate_status_to_investable(candidates_names)
+
                         if self.reps.targetinvestment_per_year == True:
                             self.reps.dbrw.stage_target_investments_done(False)
 
