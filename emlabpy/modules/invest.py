@@ -28,6 +28,7 @@ class Investmentdecision(DefaultModule):
         self.capacityOfTechnologyInPipeline = 0
         self.operationalCapacityOfTechnology = 0
         self.capacityInPipeline = 0
+        self.peak_demand =0
         self.investmentCashFlow = []
         self.useFundamentalCO2Forecast = False  # from AbstractInvestInPowerGenerationTechnologiesRole
         self.futureTick = 0  # future tick
@@ -124,12 +125,14 @@ class Investmentdecision(DefaultModule):
             highestNPV = 0
             # power plants are investable when they havent passed the capacity limits
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
+
             if self.investable_candidate_plants:  # check if there are investable power plants
                 # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
                 #     # filter out intermittent technologies
                 #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants, False)
+                self.capacity_calculations()
 
                 for candidatepowerplant in self.investable_candidate_plants:
                     cp_numbers.append(candidatepowerplant.name)
@@ -350,6 +353,10 @@ class Investmentdecision(DefaultModule):
         # print("invest", investmentCostperTechnology, "times", pow(1.05, time))
         return investmentCostperTechnology  # TODO check: in emlab it was  pow(1.05, time of permit and construction) * investmentCostperTechnology
 
+    def capacity_calculations(self):
+        self.capacityInPipeline = self.reps.calculateCapacityOfPowerPlantsInPipeline()
+        self.peak_demand = self.reps.get_peak_demand_by_country()
+
     def calculateandCheckFutureCapacityExpectation(self,
                                                    candidatepowerplant):  # if there would be more agents, the future capacity should be analyzed per age
         # checking if the technology can be installed or not
@@ -358,14 +365,13 @@ class Investmentdecision(DefaultModule):
         # This calculation dont consider that some power plants might not be decommissioned because of positive profits
         # oldExpectedInstalledCapacityOfTechnology = self.reps.calculateCapacityOfExpectedOperationalPlantsperTechnology(
         #     technology, self.futureTick, ids_of_future_installed_and_dispatched_pp)
-        self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
-            technology)
-        self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
-        self.capacityInPipeline = self.reps.calculateCapacityOfPowerPlantsInPipeline()
-
-        technologyCapacityLimit = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
-
+        #self.capacityOfTechnologyInPipeline = self.reps.calculateCapacityOfPowerPlantsByTechnologyInPipeline(technology)
+        # self.operationalCapacityOfTechnology = self.reps.calculateCapacityOfOperationalPowerPlantsByTechnology(
+        #     technology)
         # (self.capacityOfTechnologyInPipeline > 2.0 * self.operationalCapacityOfTechnology)
+        commissionedYear = self.reps.current_year + self.look_ahead_years
+        capacityOfTechnologyInvestedAtyear = self.reps.calculateCapacityOfPowerPlantsByTechnologyInstalledinYear( commissionedYear,technology)
+        technologyCapacityLimit = technology.getMaximumCapacityinCountry(self.futureInvestmentyear)
         if self.capacityInPipeline >= self.reps.maximum_investment_capacity_per_year:
             print(
                 " will not invest in " + technology.name + " because there's too much capacity in the pipeline ")
@@ -375,8 +381,15 @@ class Investmentdecision(DefaultModule):
             print(" will not invest in " + technology.name + " because the capacity limits are achieved")
             candidatepowerplant.setViableInvestment(False)
             return False
-            # TODO: add if the agent dont have enough cash then change the agent.readytoInvest = False
-
+        elif capacityOfTechnologyInvestedAtyear > 0.10 * self.peak_demand:
+            if self.reps.initialization_investment == True:
+                print(capacityOfTechnologyInvestedAtyear)
+                print(
+                    " will not invest in " + technology.name + " too much of this technology in pipeline")
+                candidatepowerplant.setViableInvestment(False)
+                return False
+            else:
+                return True
         # elif (self.expectedInstalledCapacityPerTechnology + self.candidatepowerplant.getActualNominalCapacity()) / (marketInformation.maxExpectedLoad + self.plant.getActualNominalCapacity()) >\
         #         self.technology.getMaximumInstalledCapacityFractionInCountry():
         #     logging.info(" will not invest in {} technology because there's too much of this type in the market" + technology)
@@ -454,7 +467,7 @@ class Investmentdecision(DefaultModule):
         plants_to_delete = []
         for candidate_technology in self.reps.get_unique_candidate_technologies():
             commissionedYear = self.reps.current_year + self.look_ahead_years
-            new_plants_per_tech = self.reps.get_power_plants_invested_in_tick_by_technology(commissionedYear, candidate_technology)
+            new_plants_per_tech = self.reps.get_power_plants_invested_in_tick_by_technology(commissionedYear, candidate_technology.name)
             if len(new_plants_per_tech)>1:
                 grouped_plant = CandidatePowerPlant("grouped")
                 for newplant in new_plants_per_tech:

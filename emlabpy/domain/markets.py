@@ -37,7 +37,7 @@ class ElectricitySpotMarket(Market):
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = self.hourlyDemand # no dynamic load for other cases yet
             else:
-                future_load_path =globalNames.future_load_file_for_amiris
+                future_load_path = globalNames.future_load_file_for_amiris
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None)
 

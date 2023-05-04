@@ -295,6 +295,14 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_peak_demand_by_country(self):
+        try:
+            # the load was already updated in the clock step
+            return max(next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.country == self.country)[1])
+        except StopIteration:
+            return None
+
+
     def get_electricity_voll(self) -> Optional[ElectricitySpotMarket]:
         try:
             return next(i.valueOfLostLoad for i in self.electricity_spot_markets.values() if
@@ -527,6 +535,10 @@ class Repository:
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
                     and pp.status == globalNames.power_plant_status_inPipeline])  # pp.isInPipeline(tick)
 
+    def calculateCapacityOfPowerPlantsByTechnologyInstalledinYear(self, commissionedYear, technology):
+        new_power_plants =  self.get_power_plants_invested_in_tick_by_technology(commissionedYear,technology.name)
+        return sum([pp.capacity for pp in new_power_plants])
+
     def calculateCapacityOfPowerPlantsInPipeline(self):
         return sum(
             [i.capacity for i in self.power_plants.values() if i.status == globalNames.power_plant_status_inPipeline])
@@ -596,9 +608,9 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.name[:4] == str(year)]
 
-    def get_power_plants_invested_in_tick_by_technology(self, commissionedYear, technology) -> List[PowerPlant]:
+    def get_power_plants_invested_in_tick_by_technology(self, commissionedYear, technology_name) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if i.name[:4] == str(commissionedYear) and i.technology.name == technology.name]
+                if i.name[:4] == str(commissionedYear) and i.technology.name == technology_name]
 
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:

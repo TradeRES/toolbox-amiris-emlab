@@ -93,7 +93,7 @@ class PrepareMarket(DefaultModule):
                 fuel_price = substance.futurePrice_inYear
             # --------------------------------------------------------------------- preparing demand and yield profiles
             if substance.name == "electricity":
-                if self.reps.country == "DE":  # for germany the load is calculated with a trend.
+                if self.reps.available_years_data == False: # for germany the load is calculated with a trend.
                     new_demand = demand.copy()
                     new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
