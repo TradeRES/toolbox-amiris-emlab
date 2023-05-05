@@ -89,9 +89,9 @@ class Investmentdecision(DefaultModule):
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
             self.pp_dispatched_names.append(pp.name)
-            pp_dispatched_ids.append(pp_id)
-            pp_profits.append(pp.operationalProfit)
-            self.pp_profits.at[0,pp_dispatched_ids] = pp_profits
+            #pp_dispatched_ids.append(pp_id)
+            # pp_profits.append(pp.operationalProfit)
+            self.pp_profits.at[0, pp_id] = pp.operationalProfit
 
         if self.first_run == True:
             """
