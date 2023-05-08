@@ -50,7 +50,7 @@ class LoadShedder(ImportObject):
         self.shedder_capacity = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'TimeSeries':
+        if parameter_name == 'TimeSeriesFile':
             self.TimeSeriesFile = parameter_value
         elif parameter_name == 'TimeSeriesFileFuture':
             self.TimeSeriesFileFuture = parameter_value
