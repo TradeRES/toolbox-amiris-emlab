@@ -4,6 +4,7 @@ from domain.powerplantDispatchPlan import PowerPlantDispatchPlan
 from modules.defaultmodule import DefaultModule
 from domain.financialReports import FinancialPowerPlantReport
 from util import globalNames
+import numpy as np
 
 
 class CreatingFinancialReports(DefaultModule):
@@ -84,7 +85,6 @@ class CreatingFinancialReports(DefaultModule):
             # total profits with loans are to calculate RES support. saved as totalProfitswLoans
             operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
-
             irr, npv = self.getProjectIRR(powerplant, operational_profit, loans, self.agent)
             financialPowerPlantReport.irr = irr
             financialPowerPlantReport.npv = npv
@@ -105,8 +105,8 @@ class CreatingFinancialReports(DefaultModule):
         restPayment = debt / depreciationTime
 
         # operational_profit considers already fixed costs
-        wacc = (
-                           1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
+        # wacc = ( 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
+        wacc = 0
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
 
         # print("total investment cost in MIll", totalInvestment / 1000000)
@@ -123,15 +123,16 @@ class CreatingFinancialReports(DefaultModule):
 
         npv = npf.npv(wacc, investmentCashFlow)
 
-        investmentCashFlow_with_loans = [0 for i in range(depreciationTime + buildingTime)]
-        for i in range(0, buildingTime):
-            investmentCashFlow_with_loans[i] = - equalTotalDownPaymentInstallment
-        for i in range(buildingTime, depreciationTime + buildingTime):
-            investmentCashFlow_with_loans[i] = operational_profit_withFixedCosts - loans
-        # print(pp.name)
-        # print(operational_profit_withFixedCosts)
-        # print(loans)
-        IRR = npf.irr(investmentCashFlow_with_loans)
+        # investmentCashFlow_with_loans = [0 for i in range(depreciationTime + buildingTime)]
+        # for i in range(0, buildingTime):
+        #     investmentCashFlow_with_loans[i] = - equalTotalDownPaymentInstallment
+        # for i in range(buildingTime, depreciationTime + buildingTime):
+        #     investmentCashFlow_with_loans[i] = operational_profit_withFixedCosts - loans
+
+        # if pp.technology.name == "WTG_offshore" and pp.capacity ==4000:
+        #     print(npv)
+            #print(np.divide(equalTotalDownPaymentInstallment, pp.capacity))
+        IRR = npf.irr(investmentCashFlow)
         if pd.isna(IRR):
             return IRR, npv
         else:
