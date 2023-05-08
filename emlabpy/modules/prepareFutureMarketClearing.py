@@ -59,7 +59,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
         if len(self.power_plants_list) == 1: # if it is zero, then it is because of target investment or investment iteration 0
             uniquepp = self.power_plants_list[0]
-            if reps.investmentIteration == 0 :
+            if reps.investmentIteration == 0:
+                # in the first iteration: test realitist capacity if there is only one power plant
                 uniquepp.capacity = uniquepp.capacityRealistic
                 self.reps.dbrw.stage_last_testing_technology(True)
             else:
@@ -71,6 +72,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     print("last investment decision")
                     uniquepp.capacity = uniquepp.capacityRealistic
                     self.reps.dbrw.stage_last_testing_technology(True)
+                else:
+                    if reps.investmentIteration == 1:
+                        # if in the first iteration the NPV was very high, then change back to larger installation volumes
+                        self.reps.dbrw.stage_last_testing_technology(False)
+
 
     def act(self):
         self.setTimeHorizon()

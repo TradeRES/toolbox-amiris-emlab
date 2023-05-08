@@ -76,7 +76,7 @@ class PowerPlant(EMLabAgent):
             self.owner = reps.energy_producers[owner]
         elif parameter_name == 'Id':
             self.id = int(parameter_value)
-        if parameter_name == 'Technology':
+        elif parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'Capacity':
             self.capacity = parameter_value

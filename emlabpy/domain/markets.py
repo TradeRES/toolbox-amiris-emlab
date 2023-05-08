@@ -28,9 +28,9 @@ class ElectricitySpotMarket(Market):
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'valueOfLostLoad':
             self.valueOfLostLoad = int(parameter_value)
-        if parameter_name == 'country':
+        elif parameter_name == 'country':
             self.country = str(parameter_value)
-        if parameter_name == 'growthTrend':
+        elif parameter_name == 'growthTrend':
             self.demandGrowthTrend = str(parameter_value)
             load_path = globalNames.load_file_for_amiris
             if reps.available_years_data == False:
@@ -46,14 +46,17 @@ class LoadShedder(ImportObject):
         super().__init__(name)
         self.VOLL = None
         self.TimeSeriesFile = 0
+        self.TimeSeriesFileFuture = 0
         self.shedder_capacity = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'TimeSeriesFile':
+        if parameter_name == 'TimeSeries':
             self.TimeSeriesFile = parameter_value
-        if parameter_name == 'VOLL':
+        elif parameter_name == 'TimeSeriesFileFuture':
+            self.TimeSeriesFileFuture = parameter_value
+        elif parameter_name == 'VOLL':
             self.VOLL = int(parameter_value)
-        if parameter_name == 'Shedder_capacity':
+        elif parameter_name == 'Shedder_capacity':
             self.shedder_capacity = int(parameter_value)
 
 class CapacityMarket(Market):

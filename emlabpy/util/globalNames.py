@@ -64,11 +64,18 @@ windon_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-confi
 windoff_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\windoff.csv' )
 pv_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\pv.csv' )
 
+windon_firstyear_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\first_year_windon.csv' )
+windoff_firstyear_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\first_year_windoff.csv' )
+pv_firstyear_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\first_year_pv.csv' )
+
+
+
 future_windon_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_windon.csv' )
 future_windoff_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_windoff.csv' )
 future_pv_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_pv.csv' )
 
-input_data = os.path.join(parentpath, 'data\\VREprofilesandload2019-2050.xlsx')
+input_data = os.path.join(parentpath, 'data')
+#input_data = os.path.join(parentpath, 'data\\VREprofilesandload2019-2050.xlsx')
 input_load_de = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')
 amiris_ouput_path =  os.path.join(parentpath,'amiris_workflow\\output\\')

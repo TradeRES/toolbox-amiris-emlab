@@ -62,6 +62,7 @@ class Repository:
         self.minimal_last_years_NPV = "NOTSET"
         self.last_investable_technology = False
         self.groups_plants_per_installed_year = True
+        self.scenarioWeatheryearsExcel = ""
         self.last_years_IRR_or_NPV = 0
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
@@ -72,7 +73,7 @@ class Repository:
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = False
         self.fix_profiles_to_initial_year = True
-        self.iteration_weather = ""
+        self.iteration_weather = "NOTSET"
         self.fix_demand_to_initial_year = True
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
@@ -120,6 +121,7 @@ class Repository:
         self.national_governments = dict()
         self.governments = dict()
         self.candidatesNPV = dict()
+        self.weatherYears = dict()
         self.investmentDecisions = dict()
         self.installedCapacity = dict()
         self.installedFuturePowerPlants = dict()

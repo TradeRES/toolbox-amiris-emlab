@@ -35,13 +35,14 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     print('investments and NPV')
     fig1, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    candidate_plants_project_value_per_MW.plot(ax=ax1, color=colors_unique_candidates)
+    colors = [technology_colors[tech] for tech in candidate_plants_project_value_per_MW.columns.tolist()]
+    candidate_plants_project_value_per_MW.plot(ax=ax1, color=colors)
     installed_capacity_per_iteration.plot(ax=ax2, color=colors_unique_candidates, linestyle='None', marker='o')
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('NPV [Eur] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per MW per iterations for future year ' + str(future_year))
-    ax1.set_ylim(bottom=0)
+    #ax1.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
                bbox_to_anchor=(1.2, 1.1))
@@ -1037,16 +1038,17 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     if reps.targetinvestment_per_year == True:
         max_iteration += 1
 
-    df_zeros = np.zeros(shape=(max_iteration, len(unique_candidate_power_plants)))
-    candidate_plants_project_value_perMW = pd.DataFrame(df_zeros, columns=unique_candidate_power_plants)
+  #  df_zeros = np.zeros(shape=(max_iteration, len(unique_candidate_power_plants)))
+    candidate_plants_project_value_perMW = pd.DataFrame()
 
     # preparing NPV per MW per iteration
     for name, investment in reps.candidatesNPV.items():
         if len(investment.project_value_year) > 0:
             if str(future_year) in investment.project_value_year.keys():
                 a = pd.Series(dict(investment.project_value_year[str(future_year)]))
-                candidate_plants_project_value_perMW[reps.candidatePowerPlants[name].technology.name] = a
-
+                #candidate_plants_project_value_perMW[reps.candidatePowerPlants[name].technology.name] = a
+                candidate_plants_project_value_perMW = pd.concat([candidate_plants_project_value_perMW,a.rename(reps.candidatePowerPlants[name].technology.name)], axis=1)
+                #candidate_plants_project_value_perMW.insert(loc=len(candidate_plants_project_value_perMW.columns), column=reps.candidatePowerPlants[name].technology.name, value=a)
     installed_capacity_per_iteration = pd.DataFrame(
                                                     columns=unique_candidate_power_plants).fillna(0)
     for pp in pps_invested_in_tick:
@@ -1055,6 +1057,7 @@ def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_pla
     installed_capacity_per_iteration.sort_index(ascending=True, inplace=True)
     installed_capacity_per_iteration.reset_index(drop=True, inplace=True)
     installed_capacity_per_iteration.replace(to_replace=0, value=np.nan, inplace=True)
+    candidate_plants_project_value_perMW.sort_index(ascending=True, inplace=True)
     return installed_capacity_per_iteration, candidate_plants_project_value_perMW
 
 
@@ -1461,7 +1464,7 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
         for technology_name in unique_technologies:
             generation_per_tech = 0
             consumption_per_tech = 0
-            market_value_per_tech = []
+            market_value_per_plant = []
             capacity_factor_per_tech = []
             full_load_hours = []
             for id, pp_production_in_MWh in dispatch_per_year.accepted_amount.items():
@@ -1473,11 +1476,10 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
                         full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
                         totalproduction += pp_production_in_MWh
                         totalrevenues += dispatch_per_year.revenues[id]
-                        market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
-
-                # else:
-                #     print("power plant is none", id)
-
+                        if pp_production_in_MWh> 0 :
+                            market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
+                        else:
+                            market_value_per_plant.append(0)
             for id, pp_consumption_in_MWh in dispatch_per_year.consumed_amount.items():
                 power_plant = reps.get_power_plant_by_id(id)
                 if power_plant is not None:
@@ -1489,11 +1491,11 @@ def prepare_capacity_and_generation_per_technology(reps, unique_technologies, re
                             consumption_per_tech = pp_consumption_in_MWh
                             capacity_factor_per_tech.append(pp_consumption_in_MWh / (30000 * 8760))
                             if pp_consumption_in_MWh > 0:
-                                market_value_per_tech.append(dispatch_per_year.revenues[id] / pp_consumption_in_MWh)
+                                market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_consumption_in_MWh)
 
             all_techs_full_load_hours.loc[technology_name, year] = mean(full_load_hours)
             all_techs_capacity_factor.loc[technology_name, year] = mean(capacity_factor_per_tech)
-            all_techs_market_value.loc[technology_name, year] = mean(market_value_per_tech)
+            all_techs_market_value.loc[technology_name, year] = mean(market_value_per_plant)
             all_techs_generation.loc[technology_name, year] = generation_per_tech
             all_techs_consumption.loc[technology_name, year] = consumption_per_tech
             # if technology_name == "Lithium_ion_battery":
@@ -1590,17 +1592,21 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
     return yearly_electricity_prices, residual_load, TotalAwardedPowerInMW, production_load_shedders_MWh
 
 
-def reading_original_load(years_to_generate):
-    if reps.country == "NL" and reps.fix_demand_to_initial_year == True:
-        input_yearly_profiles_demand = globalNames.input_data
+def reading_original_load(years_to_generate, list_ticks):
+    if reps.country == "NL" and reps.fix_profiles_to_initial_year == False:
+        input_data = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
+        input_yearly_profiles_demand = input_data
+        sequence = reps.weatherYears["weatherYears"].sequence[list_ticks]
         allyears_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
-        print("start year ", str(years_to_generate[0]))
-        one_year_load = allyears_load[years_to_generate[0]]
-        yearly_load = pd.DataFrame()
-        for y in years_to_generate:
-            yearly_load[y] = one_year_load
+        yearly_load = pd.DataFrame(columns = years_to_generate)
+        zipped = zip(years_to_generate, sequence.tolist())
+        for y in zipped:
+            yearly_load[y[0]] = allyears_load.iloc[:,y[1]]
+
+
     elif reps.country == "NL":
-        input_yearly_profiles_demand = globalNames.input_data
+        input_data = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
+        input_yearly_profiles_demand = input_data
         yearly_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
 
     elif reps.country == "DE":
@@ -1686,7 +1692,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
     years_to_generate_initialization = list(
         range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1))  # control the current year
-
+    list_ticks = list(range(0, reps.current_tick + 1))
     ticks_to_generate = list(range(start_tick, reps.current_tick + 1))
 
     years_to_generate_and_build = list(
@@ -1716,7 +1722,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     elif test_tech not in reps.get_unique_candidate_technologies_names():
         raise Exception("Test other technology, this is not installed until year" + str(years_to_generate[-1]))
 
-    yearly_load = reading_original_load(years_to_generate)
+    yearly_load = reading_original_load(years_to_generate, list_ticks)
 
     prepare_pp_decommissioned(reps)
 
@@ -2088,12 +2094,12 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-grouped"
+SCENARIOS = ["-historical_weather_years"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 29
+test_tick = 3
 # write None is no investment is expected,g
 test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 

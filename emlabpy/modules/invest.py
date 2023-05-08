@@ -380,7 +380,7 @@ class Investmentdecision(DefaultModule):
             if self.reps.initialization_investment == True:
                 print(capacityOfTechnologyInvestedAtyear)
                 print(
-                    " will not invest in " + technology.name + " too much of this technology in pipeline")
+                    " will not invest in " + technology.name + " more than 10% of peak demand")
                 candidatepowerplant.setViableInvestment(False)
                 return False
             else:

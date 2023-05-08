@@ -33,21 +33,25 @@ grandparentpath = dirname(dirname(realpath(os.getcwd())))
 parentpath = os.path.dirname(os.getcwd())
 
 amiris_ouput_path = os.path.join(grandparentpath, 'amiris_workflow\\output\\')
-
+amiris_worfklow_path = os.path.join(grandparentpath, 'amiris_workflow\\')
 load_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
 future_load_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_load.csv')
 
-input_weather_years = os.path.join(grandparentpath, 'data\\40weatherYears.xlsx')
-
-input_yearly_profiles_demand = os.path.join(grandparentpath,
-                                            'data\\VREprofilesandload2019-2050.xlsx')
+#
+# input_yearly_profiles_demand = os.path.join(grandparentpath,
+#                                             'data\\VREprofilesandload2019-2050.xlsx')
 
 windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windon.csv')
-future_windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_windon.csv')
 windoff_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windoff.csv')
+pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\pv.csv')
+
+windon_firstyear_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\first_year_windon.csv')
+windoff_firstyear_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\first_year_windoff.csv')
+pv_firstyear_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\first_year_pv.csv')
+
+future_windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_windon.csv')
 future_windoff_file_for_amiris = os.path.join(grandparentpath,
                                               'amiris_workflow\\amiris-config\\data\\future_windoff.csv')
-pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\pv.csv')
 future_pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_pv.csv')
 
 
@@ -80,25 +84,25 @@ def update_years_file(current_year, initial, final_year, lookAhead):
     f.close()
 
 
-def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year, fix_profiles_to_initial_year,
+def prepare_AMIRIS_data(year, investment_year, new_tick, fix_demand_to_initial_year, fix_profiles_to_initial_year,
                         modality):
-    print("preparing data for years " + str(year) + " and " + str(future_year) + " for NL")
+    print("preparing data for years " + str(year) + " and " + str(investment_year) + " for NL")
     try:
-        excel = pd.read_excel(input_yearly_profiles_demand, index_col=0,
+        excel = pd.read_excel(input_weather_years_excel, index_col=0,
                                  sheet_name=["Wind Onshore profiles",
                                              "Wind Offshore profiles",
                                              "Sun PV profiles",
                                              "Load"])
 
         if fix_demand_to_initial_year == False and fix_profiles_to_initial_year == True:
-            print("preparing demand")
+            print("--------preparing demand, fix profiles")
             demand = excel['Load'][year]
             demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-            future_demand = excel['Load'][future_year]
+            future_demand = excel['Load'][investment_year]
             future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
 
             if modality == "initialize":
-                print("preparing profiles NOT random")
+                print("--------preparing profiles NOT random")
                 wind_onshore = excel['Wind Onshore profiles'][year]
                 wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
                 wind_offshore = excel['Wind Offshore profiles'][year]
@@ -109,7 +113,7 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 pass
 
         elif fix_demand_to_initial_year == True and fix_profiles_to_initial_year == True:
-            print("fix demand and profiles")
+            print("--------fix demand and fix profiles")
             if modality == "initialize":
                 demand = excel['Load'][year]
                 demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
@@ -123,6 +127,7 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                 pass
 
         elif fix_demand_to_initial_year == True and fix_profiles_to_initial_year == False:
+            print("---------fix demand and update profiles")
             iteration = next(i['parameter_value'] for i in
                              db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                     object_name) \
@@ -133,48 +138,59 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
                                          "weatherYears", "weatherYears") if i['alternative'] == iteration)
 
             weatherYears = pd.DataFrame(weatherYears_data.values, index=weatherYears_data.indexes)
-            new_weather_tick = weatherYears.values[new_tick]
-            print("preparing year profiles to RANDOM year " + str(new_weather_tick))
-            more_years_profiles = pd.read_excel(input_weather_years, index_col=0, skiprows=[0],
-                                                sheet_name=["Wind Onshore profiles",
-                                                            "Wind Offshore profiles",
-                                                            "Sun PV profiles", "load"])
-            # when profiles are chosen to change the actual year profile change but not the ones for future year
-            wind_onshore = more_years_profiles['Wind Onshore profiles'][new_weather_tick]
-            wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
-            wind_offshore = more_years_profiles['Wind Offshore profiles'][new_weather_tick]
-            wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
-            pv = more_years_profiles['Sun PV profiles'][new_weather_tick]
-            pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
-            load = more_years_profiles['Load'][new_weather_tick]
-            load.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
+            future_year_based_on_past = weatherYears.values[new_tick]
+            print("preparing year profiles to RANDOM year " + str(future_year_based_on_past))
             """
             Demand is not increasing but the load is changing in every weather year due to heat demand
             """
-            load = more_years_profiles['load'][new_weather_tick]
+            load = excel['Load'].iloc[:,future_year_based_on_past] *load_shedders.loc["base", "percentage_load"]
             load.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-            print("total load for present year")
-            print(sum(load))
+
+            for lshedder in ["low", "mid", "high"]:
+                load_shedder = excel['Load'].iloc[:,future_year_based_on_past] *load_shedders.loc[lshedder,"percentage_load"]
+                load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder,"TimeSeriesFile"]))
+                load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
+
+            print("total load for present year:")
+            print(load.sum())
 
             if modality == "initialize":
                 """"
                 The investments are done for the same future "representative" year.
                 The future the profiles and the demand are not changing       
                 """
-                print("Initializing demand to " + str(year) + " and future profiles to" + str(year))
-                future_demand = excel['Load'][year]
+                print("Initializing demand to " + str(year) + " and future profiles based on " + str(investment_year))
+                for lshedder in ["low", "mid", "high"]:
+                    load_shedder = excel['Load'][investment_year] * load_shedders.loc[lshedder, "percentage_load"]
+                    load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[lshedder,"TimeSeriesFileFuture"]))
+                    load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
+                future_demand = excel['Load'][investment_year] * load_shedders.loc["base", "percentage_load"]
                 future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
-                future_wind_offshore = excel['Wind Offshore profiles'][year]
+                future_wind_offshore = excel['Wind Offshore profiles'][investment_year]
                 future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
-                future_wind_onshore = excel['Wind Onshore profiles'][year]
+                future_wind_onshore = excel['Wind Onshore profiles'][investment_year]
                 future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
-                future_pv = excel['Sun PV profiles'][year]
+                future_pv = excel['Sun PV profiles'][investment_year]
                 future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
                 print("total load for investment year")
                 print(sum(future_demand))
 
+                wind_onshore = excel['Wind Onshore profiles'].iloc[:,future_year_based_on_past]
+                wind_onshore.to_csv(windon_firstyear_file_for_amiris, header=False, sep=';', index=True)
+                wind_offshore = excel['Wind Offshore profiles'].iloc[:,future_year_based_on_past]
+                wind_offshore.to_csv(windoff_firstyear_file_for_amiris, header=False, sep=';', index=True)
+                pv = excel['Sun PV profiles'].iloc[:,future_year_based_on_past]
+                pv.to_csv(pv_firstyear_file_for_amiris, header=False, sep=';', index=True)
+
             else:
-                pass
+                # when profiles are chosen to change the actual year profile change but not the ones for future year
+                wind_onshore = excel['Wind Onshore profiles'].iloc[:,future_year_based_on_past]
+                wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
+                wind_offshore = excel['Wind Offshore profiles'].iloc[:,future_year_based_on_past]
+                wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
+                pv = excel['Sun PV profiles'].iloc[:,future_year_based_on_past]
+                pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
+
         elif fix_demand_to_initial_year == False and fix_profiles_to_initial_year == False:
             print("demand and profiles change every year")
             raise Exception # profiles would only change year to year but not multiple weather years
@@ -187,7 +203,7 @@ def prepare_AMIRIS_data(year, future_year, new_tick, fix_demand_to_initial_year,
 
 
 def prepare_AMIRIS_data_for_one_year():
-    print("preparing DE data")
+    print("preparing data when there are no more years data available")
     load_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
     pv_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\pv_DE.csv')
     windon_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windon_DE.csv')
@@ -228,10 +244,35 @@ try:
                                              class_name, object_name) \
                                          if i['parameter_name'] == 'targetinvestment_per_year')
 
-        # test_first_intermittent_technologies = next(i['parameter_value'] for i in
-        #                                  db_emlab.query_object_parameter_values_by_object_class_and_object_name(
-        #                                      class_name, object_name) \
-        #                                  if i['parameter_name'] == 'Test first intermittent technologies')
+        representative_year = next(i['parameter_value'] for i in
+                                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                             class_name, object_name) \
+                                         if i['parameter_name'] == 'Representative year')
+
+        input_weather_years_excel_name = next(i['parameter_value'] for i in
+                                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                             class_name, object_name) \
+                                         if i['parameter_name'] == 'scenarioWeatheryearsExcel')
+
+        global input_weather_years_excel
+        input_weather_years_excel = os.path.join(grandparentpath, 'data', input_weather_years_excel_name)
+        global load_shedders
+        load_shedders = pd.DataFrame(columns=["TimeSeriesFile", "percentage_load", "TimeSeriesFileFuture"])
+
+        for load_shedder in ["low", "mid", "high", "base"]:
+            load_shedders.at[load_shedder, 'TimeSeriesFile']  = next(i['parameter_value'] for i in
+                     db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                         "LoadShedders", load_shedder) \
+                     if i['parameter_name'] == 'TimeSeriesFile')
+            load_shedders.at[load_shedder, 'TimeSeriesFileFuture']  = next(i['parameter_value'] for i in
+                                                                     db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                                                         "LoadShedders", load_shedder) \
+                                                                     if i['parameter_name'] == 'TimeSeriesFileFuture')
+            load_shedders.at[load_shedder, 'percentage_load']  = next(i['parameter_value'] for i in
+                     db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                         "LoadShedders", load_shedder) \
+                     if i['parameter_name'] == 'percentage_load')
+
         fix_demand_to_initial_year = False
         fix_demand_to_initial_year = next(i['parameter_value'] for i in
                                           db_emlab.query_object_parameter_values_by_object_class_and_object_name(
@@ -271,7 +312,14 @@ try:
             update_years_file(StartYear, StartYear, final_year, lookAhead)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
-            future_year = StartYear + lookAhead
+
+
+            if representative_year != "NOTSET":
+                future_year = int(representative_year)
+            else:
+                future_year = StartYear + lookAhead
+
+
             if available_years_data == True:
                 prepare_AMIRIS_data(StartYear, future_year, 0, fix_demand_to_initial_year, fix_profiles_to_initial_year,
                                     "initialize")
