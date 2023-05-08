@@ -960,8 +960,7 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": "hidden",
-                                "value": "weatherYears"
+                                "position": 0
                             },
                             {
                                 "map_type": "Alternative",
@@ -1560,7 +1559,9 @@
                 "0": "string",
                 "1": "float",
                 "2": "string",
-                "3": "float"
+                "3": "string",
+                "4": "string",
+                "5": "string"
             }
         },
         "table_default_column_type": {},
