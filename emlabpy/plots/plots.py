@@ -2027,7 +2027,8 @@ fuel_colors = {
     "hydrogen": "navy",
     "nuclear": "mediumorchid",
     "processing_residues": "mediumseagreen",
-    "wood_pellets": "springgreen"
+    "wood_pellets": "springgreen",
+    "OTHER": "darkred"
 }
 
 AMIRIS_temporal_fuel = {
@@ -2094,12 +2095,12 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-historical_weather_years"
+SCENARIOS = ["-wrong_dispatch"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 3
+test_tick = 1
 # write None is no investment is expected,g
 test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
