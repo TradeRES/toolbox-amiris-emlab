@@ -35,9 +35,9 @@ technology_colors = {
 # dataframe = dataframeoriginal.loc[dataframeoriginal['Location'] == country]
 # min_capacity_to_group = 600
 
-excel_path = 'C:\\toolbox-amiris-emlab\\data\\archiv\\Power_plants_Ni.xlsx'
+excel_path = 'C:\\toolbox-amiris-emlab\\data\\powerplants\\Power_plants_Ni.xlsx'
 country = "NL"
-year = 2020
+year = 2051
 dataframeoriginal = pd.read_excel(excel_path, sheet_name="extendedNLupdated", usecols="A:L")
 dictionary = pd.read_excel(excel_path, sheet_name="Dict", usecols="A:B")
 dataframe = dataframeoriginal.loc[dataframeoriginal['Location'] == country]
@@ -45,7 +45,7 @@ a = dictionary.set_index('Competes').to_dict()['traderes']
 dataframe.replace(a, inplace=True)
 dataframe["Age"] = year - dataframe.Year
 
-min_capacity_to_group = 200
+min_capacity_to_group = 400
 
 dataframe.rename(columns={"Technology traderes": "Technology"}, inplace=True)
 dataframe.sort_values(by=['Age'], ascending=True)
@@ -60,21 +60,22 @@ for t in techs:
     if plants_negative_capacity.size > 0:
         for index, row in plants_negative_capacity.iterrows():
             #print(row.Capacity)
-            # select plants that match the same capacity  and that havent been assigned a decomission year from previous loops
+            # select plants that match the same capacity and that havent been assigned a decomission year from previous loops
             plant_to_be_decommissioned = dataframe.loc[
                 (dataframe['Capacity'] == - row.Capacity) & (dataframe['DecommissionInYear'] == 3000) & (
                         dataframe['Technology'] == t)]
             # print(plant_to_be_decommissioned.shape[0] )
             if plant_to_be_decommissioned.shape[0] == 0:
                 pass
-                #print("nothing to decommission")
+            # no plant with same capacity
+
             else:
                 if plant_to_be_decommissioned.shape[0] > 1:
                     # select the plant that was earlier installed
                     oldest_plant_year = plant_to_be_decommissioned.Year.min()
                     dataframe.loc[(dataframe['Technology'] == t) & (dataframe['Year'] == oldest_plant_year) & (
                             dataframe['Capacity'] == - row.Capacity), "DecommissionInYear"] = row.Year
-                    #print("oldest_plant_year " +  str(oldest_plant_year) )
+
                 elif plant_to_be_decommissioned.shape[0] == 1:
                     if (row.Year - dataframe.loc[
                         (dataframe['Technology'] == t) & (dataframe['Capacity'] == - row.Capacity), "Year"].values[
@@ -88,14 +89,34 @@ for t in techs:
                     else:
                         dataframe.loc[(dataframe['Technology'] == t) & (
                                 dataframe['Capacity'] == - row.Capacity), "DecommissionInYear"] = row.Year
-                #print("dropping row")
+
                 dataframe.drop(dataframe[(dataframe['Capacity'] == row.Capacity) & (dataframe['DecommissionInYear'] == 3000) & (
                         dataframe['Technology'] == t)].index, inplace = True)
+
         #plants_negative_capacity = plants_negative_capacity.drop(index, inplace=True)
 
 print("Added decommission year according to plan")
 # avoid grouping plants that have a decommission date
 plants_without_decommission_date = dataframe[dataframe['DecommissionInYear'] == 3000]
+
+# DROPPING PLANTS WITH DECOMMISSION DATE
+dataframe.drop(dataframe[dataframe['DecommissionInYear'] <= year].index, inplace=True)
+for t in techs:
+    print("---------------------"+t)
+    plants_negative_capacity = dataframe.loc[(dataframe['Capacity'] < 0) & (dataframe['Technology'] == t)]
+    if plants_negative_capacity.size > 0:
+        negative_capacity = plants_negative_capacity.sum()
+
+
+dataframe.drop(dataframe[(dataframe['Capacity'] == row.Capacity) & (dataframe['DecommissionInYear'] == 3000) & (
+                dataframe['Technology'] == t)].index, inplace = True)
+
+
+# summing up negative values
+
+
+
+
 # Group the filtered DataFrame by columns
 # group all power plants of same age and technology together
 df = dataframe.groupby(["Technology", 'Age' ], as_index=False).agg(
@@ -206,7 +227,7 @@ fig1 = sns.relplot(x="Age", y="Efficiency", hue="Technology", size="Capacity",
 plt.xlabel("Age", fontsize="large")
 plt.ylabel("Efficiency", fontsize="large")
 
-fig1.savefig('../data/' + 'Initial_power_plants_NL.png', bbox_inches='tight', dpi=300)
+fig1.savefig('../data/' + 'Initial_power_plants_NL_2030.png', bbox_inches='tight', dpi=300)
 plt.close('all')
 
-final.to_excel("../data/" + country + str(year) + "planned_RES_datapower_plants_grouped.xlsx")
+final.to_excel("../data/" + country + str(year) + "planned_plants_grouped.xlsx")
