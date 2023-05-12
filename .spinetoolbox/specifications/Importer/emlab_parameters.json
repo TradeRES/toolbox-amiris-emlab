@@ -1067,44 +1067,6 @@
                     }
                 }
             ],
-            "HydrogenfromOptim": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "table_name",
-                                "value": "HydrogenfromOptim"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "LoadShedders": [
                 {
                     "Mapping 1": {
@@ -1125,6 +1087,44 @@
                             {
                                 "map_type": "ParameterDefinition",
                                 "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "LoadShifterCap": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name",
+                                "value": "LoadShifterCap"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": 0
                             },
                             {
                                 "map_type": "Alternative",
@@ -1163,8 +1163,8 @@
             "weatherYears40",
             "TechnologyTargets",
             "TechnologyTrends",
-            "HydrogenfromOptim",
-            "LoadShedders"
+            "LoadShedders",
+            "LoadShifterCap"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1250,11 +1250,11 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "HydrogenfromOptim": {
+            "LoadShedders": {
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "LoadShedders": {
+            "LoadShifterCap": {
                 "read_until_col": true,
                 "read_until_row": true
             }
@@ -1548,20 +1548,17 @@
                 "6": "float",
                 "7": "float"
             },
-            "HydrogenfromOptim": {
-                "0": "string",
-                "1": "float",
-                "2": "string",
-                "3": "string",
-                "4": "string"
-            },
             "LoadShedders": {
                 "0": "string",
                 "1": "float",
                 "2": "string",
                 "3": "string",
-                "4": "string",
-                "5": "string"
+                "4": "float",
+                "5": "float"
+            },
+            "LoadShifterCap": {
+                "0": "string",
+                "1": "float"
             }
         },
         "table_default_column_type": {},

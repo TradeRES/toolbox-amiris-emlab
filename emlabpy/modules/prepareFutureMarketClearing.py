@@ -88,7 +88,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.openwriter()
         self.write_renewables()
         self.write_storage()
-        self.write_electrolysers()
+        self.write_load_shifter_with_price_cap()
         self.write_load_shedders()
         self.write_conventionals()
         self.write_biogas()

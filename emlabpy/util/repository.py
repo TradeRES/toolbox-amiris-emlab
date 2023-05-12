@@ -72,9 +72,9 @@ class Repository:
         self.fix_fuel_prices_to_year = False
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = False
-        self.fix_profiles_to_initial_year = True
+        self.fix_profiles_to_representative_year = True
+        self.fix_demand_to_representative_year = True
         self.iteration_weather = "NOTSET"
-        self.fix_demand_to_initial_year = True
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
         # section --------------------------------------------------------------------------------------investments
@@ -112,7 +112,7 @@ class Repository:
         self.power_plant_dispatch_plans_in_year = dict()
         self.bids = dict()
         self.power_generating_technologies = dict()
-        self.hydrogen_demand = dict()
+        self.loadShifterDemand = dict()
         self.market_clearing_points = dict()
         self.loadShedders = dict()
         self.power_grid_nodes = dict()

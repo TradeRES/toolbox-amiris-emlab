@@ -1593,7 +1593,7 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
 
 
 def reading_original_load(years_to_generate, list_ticks):
-    if reps.country == "NL" and reps.fix_profiles_to_initial_year == False:
+    if reps.country == "NL" and reps.fix_profiles_to_representative_year == False:
         input_data = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
         input_yearly_profiles_demand = input_data
         sequence = reps.weatherYears["weatherYears"].sequence[list_ticks]
@@ -1604,10 +1604,15 @@ def reading_original_load(years_to_generate, list_ticks):
             yearly_load[y[0]] = allyears_load.iloc[:,y[1]]
 
 
-    elif reps.country == "NL":
-        input_data = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
-        input_yearly_profiles_demand = input_data
-        yearly_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
+    elif reps.country == "NL" and reps.fix_profiles_to_representative_year == True:
+        input_yearly_profiles_demand = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
+        all_years = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
+        load_representative_year = pd.DataFrame(all_years[reps.representative_year])
+        # repeat load for all generation years
+        number_years = len(years_to_generate)
+        yearly_load = pd.concat([load_representative_year]*number_years, axis=1 )
+        yearly_load.columns = years_to_generate
+
 
     elif reps.country == "DE":
         input_yearly_profiles_demand = globalNames.input_load_de
@@ -1961,7 +1966,7 @@ def writeInfo(reps, path_to_plots, scenario_name):
         file.write("fix_fuel_prices_to_year \n")
         info.append("fix_fuel_prices_to_year")
 
-    if reps.fix_profiles_to_initial_year == True:
+    if reps.fix_profiles_to_representative_year == True:
         print("fix_profiles_to_initial_year")
         file.write("fix_profiles_to_initial_year \n")
         info.append("fix_profiles_to_initial_year")
@@ -1970,7 +1975,7 @@ def writeInfo(reps, path_to_plots, scenario_name):
         file.write(str(reps.iteration_weather) + "\n")
         info.append(reps.iteration_weather)
 
-    if reps.fix_demand_to_initial_year == True:
+    if reps.fix_demand_to_representative_year == True:
         print("fix_demand_to_initial_year")
         file.write("fix_demand_to_initial_year \n")
         info.append("fix_demand_to_initial_year")
@@ -2095,7 +2100,7 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-wrong_dispatch"
+SCENARIOS = ["-test2"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False

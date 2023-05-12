@@ -9,6 +9,7 @@ from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import CandidatesNPV, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
+from domain.load_shifter_with_cap_demand import LoadShifterwCap
 from domain.weatherYears import WeatherYears
 from modules.profits import Profits
 from domain.newTechnology import NewTechnology
@@ -121,10 +122,13 @@ class SpineDBReaderWriter:
                 reps.targetinvestment_per_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'install_missing_capacity_as_one_pp':
                 reps.install_missing_capacity_as_one_pp = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'fix_profiles_to_initial_year':
-                reps.fix_profiles_to_initial_year = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'fix_demand_to_initial_year':
-                reps.fix_demand_to_initial_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'fix_profiles_to_representative_year':
+                reps.fix_profiles_to_representative_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'fix_demand_to_representative_year':
+                reps.fix_demand_to_representative_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'Representative year':
+                reps.representative_year = int(row['parameter_value'])
+
             elif row['parameter_name'] == 'Power plants year':
                 reps.Power_plants_from_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'install_at_look_ahead_year':
@@ -878,8 +882,10 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     elif object_class_name == 'Targets':
         add_parameter_value_to_repository(reps, db_line, reps.target_investors, TargetInvestor)
-    elif object_class_name == 'HydrogenfromOptim':
-        add_parameter_value_to_repository(reps, db_line, reps.hydrogen_demand, HydrogenDemand)
+    # elif object_class_name == 'HydrogenfromOptim':
+    #     add_parameter_value_to_repository(reps, db_line, reps.hydrogen_demand, HydrogenDemand)
+    elif object_class_name == 'LoadShifterCap':
+        add_parameter_value_to_repository(reps, db_line, reps.loadShifterDemand, LoadShifterwCap)
     elif object_class_name == 'Technologies':
         if db_line[1] in globalNames.used_technologies:
             add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,

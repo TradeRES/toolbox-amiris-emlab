@@ -47,17 +47,20 @@ class LoadShedder(ImportObject):
         self.VOLL = None
         self.TimeSeriesFile = 0
         self.TimeSeriesFileFuture = 0
-        self.shedder_capacity = 0
+        self.ShedderCapacityMW = 0
+        self.percentageLoad = 0
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'TimeSeriesFile':
-            self.TimeSeriesFile = parameter_value
+            self.TimeSeriesFile = str(parameter_value)
         elif parameter_name == 'TimeSeriesFileFuture':
-            self.TimeSeriesFileFuture = parameter_value
+            self.TimeSeriesFileFuture =  str(parameter_value)
         elif parameter_name == 'VOLL':
             self.VOLL = int(parameter_value)
-        elif parameter_name == 'Shedder_capacity':
-            self.shedder_capacity = int(parameter_value)
+        elif parameter_name == 'ShedderCapacityMW':
+            self.ShedderCapacityMW = parameter_value
+        elif parameter_name == 'percentage_load':
+            self.percentageLoad = parameter_value
 
 class CapacityMarket(Market):
     """"""

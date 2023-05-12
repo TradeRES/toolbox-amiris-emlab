@@ -42,7 +42,7 @@ class PrepareMarket(DefaultModule):
         self.write_renewables()
         self.write_storage()
         self.write_conventionals()
-        self.write_electrolysers()
+        self.write_load_shifter_with_price_cap()
         self.write_load_shedders()
         self.write_biogas()
         self.write_scenario_data_emlab("next_year_price")
@@ -102,7 +102,7 @@ class PrepareMarket(DefaultModule):
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
                         if self.reps.current_year == 0:
                             # profiles were changed for the initialization step
-                            if self.reps.fix_profiles_to_initial_year == False:
+                            if self.reps.fix_profiles_to_representative_year == False:
                                 shutil.copy(globalNames.windoff_firstyear_file_for_amiris,
                                             globalNames.windoff_file_for_amiris)
                                 shutil.copy(globalNames.windon_firstyear_file_for_amiris,
@@ -117,7 +117,7 @@ class PrepareMarket(DefaultModule):
                     elif self.reps.runningModule == "run_future_market":
                         if self.reps.investmentIteration == 0:
                             # only update data in first iteration of each year
-                            if self.reps.fix_profiles_to_initial_year == False:
+                            if self.reps.fix_profiles_to_representative_year == False:
                                 # ================================================== Updating profiles for investment, demand is adjusted with excel table
                                 print("copy profiles prepared in clock from future")
                                 shutil.copy(globalNames.future_windoff_file_for_amiris,
@@ -167,15 +167,20 @@ class PrepareMarket(DefaultModule):
     #     demand = excel['Load'][self.reps.current_year + self.reps.investment_initialization_years]
     #     demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=True)
 
-    def write_electrolysers(self):
+    def write_load_shifter_with_price_cap(self):
+        """
+        In Amiris the load shifter with a price cap was developed to be an electrolyzer
+        :return:
+        """
+
         if self.reps.monthly_hydrogen_demand ==True:
-            hydrogen_demand = "amiris-config/data/hydrogen_demand.csv"
+            hydrogen_demand = self.reps.loadShifterDemand['Industrial_load_shifter']
         else:
-            hydrogen_demand = self.reps.hydrogen_demand["Hydrogen"].averagemonthlyConsumptionMWh
+            hydrogen_demand = self.reps.loadShifterDemand['Industrial_load_shifter'].averagemonthlyConsumptionMWh
 
         d = {'identifier': 99999999999,
              'ElectrolyserType': "ELECTROLYSIS",
-             'PeakConsumptionInMW': self.reps.hydrogen_demand["Hydrogen"].peakConsumptionInMW,
+             'PeakConsumptionInMW': self.reps.loadShifterDemand['Industrial_load_shifter'].peakConsumptionInMW,
              'ConversionFactor': 1,
             # 'ConversionFactor': self.reps.power_generating_technologies['electrolyzer'].efficiency,
              'HydrogenProductionTargetInMWH': hydrogen_demand
