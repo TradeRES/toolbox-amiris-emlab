@@ -67,8 +67,7 @@ data/backbone/*
 data/renewableninja/*
 data/sources/*
 .idea/workspace.xml
-data/~$VREprofilesandload2019-2050.xlsx
-data/~$AMIRIS-EMLABpy Data inventoryREADME.xlsx
+
 amiris_workflow/amiris-config/data/first_year_pv.csv
 amiris_workflow/amiris-config/data/first_year_windoff.csv
 amiris_workflow/amiris-config/data/first_year_windon.csv
@@ -81,3 +80,4 @@ amiris_workflow/amiris-config/data/LS_high.csv
 amiris_workflow/amiris-config/data/LS_hydrogen.csv
 amiris_workflow/amiris-config/data/LS_low.csv
 amiris_workflow/amiris-config/data/LS_mid.csv
+data/~$Coupling Config.xlsx
