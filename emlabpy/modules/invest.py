@@ -231,11 +231,13 @@ class Investmentdecision(DefaultModule):
             else:
                 print("all technologies are unprofitable")
     def stage_loans_and_downpayments(self):
-        for newplant in self.reps.get_power_plants_invested_in_future_tick(self.futureTick):
-            print("stagingloans")
-            print(newplant.name)
-            self.reps.dbrw.stage_loans(newplant)
-            self.reps.dbrw.stage_downpayments(newplant)
+        for pp_id in self.ids_of_future_installed_and_dispatched_pp:
+            if str(pp_id)[:4] == str(self.futureTick):
+                newplant = self.reps.get_power_plant_by_id(pp_id)
+                print("staging loan")
+                print(pp_id)
+                self.reps.dbrw.stage_loans(newplant)
+                self.reps.dbrw.stage_downpayments(newplant)
 
     def invest(self, newplant, target_invest):
         if self.reps.install_at_look_ahead_year == True:
@@ -483,6 +485,7 @@ class Investmentdecision(DefaultModule):
                 grouped_plant.setTechnology(candidate_technology)
                 grouped_plant = self.invest(grouped_plant, False)
                 self.reps.dbrw.stage_new_power_plant(grouped_plant)
+                self.ids_of_future_installed_and_dispatched_pp.append(grouped_plant.id)
                 # self.reps.dbrw.stage_loans(grouped_plant)
                 # self.reps.dbrw.stage_downpayments(grouped_plant)
 

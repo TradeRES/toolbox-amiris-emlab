@@ -494,6 +494,9 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
+    all_techs_generation_nozeroes.to_csv(results_file, header=True, sep=';', index=True)
+
+
     axs19 = all_techs_consumption_nozeroes.plot.area(color=colors)
     axs19.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -2151,12 +2154,12 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-test"
+SCENARIOS = ["NL2090_SD100_PH0_MI1000000000_totalProfits_-equilibirumWeatheryears"
              ]  # add a dash before!
-existing_scenario = False
+existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 0
+test_tick = -4
 # write None is no investment is expected,g
 test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
