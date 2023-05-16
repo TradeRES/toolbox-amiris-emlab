@@ -197,9 +197,8 @@ class Investmentdecision(DefaultModule):
                         else:
                             self.reps.investment_initialization_years += 1
                             self.continue_iteration()
+
                             self.reps.dbrw.stage_testing_future_year(self.reps)
-                            # if self.reps.test_first_intermittent_technologies == True:
-                            #     self.reps.dbrw.stage_testing_intermittent_technologies(True)
 
                         # reset all candidate power plants to investable
                         candidates_names = self.reps.get_unique_candidate_names()
@@ -214,7 +213,6 @@ class Investmentdecision(DefaultModule):
                         self.reps.dbrw.stage_last_testing_technology(False)
                         self.stop_iteration()
                     # saving iteration number back to zero for next year
-                    #raise Exception
                     self.reps.dbrw.stage_iteration(0)
 
                     if self.reps.groups_plants_per_installed_year == True:
@@ -232,9 +230,9 @@ class Investmentdecision(DefaultModule):
                 print("all technologies are unprofitable")
     def stage_loans_and_downpayments(self):
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
-            if str(pp_id)[:4] == str(self.futureTick):
+            if str(pp_id)[:4] == str(self.futureInvestmentyear):
                 newplant = self.reps.get_power_plant_by_id(pp_id)
-                print("staging loan")
+                print("staging loans")
                 print(pp_id)
                 self.reps.dbrw.stage_loans(newplant)
                 self.reps.dbrw.stage_downpayments(newplant)
@@ -486,8 +484,6 @@ class Investmentdecision(DefaultModule):
                 grouped_plant = self.invest(grouped_plant, False)
                 self.reps.dbrw.stage_new_power_plant(grouped_plant)
                 self.ids_of_future_installed_and_dispatched_pp.append(grouped_plant.id)
-                # self.reps.dbrw.stage_loans(grouped_plant)
-                # self.reps.dbrw.stage_downpayments(grouped_plant)
 
 
         # deleting plants that have been grouped
