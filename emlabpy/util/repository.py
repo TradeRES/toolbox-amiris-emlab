@@ -605,8 +605,8 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.status == globalNames.power_plant_status_operational]
 
-    def get_power_plants_invested_in_tick(self, tick) -> List[PowerPlant]:
-        year = tick + self.start_simulation_year + self.lookAhead
+    def get_power_plants_invested_in_future_tick(self, futuretick) -> List[PowerPlant]:
+        year = futuretick + self.start_simulation_year
         return [i for i in self.power_plants.values()
                 if i.name[:4] == str(year)]
 

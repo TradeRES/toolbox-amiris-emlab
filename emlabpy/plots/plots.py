@@ -766,6 +766,24 @@ def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
     plt.close('all')
 
 
+
+def plot_overall_new_plants(overall_NPV_per_technology, overall_IRR_per_technology, path_to_plots):
+    fig31, axs31 = plt.subplots(1,2)
+    # key gives the group name (i.e. category), data gives the actual values
+    fig31.tight_layout()
+    overall_NPV_per_technology.plot(ax=axs31[0],  rot=0, grid=True, legend=False)
+    overall_IRR_per_technology.plot(ax=axs31[1],  rot=0, grid=True, legend=False)
+    #axs31[0].set_axisbelow(True)
+    axs31[0].set_ylabel('NPV', fontsize='medium')
+    #axs31[1].set_axisbelow(True)
+    axs31[1].set_xlabel('IRR %', fontsize='medium')
+    # plt.xlabel('Years', fontsize='medium')
+    # plt.ylabel('%', fontsize='medium')
+    #plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
+    axs31[0].set_title('IRR and NPV new plants')
+    fig31.savefig(path_to_plots + '/' + 'NPV and IRRs new plants.png', bbox_inches='tight', dpi=300)
+
+
 def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_plants_all,
                         candidate_plants_project_value_per_MW,
                         test_year,
@@ -1030,9 +1048,9 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
         last_year_strategic_reserve_capacity, number_per_status, number_per_status_last_year
 
 
-def prepare_capacity_per_iteration(future_year, reps, unique_candidate_power_plants):
+def prepare_capacity_per_iteration(future_year, future_tick, reps, unique_candidate_power_plants):
     # preparing empty df
-    pps_invested_in_tick = reps.get_power_plants_invested_in_tick(test_tick)
+    pps_invested_in_tick = reps.get_power_plants_invested_in_future_tick(future_tick)
     max_iteration = len(pps_invested_in_tick)
     # for the years in which there are no other investments than this.
     if reps.targetinvestment_per_year == True:
@@ -1121,7 +1139,7 @@ def prepare_revenues_per_iteration(reps, future_tick, last_year, future_year):
     # real obtained operational profits
     if last_year >= future_year:
         # get power plants ids invested in tick from investment decisions
-        plants_commissioned_in_future_year = reps.get_power_plants_invested_in_tick(test_tick)
+        plants_commissioned_in_future_year = reps.get_power_plants_invested_in_future_tick(future_tick)
         profits_plants_commissioned = pd.DataFrame()
         for pp in plants_commissioned_in_future_year:
             # get operational profits
@@ -1135,6 +1153,33 @@ def prepare_revenues_per_iteration(reps, future_tick, last_year, future_year):
         operational_profits_commissioned = False
 
     return sorted_average_revenues_per_tech_test_tick, all_future_operational_profit, operational_profits_commissioned
+
+
+
+def prepare_retrospectively_npv_and_irr( reps, unique_technologies):
+    overall_NPV_per_technology = pd.DataFrame(columns =unique_technologies )
+    overall_IRR_per_technology = pd.DataFrame(columns =unique_technologies )
+    for technology_name in unique_technologies:
+        powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
+        npvs = []
+        irrs = []
+        for pp in powerplants_per_tech:
+        # todo change status to decommissioned
+            if pp.is_new_installed() and pp.status == globalNames.power_plant_status_operational:
+                investmentCashFlow_no_downpayments = reps.financialPowerPlantReports[pp.name].totalProfitswLoans
+                investmentCashFlow_no_downpayments.sort_index(inplace=True)
+                nr_downpayments = reps.power_plants[pp.name].downpayment.getTotalNumberOfPayments()
+                downpayment = reps.power_plants[pp.name].downpayment.getAmountPerPayment()
+                list_downpayments = [- downpayment for item in range(0, int(nr_downpayments))]
+                investmentCashFlow = pd.concat([pd.Series(list_downpayments), investmentCashFlow_no_downpayments], ignore_index=True)
+                npv = npf.npv(reps.energy_producers[reps.agent].equityInterestRate, investmentCashFlow)
+                irr = npf.irr(investmentCashFlow)
+                npvs.append(npv)
+                irrs.append(irr)
+        if len(powerplants_per_tech) >0:
+            overall_NPV_per_technology.at[0,technology_name] = np.average(npvs)
+            overall_IRR_per_technology.at[0,technology_name] = np.average(irrs)
+    return overall_NPV_per_technology, overall_IRR_per_technology
 
 
 def prepare_operational_profit_per_year_per_tech(reps, unique_technologies, simulation_years):
@@ -1731,6 +1776,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     prepare_pp_decommissioned(reps)
 
+
+    overall_NPV_per_technology, overall_IRR_per_technology = prepare_retrospectively_npv_and_irr( reps, unique_candidate_power_plants)
+    plot_overall_new_plants(overall_NPV_per_technology, overall_IRR_per_technology, path_to_plots)
     # # section -----------------------------------------------------------------------------------------------capacities
     all_techs_generation, all_techs_consumption, all_techs_market_value, all_techs_capacity_factor, \
         average_electricity_price, all_techs_full_load_hours, share_RES = prepare_capacity_and_generation_per_technology(
@@ -1771,13 +1819,16 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                         technology_colors)
 
     installed_capacity_per_iteration, candidate_plants_project_value_per_MW = prepare_capacity_per_iteration(
-        future_year, reps, unique_candidate_power_plants)
+        future_year, future_tick, reps, unique_candidate_power_plants)
 
     if candidate_plants_project_value_per_MW.shape[0] == 0:
         print("----------------------------------------------------no installable capacity in this test year")
     else:
         plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW, installed_capacity_per_iteration,
                                                future_year, path_to_plots, colors_unique_candidates)
+
+
+
     # ATTENTION: FOR TEST TECH
     average_profits_per_tech_per_year_perMW, new_pp_profits_for_tech = prepare_operational_profit_per_year_per_tech(
         reps, unique_technologies, ticks_to_generate)
@@ -2100,12 +2151,12 @@ results_excel = "ITERATIONS.xlsx"
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 # SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["-test2"
+SCENARIOS = ["-test"
              ]  # add a dash before!
 existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
-test_tick = 1
+test_tick = 0
 # write None is no investment is expected,g
 test_tech = None #'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 

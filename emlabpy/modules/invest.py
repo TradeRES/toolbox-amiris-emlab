@@ -214,12 +214,15 @@ class Investmentdecision(DefaultModule):
                         self.reps.dbrw.stage_last_testing_technology(False)
                         self.stop_iteration()
                     # saving iteration number back to zero for next year
+                    #raise Exception
                     self.reps.dbrw.stage_iteration(0)
 
                     if self.reps.groups_plants_per_installed_year == True:
                         self.group_power_plants()
                     else:
-                        self.stage_loans_and_downpayments()
+                        pass # not grouping power plants
+
+                    self.stage_loans_and_downpayments()
 
                     # saving profits of installed power plants.
                     print("saving future total profits")
@@ -228,10 +231,11 @@ class Investmentdecision(DefaultModule):
             else:
                 print("all technologies are unprofitable")
     def stage_loans_and_downpayments(self):
-        for newplant in self.reps.get_power_plants_invested_in_tick(self.reps.current_tick):
+        for newplant in self.reps.get_power_plants_invested_in_future_tick(self.futureTick):
+            print("stagingloans")
+            print(newplant.name)
             self.reps.dbrw.stage_loans(newplant)
             self.reps.dbrw.stage_downpayments(newplant)
-
 
     def invest(self, newplant, target_invest):
         if self.reps.install_at_look_ahead_year == True:
@@ -479,8 +483,8 @@ class Investmentdecision(DefaultModule):
                 grouped_plant.setTechnology(candidate_technology)
                 grouped_plant = self.invest(grouped_plant, False)
                 self.reps.dbrw.stage_new_power_plant(grouped_plant)
-                self.reps.dbrw.stage_loans(grouped_plant)
-                self.reps.dbrw.stage_downpayments(grouped_plant)
+                # self.reps.dbrw.stage_loans(grouped_plant)
+                # self.reps.dbrw.stage_downpayments(grouped_plant)
 
 
         # deleting plants that have been grouped

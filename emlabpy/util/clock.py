@@ -161,10 +161,6 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
                 pv = excel['Sun PV profiles'].iloc[:,sequence_year]
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
-
-        elif fix_demand_to_representative_year == False and fix_profiles_to_representative_year == False:
-            print("demand and profiles change every year")
-            raise Exception # profiles would only change year to year but not multiple weather years
         else:
             raise Exception
     except Exception as e:
