@@ -97,7 +97,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                                              "Load"])
 
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
-            print("--------don't change demand fix profiles  INCREASE DEMAND   ")
+            print("--------don't change demand fix profiles  INCREASE DEMAND   ") # todo: increase demand
             raise Exception # have to add exel with increasing demand
 
             # demand = excel['Load'][year]
@@ -127,7 +127,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
             else:
                 pass
 
-        elif fix_demand_to_representative_year == True and fix_profiles_to_representative_year == False:
+        elif fix_demand_to_representative_year == False and fix_profiles_to_representative_year == False:
             print("---------fix demand and update profiles")
             iteration = next(i['parameter_value'] for i in
                              db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,

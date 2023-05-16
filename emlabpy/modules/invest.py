@@ -332,7 +332,7 @@ class Investmentdecision(DefaultModule):
 
     def npv(self, investmentCashFlow):
         # print("WACC  ", wacc, " ", [round(x) for x in investmentCashFlow])
-        discountedprojectvalue = npf.npv(self.wacc, investmentCashFlow)
+        discountedprojectvalue = npf.npv(self.agent.equityInterestRate, investmentCashFlow)
         return discountedprojectvalue
 
     def getActualInvestedCapitalperMW(self, technology):
