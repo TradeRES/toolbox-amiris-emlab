@@ -483,7 +483,9 @@ class Investmentdecision(DefaultModule):
                 grouped_plant.setTechnology(candidate_technology)
                 grouped_plant = self.invest(grouped_plant, False)
                 self.reps.dbrw.stage_new_power_plant(grouped_plant)
-                self.ids_of_future_installed_and_dispatched_pp.append(grouped_plant.id)
+                self.reps.dbrw.stage_loans(grouped_plant)
+                self.reps.dbrw.stage_downpayments(grouped_plant)
+           #     self.ids_of_future_installed_and_dispatched_pp.append(grouped_plant.id)
 
 
         # deleting plants that have been grouped
