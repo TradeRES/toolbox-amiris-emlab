@@ -33,8 +33,12 @@ class Substance(ImportObject):
             self.trend = reps.trends[parameter_value]
         elif parameter_name == 'futurePrice':
             self.futurePrice = parameter_value
-        elif parameter_name == 'simulatedPrice':
-            self.simulatedPrice = parameter_value
+        elif parameter_name == 'simulatedPrice'and reps.runningModule == "plotting":
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
+            self.simulatedPrice = pd_series
         elif parameter_name == reps.country:
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
