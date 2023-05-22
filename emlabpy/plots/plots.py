@@ -41,7 +41,7 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('NPV [Eur] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
-    ax1.set_title('Investments and NPV per MW per iterations for future year ' + str(future_year))
+    ax1.set_title('Investments and NPV per MW per iterations ' + '\n for future year ' + str(future_year))
     # ax1.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
@@ -427,10 +427,11 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     all_techs_capacity_nozeroes = installed_capacity[installed_capacity > 0]
     all_techs_capacity_nozeroes.dropna(how='all', axis=1, inplace=True)
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
+    all_techs_capacity_nozeroes = all_techs_capacity_nozeroes/1000
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None)
     axs17.set_axisbelow(True)
     plt.xlabel('Years', fontsize='large')
-    plt.ylabel('Installed Capacity [MW]', fontsize='medium')
+    plt.ylabel('Installed Capacity [GW]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs17.set_title(scenario_name + "\n Installed Capacity ")
     # plt.legend(fontsize='large')
@@ -469,22 +470,23 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
 def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_plots, technology_colors
                            ):
     """
-    ALl technologies after the current simulation year are wrong (capacity limits can be passed)
+    ALl technologies after the current simulation year can be wrongly displayed (capacity limits can be passed)
     because decommissions are not considered.
     """
     all_techs_generation_nozeroes = all_techs_generation[all_techs_generation > 0]
     all_techs_generation_nozeroes.dropna(how='all', axis=1, inplace=True)
     all_techs_consumption_nozeroes = all_techs_consumption[all_techs_consumption > 0]
     all_techs_consumption_nozeroes.dropna(how='all', axis=1, inplace=True)
-
+    all_techs_generation_nozeroes = all_techs_generation_nozeroes/1000000
+    all_techs_consumption_nozeroes = all_techs_consumption_nozeroes/1000000
     colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
-    if calculate_investments == False:
-        all_techs_generation_nozeroes = pd.concat([all_techs_generation_nozeroes] * 2, ignore_index=True)
+    # if calculate_investments == False:
+    #     all_techs_generation_nozeroes = pd.concat([all_techs_generation_nozeroes] * 2, ignore_index=True)
 
     axs18 = all_techs_generation_nozeroes.plot.area(color=colors)
     axs18.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Annual Generation [MWh]', fontsize='medium')
+    plt.ylabel('Annual Generation [TWh]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs18.set_title(scenario_name + ' \n Annual Generation')
@@ -659,9 +661,9 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     colors = plt.cm.rainbow(np.linspace(0, 1, n))
     fig24, axs24 = plt.subplots(nrows=2, ncols=1)
     sorted_prices.plot(color=colors, ax=axs24[0], legend=None)
-    plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1.1, 1.1), ncol=3)
+    # plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1.1, 1.1), ncol=3)
     plt.ylim([0, 200])
-    axs24[0].legend(fontsize='small', loc='top right',ncol = 5 )
+    axs24[0].legend(fontsize='small', loc='upper right',ncol = 5 )
     axs24[0].set_title('Price duration curve')
     axs24[1] = sorted_prices.plot(color=colors, ax=axs24[1], legend=None)
     plt.xlabel('hours', fontsize='medium')
@@ -688,7 +690,7 @@ def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
 def plot_cash_flows(cash_flows, new_plants_loans, calculate_capacity_mechanisms, path_to_plots):
     if calculate_capacity_mechanisms == False:
         cash_flows.drop(["Capacity Mechanism"], axis=1, inplace=True)
-
+    cash_flows = cash_flows/1000000000
     axs29 = cash_flows.plot.area()
     axs29.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -696,7 +698,7 @@ def plot_cash_flows(cash_flows, new_plants_loans, calculate_capacity_mechanisms,
     plt.legend(fontsize='large')
     # plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    axs29.set_title(scenario_name + ' \nCash Flow Energy Producer')
+    axs29.set_title(scenario_name + ' \nTotal Cash Flows')
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'Cash Flows.png', bbox_inches='tight', dpi=300)
     results_file = os.path.join(path_to_plots, 'cash_flows.csv')
@@ -705,12 +707,13 @@ def plot_cash_flows(cash_flows, new_plants_loans, calculate_capacity_mechanisms,
     axs30 = new_plants_loans.plot.bar()
     axs30.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Cash [Eur]', fontsize='medium')
+    plt.ylabel('Cash [bn Eur]', fontsize='medium')
     plt.grid()
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs30.set_title('Downpayments Energy Producer')
     fig30 = axs30.get_figure()
     fig30.savefig(path_to_plots + '/' + 'Cash Flows Downpayments.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
     #
     # axs32 = total_costs.plot()
     # axs32.set_axisbelow(True)
@@ -720,7 +723,7 @@ def plot_cash_flows(cash_flows, new_plants_loans, calculate_capacity_mechanisms,
     # axs32.set_title('Total Profits (with loans)')
     # fig32 = axs32.get_figure()
     # fig32.savefig(path_to_plots + '/' + 'Total Profits.png', bbox_inches='tight', dpi=300)
-    plt.close('all')
+
 
 
 def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
@@ -741,10 +744,11 @@ def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
     cost_recovery.to_csv(results_file, header=True, sep=';', index=True)
     plt.close()
 
+    cumulative_cost_recovery = cumulative_cost_recovery/1000000000
     axs34 = cumulative_cost_recovery.plot()
     axs34.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Eur', fontsize='medium')
+    plt.ylabel('bn Eur', fontsize='medium')
     plt.grid()
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 0.9))
     axs34.set_title('Cummulative cost recovery ')
@@ -798,7 +802,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
             test_npvs = data
 
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('[Eur] / MW', fontsize='medium')
+    plt.ylabel('[Eur / MW]', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
     axs31.set_title('NPV per MW for new plants (discount rate = 0)')
     fig31.savefig(path_to_plots + '/' + 'NPV per MW for new plants.png', bbox_inches='tight', dpi=300)
@@ -901,7 +905,7 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     axs37[0].set_xlabel('Years', fontsize='medium')
     axs37[1].set_ylabel('%', fontsize='medium')
     axs37[0].legend(loc='lower center')
-    axs37[0].legend(['Hydrogen', 'Industrial'])
+    axs37[0].legend(['Hydrogen', 'Industrial heat'])
     fig37.savefig(path_to_plots + '/' + 'Hydrogen_produced.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
@@ -919,7 +923,7 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     axs38[0].set_ylabel('MWh', fontsize='medium')
     axs38[0].set_xlabel('Years', fontsize='medium')
     axs38[1].set_ylabel('%', fontsize='medium')
-    axs38[0].legend(loc='lower center')
+
     fig38.savefig(path_to_plots + '/' + 'Load_shedded.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
@@ -2205,10 +2209,10 @@ results_excel = "ITERATIONS.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-# SCENARIOS = ["NL2056_SD3_PH3_MI100000000_totalProfits_-improving graphs"]
-SCENARIOS = ["NL2090_SD0_PH0_MI1000000000_totalProfits_-historical_sequence"
+# SCENARIOS = ["NL2090_SD0_PH0_MI1000000000_totalProfits_-historical_sequence"]
+SCENARIOS = ["-new"
              ]  # add a dash before!
-existing_scenario = True
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 5

@@ -177,6 +177,7 @@ class Investmentdecision(DefaultModule):
                 # todo: this can be avoid, saving for debugging
                 self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
                 # if the power plant is correctly saved
+
                 if highestNPVCandidatePP is not None:
                     # investing in best candidate power plant as it passed the checks.
                     print("Investing in " + highestNPVCandidatePP.technology.name)
@@ -233,6 +234,8 @@ class Investmentdecision(DefaultModule):
             else:
                 print("all technologies are unprofitable")
     def stage_loans_and_downpayments_of_ungrouped(self, newplant):
+        print("saving loans")
+        print(newplant.id)
         self.reps.dbrw.stage_loans(newplant)
         self.reps.dbrw.stage_downpayments(newplant)
 
@@ -482,6 +485,7 @@ class Investmentdecision(DefaultModule):
                 grouped_plant.setLocation(self.reps.country)
                 grouped_plant.setTechnology(candidate_technology)
                 grouped_plant = self.invest(grouped_plant, False)
+                grouped_plant = self.calculate_investments_of_ungrouped(grouped_plant)
                 self.reps.dbrw.stage_new_power_plant(grouped_plant)
                 self.reps.dbrw.stage_loans(grouped_plant)
                 self.reps.dbrw.stage_downpayments(grouped_plant)
