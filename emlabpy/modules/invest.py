@@ -219,8 +219,12 @@ class Investmentdecision(DefaultModule):
                         self.group_power_plants()
                     else:
                         pass # not grouping power plants
-
-                    self.stage_loans_and_downpayments()
+                    # Ids of grouped power plants were removed
+                    for pp_id in self.ids_of_future_installed_and_dispatched_pp:
+                        if str(pp_id)[:4] == str(self.futureInvestmentyear):
+                            newplant = self.reps.get_power_plant_by_id(pp_id)
+                            newplant = self.calculate_investments_of_ungrouped(newplant)
+                            self.stage_loans_and_downpayments_of_ungrouped(newplant)
 
                     # saving profits of installed power plants.
                     print("saving future total profits")
@@ -228,14 +232,9 @@ class Investmentdecision(DefaultModule):
                                                                                self.future_installed_plants_ids)
             else:
                 print("all technologies are unprofitable")
-    def stage_loans_and_downpayments(self):
-        for pp_id in self.ids_of_future_installed_and_dispatched_pp:
-            if str(pp_id)[:4] == str(self.futureInvestmentyear):
-                newplant = self.reps.get_power_plant_by_id(pp_id)
-                print("staging loans")
-                print(pp_id)
-                self.reps.dbrw.stage_loans(newplant)
-                self.reps.dbrw.stage_downpayments(newplant)
+    def stage_loans_and_downpayments_of_ungrouped(self, newplant):
+        self.reps.dbrw.stage_loans(newplant)
+        self.reps.dbrw.stage_downpayments(newplant)
 
     def invest(self, newplant, target_invest):
         if self.reps.install_at_look_ahead_year == True:
@@ -258,31 +257,32 @@ class Investmentdecision(DefaultModule):
                          ))
 
         self.new_id += 1
-
         newplant.name = newid
         newplant.id = newid
         # in Amiris the candidate power plants are tested add a small capacity. The real candidate power plants have a bigger capacity
+        # todo: this might not longer be needed
         newplant.specifyPowerPlantforInvest(self.reps,  self.look_ahead_years)
-
         print("{0} invests in technology {1} at tick {2}, with id{3} :".format(self.agent.name,
                                                                              newplant.technology.name,
                                                                              self.reps.current_tick, newid))
         # --------------------------------------------------------------------------------------Payments
         print(newplant.getActualInvestedCapital() / (1000000*newplant.capacity))
         print(newplant.capacityTobeInstalled)
+        return newplant
+
+    def calculate_investments_of_ungrouped(self, newplant):
+        newplant.specify_invested_costs(self.reps)
         investmentCostPayedByEquity = newplant.getActualInvestedCapital() * (1 - self.agent.getDebtRatioOfInvestments())
         investmentCostPayedByDebt = newplant.getActualInvestedCapital() * self.agent.getDebtRatioOfInvestments()
         totalDownPayment = investmentCostPayedByEquity
-        bigbank = self.reps.bigBank
-        manufacturer = self.reps.manufacturer
         # --------------------------------------------------------------------------------------creating downpayment
         # self.createSpreadOutDownPayments(self.agent, manufacturer, totalDownPayment, newplant)
         buildingTime = newplant.getActualLeadtime() # the plant is built after permit time.
-
         # from_agent: str, to: str, amount, numberOfPayments, loanStartTime, donePayments, plant
-        downpayment = self.reps.createDownpayment(self.agent.name, manufacturer.name, totalDownPayment / buildingTime,
+        startick = newplant.commissionedYear - self.reps.start_simulation_year - buildingTime
+        downpayment = self.reps.createDownpayment(self.agent.name, self.reps.manufacturer.name, totalDownPayment / buildingTime,
                                                   buildingTime,
-                                                  self.reps.current_tick, 0, newplant)
+                                                  startick, 0, newplant)
         """
         Cash flows are kept only at the financial results module
         Downpayments start from next year
@@ -294,7 +294,7 @@ class Investmentdecision(DefaultModule):
                                                   newplant.getTechnology().getDepreciationTime(),
                                                   self.agent.getLoanInterestRate())
 
-        loan = self.reps.createLoan(self.agent.name, bigbank.name, amount,
+        loan = self.reps.createLoan(self.agent.name, self.reps.bigBank.name, amount,
                                     newplant.getTechnology().getDepreciationTime(),
                                     (newplant.commissionedYear - self.reps.start_simulation_year), 0, newplant)
         newplant.setLoan(loan)

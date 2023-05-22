@@ -312,7 +312,7 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameters(self.powerplant_installed_classname,
                                      ["Id", "Age", "actualEfficiency", "DischargingEfficiency", "Capacity", "Location",
-                                      "Owner", "Status", "Cash"
+                                      "Owner", "Status", #"Cash",
                                                          "Technology"])
 
     def stage_new_power_plant(self, powerplant):
@@ -326,7 +326,7 @@ class SpineDBReaderWriter:
                                             ('Location', powerplant.location),
                                             ('Owner', powerplant.owner.name),
                                             ('Status', powerplant.status),
-                                            ('Cash', powerplant.cash),
+                                           # ('Cash', powerplant.cash),
                                             ('Technology', powerplant.technology.name)], "0")
 
     def stage_id_plant_to_delete(self, powerplant):
@@ -596,7 +596,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.loans_object_classname, str(pp.name),
                                            [('amountPerPayment', pp.loan.amountPerPayment),
                                             ('numberOfPaymentsDone', pp.loan.numberOfPaymentsDone),
-                                            ('loanStartTick', pp.loan.loanStartTick),
+                                           # ('loanStartTick', pp.loan.loanStartTick), # loans start tick are determined in the payloans function
                                             ('totalNumberOfPayments', pp.loan.totalNumberOfPayments)
                                             ],
                                            '0')
@@ -612,7 +612,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.downpayments_object_classname, str(pp.name),
                                            [('amountPerPayment', pp.downpayment.amountPerPayment),
                                             ('numberOfPaymentsDone', pp.downpayment.numberOfPaymentsDone),
-                                            ('loanStartTick', pp.downpayment.loanStartTick),
+                                           # ('loanStartTick', pp.downpayment.loanStartTick),# loans start tick are determined in the payloans function
                                             ('totalNumberOfPayments', pp.downpayment.totalNumberOfPayments)
                                             ],
                                            '0')

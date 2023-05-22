@@ -151,10 +151,14 @@ class PowerPlant(EMLabAgent):
                 reps.current_year + self.getActualPermittime() + self.getActualLeadtime() + self.getTechnology().getExpectedLifetime())
 
         self.status = globalNames.power_plant_status_inPipeline
+
+
+    def specify_invested_costs(self, reps):
+        self.setActualLeadtime(self.technology.getExpectedLeadtime())
+        self.setActualPermittime(self.technology.getExpectedPermittime())
+        self.calculateAndSetActualInvestedCapitalbyinterpolate(reps, self.technology, self.commissionedYear)  # INVEST
         self.setActualFixedOperatingCost(self.getTechnology().get_fixed_costs_by_commissioning_year(
             self.commissionedYear) * self.get_actual_nominal_capacity())
-        self.calculateAndSetActualInvestedCapitalbyinterpolate(reps, self.technology, self.commissionedYear)  # INVEST
-
     def specifyPowerPlantsInstalled(self, reps, run_initialize_power_plants):
         """"
         specify power plant from initial database
