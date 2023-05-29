@@ -100,7 +100,7 @@ class PrepareMarket(DefaultModule):
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else:  # for now, only have dynamic data for NL case
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
-                        if self.reps.current_year == 0:
+                        if self.reps.current_tick == 0:
                             # profiles were changed for the initialization step
                             if self.reps.fix_profiles_to_representative_year == False:
                                 shutil.copy(globalNames.windoff_firstyear_file_for_amiris,
@@ -113,6 +113,9 @@ class PrepareMarket(DefaultModule):
                                 pass # the profiles were not changed
                         else:
                             pass # the load was already updated in the clock step
+                        # this is only to test that the files are copied correctly
+                        # a = pd.read_csv(globalNames.windon_file_for_amiris, sep=";", header=None)
+                        # print(a.sum()[1])
 
                     elif self.reps.runningModule == "run_future_market":
                         if self.reps.investmentIteration == 0:

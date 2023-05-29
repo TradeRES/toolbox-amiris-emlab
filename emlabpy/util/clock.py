@@ -149,23 +149,23 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 All initialization loop investments are made according to representative year.
                 Profiles are prepared for first year, so that these are overwritten in the 
                 """
-                print("Initializing demand to " + str(year) + " and future profiles based on " + str(investment_year))
+                print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(investment_year))
                 prepare_initialization_load_for_future_year(excel)
                 prepare_initialization_profiles_for_future_year(excel)
                 update_profiles_first_year(excel, sequence_year)
             else:
                 # current year profile change, but future profiles remain
-                wind_onshore = excel['Wind Onshore profiles'].iloc[:,sequence_year]
+                wind_onshore = excel['Wind Onshore profiles'][sequence_year]
                 wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
-                wind_offshore = excel['Wind Offshore profiles'].iloc[:,sequence_year]
+                wind_offshore = excel['Wind Offshore profiles'][sequence_year]
                 wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
-                pv = excel['Sun PV profiles'].iloc[:,sequence_year]
+                pv = excel['Sun PV profiles'][sequence_year]
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
         else:
             raise Exception
     except Exception as e:
         print("failed updating AMIRIS data")
-        print(e)
+        raise Exception
     return 0
 
 def update_load_current_year(excel, current_year):
@@ -175,19 +175,19 @@ def update_load_current_year(excel, current_year):
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder_name,"TimeSeriesFile"]))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
-        print(lshedder_name)
-        print(load_shedder.sum()/1000000)
+        # print(lshedder_name + "TWH")
+        # print(load_shedder.sum()/1000000)
 
 def update_load_current_year_by_sequence_year(excel, sequence_year):
     """
     Demand is not increasing but the load is changing in every weather year due to heat demand
     """
     for lshedder_name in ["base", "low", "mid", "high"]:
-        load_shedder = excel['Load'].iloc[:,sequence_year] *load_shedders.loc[lshedder_name,"percentage_load"]
+        load_shedder = excel['Load'][sequence_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder_name,"TimeSeriesFile"]))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
-        print(lshedder_name)
-        print(load_shedder.sum()/1000000)
+        # print(lshedder_name)
+        # print(load_shedder.sum()/1000000)
 
 def prepare_initialization_load_for_future_year(excel):
     # writing FUTURE load shedders
@@ -209,11 +209,11 @@ def prepare_initialization_profiles_for_future_year(excel):
     print("total load for investment year")
 
 def update_profiles_first_year(excel, current_year):
-    wind_onshore = excel['Wind Onshore profiles'].iloc[:,current_year]
+    wind_onshore = excel['Wind Onshore profiles'][current_year]
     wind_onshore.to_csv(windon_firstyear_file_for_amiris, header=False, sep=';', index=True)
-    wind_offshore = excel['Wind Offshore profiles'].iloc[:,current_year]
+    wind_offshore = excel['Wind Offshore profiles'][current_year]
     wind_offshore.to_csv(windoff_firstyear_file_for_amiris, header=False, sep=';', index=True)
-    pv = excel['Sun PV profiles'].iloc[:,current_year]
+    pv = excel['Sun PV profiles'][current_year]
     pv.to_csv(pv_firstyear_file_for_amiris, header=False, sep=';', index=True)
 
 def update_profiles_current_year(excel, current_year):

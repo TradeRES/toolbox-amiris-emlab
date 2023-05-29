@@ -37,7 +37,8 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     ax2 = ax1.twinx()
     colors = [technology_colors[tech] for tech in candidate_plants_project_value_per_MW.columns.tolist()]
     candidate_plants_project_value_per_MW.plot(ax=ax1, color=colors)
-    installed_capacity_per_iteration.plot(ax=ax2, color=colors_unique_candidates, linestyle='None', marker='o')
+    if installed_capacity_per_iteration.size != 0:
+        installed_capacity_per_iteration.plot(ax=ax2, color=colors_unique_candidates, linestyle='None', marker='o')
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('NPV [Eur] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
@@ -1681,7 +1682,7 @@ def reading_original_load(years_to_generate, list_ticks):
         yearly_load = pd.DataFrame(columns=years_to_generate)
         zipped = zip(years_to_generate, sequence.tolist())
         for y in zipped:
-            yearly_load[y[0]] = allyears_load.iloc[:, y[1]]
+            yearly_load[y[0]] = allyears_load[y[1]]
 
     elif reps.country == "NL" and reps.fix_demand_to_representative_year == True:
         input_yearly_profiles_demand = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
@@ -2284,22 +2285,22 @@ results_excel = "ITERATIONS.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-SCENARIOS = ["NL-historical_sequence"]
+SCENARIOS = ["find_weather_year"]
 
 #SCENARIOS = ["-test"]
 # SCENARIOS = ["NL-historical_sequence", "NL-iteration2", "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
 
-existing_scenario = True
-save_excel = True
+existing_scenario = False
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
 test_tech = None  # 'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
 industrial_demand_as_flex_demand_with_cap = True
-calculate_monthly_generation = True
+calculate_monthly_generation = False #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 load_shedding_plots = True
 
 calculate_investments = True
