@@ -184,7 +184,6 @@ class PowerPlant(EMLabAgent):
         if self.actualFixedOperatingCost == 'NOTSET':  # old power plants have set their fixed costs
             self.setActualFixedOperatingCost(self.getTechnology().get_fixed_costs_by_commissioning_year(
                 self.commissionedYear) * self.get_actual_nominal_capacity())  # if plant passed its lifetime then it should have higher costs
-
         if reps.decommission_from_input == True and self.decommissionInYear is not None:
             self.setEndOfLife(self.decommissionInYear - reps.start_simulation_year)  # set in terms of tick
 
@@ -249,7 +248,7 @@ class PowerPlant(EMLabAgent):
     def calculateAndSetActualInvestedCapital(self, reps, technology, age):
         investment_year = - age + reps.current_year
         if investment_year <= technology.investment_cost_eur_MW.index.min():
-            # Finds investment cost by time series if there are no prices available
+            # Finds investment cost by time series if there are no prices for before
             self.setActualInvestedCapital(self.technology.getInvestmentCostbyTimeSeries(
                 - age) * self.get_actual_nominal_capacity())
         else:  # by year

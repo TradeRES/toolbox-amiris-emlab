@@ -139,7 +139,7 @@ class PowerGeneratingTechnology(ImportObject):
         elif self.investment_cost_eur_MW.index.min() > year: # if the year is lower than data, take first year
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
             return self.investment_cost_eur_MW.iloc[0]
-        else: # interpolate years
+        else: # interpolate years. If the year is larger then the maximum value is taken
             self.investment_cost_eur_MW.at[year] = np.nan
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
             self.investment_cost_eur_MW.interpolate(method='linear',  inplace=True)
@@ -148,13 +148,10 @@ class PowerGeneratingTechnology(ImportObject):
     def get_fixed_costs_by_commissioning_year(self, year):
         if year in self.fixed_cost_eur_MW.index.values:  # value is present
             return self.fixed_cost_eur_MW[year]
-        elif self.fixed_cost_eur_MW.index.min() > year: # if the year is lower than data, take first year
+        elif self.fixed_cost_eur_MW.index.min() > year: # if the year is lower than data available, take first year
             self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
             return self.fixed_cost_eur_MW.iloc[0]
-        elif self.fixed_cost_eur_MW.index.max() < year: # if the year is lower than data, take first year
-            self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
-            return self.fixed_cost_eur_MW.iloc[0]
-        else: # interpolate years
+        else: # interpolate years AND if the year is higher than data, take the last value
             self.fixed_cost_eur_MW.at[year] = np.nan
             self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
             self.fixed_cost_eur_MW.interpolate(method='linear',  inplace=True)
