@@ -13,6 +13,7 @@ Sanchez
 import shutil
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import os
 import pandas as pd
 import seaborn as sns
@@ -91,6 +92,10 @@ def plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, c
 def plot_investments(annual_installed_capacity, annual_commissioned, annual_decommissioned_capacity,
                      path_to_plots, colors):
     print('Capacity Investments plot')
+    annual_installed_capacity = annual_installed_capacity/1000
+    annual_decommissioned_capacity = annual_decommissioned_capacity/1000
+    annual_commissioned = annual_commissioned/1000
+
     fig6, axs6 = plt.subplots(3, 1)
     fig6.tight_layout()
     annual_installed_capacity.plot.bar(ax=axs6[0], stacked=True, rot=0, color=colors, grid=True, legend=False)
@@ -98,15 +103,16 @@ def plot_investments(annual_installed_capacity, annual_commissioned, annual_deco
     annual_decommissioned_capacity.plot.bar(ax=axs6[2], stacked=True, rot=0, color=colors, grid=True, legend=False)
     axs6[0].set_axisbelow(True)
     axs6[2].set_xlabel('Years', fontsize='medium')
-    for label in axs6[0].get_xticklabels(which='major'):
-        label.set(rotation=50, horizontalalignment='right')
-    for label in axs6[1].get_xticklabels(which='major'):
-        label.set(rotation=50, horizontalalignment='right')
-    for label in axs6[2].get_xticklabels(which='major'):
-        label.set(rotation=50, horizontalalignment='right')
-    axs6[0].set_ylabel('In pipeline MW', fontsize='small')
-    axs6[1].set_ylabel('Commissioned MW', fontsize='small')
-    axs6[2].set_ylabel('Decommissioned MW', fontsize='small')
+    axs6[0].grid(True, which='minor')
+    axs6[1].grid(True, which='minor')
+    axs6[2].grid(True, which='minor')
+    axs6[0].xaxis.set_major_locator(ticker.MultipleLocator(5))
+    axs6[1].xaxis.set_major_locator(ticker.MultipleLocator(5))
+    axs6[2].xaxis.set_major_locator(ticker.MultipleLocator(5))
+
+    axs6[0].set_ylabel('In pipeline GW', fontsize='small')
+    axs6[1].set_ylabel('Commissioned GW', fontsize='small')
+    axs6[2].set_ylabel('Decommissioned GW', fontsize='small')
 
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     axs6[0].set_title(scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
@@ -433,7 +439,7 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     axs17.set_axisbelow(True)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [GW]', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     axs17.set_title(scenario_name + "\n Installed Capacity ")
     # plt.legend(fontsize='large')
     results_file = os.path.join(path_to_plots, 'capacities.csv')
@@ -488,7 +494,7 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     axs18.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Annual Generation [TWh]', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs18.set_title(scenario_name + ' \n Annual Generation')
     fig18 = axs18.get_figure()
@@ -501,7 +507,7 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     axs19 = all_techs_consumption_nozeroes.plot.area(color=colors)
     axs19.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Annual Consumption [MWh]', fontsize='medium')
+    plt.ylabel('Annual Consumption [TWh]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs19.set_title(scenario_name + ' \n Annual Consumption')
@@ -553,7 +559,7 @@ def plot_shortages_and_ENS(shortages, ENS_in_simulated_years, path_to_plots):
     ENS_in_simulated_years = ENS_in_simulated_years/1000000
     shortages.plot(ax=axs3[0], grid=True, legend=False)
     ENS_in_simulated_years.plot(ax=axs3[1], grid=True, legend=False)
-    axs3[0].set_ylabel('Number of shortage hours', fontsize='medium')
+    axs3[0].set_ylabel('Shortage hours', fontsize='medium')
     axs3[0].set_xlabel('Years', fontsize='medium')
     axs3[1].set_ylabel('Energy not supplied [TWh]', fontsize='medium')
     fig3.savefig(path_to_plots + '/' + 'LOLE_ENS.png', bbox_inches='tight', dpi=300)
@@ -933,15 +939,16 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     # reorganize columns as specified
     percentage_load_shedded = percentage_load_shedded[['low', 'mid', 'high', 'base' ]]
     # dropping hydrogen because it is too
+    load_shedded_per_group_MWh = load_shedded_per_group_MWh/1000000
     load_shedded_per_group_MWh.drop('hydrogen', axis=1, inplace=True)
     fig38, axs38 = plt.subplots(2,1)
     fig38.tight_layout()
     load_shedded_per_group_MWh.plot(ax=axs38[0], legend=False)
-    axs38[0].set_xlabel('Years', fontsize='medium')
-    axs38[0].set_title('load shedded', fontsize='medium')
+
+    axs38[0].set_title('Load shedded', fontsize='medium')
     percentage_load_shedded.plot(ax=axs38[1], legend=True)
     axs38[1].set_title('load shedded / sheddable load', fontsize='medium')
-    axs38[0].set_ylabel('MWh', fontsize='medium')
+    axs38[0].set_ylabel('TWh', fontsize='medium')
     axs38[1].set_xlabel('Years', fontsize='medium')
     axs38[1].set_ylabel('%', fontsize='medium')
 
@@ -1826,15 +1833,22 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
 
 
 def prepare_monthly_electricity_prices(electricity_prices):
-    monthly_electricity_price = electricity_prices
+    monthly_electricity_price = electricity_prices.copy(deep=True)
     monthly_electricity_price['monthly'] = (electricity_prices.index // 730)
     grouped = monthly_electricity_price.groupby(['monthly']).mean()
     monthly_electricity_price_grouped = grouped.melt()['value']
     ax1 = monthly_electricity_price_grouped.plot()
-    ax1.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.xlabel('Months', fontsize='medium')
     plt.ylabel('Eur/Mwh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(60))
+    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(12))
+    # ax1.set_xticklabels(which='major')
+    # for label in ax1.get_xticklabels(which='major'):
+    #     label.set(rotation=50, horizontalalignment='right')
+    results_file = os.path.join(path_to_plots, 'monthly_electricity_prices.csv')
+    monthly_electricity_price_grouped.to_csv(results_file, header=True, sep=';', index=True)
+    ax1.grid(True, which='minor')
     fig1 = ax1.get_figure()
     fig1.savefig(path_to_plots + '/' + 'Monthly_electricity_prices.png', bbox_inches='tight', dpi=300)
 
@@ -1843,6 +1857,7 @@ def prepare_monthly_electricity_prices(electricity_prices):
     plt.xlabel('Months', fontsize='medium')
     plt.ylabel('Eur/Mwh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
+    plt.legend(fontsize='small', loc='upper right', ncol=5)
     fig1 = ax1.get_figure()
     fig1.savefig(path_to_plots + '/' + 'Monthly_electricity_prices_by_year.png', bbox_inches='tight', dpi=300)
 
@@ -2285,22 +2300,22 @@ results_excel = "ITERATIONS.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-SCENARIOS = ["find_weather_year"]
+SCENARIOS = ["NL-historical_sequence"]
 
 #SCENARIOS = ["-test"]
 # SCENARIOS = ["NL-historical_sequence", "NL-iteration2", "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
 
-existing_scenario = False
+existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech = None  # 'Lithium_ion_battery'  # None #"Lithium_ion_battery" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
 industrial_demand_as_flex_demand_with_cap = True
-calculate_monthly_generation = False #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+calculate_monthly_generation = False #!!!!!!!!!!!!!!
 load_shedding_plots = True
 
 calculate_investments = True
