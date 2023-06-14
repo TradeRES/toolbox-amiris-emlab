@@ -605,6 +605,13 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.status == globalNames.power_plant_status_operational]
 
+
+    def get_load_shedder_by_VOLL(self, VOLL) :
+        try:
+            return next(i.name for i in self.loadShedders.values() if i.VOLL == VOLL)
+        except StopIteration:
+            return None
+
     def get_power_plants_invested_in_future_tick(self, futuretick) -> List[PowerPlant]:
         year = futuretick + self.start_simulation_year
         return [i for i in self.power_plants.values()
