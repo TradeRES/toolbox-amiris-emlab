@@ -272,8 +272,9 @@ def create_agent(row, translation: List[Dict]) -> Dict:
     return agent
 
 
-def get_elements_from_list(value: List, row) -> List[Dict]:
+def get_elements_from_list(value: List, row: pd.Series) -> List[Dict]:
     """Obtain list-like elements"""
+    value = value.copy()
     length = value.pop(0)["length"]
     attr_dict = {col_count: {} for col_count in range(length)}
     for entry in value:

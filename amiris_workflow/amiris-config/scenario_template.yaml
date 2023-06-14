@@ -26,11 +26,6 @@ Agents:
     Attributes:
       ShareOfRevenues: 0.0
 
-  - Type: DemandTrader
-    Id: 5
-    Attributes:
-      Loads: []
-
   - Type: PriceForecaster  #MeritOrderForecaster
     Id: 6
     Attributes:

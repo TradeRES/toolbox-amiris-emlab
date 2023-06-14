@@ -4,11 +4,15 @@ AgentGroups:
 Agents:
   - column: Type
     target: SHEDDING
-    append:
-      - agent: *demand
-        below: Attributes/Loads
-        elements:
-           - attribute: ValueOfLostLoad
-             column: VOLL
-           - attribute: DemandSeries
-             column: TimeSeries
+    create:
+      - attribute: Type
+        value: DemandTrader
+      - attribute: Id
+        column: identifier
+      - attribute: Attributes/Loads
+        list:
+          - length: 1
+          - attribute: ValueOfLostLoad
+            column: [VOLL]
+          - attribute: DemandSeries
+            column: [TimeSeries]
