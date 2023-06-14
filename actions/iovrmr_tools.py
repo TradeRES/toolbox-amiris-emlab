@@ -674,6 +674,8 @@ def evaluate_dispatch_per_group(
     for group in conventional_generation.groupby("AgentId"):
         dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
 
+    # Ensure data set is sorted by agent ids in increasing order
+    demand_results = demand_results.sort_values(by=["AgentId", "TimeStep"])
     demand_results["AwardedEnergyInMWH"].fillna(method="bfill", inplace=True)
     demand_dispatch = demand_results.dropna()
     demand_dispatch["Shedding"] = demand_dispatch["RequestedEnergyInMWH"] - demand_dispatch["AwardedEnergyInMWH"]
