@@ -56,6 +56,7 @@ amiris_workflow/amiris-config/data/future_load.csv
 amiris_workflow/amiris-config/data/future_windoff.csv
 amiris_workflow/amiris-config/data/future_windon.csv
 amiris_workflow/amiris-config/data/load_shedding/*
+amiris_workflow/amiris-config/data/demand_processed/*
 emlabpy/years.txt
 amiris_workflow/amiris-config/data/hoho_cluster_shedding_timeseries.csv
 amiris_workflow/amiris-config/data/ind_cluster-2_shedding_timeseries.csv

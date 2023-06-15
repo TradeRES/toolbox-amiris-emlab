@@ -319,7 +319,15 @@ def aggregate_results(data_manager, config, params):
 
         elif file_name in DEMAND:
             type_df = pd.read_csv(file, sep=";")
-            residual_load_results[file_name] = type_df
+            residual_load_results[file_name] = type_df.copy()
+            column_names = {
+                "RequestedEnergyInMWH": AmirisOutputs.ENERGY_SHEDDED_IN_MWH.name,
+                "AwardedEnergyInMWH": AmirisOutputs.CONSUMPTION_IN_MWH.name,
+            }
+            outputs_per_agent = sum_per_agent(type_df, list(column_names.keys()))
+            outputs_per_agent["RequestedEnergyInMWH"] -= outputs_per_agent["AwardedEnergyInMWH"]
+            outputs_per_agent.rename(columns=column_names, inplace=True)
+            to_concat.append(outputs_per_agent)
 
     overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
