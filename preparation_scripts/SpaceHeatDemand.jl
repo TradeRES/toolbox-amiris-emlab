@@ -2,18 +2,18 @@
 using Pkg, JuMP, XLSX, DataFrames, DelimitedFiles, Dates
 import XLSX, DataFrames, CSV, Dates
 
-#cd(path * "/Inputs")
-
-SH_corr = XLSX.readdata("Inputs/sh_corr.xlsx", "sh_corr!B3:C26")
-AS_corr = XLSX.readdata("Inputs/sh_corr.xlsx", "sh_corr!F3:G3")
-GS_corr = XLSX.readdata("Inputs/sh_corr.xlsx", "sh_corr!J3:K3")
-Temp = XLSX.readdata("Inputs/weather_data.xlsx", "weather_data!B2:B350641")
+full_path = joinpath(pwd(),"data" , "weatherpotentialNetherlands" , "heating" ,"sh_corr.xlsx")
+full_path_2 = joinpath(pwd(),"data" , "weatherpotentialNetherlands" , "heating" ,"weather_data.xlsx")
+println(full_path_2)
+SH_corr = XLSX.readdata(full_path, "sh_corr!B3:C26")
+AS_corr = XLSX.readdata(full_path, "sh_corr!F3:G3")
+GS_corr = XLSX.readdata(full_path, "sh_corr!J3:K3")
+Temp = XLSX.readdata(full_path_2, "weather_data!B2:B350641")
 
 #HD = DataFrame(T = [], HD = [])
 HD_pred = zeros(length(Temp),4)
 ii = 0
 for i in 1:length(Temp)
-
 
     slope_AS = AS_corr[1]
     intercept_AS = AS_corr[2]
@@ -46,8 +46,6 @@ for i in 1:length(Temp)
         if HD_pred[i,1] < 0 
             HD_pred[i,1] = 0
         end
-
-
 
 end
 

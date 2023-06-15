@@ -87,3 +87,6 @@ emlabpy/plots/supply_book.csv
 emlabpy/plots/test_merit_order.py
 *.csv
 emlabpy/plots/merit order curve.ipynb
+*.png
+.idea/workspace.xml
+amiris_workflow/amiris-config/data/future_pv.csv
