@@ -684,6 +684,7 @@ def evaluate_dispatch_per_group(
 
     for group in demand_dispatch.groupby("AgentId"):
         dispatch["load_shedding"] += group[1]["Shedding"]
+        dispatch[f"unit_{group[0]}"] = group[1]["Shedding"]
 
     dispatch.reset_index(drop=True, inplace=True)
 
