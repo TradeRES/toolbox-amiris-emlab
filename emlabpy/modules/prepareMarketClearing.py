@@ -207,7 +207,8 @@ class PrepareMarket(DefaultModule):
                 VOLLs.append(loadshedder.VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
 
-        d = {'Type': Type_ls,
+        d = {'identifier':   [i * 100000 for i in VOLLs], # assigning random identifier
+             'Type': Type_ls,
              'VOLL': VOLLs,
              'TimeSeries': TimeSeries
              }

@@ -1830,18 +1830,15 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     VOLL = reps.loadShedders["base"].VOLL
     total_voluntary = []
     for name, loadshedder in reps.loadShedders.items():
-        if name not in ["hydrogen", "base"]:
+        if name not in ["base", "hydrogen"]:
             total_voluntary.append(loadshedder.percentageLoad)
     total_voluntary_load = sum(total_voluntary)
-    voluntary_shedding = yearly_load*total_voluntary_load
-    involuntary_shedding = yearly_load - voluntary_shedding
+
+    inflexible_shedding = hourly_load_shedded -  reps.loadShedders["hydrogen"].ShedderCapacityMW - (yearly_load * total_voluntary_load)
     shortage_hours["from prices > VOLL"] = yearly_electricity_prices.eq(VOLL).sum()
     # todo energy not supplied = load - total generation. so far total generation seem to be wrong
-    energy_not_supplied_per_year = involuntary_shedding[yearly_electricity_prices.eq(VOLL)]
-    ENS_in_simulated_years_filtered = energy_not_supplied_per_year[
-        years_to_generate]  # todo mine produced hourly energy . hourly generation is wrong
-    ENS = ENS_in_simulated_years_filtered - TotalAwardedPowerInMW
-    ENS_in_simulated_years = ENS.sum(axis=0)
+    energy_not_supplied_per_year = inflexible_shedding[yearly_electricity_prices.eq(VOLL)]
+    ENS_in_simulated_years = energy_not_supplied_per_year.sum(axis=0)
     """
     supply ratio: hour when load is the highest 
     """
@@ -2360,22 +2357,21 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "ITERATIONS.xlsx"
+results_excel = "sequences.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 #SCENARIOS = ["NL-fix_profiles_demand"]
-# SCENARIOS = ["NL2053_SD0_PH0_MI1000000000_totalProfits_-testing"]
-SCENARIOS = ["NL-iteration1"]
+#SCENARIOS = ["NL2053_SD0_PH0_MI1000000000_totalProfits_-testing2years"]
+SCENARIOS = ["NL-iteration2"]
 
-# SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
-#              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
-#              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
-#              "NL-iteration1_2010"
-#              ]  # add a dash before!
+SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
+             "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
+             "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
+             ]  # add a dash before!
 
 existing_scenario = True
-save_excel = False
+save_excel = True
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
