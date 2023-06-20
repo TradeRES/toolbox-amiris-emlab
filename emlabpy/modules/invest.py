@@ -500,6 +500,7 @@ class Investmentdecision(DefaultModule):
     # Returns the Node Limit by Technology or the max double numer if none was found
     def read_csv_results_and_filter_candidate_plants(self):
         df = pd.read_csv(globalNames.amiris_results_path)
+        df = df.dropna(subset=['VARIABLE_COSTS_IN_EURO', 'REVENUES_IN_EURO', 'CONTRIBUTION_MARGIN_IN_EURO' ,'PRODUCTION_IN_MWH'])
         df['commissionyear'] = df['identifier'].astype(str).str[0:4]
         # the candidate power plants wer given an id of 9999.
         # Only these candidate power plants need to be analyzed

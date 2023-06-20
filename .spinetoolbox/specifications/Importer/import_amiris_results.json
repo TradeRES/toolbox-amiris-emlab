@@ -9,10 +9,13 @@
                         "mapping": [
                             {
                                 "map_type": "ObjectClass",
-                                "position": 6,
+                                "position": 7,
                                 "skip_columns": [
-                                    5
-                                ]
+                                    1,
+                                    2,
+                                    6
+                                ],
+                                "read_start_row": 6
                             },
                             {
                                 "map_type": "Object",
@@ -65,7 +68,8 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "string"
+                "6": "float",
+                "7": "string"
             }
         },
         "table_default_column_type": {},
