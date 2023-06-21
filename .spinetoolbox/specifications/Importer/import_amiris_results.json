@@ -67,7 +67,7 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float"
+                "6": "string"
             }
         },
         "table_default_column_type": {},
