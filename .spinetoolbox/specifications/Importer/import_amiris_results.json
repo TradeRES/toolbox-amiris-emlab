@@ -12,7 +12,6 @@
                                 "position": 7,
                                 "skip_columns": [
                                     1,
-                                    2,
                                     6
                                 ],
                                 "read_start_row": 6
@@ -68,8 +67,7 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float",
-                "7": "string"
+                "6": "float"
             }
         },
         "table_default_column_type": {},
