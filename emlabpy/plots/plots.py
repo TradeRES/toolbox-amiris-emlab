@@ -1641,6 +1641,10 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
 
     global average_yearly_generation
     average_yearly_generation = pd.DataFrame()
+
+    global hourly_load_shedders_per_year
+    hourly_load_shedders_per_year = dict()
+
     dfs={}
     for year in years_to_generate:
         if existing_scenario == True:
@@ -1654,6 +1658,13 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
         residual_load.at[:, year] = df['residual_load']['residual_load']
         hourly_load_shedded.at[:, year] = df['hourly_generation'].load_shedding
         hourly_industrial_heat.at[:, year] = df['hourly_generation'].electrolysis_power_consumption
+
+        if calculate_hourly_shedders  == True:
+            hourly_load_shedders = pd.DataFrame()
+            for unit in df['hourly_generation'].columns.values:
+                if unit[0:4] == "unit":
+                    hourly_load_shedders[unit[5:]] = df['hourly_generation'][unit]
+            hourly_load_shedders_per_year[year] = hourly_load_shedders
 
         if calculate_monthly_generation  == True:
             name = "yearly_generation" +  str(year)
@@ -1705,56 +1716,85 @@ def reading_original_load(years_to_generate, list_ticks):
     return yearly_load
 
 
-def prepare_percentage_load_shedded_new(reps, yearly_load, electricity_prices, years_to_generate):
-    maximumLS = pd.DataFrame()
-    load_shedders_data = pd.DataFrame()
-    load_shedded_per_group_MWh = pd.DataFrame()
-    for name, values in reps.loadShedders.items():
-        load_shedders_data.at[name,"VOLL"] = values.VOLL
-        load_shedders_data.at[name,"percentageLoad"] = values.percentageLoad
-    sorted_shedders = load_shedders_data.sort_values(by = "VOLL")
-    sorted_shedders['VOLLnext'] = sorted_shedders['VOLL'].shift(-1)
-    sorted_shedders.at["base", 'VOLLnext'] = -100
-    if load_shedding_plots == True:
-        for year in years_to_generate:
-            load = yearly_load[year]
-            for i, load_shedder in sorted_shedders.iterrows() :
-                if load_shedder.name == "hydrogen":
-                    maximumLS['hydrogen'] = [reps.loadShedders["hydrogen"].ShedderCapacityMW]*8760
+def prepare_percentage_load_shedded_new(reps, years_to_generate):
+    total_load_shedded  = pd.DataFrame()
+    total_load_shedded_per_year = pd.DataFrame()
+    max_ENS_in_a_row = pd.DataFrame()
+    for year in years_to_generate:
+        for name, values in reps.loadShedders.items():
+            id_shedder = values.VOLL*100000
+            selected_df = hourly_load_shedders_per_year[year]
+            total_load_shedded[name] = selected_df[str(id_shedder)]
+        total_load_shedded_per_year[year] = total_load_shedded.sum()
+
+        continuous_hours = 0  # Counter for continuous hours
+        max_continuous_hours = 0  # Counter for maximum continuous hours
+
+        for column_name, column_data in total_load_shedded.iteritems():
+            continuous_hours = 0  # Counter for continuous hours
+            max_continuous_hours = 0  # Counter for maximum continuous hours
+            prev_value = 0  # Variable to store the previous value
+            filtered = [column_data>0]
+            for value in filtered[0]:
+                if value == True:
+                    continuous_hours += 1
                 else:
-                    maximumLS[load_shedder.name] = load*load_shedder["percentageLoad"]
-            generation_and_prices = pd.concat([hourly_load_shedded[year], electricity_prices[year]], ignore_index=True,
-                                              axis=1)
-            generation_and_prices.columns = ['load_shedding', 'ElectricityPriceInEURperMWH']
-            load_shedded_per_group = pd.DataFrame()
-            last = []
-            for num, column in enumerate(maximumLS.columns):
-                if num == 0 :
-                    load_shedded_per_group[column] = maximumLS[column] # hydrogen remains hydorgen
-                else:
-                    load_shedded_per_group[column] = generation_and_prices["load_shedding"]
-                    load_shedded_per_group[column] = load_shedded_per_group[column] - maximumLS[last].sum(axis=1)
-                    mask = load_shedded_per_group[column] > maximumLS[column]
-                    load_shedded_per_group.loc[mask, column] = maximumLS.loc[mask,column ]
-                last.append(column)
+                    continuous_hours = 0
+                if continuous_hours > max_continuous_hours:
+                    max_continuous_hours = continuous_hours
+            max_ENS_in_a_row.at[column_name,year] =  max_continuous_hours
+    return total_load_shedded_per_year, max_continuous_hours
 
-            load_shedded = pd.DataFrame(index = load_shedded_per_group.index)
-            for indx,VOLL  in sorted_shedders["VOLL"].iteritems():
-                name = reps.get_load_shedder_by_VOLL(VOLL)
-                nextVOLL = sorted_shedders.loc[indx,"VOLLnext"]
-                load_shedded[str(name)] = load_shedded_per_group.loc[
-                    (generation_and_prices['ElectricityPriceInEURperMWH'] > nextVOLL ) &
-                    (generation_and_prices['ElectricityPriceInEURperMWH']<= VOLL ) &
-                    (generation_and_prices['load_shedding'] > 0 ) , str(name)]
-                load_shedded[str(name)] = maximumLS.loc[
-                    (generation_and_prices['ElectricityPriceInEURperMWH'] > VOLL )&
-                    (generation_and_prices['load_shedding'] > 0 ) , str(name)]
 
-            sum_load_shedded = load_shedded.sum(axis=0)
-            load_shedded_per_group_MWh[year ] = sum_load_shedded
+    #
+    # maximumLS = pd.DataFrame()
+    # load_shedders_data = pd.DataFrame()
+    # load_shedded_per_group_MWh = pd.DataFrame()
+    # for name, values in reps.loadShedders.items():
+    #     load_shedders_data.at[name,"VOLL"] = values.VOLL
+    #     load_shedders_data.at[name,"percentageLoad"] = values.percentageLoad
+    # sorted_shedders = load_shedders_data.sort_values(by = "VOLL")
+    # sorted_shedders['VOLLnext'] = sorted_shedders['VOLL'].shift(-1)
+    # sorted_shedders.at["base", 'VOLLnext'] = -100
+    # if load_shedding_plots == True:
+    #     for year in years_to_generate:
+    #         load = yearly_load[year]
+    #         for i, load_shedder in sorted_shedders.iterrows() :
+    #             if load_shedder.name == "hydrogen":
+    #                 maximumLS['hydrogen'] = [reps.loadShedders["hydrogen"].ShedderCapacityMW]*8760
+    #             else:
+    #                 maximumLS[load_shedder.name] = load*load_shedder["percentageLoad"]
+    #         generation_and_prices = pd.concat([hourly_load_shedded[year], electricity_prices[year]], ignore_index=True,
+    #                                           axis=1)
+    #         generation_and_prices.columns = ['load_shedding', 'ElectricityPriceInEURperMWH']
+    #         load_shedded_per_group = pd.DataFrame()
+    #         last = []
+    #         for num, column in enumerate(maximumLS.columns):
+    #             if num == 0 :
+    #                 load_shedded_per_group[column] = maximumLS[column] # hydrogen remains hydorgen
+    #             else:
+    #                 load_shedded_per_group[column] = generation_and_prices["load_shedding"]
+    #                 load_shedded_per_group[column] = load_shedded_per_group[column] - maximumLS[last].sum(axis=1)
+    #                 mask = load_shedded_per_group[column] > maximumLS[column]
+    #                 load_shedded_per_group.loc[mask, column] = maximumLS.loc[mask,column ]
+    #             last.append(column)
+    #
+    #         load_shedded = pd.DataFrame(index = load_shedded_per_group.index)
+    #         for indx,VOLL  in sorted_shedders["VOLL"].iteritems():
+    #             name = reps.get_load_shedder_by_VOLL(VOLL)
+    #             nextVOLL = sorted_shedders.loc[indx,"VOLLnext"]
+    #             load_shedded[str(name)] = load_shedded_per_group.loc[
+    #                 (generation_and_prices['ElectricityPriceInEURperMWH'] > nextVOLL ) &
+    #                 (generation_and_prices['ElectricityPriceInEURperMWH']<= VOLL ) &
+    #                 (generation_and_prices['load_shedding'] > 0 ) , str(name)]
+    #             load_shedded[str(name)] = maximumLS.loc[
+    #                 (generation_and_prices['ElectricityPriceInEURperMWH'] > VOLL )&
+    #                 (generation_and_prices['load_shedding'] > 0 ) , str(name)]
+    #
+    #         sum_load_shedded = load_shedded.sum(axis=0)
+    #         load_shedded_per_group_MWh[year ] = sum_load_shedded
+    #     return load_shedded_per_group_MWh
 
-        print("here")
-        return load_shedded_per_group_MWh
 
 def prepare_percentage_load_shedded(yearly_load, electricity_prices, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
@@ -1964,8 +2004,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     yearly_load = reading_original_load(years_to_generate, list_ticks)
     monthly_electricity_price_grouped = prepare_monthly_electricity_prices(electricity_prices)
+    if calculate_hourly_shedders == True:
+        total_load_shedded_per_year, max_continuous_hours = prepare_percentage_load_shedded_new(reps, years_to_generate)
 
-    #load_shedded_per_group_MWh = prepare_percentage_load_shedded_new(reps, yearly_load, electricity_prices, years_to_generate)
     percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation = prepare_percentage_load_shedded(
         yearly_load, electricity_prices,
         years_to_generate)
@@ -2357,21 +2398,22 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "sequences.xlsx"
+results_excel = "verification.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-#SCENARIOS = ["NL-fix_profiles_demand"]
-#SCENARIOS = ["NL2053_SD0_PH0_MI1000000000_totalProfits_-testing2years"]
-SCENARIOS = ["NL-iteration2"]
+SCENARIOS = ["NL-verification"]
 
-SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
-             "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
-             "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
-             ]  # add a dash before!
+#SCENARIOS = ["NL2053_SD0_PH0_MI1000000000_totalProfits_-testing2years"]
+#SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(2009)"]
+#SCENARIOS = ["NL-iteration1"]
+# SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
+#              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
+#              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
+#              ]  # add a dash before!
 
 existing_scenario = True
-save_excel = True
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
@@ -2379,6 +2421,7 @@ test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "
 
 industrial_demand_as_flex_demand_with_cap = True
 calculate_monthly_generation = False #!!!!!!!!!!!!!!
+calculate_hourly_shedders = True
 load_shedding_plots = True
 
 calculate_investments = True

@@ -698,7 +698,8 @@ class Repository:
     def get_all_power_plant_dispatch_plans_by_tick(self, tick: int) -> \
             List[PowerPlantDispatchPlan]:
         try:
-            return next(i for i in self.power_plant_dispatch_plans.values() if i.name == str(tick))
+          #  return next(i for i in self.power_plant_dispatch_plans.values() if str(int(float(i.name))) == str(tick))
+            return next(i for i in self.power_plant_dispatch_plans.values() if str(i.name) == str(tick))
         except StopIteration:
             return None
 
