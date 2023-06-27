@@ -160,8 +160,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.fixed_cost_eur_MW.interpolate(method='linear',  inplace=True)
             return self.fixed_cost_eur_MW[year]
 
-    def getInvestmentCostbyTimeSeries(self, time): # geometric trend
-        return self.investment_cost_time_series.get_value(time)
+    def getInvestmentCostbyTimeSeries(self, time):
+        return self.investment_cost_time_series.get_value(time) # geometric trend
 
     def get_fixed_operating_by_time_series(self, age, commissionedYear):
         # time = passed years in dismantle

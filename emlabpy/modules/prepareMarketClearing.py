@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from util import globalNames
 
 
+
 class PrepareMarket(DefaultModule):
     """
     This module prepares the information for the current simulation year
@@ -84,8 +85,6 @@ class PrepareMarket(DefaultModule):
         df.to_excel(self.writer, sheet_name="times")
 
     def write_scenario_data_emlab(self, calculatedprices):
-        wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-        demand = wholesale_market.hourlyDemand
         dict_fuels = {}
         for k, substance in self.reps.substances.items():
             if calculatedprices == "next_year_price":  # choose the prices depending if nexy year or future year is calculated
@@ -95,10 +94,32 @@ class PrepareMarket(DefaultModule):
             # --------------------------------------------------------------------- preparing demand and yield profiles
             if substance.name == "electricity":
                 if self.reps.available_years_data == False: # for germany the load is calculated with a trend.
-                    new_demand = demand.copy()
+                    demand = 0
+                    new_demand = demand.copy() # todo finish this
                     new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else:  # for now, only have dynamic data for NL case
+                    # ==================================================  demand with increase
+                    if self.reps.increase_demand == True:
+                        totaldemand = 0
+                        print(fuel_price) # fuel price can also be seen as price increase
+                        load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
+                        for load_shedder_name , load_shedder in self.reps.loadShedders.items():
+                            if load_shedder_name == "hydrogen":
+                                pass
+                            elif calculatedprices == "next_year_price":
+                                load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
+                            else: # calculatedprices == "future market":
+                                load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
+
+                            originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
+                            originalload[1] = (originalload[1] * fuel_price)
+                            totaldemand +=originalload[1].sum()
+                            originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
+
+                        market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
+                        self.reps.dbrw.stage_total_demand(market.name , totaldemand, self.simulation_year , calculatedprices)
+
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
                         if self.reps.current_tick == 0:
                             # profiles were changed for the initialization step
@@ -121,7 +142,7 @@ class PrepareMarket(DefaultModule):
                         if self.reps.investmentIteration == 0:
                             # only update data in first iteration of each year
                             if self.reps.fix_profiles_to_representative_year == False:
-                                # ================================================== Updating profiles for investment, demand is adjusted with excel table
+                                # ================================================== Updating profiles for investment
                                 print("copy profiles prepared in clock from future")
                                 shutil.copy(globalNames.future_windoff_file_for_amiris,
                                             globalNames.windoff_file_for_amiris)

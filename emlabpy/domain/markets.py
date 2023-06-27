@@ -22,7 +22,7 @@ class ElectricitySpotMarket(Market):
         self.valueOfLostLoad = 0
         self.hourlyDemand = None
         self.future_demand = None
-        self.demandGrowthTrend = 0.0
+        self.future_demand_peak = None
         self.country = ""
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -30,16 +30,20 @@ class ElectricitySpotMarket(Market):
             self.valueOfLostLoad = int(parameter_value)
         elif parameter_name == 'country':
             self.country = str(parameter_value)
-        elif parameter_name == 'growthTrend':
-            self.demandGrowthTrend = str(parameter_value)
+        elif parameter_name == 'futurePrice':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.future_demand_peak = pd.Series(values, index=index)
+        elif parameter_name == 'totalDemand':
             load_path = globalNames.load_file_for_amiris
             if reps.available_years_data == False:
                 self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
                 self.future_demand = self.hourlyDemand # no dynamic load for other cases yet
             else:
-                future_load_path = globalNames.future_load_file_for_amiris
-                self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
-                self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None)
+                future_load_path = globalNames.future_load_file_for_amiris # todo hourlu demand is also composed of flexible demand
+                self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None) # inflexible load
+                self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None) # inflexible load
 
 class LoadShedder(ImportObject):
     def __init__(self, name):

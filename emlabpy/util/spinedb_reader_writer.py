@@ -126,6 +126,8 @@ class SpineDBReaderWriter:
                 reps.fix_profiles_to_representative_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'fix_demand_to_representative_year':
                 reps.fix_demand_to_representative_year = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'increase_demand':
+                reps.increase_demand = bool(row['parameter_value'])
             elif row['parameter_name'] == 'Representative year':
                 reps.representative_year = int(row['parameter_value'])
 
@@ -342,6 +344,14 @@ class SpineDBReaderWriter:
         self.stage_object_parameter(self.total_capacity_classname, str(year))
         self.stage_object_parameter_values(self.total_capacity_classname, object_name,
                                            [(str(year), peak_dispatchable_capacity)], '0')
+
+    def stage_total_demand(self,market , total_demand, year , total_demand_name):
+        self.stage_object_class("ElectricitySpotMarkets")
+        self.stage_object("ElectricitySpotMarkets", market)
+        self.stage_object_parameter("ElectricitySpotMarkets", total_demand_name)
+        self.stage_object_parameter_values("ElectricitySpotMarkets", market,
+                                           [(total_demand_name, Map([str(year)], [total_demand]))], "0")
+
 
     def stage_installed_pp_names(self, list_installed_pp, simulation_tick):
         object_name = "All"

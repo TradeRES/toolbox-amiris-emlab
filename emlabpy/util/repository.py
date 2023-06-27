@@ -74,6 +74,7 @@ class Repository:
         self.writeALLcostsinOPEX = False
         self.fix_profiles_to_representative_year = True
         self.fix_demand_to_representative_year = True
+        self.increase_demand = False
         self.iteration_weather = "NOTSET"
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
@@ -297,10 +298,10 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_peak_demand_by_country(self):
+    def get_peak_future_demand_by_country(self, year):
         try:
             # the load was already updated in the clock step
-            return max(next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.country == self.country)[1])
+            return next(i.future_demand_peak.loc[year] for i in self.electricity_spot_markets.values() if i.country == self.country)
         except StopIteration:
             return None
 

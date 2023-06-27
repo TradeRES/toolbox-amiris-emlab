@@ -97,24 +97,8 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                                              "Load"])
 
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
-            print("--------don't change demand fix profiles  INCREASE DEMAND   ") # todo: increase demand
-            raise Exception # have to add exel with increasing demand
-
-            # demand = excel['Load'][year]
-            # demand.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
-            # future_demand = excel['Load'][investment_year]
-            # future_demand.to_csv(future_load_file_for_amiris, header=False, sep=';', index=True)
-            #
-            # if modality == "initialize":
-            #     print("--------preparing profiles NOT random")
-            #     wind_onshore = excel['Wind Onshore profiles'][year]
-            #     wind_onshore.to_csv(windon_file_for_amiris, header=False, sep=';', index=True)
-            #     wind_offshore = excel['Wind Offshore profiles'][year]
-            #     wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
-            #     pv = excel['Sun PV profiles'][year]
-            #     pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
-            # else:
-            #     pass
+            print("--------INCREASE DEMAND and fix profiles   ") # todo: increase demand
+            raise Exception
 
         elif fix_demand_to_representative_year == True and fix_profiles_to_representative_year == True:
             print("--------fix demand and fix profiles to representative year " + str(investment_year))

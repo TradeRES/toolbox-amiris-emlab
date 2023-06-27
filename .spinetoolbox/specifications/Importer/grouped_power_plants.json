@@ -700,8 +700,7 @@
             ]
         },
         "selected_tables": [
-            "groupedDecarbonizedNL",
-            "groupedDecarbonizedNL_notechlim"
+            "groupedDecarbonizedNL"
         ],
         "table_options": {
             "germany2019": {
