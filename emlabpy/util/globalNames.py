@@ -30,7 +30,6 @@ power_plant_status_not_set = 'NOTSET'
 power_plant_status_strategic_reserve = 'InStrategicReserve'
 #power_plant_status_capacity_mechanism = 'InCapacityMechanism'
 
-future_prices = "futurePrice"
 simulated_prices = "simulatedPrice"
 
 modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "run_strategic_reserve" ,
@@ -60,6 +59,7 @@ amiris_data_path =  os.path.join(  parentpath, 'amiris_workflow\\amiris_data_str
 load_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\load.csv')
 future_load_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\future_load.csv' )
 
+
 windon_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\windon.csv' )
 windoff_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\windoff.csv' )
 pv_file_for_amiris = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\pv.csv' )
@@ -82,3 +82,4 @@ amiris_ouput_path =  os.path.join(parentpath,'amiris_workflow\\output\\')
 amiris_RAWresults_path = os.path.join(parentpath,'amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv')
 power_plants_path = os.path.join(parentpath,'data\\Power_plants.xlsx')
 scenarios_path = os.path.join(parentpath,'emlabpy\\plots\\Scenarios\\')
+amiris_config_data = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data' )

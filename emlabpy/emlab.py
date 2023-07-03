@@ -27,7 +27,7 @@ from modules.co2market import *
 from modules.invest import *
 from modules.prepareFutureMarketClearing import *
 from modules.dismantle import *
-from modules.createresults import *
+
 # Initialize Logging
 if not os.path.isdir('logs'):
     os.makedirs('logs')

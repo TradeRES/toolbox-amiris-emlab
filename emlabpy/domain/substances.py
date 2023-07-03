@@ -55,20 +55,20 @@ class Substance(ImportObject):
 
     def get_price_for_tick(self, reps, year, simulating_future_market):
         # first consider prices if these are supposed to be fix
+        """
+        electricity price  = demand can be increased even if othe fuel prices remain fix
+        for future estimation fuel prices interpolate bewteen available data
+        """
         if self.name == "electricity" and reps.increase_demand ==True:
             if simulating_future_market == True:
                 if reps.initialization_investment == True:
-                    self.newPrice = self.interpolate_year(year)
+                    self.newPrice = self.trend.top ** (reps.investment_initialization_years)  # assuming that demand incrases according to mode on the last years
                 else:
                     self.initializeGeometricTrendRegression(reps, self.simulatedPrice)
                     self.newPrice = self.geometricRegression.predict(reps.lookAhead)
             else: # realized market
-                if reps.current_tick == 0:
-                    last_value = self.interpolate_year(year)
-                else:
-                    last_value = self.simulatedPrice.loc[year - 1]
                 random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
-                self.newPrice = last_value * random_number
+                self.newPrice = random_number
 
         elif reps.fix_fuel_prices_to_year == True:  # fixing prices to year
             if  self.name == "CO2" and reps.yearly_CO2_prices == True:
@@ -122,7 +122,6 @@ class Substance(ImportObject):
         if reps.current_tick >= reps.pastTimeHorizon:
             values = range(reps.current_year - reps.pastTimeHorizon, reps.current_year + 1)
             years = [*values]
-
             y = calculatedPrices.loc[years]
         else:
             y = calculatedPrices.values

@@ -26,9 +26,6 @@ import numpy as np
 logging.basicConfig(level=logging.ERROR)
 
 
-def plot_IEWT(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors):
-    # make all needed graphs for conference
-    pass
 
 
 def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW, installed_capacity_per_iteration,
@@ -450,6 +447,17 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     fig17.savefig(path_to_plots + '/' + 'Annual installed Capacity per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
+def plot_total_demand(reps):
+    future_demand = reps.get_peak_future_demand()
+    realized_demand = reps.get_realized_peak_demand()
+    axs21 = future_demand.plot()
+    realized_demand.plot()
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.grid()
+    axs21.set_title('peak demand')
+    fig21 = axs21.get_figure()
+    fig21.savefig(path_to_plots + '/' + 'Peak demand.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_techs_full_load_hours, path_to_plots,
                                              colors_unique_techs):
@@ -2024,7 +2032,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         reps, unique_technologies, renewable_technologies, yearly_load,
         years_to_generate)
 
-
+    plot_total_demand(reps)
 
     plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor.T, all_techs_full_load_hours.T, path_to_plots,
                                              colors_unique_techs)
@@ -2138,7 +2146,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 average_electricity_price['VRES support'] = VRES_price.values
                 plot_costs_to_society(average_electricity_price, path_to_plots)
 
-
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
     yearly_costs, marginal_costs_per_hour = prepare_screening_curves(reps, test_year)
@@ -2149,11 +2156,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     future_fuel_prices = prepare_future_fuel_prices(reps)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
 
-    # plot_IEWT(all_techs_capacity, path_to_plots, years_to_generate_and_build, technology_colors)
+
     # section -----------------------------------------------------------------------------------------------Write Excel
     if save_excel == True:
         path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
         CostRecovery_data = pd.read_excel(path_to_results, sheet_name='CostRecovery', index_col=0)
+
         LOL_data = pd.read_excel(path_to_results, sheet_name='LOL', index_col=0)
         ENS_data = pd.read_excel(path_to_results, sheet_name='ENS', index_col=0)
         SupplyRatio_data = pd.read_excel(path_to_results, sheet_name='SupplyRatio', index_col=0)
@@ -2167,6 +2175,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         last_year_operational_capacity_data = pd.read_excel(path_to_results, sheet_name='last_year_capacity',
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
+        AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology', index_col=0)
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
@@ -2176,6 +2185,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Installed_capacity_data = pd.concat([Installed_capacity_data, df1], axis=1)
         df2 = pd.DataFrame(NPVNewPlants, columns=[scenario_name])
         NPVNewPlants_data = pd.concat([NPVNewPlants_data, df2], axis=1)
+
+        npvs_per_tech_per_MW = pd.DataFrame(npvs_per_tech_per_MW)
+        npvs_per_tech_per_MW.at["scenario_name",:] = scenario_name
+        AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, npvs_per_tech_per_MW], axis=1)
 
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
@@ -2217,6 +2230,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
             Monthly_electricity_data.to_excel(writer, sheet_name='MonthlyElectricityPrices')
             NPVNewPlants_data.to_excel(writer, sheet_name='NPVNewPlants')
+            AverageNPVpertechnology_data.to_excel(writer, sheet_name='AverageNPVpertechnology')
             Installed_capacity_data.to_excel(writer, sheet_name='InstalledCapacity')
             H2_production_data.to_excel(writer, sheet_name='H2Production')
             IndustrialHeat_data.to_excel(writer, sheet_name='IndustrialHeat')
@@ -2398,21 +2412,21 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "verification.xlsx"
+results_excel = "extremes2.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-SCENARIOS = ["NL-verification"]
+#SCENARIOS = ["NL-verification"]
 
-#SCENARIOS = ["NL2053_SD0_PH0_MI1000000000_totalProfits_-testing2years"]
+SCENARIOS = ["-testing_demand4"]
 #SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(2009)"]
-#SCENARIOS = ["NL-iteration1"]
+# SCENARIOS = ["NL-iteration1"]
 # SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
 #              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
 
-existing_scenario = True
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
@@ -2420,8 +2434,8 @@ test_tick = 0
 test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
 
 industrial_demand_as_flex_demand_with_cap = True
-calculate_monthly_generation = False #!!!!!!!!!!!!!!
-calculate_hourly_shedders = True
+calculate_monthly_generation = False #!!!!!!!!!!!!!!For the new plots
+calculate_hourly_shedders = False
 load_shedding_plots = True
 
 calculate_investments = True

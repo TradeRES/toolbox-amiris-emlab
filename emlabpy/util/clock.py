@@ -107,7 +107,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 update_load_current_year(excel, investment_year)
                 update_profiles_current_year(excel, investment_year)
                 # market preparation changed the name of file to future
-                prepare_initialization_load_for_future_year(excel)
+                prepare_hydrogen_initilization(excel)
             else:
                 pass
 
@@ -135,6 +135,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 """
                 print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(investment_year))
                 prepare_initialization_load_for_future_year(excel)
+                prepare_hydrogen_initilization(excel)
                 prepare_initialization_profiles_for_future_year(excel)
                 update_profiles_first_year(excel, sequence_year)
             else:
@@ -157,7 +158,7 @@ def update_load_current_year(excel, current_year):
     # load.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
     for lshedder_name in ["base", "low", "mid", "high"]:
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
-        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder_name,"TimeSeriesFile"]))
+        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_original_" + lshedder_name + ".csv"))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
         # print(lshedder_name + "TWH")
         # print(load_shedder.sum()/1000000)
@@ -176,13 +177,19 @@ def update_load_current_year_by_sequence_year(excel, sequence_year):
 def prepare_initialization_load_for_future_year(excel):
     # writing FUTURE load shedders
     for lshedder_name in ["low", "mid", "high", "base"]:
-        load_shedder = excel['Load'][investment_year] * load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[lshedder_name,"TimeSeriesFileFuture"]))
+        load_shedder = excel['Load'][investment_year] * load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
+
+
+def prepare_hydrogen_initilization(excel):
+    hydrogen_series = pd.DataFrame( [load_shedders.loc[ "hydrogen","ShedderCapacityMW"]]*8760, index = excel['Load'].index)
+    hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFileFuture"]))
+    hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
     # hydrogen demand keeps constant
-    hydrogen_series = pd.DataFrame( [load_shedders.loc[ "hydrogen","ShedderCapacityMW"]]*8760, index = load_shedder.index)
-    hydrogen_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFileFuture"]))
-    hydrogen_series.to_csv(hydrogen_file_for_amiris, header=False, sep=';', index=True)
+    # hydrogen_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFile"]))
+    # hydrogen_series.to_csv(hydrogen_file_for_amiris, header=False, sep=';', index=True)
+
 def prepare_initialization_profiles_for_future_year(excel):
     future_wind_offshore = excel['Wind Offshore profiles'][investment_year]
     future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)

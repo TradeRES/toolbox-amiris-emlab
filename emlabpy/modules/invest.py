@@ -357,7 +357,7 @@ class Investmentdecision(DefaultModule):
 
     def capacity_calculations(self):
         self.capacityInPipeline = self.reps.calculateCapacityOfPowerPlantsInPipeline()
-        self.peak_demand = self.reps.get_peak_future_demand_by_country( self.futureInvestmentyear )
+        self.peak_demand = self.reps.get_peak_future_demand_by_year(self.futureInvestmentyear)
 
     def calculateandCheckFutureCapacityExpectation(self,
                                                    candidatepowerplant):  # if there would be more agents, the future capacity should be analyzed per age
