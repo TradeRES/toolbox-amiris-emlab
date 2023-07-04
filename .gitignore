@@ -91,3 +91,7 @@ emlabpy/plots/merit order curve.ipynb
 *.png
 .idea/workspace.xml
 amiris_workflow/amiris-config/data/future_pv.csv
+amiris_workflow/originalmid
+amiris_workflow/originallow
+amiris_workflow/originalhigh
+amiris_workflow/originalbase

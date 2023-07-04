@@ -59,7 +59,7 @@ class CreatingFinancialReports(DefaultModule):
             # CO2 costs + fuel costs
             self.agent.CF_COMMODITY -= dispatch.variable_costs
 
-            loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
+            loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year # todo: there are no downpayments because its only for operational plants
             # # attention: this is only to check
             # if powerplant.downpayment_in_year> 0:
             #     print("downpayment is paid during construction. why is it paid here")

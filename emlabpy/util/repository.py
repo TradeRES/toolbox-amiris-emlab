@@ -235,6 +235,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_totalProfitswLoans_for_plant(self, plant_name):
+        try:
+            return next(i.totalProfitswLoans for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
+
     def get_irrs_for_plant(self, plant_name):
         try:
             return next(i.irr for i in self.financialPowerPlantReports.values() if i.name == plant_name)
