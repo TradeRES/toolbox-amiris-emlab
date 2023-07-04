@@ -67,8 +67,9 @@ class Substance(ImportObject):
                     self.initializeGeometricTrendRegression(reps, self.simulatedPrice)
                     self.newPrice = self.geometricRegression.predict(reps.lookAhead)
             else: # realized market
+                last_value = self.simulatedPrice.loc[year - 1]
                 random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
-                self.newPrice = random_number
+                self.newPrice = random_number * last_value
 
         elif reps.fix_fuel_prices_to_year == True:  # fixing prices to year
             if  self.name == "CO2" and reps.yearly_CO2_prices == True:
