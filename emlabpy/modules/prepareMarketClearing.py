@@ -101,7 +101,7 @@ class PrepareMarket(DefaultModule):
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else:  # for now, only have dynamic data for NL case
                     # ==================================================  demand with increase
-                    if self.reps.increase_demand == True  and self.reps.investmentIteration == 0:
+                    if self.reps.increase_demand == True  and self.reps.investmentIteration <= 0:
                         totaldemand = 0
                         print("FUEL_PRICE")
                         print(fuel_price) # fuel price can also be seen as price increase
@@ -111,16 +111,15 @@ class PrepareMarket(DefaultModule):
                                 pass
                             else:
                                 load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, ( "LS_original_" + load_shedder_name + ".csv"))
-                            originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
-                            originalload[1] = (originalload[1] * fuel_price)
-                            totaldemand +=originalload[1].sum()
+                                originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
+                                originalload[1] = (originalload[1] * fuel_price)
+                                totaldemand +=originalload[1].sum()
 
-                            if calculatedprices == "next_year_price":
-                                load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
-                            else: # calculatedprices == "future market":
-                                load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
-
-                            originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
+                                if calculatedprices == "next_year_price":
+                                    load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
+                                else: # calculatedprices == "future market":
+                                    load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
+                                originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
 
                         totaldemand += self.reps.loadShifterDemand["Industrial_load_shifter"].averagemonthlyConsumptionMWh*12
                         market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
@@ -131,6 +130,7 @@ class PrepareMarket(DefaultModule):
                         if self.reps.current_tick == 0:
                             # profiles were changed for the initialization step
                             if self.reps.fix_profiles_to_representative_year == False:
+                                print("copy profiles from first year that were changed in initialization")
                                 shutil.copy(globalNames.windoff_firstyear_file_for_amiris,
                                             globalNames.windoff_file_for_amiris)
                                 shutil.copy(globalNames.windon_firstyear_file_for_amiris,

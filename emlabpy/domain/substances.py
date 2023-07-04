@@ -32,8 +32,12 @@ class Substance(ImportObject):
             self.resource_limit2020 = float(parameter_value)
         elif parameter_name == 'trend':
             self.trend = reps.trends[parameter_value]
-        elif parameter_name == 'futurePrice':
-            self.futurePrice = parameter_value
+        elif parameter_name == 'futurePrice' and reps.runningModule in ["plotting"]:
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
+            self.futurePrice = pd_series
         elif parameter_name == 'simulatedPrice'and reps.runningModule in ["plotting", "run_future_market", "run_prepare_next_year_market_clearing"]:
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
@@ -67,7 +71,10 @@ class Substance(ImportObject):
                     self.initializeGeometricTrendRegression(reps, self.simulatedPrice)
                     self.newPrice = self.geometricRegression.predict(reps.lookAhead)
             else: # realized market
-                last_value = self.simulatedPrice.loc[year - 1]
+                if reps.current_tick==0:
+                    last_value = 1
+                else:
+                    last_value = self.simulatedPrice.loc[year - 1]
                 random_number = random.triangular(self.trend.min, self.trend.max,  self.trend.top) # low, high, mode
                 self.newPrice = random_number * last_value
 

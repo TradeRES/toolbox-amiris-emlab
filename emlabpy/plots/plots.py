@@ -1445,12 +1445,14 @@ def prepare_screening_curves_candidates(reps, year):
            + agent.debtRatioOfInvestments * agent.loanInterestRate
     yearly_costs_candidates = pd.DataFrame(index=hours)
 
-    CO2prices_future_prices = reps.substances["CO2"].futurePrice.to_dict()
-    values = [float(i[1]) for i in CO2prices_future_prices["data"]]
-    index = [int(i[0]) for i in CO2prices_future_prices["data"]]
-    co2prices = pd.Series(values, index=index)
-    co2price = co2prices[year]
+    CO2prices_future_prices = reps.substances["CO2"].futurePrice
+    # values = [float(i[1]) for i in CO2prices_future_prices["data"]]
+    # index = [int(i[0]) for i in CO2prices_future_prices["data"]]
+    # co2prices = pd.Series(values, index=index)
 
+    co2price = CO2prices_future_prices[year]
+    print("co2price")
+    print(co2price)
     for tech in reps.get_unique_candidate_technologies():
         investment_cost = tech.get_investment_costs_perMW_by_year(year)
         annual_cost_capital = npf.pmt(wacc, tech.expected_lifetime, -investment_cost)
@@ -1459,10 +1461,7 @@ def prepare_screening_curves_candidates(reps, year):
             fuel_price = np.int64(0)
             co2_TperMWh = np.int64(0)
         else:
-            future_prices = tech.fuel.futurePrice.to_dict()
-            df = pd.DataFrame(future_prices['data'])
-            df.set_index(0, inplace=True)
-            fuel_price = df.at[str(year), 1]
+            fuel_price = tech.fuel.futurePrice[year]
             # Co2EmissionsInTperMWH / efficiency = CO2 emissions per MWh
             co2_TperMWh = tech.fuel.co2_density
 
@@ -2430,7 +2429,7 @@ results_excel = "test.xlsx"
 # The short name from the scenario will start from "-"
 #SCENARIOS = ["NL-verification"]
 
-SCENARIOS = ["-testing_demand4"]
+SCENARIOS = ["NL-stochastic_demand_increase"]
 #SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(2009)"]
 # SCENARIOS = ["NL-iteration1"]
 # SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
@@ -2439,7 +2438,7 @@ SCENARIOS = ["-testing_demand4"]
 #              ]  # add a dash before!
 
 existing_scenario = False
-save_excel = True
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
