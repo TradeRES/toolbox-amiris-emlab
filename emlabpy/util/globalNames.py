@@ -29,7 +29,7 @@ power_plant_status_to_be_decommissioned = 'TobeDecommissioned'
 power_plant_status_not_set = 'NOTSET'
 power_plant_status_strategic_reserve = 'InStrategicReserve'
 #power_plant_status_capacity_mechanism = 'InCapacityMechanism'
-
+future_prices = "futurePrice"
 simulated_prices = "simulatedPrice"
 
 modules_need_AMIRIS = ["run_short_investment_module" ,"run_capacity_market" , "run_strategic_reserve" ,

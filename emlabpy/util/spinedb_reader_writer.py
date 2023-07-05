@@ -719,7 +719,7 @@ class SpineDBReaderWriter:
 
     def stage_init_future_prices_structure(self):
         self.stage_object_class(self.fuel_classname)
-        self.stage_object_parameters(self.fuel_classname, ["futurePrice"])
+        self.stage_object_parameters(self.fuel_classname, [globalNames.future_prices])
 
     def stage_target_investments_done(self, done):
         self.stage_object_class(self.configuration_object_classname)
@@ -736,7 +736,6 @@ class SpineDBReaderWriter:
     def stage_simulated_fuel_prices(self, year, price, substance):
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
-        # print(self.fuel_classname, substance.name, "simulatedPrice", tick,"-", type(price), price)
         self.db.import_object_parameter_values(
             [(self.fuel_classname, substance.name, globalNames.simulated_prices, Map([str(year)], [price]), '0')])
 
@@ -744,7 +743,7 @@ class SpineDBReaderWriter:
         object_name = substance.name
         self.stage_object(self.fuel_classname, object_name)
         self.db.import_object_parameter_values(
-            [(self.fuel_classname, substance.name, "futurePrice", Map([str(year)], [futurePrice]), '0')])
+            [(self.fuel_classname, substance.name, globalNames.future_prices, Map([str(year)], [futurePrice]), '0')])
 
     def get_calculated_simulated_fuel_prices(self, substance, parametername):
         calculated_fuel_prices = self.db.query_object_parameter_values_by_object_class_name_parameter_and_alternative(
