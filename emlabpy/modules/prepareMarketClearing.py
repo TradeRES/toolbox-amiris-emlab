@@ -130,11 +130,13 @@ class PrepareMarket(DefaultModule):
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
                                 originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                 originalload[1] = (originalload[1] * fuel_price)
-                                totaldemand +=originalload[1].sum()
-                    totaldemand += self.reps.loadShifterDemand["Industrial_load_shifter"].averagemonthlyConsumptionMWh*12
+                                totaldemand += originalload[1]
+
+                    total_peak_demand = max(totaldemand)
+                    total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                     market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-                    demand_name = calculatedprices[:-5] + "Demand"
-                    self.reps.dbrw.stage_total_demand(market.name , totaldemand, self.simulation_year , demand_name)
+                    demand_name = calculatedprices[:-5] + "_demand_peak"
+                    self.reps.dbrw.stage_total_demand(market.name , total_peak_demand, self.simulation_year , demand_name)
 
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
                         if self.reps.current_tick == 0:

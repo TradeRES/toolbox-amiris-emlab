@@ -1,8 +1,8 @@
 
 from domain.import_object import *
 import pandas as pd
-
-class StrategicReserveOperator(ImportObject):
+from domain.actors import EMLabAgent
+class StrategicReserveOperator(EMLabAgent):
 
     def __init__(self, name):
         super().__init__(name)
@@ -10,7 +10,7 @@ class StrategicReserveOperator(ImportObject):
         self.reservePriceSR = 0
         self.reserveVolumePercentSR = 0
         self.cash = 0
-        self.revenues_per_year = 0
+        self.revenues_per_year = dict()
         self.reserveVolume = dict()
         self.list_of_plants = []
         self.list_of_plants_all = dict()

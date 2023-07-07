@@ -29,7 +29,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
             # Get Variable and Fixed Operating Costs
             fixed_operating_costs = powerplant.getActualFixedOperatingCost()
-            variable_costs =  self.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
+            variable_costs = powerplant.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
             # Calculate normalised costs
             normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
 
@@ -77,7 +77,8 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Retrieve plants already contracted in reserve
         list_of_plants = self.operator.list_of_plants
         # Remove decommissioned plants from reserve
-        for plant in (self.reps.decommissioned["Decommissioned"]).Decommissioned:
+
+        for plant in (self.reps.decommissioned["Decommissioned"]).Done:
             if plant in list_of_plants:
                 list_of_plants.remove(plant)
 

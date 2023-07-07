@@ -14,7 +14,11 @@ class EMLabAgent(ImportObject):
         self.co2Allowances = 0
         self.lastYearsCo2Allowances = 0
 
+    def setCash(self, cash):
+        self.cash = cash
 
+    def getCash(self):
+        return self.cash
 
 class BigBank(EMLabAgent):
 

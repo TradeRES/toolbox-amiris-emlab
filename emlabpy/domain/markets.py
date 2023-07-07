@@ -31,12 +31,12 @@ class ElectricitySpotMarket(Market):
             self.valueOfLostLoad = int(parameter_value)
         elif parameter_name == 'country':
             self.country = str(parameter_value)
-        elif parameter_name == 'futureDemand':
+        elif parameter_name == 'future_demand_peak':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.future_demand_peak = pd.Series(values, index=index)
-        elif parameter_name == 'next_year_Demand':
+        elif parameter_name == 'next_year__demand_peak':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
