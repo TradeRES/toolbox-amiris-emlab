@@ -211,12 +211,14 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
             if marketer["Type"] == "RenewableTrader":
                 marketer["Attributes"]["MarketValueForecastMethod"] = "PREVIOUS_MONTH"
         res_operators_and_marketers = []
+        res_energy_carriers_and_operators = []
         for operator in operators:
             res_operators_and_marketers.append(add_trader_mapping(operator))
+            res_energy_carriers_and_operators.append(add_energy_carrier_mapping(operator))
 
         template["Agents"].extend(agent_list)
 
-        return template, all_registered_agents, res_operators_and_marketers
+        return template, all_registered_agents, res_operators_and_marketers, res_energy_carriers_and_operators
 
     if not template["Agents"]:
         template["Agents"] = agent_list
@@ -295,7 +297,7 @@ def get_elements_from_list(value: List, row: pd.Series) -> List[Dict]:
     return list(attr_dict.values())
 
 
-def add_trader_mapping(operator: Dict):
+def add_trader_mapping(operator: Dict) -> Dict:
     """Add mapping between operator and trader and remove SupportInstrument attribute in case of no support"""
     try:
         support_instrument = operator["Attributes"]["SupportInstrument"]
@@ -306,6 +308,18 @@ def add_trader_mapping(operator: Dict):
     return {
         "Operator": operator["Id"],
         "Trader": int(str(operator["Id"]) + str(TRADER_SUFFIX)),
+    }
+
+
+def add_energy_carrier_mapping(operator: Dict) -> Dict:
+    """Add mapping between operator and energy carrier for renewable energies"""
+    try:
+        energy_carrier = operator["Attributes"]["EnergyCarrier"]
+    except KeyError:
+        raise ValueError("Missing energy carrier specification!")
+    return {
+        "Operator": operator["Id"],
+        "EnergyCarrier": energy_carrier
     }
 
 

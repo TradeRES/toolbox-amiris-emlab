@@ -106,6 +106,10 @@ def write_amiris_config(data_manager, config, params):
         inserted_agents = config_and_agents[1]
         try:
             res_operators_and_traders = config_and_agents[2]
+            res_operators_and_energy_carriers = config_and_agents[3]
+            if "renewables_energy_carriers" not in data_manager.keys():
+                with data_manager.overwrite:
+                    data_manager[params["data"]["write_to_dmgr"]] = pd.DataFrame(res_operators_and_energy_carriers)
         except IndexError:
             res_operators_and_traders = None
         if "Contracts" in translation_map:
