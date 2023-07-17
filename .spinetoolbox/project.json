@@ -335,17 +335,6 @@
                 ]
             },
             {
-                "name": "from Invest to Next year",
-                "from": [
-                    "Invest",
-                    "bottom"
-                ],
-                "to": [
-                    "Next year",
-                    "left"
-                ]
-            },
-            {
                 "name": "from power plants importer to EmlabDB",
                 "from": [
                     "power plants importer",
@@ -478,28 +467,6 @@
                 ]
             },
             {
-                "name": "from Financial Results to prepare future market",
-                "from": [
-                    "Financial Results",
-                    "right"
-                ],
-                "to": [
-                    "prepare future market",
-                    "right"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to Financial Results",
-                "from": [
-                    "AMIRIS DB",
-                    "right"
-                ],
-                "to": [
-                    "Financial Results",
-                    "left"
-                ]
-            },
-            {
                 "name": "from import AMIRIS to AMIRIS DB",
                 "from": [
                     "import AMIRIS",
@@ -584,6 +551,72 @@
                 ],
                 "to": [
                     "intialization Invest",
+                    "left"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to CRM",
+                "from": [
+                    "EmlabDB2",
+                    "bottom"
+                ],
+                "to": [
+                    "CRM",
+                    "right"
+                ]
+            },
+            {
+                "name": "from Invest to Next year",
+                "from": [
+                    "Invest",
+                    "left"
+                ],
+                "to": [
+                    "Next year",
+                    "bottom"
+                ]
+            },
+            {
+                "name": "from Financial Results to prepare future market",
+                "from": [
+                    "Financial Results",
+                    "right"
+                ],
+                "to": [
+                    "prepare future market",
+                    "right"
+                ]
+            },
+            {
+                "name": "from CRM to Financial Results",
+                "from": [
+                    "CRM",
+                    "right"
+                ],
+                "to": [
+                    "Financial Results",
+                    "right"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to CRM",
+                "from": [
+                    "AMIRIS DB",
+                    "right"
+                ],
+                "to": [
+                    "CRM",
+                    "left"
+                ]
+            },
+            {
+                "name": "from AMIRIS DB to Financial Results",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Financial Results",
                     "left"
                 ]
             }
@@ -818,8 +851,8 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -47.9491256033197,
-            "y": -308.22172051192445,
+            "x": -32.72222276501155,
+            "y": -169.48771687400568,
             "specification": "Prepare future market",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -840,8 +873,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": -24.43289373813419,
-            "y": -132.5681523084883,
+            "x": -164.85877546919826,
+            "y": -47.97424765122079,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
@@ -898,8 +931,8 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -160.63916858479513,
-            "y": -483.8117384074217,
+            "x": -160.6391685847951,
+            "y": -487.1954945937124,
             "url": {
                 "dialect": "sqlite",
                 "host": "",
@@ -991,8 +1024,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -299.4829609408041,
-            "y": -147.65027873652656,
+            "x": -382.38498750492624,
+            "y": -30.910690309497397,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1044,8 +1077,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -43.657141076661404,
-            "y": -480.5630238550334,
+            "x": -40.58318468713761,
+            "y": -302.2735532626538,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1115,6 +1148,28 @@
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
+        },
+        "CRM": {
+            "type": "Tool",
+            "description": "",
+            "x": -31.07975837782992,
+            "y": -488.9211399952574,
+            "specification": "Capacity Mechanism",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_strategic_reserve_ger"
+                }
+            ]
         }
     }
 }

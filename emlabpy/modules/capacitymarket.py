@@ -75,8 +75,9 @@ class CapacityMarketClearing(MarketModule):
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.simulated_prices,
-                                                                                           self.reps.current_year +1 )
+                                                                                           globalNames.future_prices,
+                                                                                           self.reps.current_year + 1 )
+        # todo: replace this by expected future demand?
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
         print("peak load" + str(peakExpectedDemand))
