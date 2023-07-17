@@ -218,7 +218,12 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
 
         template["Agents"].extend(agent_list)
 
-        return template, all_registered_agents, res_operators_and_marketers, res_energy_carriers_and_operators
+        return (
+            template,
+            all_registered_agents,
+            res_operators_and_marketers,
+            res_energy_carriers_and_operators,
+        )
 
     if not template["Agents"]:
         template["Agents"] = agent_list
@@ -317,10 +322,7 @@ def add_energy_carrier_mapping(operator: Dict) -> Dict:
         energy_carrier = operator["Attributes"]["EnergyCarrier"]
     except KeyError:
         raise ValueError("Missing energy carrier specification!")
-    return {
-        "Operator": operator["Id"],
-        "EnergyCarrier": energy_carrier
-    }
+    return {"Operator": operator["Id"], "EnergyCarrier": energy_carrier}
 
 
 def add_trader_by_support_instrument(agent: Dict, template: Dict):
@@ -630,6 +632,7 @@ def evaluate_dispatch_per_group(
     operator_results: Dict,
     conventional_results: pd.DataFrame,
     demand_results: pd.DataFrame,
+    renewables_energy_carriers: pd.DataFrame = None,
     operators_offset: int = 5,
     trader_offset: int = 4,
     demand_offset: int = 1,
@@ -646,6 +649,8 @@ def evaluate_dispatch_per_group(
                 dispatch = initialize_dispatch(operator_results)
             for group in operator_results.groupby("AgentId"):
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
+            if key == "VariableRenewableOperator":
+                dispatch = extract_generation_by_energy_carrier(operator_results, renewables_energy_carriers, dispatch)
         elif key == "StorageTrader":
             storage_results = val[
                 [
@@ -671,7 +676,14 @@ def evaluate_dispatch_per_group(
                 dispatch["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
                 final_storage_levels.at[group[0], "value"] = group[1]["StoredEnergyInMWH"].iloc[-1]
         elif key == "ElectrolysisTrader":
-            electrolysis_results = val[["TimeStep", "AgentId", "AwardedEnergyInMWH", "ProducedHydrogenInMWH"]].dropna()
+            electrolysis_results = val[
+                [
+                    "TimeStep",
+                    "AgentId",
+                    "AwardedEnergyInMWH",
+                    "ProducedHydrogenInMWH",
+                ]
+            ].dropna()
             electrolysis_results["new_time_step"] = electrolysis_results["TimeStep"] - trader_offset
             electrolysis_results = electrolysis_results.set_index("new_time_step")
             if dispatch.empty:
@@ -721,3 +733,20 @@ def initialize_dispatch(dispatch_df) -> pd.DataFrame:
         ],
         data=0,
     )
+
+
+def extract_generation_by_energy_carrier(
+    operator_results: pd.DataFrame, renewables_energy_carriers: pd.DataFrame, dispatch: pd.DataFrame
+) -> pd.DataFrame:
+    """Extract generation from variable renewables per energy carrier"""
+    combined_df = pd.merge(
+        operator_results.reset_index(), renewables_energy_carriers, how="left", left_on="AgentId", right_on="Operator"
+    )
+    combined_df = combined_df.set_index("new_time_step")
+    for energy_carrier, values in combined_df.groupby("EnergyCarrier"):
+        if energy_carrier not in dispatch.columns:
+            dispatch[energy_carrier] = 0
+        for group in values.groupby("AgentId"):
+            dispatch[energy_carrier] += group[1]["AwardedPowerInMWH"]
+
+    return dispatch

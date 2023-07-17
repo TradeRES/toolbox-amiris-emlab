@@ -257,6 +257,7 @@ def run_amiris(data_manager, config, params):
 def aggregate_results(data_manager, config, params):
     """Calculate refinancing-related results for AMIRIS agents"""
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
+    renewables_energy_carriers = data_manager["renewables_energy_carriers"]
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
     to_concat = []
@@ -336,7 +337,7 @@ def aggregate_results(data_manager, config, params):
     overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
     generation_per_group, final_storage_levels = evaluate_dispatch_per_group(
-        operator_results, conventional_results_grouped, residual_load_results[DEMAND[0]]
+        operator_results, conventional_results_grouped, residual_load_results[DEMAND[0]], renewables_energy_carriers
     )
 
     if conventional_series:
