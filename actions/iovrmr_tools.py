@@ -574,10 +574,10 @@ def calculate_residual_load(
         else:
             raise ValueError("Received invalid key for residual_load_results!")
 
-    overall_res_generation = calculate_overall_value(res_generation_to_aggregate)
+    overall_vres_generation = calculate_overall_value(res_generation_to_aggregate)
     overall_demand = calculate_overall_value(demand_to_aggregate)
 
-    residual_load = overall_demand - overall_res_generation
+    residual_load = overall_demand - overall_vres_generation
     residual_load.name = "residual_load"
     residual_load = residual_load.round(4)
     residual_load = residual_load.reset_index().drop(columns="new_time_step")["residual_load"]
