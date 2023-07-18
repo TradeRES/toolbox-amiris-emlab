@@ -100,7 +100,7 @@ class PrepareMarket(DefaultModule):
                     new_demand[1] = new_demand[1].apply(lambda x: x * fuel_price)
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else:  # for now, only have dynamic data for NL case
-                    totaldemand = 0
+                    peakdemand = 0
                     print("FUEL_PRICE")
                     print(fuel_price) # fuel price can also be seen as price increase
                     load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
@@ -112,7 +112,7 @@ class PrepareMarket(DefaultModule):
                                 load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, ( "LS_original_" + load_shedder_name + ".csv"))
                                 originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                 originalload[1] = (originalload[1] * fuel_price)
-                                totaldemand +=originalload[1].sum()
+                                peakdemand += originalload[1]
                                 if calculatedprices == "next_year_price":
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
                                 else: # calculatedprices == "future market":
@@ -130,9 +130,9 @@ class PrepareMarket(DefaultModule):
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
                                 originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                 originalload[1] = (originalload[1] * fuel_price)
-                                totaldemand += originalload[1]
+                                peakdemand += originalload[1]
 
-                    total_peak_demand = max(totaldemand)
+                    total_peak_demand = max(peakdemand)
                     total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                     market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
                     demand_name = calculatedprices[:-5] + "_demand_peak"

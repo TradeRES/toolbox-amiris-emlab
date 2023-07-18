@@ -284,7 +284,7 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
 
 
 def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                     CM_clearing_price, total_costs_CM, ran_capacity_market, path_to_plots, colors_unique_techs):
+                     CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, path_to_plots, colors_unique_techs):
     # df.plot(x='Team', kind='bar', stacked=True,
     axs26 = accepted_pp_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
     axs26.set_axisbelow(True)
@@ -317,7 +317,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     fig27 = axs27.get_figure()
     fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight', dpi=300)
 
-    if ran_capacity_market == True:
+    if ran_CRM == "capacity_market":
         axs28 = CM_clearing_price.plot()
         axs28.set_axisbelow(True)
         plt.xlabel('Simulation year', fontsize='medium')
@@ -337,6 +337,18 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs29.set_title('Capacity Mechanism total costs')
         fig29 = axs29.get_figure()
         fig29.savefig(path_to_plots + '/' + 'Capacity Mechanism total costs.png', bbox_inches='tight', dpi=300)
+
+    else:
+        axs29 = revenues_from_SR.plot()
+        axs29.set_axisbelow(True)
+        plt.xlabel('tick', fontsize='medium')
+        plt.ylabel('[Eur]', fontsize='medium')
+        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid()
+        axs29.set_title('Strategic Reserve operator revenues')
+        fig29 = axs29.get_figure()
+        fig29.savefig(path_to_plots + '/' + 'revenues_from_SR.png', bbox_inches='tight', dpi=300)
+
 
 
 def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, profits_with_loans_all, path_to_plots, technology_colors):
@@ -1482,12 +1494,12 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
     number_accepted_pp_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
     capacity_mechanisms_per_tech = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
     CM_clearing_price = pd.DataFrame(index=ticks_to_generate).fillna(0)
-    revenues_from_market = pd.DataFrame(index=ticks_to_generate).fillna(0)
+    revenues_from_SR = pd.DataFrame(index=ticks_to_generate).fillna(0)
 
     # attention: FOR STRATEGIC RESERVES
     sr_operator = reps.get_strategic_reserve_operator(reps.country)
     if sr_operator.cash != 0:
-        ran_capacity_market = False
+        ran_CRM = "strategic_reserve"
         for tick in ticks_to_generate:
             accepted_per_tick = sr_operator.list_of_plants_all[tick]
             for technology_name in unique_technologies:
@@ -1495,11 +1507,11 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
                     if reps.power_plants[accepted_plant].technology.name == technology_name:
                         capacity_mechanisms_per_tech.loc[tick, technology_name] += reps.power_plants[
                             accepted_plant].capacity
-            # todo: finish the revenues
-            # revenues_from_market.at[tick,0] = sr_operator.revenues_per_year[tick]
+            revenues_from_SR.at[tick,0] = sr_operator.revenues_per_year_all[tick]
+
     # attention: FOR CAPACITY MARKETS
     else:
-        ran_capacity_market = True
+        ran_CRM = "capacity_market"
         market = reps.get_capacity_market_in_country(reps.country)
         for tick in ticks_to_generate:
             accepted_per_tick = reps.get_accepted_CM_bids(tick)  # accepted amount from bids todo change to erase bids
@@ -1521,7 +1533,8 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
         CM_revenues_per_technology[technology_name] = total_revenues_per_technology
     total_costs_CM = CM_revenues_per_technology.sum(axis=1, skipna=True)
 
-    return CM_revenues_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM, ran_capacity_market
+    return CM_revenues_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM, \
+        ran_CRM, revenues_from_SR
 
 
 # def market_value_per_technology(reps, unique_technologies, years_to_generate):
@@ -1969,7 +1982,7 @@ def prepare_monthly_electricity_prices(electricity_prices):
 
 
 def generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
-                   calculate_capacity_mechanisms, calculate_vres_support):
+                   calculate_vres_support):
     print("Databases read")
     unique_technologies = reps.get_unique_technologies_names()
     # conventional_technologies = ['Coal PSC', "Fuel oil PGT", 'Lignite PSC', "CCGT_CHP_backpressure_DH", \
@@ -2119,11 +2132,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
         CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
-            total_costs_CM, ran_capacity_market = prepare_accepted_CapacityMechanism(
+            total_costs_CM, ran_CRM, revenues_from_SR = prepare_accepted_CapacityMechanism(
             reps, unique_technologies,
             ticks_to_generate)
         plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                         CM_clearing_price, total_costs_CM, ran_capacity_market, path_to_plots, colors_unique_techs)
+                         CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, path_to_plots, colors_unique_techs)
 
     if calculate_vres_support == True:
         yearly_vres_support = calculating_RES_support(reps, years_to_generate)
@@ -2141,13 +2154,17 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
         # plotting costs to society
         annual_generation = all_techs_generation.sum().values
+        if calculate_vres_support == True:
+            VRES_price = yearly_vres_support["Vres support"] / annual_generation.T
+            average_electricity_price['VRES support'] = VRES_price.values
         if calculate_capacity_mechanisms == True:
             CM_price = total_costs_CM / annual_generation
-            average_electricity_price['CapacityMarket'] = CM_price.values
-            if calculate_vres_support == True:
-                VRES_price = yearly_vres_support["Vres support"] / annual_generation.T
-                average_electricity_price['VRES support'] = VRES_price.values
-                plot_costs_to_society(average_electricity_price, path_to_plots)
+            average_electricity_price['CRM_Costs'] = CM_price.values
+            if ran_CRM == "strategic_reserve":
+                revenues_SR = revenues_from_SR[0] / annual_generation
+                average_electricity_price['CRM_revenues'] = revenues_SR.values
+
+        plot_costs_to_society(average_electricity_price, path_to_plots)
 
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
@@ -2219,7 +2236,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Commissioned_capacity_data[scenario_name] = capacity_per_status.InPipeline
 
         if calculate_capacity_mechanisms == True:
-            CM_data[scenario_name] = average_electricity_price['CapacityMarket']
+            CM_data[scenario_name] = average_electricity_price['CRM_Costs']
             clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
 
@@ -2423,29 +2440,30 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "test.xlsx"
+results_excel = "extremes3.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-#SCENARIOS = ["NL-verification"]
+SCENARIOS = ["NL2090_SD0_PH0_MI1000000000_totalProfits_NL-SR_all_years"]
 
-SCENARIOS = ["NL-stochastic_demand_increase"]
+#SCENARIOS = ["NL-SR"]
+
 #SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(2009)"]
 # SCENARIOS = ["NL-iteration1"]
-# SCENARIOS = ["NL-fix_profiles", "NL-iteration1", "NL-iteration2",
+# SCENARIOS = ["NL-fix_profiles", "NL-stochastic_increase_demand", "NL-iteration1", "NL-iteration2",
 #              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
 
-existing_scenario = False
+existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech =  "hydrogen_turbine"  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"#  None
+test_tech =  None # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
 industrial_demand_as_flex_demand_with_cap = True
-calculate_monthly_generation = False #!!!!!!!!!!!!!!For the new plots
+calculate_monthly_generation = True #!!!!!!!!!!!!!!For the new plots
 calculate_hourly_shedders = False
 load_shedding_plots = True
 
@@ -2453,7 +2471,9 @@ calculate_investments = True
 calculate_investments_per_iteration = False  # ProfitsC
 calculate_profits_candidates_per_iteration = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
-capacity_mechanisms = False
+
+global calculate_capacity_mechanisms
+calculate_capacity_mechanisms = True
 calculate_vres_support = False
 electrolyzer_read = True
 
@@ -2536,7 +2556,7 @@ for scenario_name in SCENARIOS:
         writeInfo(reps, path_to_plots, scenario_name)
 
         generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
-                       capacity_mechanisms, calculate_vres_support)
+                       calculate_vres_support)
 
     except Exception as e:
         logging.error('Exception occurred: ' + str(e))
