@@ -78,7 +78,11 @@ class CreatingFinancialReports(DefaultModule):
 
             self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
             # total profits are used to decide for decommissioning saved as totalProfits
-            operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + fixed_and_variable_costs
+
+            if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
+                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + fixed_and_variable_costs
+            else:
+                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + fixed_and_variable_costs
 
             financialPowerPlantReport.totalProfits = operational_profit  # saved as totalProfits
 

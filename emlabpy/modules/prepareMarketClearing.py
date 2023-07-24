@@ -63,7 +63,9 @@ class PrepareMarket(DefaultModule):
         self.reps.dbrw.stage_peak_dispatchable_capacity(peak_dispatchable_capacity, self.reps.current_year)
 
     def sort_power_plants_by_age(self):  # AMIRIS seem to give dispatch priority according to the order in the excel.
+        print(self.power_plants_list[0].age)
         self.power_plants_list.sort(key=lambda x: x.age)
+        print(self.power_plants_list[0].age)
 
     def setTimeHorizon(self):
         self.tick = self.reps.current_tick
