@@ -1077,8 +1077,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": -40.58318468713761,
-            "y": -302.2735532626538,
+            "x": 85.616504055198,
+            "y": -302.27355326265376,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [

@@ -2481,11 +2481,11 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "Strategic_Reserve.xlsx"
+results_excel = "Strategic_Reserve2.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-SCENARIOS = ["NL2090_SD0_PH0_MI1000000000_totalProfits_NL-SR_dummy"]
+SCENARIOS = ["NL-strategic_reserve_7_800", "NL-strategic_reserve_15_800", "NL-strategic_reserve_15_1600", ]
 
 #SCENARIOS = ["NL-noSR", "NL-strategic_reserve_7", "NL-strategic_reserve_15"]
 
@@ -2496,8 +2496,8 @@ SCENARIOS = ["NL2090_SD0_PH0_MI1000000000_totalProfits_NL-SR_dummy"]
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
 
-existing_scenario = False
-save_excel = False
+existing_scenario = True
+save_excel = True
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
