@@ -33,6 +33,13 @@ Agents:
       ForecastPeriodInHours: 168
       ForecastRequestOffsetInSeconds: 27
 
+  - Type: MeritOrderForecaster
+    Id: 666
+    Attributes:
+      DistributionMethod: SAME_SHARES
+      ForecastPeriodInHours: 168
+      ForecastRequestOffsetInSeconds: 27
+
   - Type: SupportPolicy
     Id: 90
     Attributes:

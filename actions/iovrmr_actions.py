@@ -35,7 +35,7 @@ from iovrmr_tools import (
     calculate_residual_load,
     calculate_overall_res_infeed,
     evaluate_dispatch_per_group,
-    CONVENTIONAL_RESULTS_GROUPED,
+    CONVENTIONAL_RESULTS_GROUPED, get_storage_strategist_type, adjust_contracts_for_storages,
 )
 
 
@@ -117,9 +117,13 @@ def write_amiris_config(data_manager, config, params):
             if not inserted_agents and amiris_map == "amiris-config/supportPolicyFieldMap.yaml":
                 inserted_agents = [{"SupportPolicy": 90}]
             if inserted_agents:
-                config_file = insert_contracts_from_map(
-                    inserted_agents, translation_map["Contracts"], config_file, res_operators_and_traders, data
-                )
+                if list(inserted_agents[0].keys())[0] == "StorageTrader":
+                    strategist_type = get_storage_strategist_type(inserted_agents, config_file)
+                    config_file = adjust_contracts_for_storages(strategist_type, inserted_agents, config_file, data)
+                else:
+                    config_file = insert_contracts_from_map(
+                        inserted_agents, translation_map["Contracts"], config_file, res_operators_and_traders, data
+                    )
 
     write_yaml(config_file, output_file_path)
 
