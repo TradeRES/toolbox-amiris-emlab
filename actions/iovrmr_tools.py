@@ -56,6 +56,7 @@ class AmirisOutputs(Enum):
     CONTRIBUTION_MARGIN_IN_EURO = auto()
     PRODUCTION_IN_MWH = auto()
     CONSUMPTION_IN_MWH = auto()
+    ENERGY_SHEDDED_IN_MWH = auto()
 
 
 def raise_and_log_critical_error(error_message: str) -> NoReturn:
@@ -273,8 +274,9 @@ def create_agent(row, translation: List[Dict]) -> Dict:
     return agent
 
 
-def get_elements_from_list(value: List, row) -> List[Dict]:
+def get_elements_from_list(value: List, row: pd.Series) -> List[Dict]:
     """Obtain list-like elements"""
+    value = value.copy()
     length = value.pop(0)["length"]
     attr_dict = {col_count: {} for col_count in range(length)}
     for entry in value:
@@ -634,23 +636,17 @@ def calculate_residual_load(
 ) -> pd.Series:
     """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
     res_generation_to_aggregate = []
-    overall_demand = None
+    demand_to_aggregate = []
     for key, val in residual_load_results.items():
         if key in OPERATOR_AGENTS:
-            value = val.loc[val["AwardedPowerInMWH"].notna()]
-            value["new_time_step"] = value["TimeStep"] - operators_offset
-            res_generation_to_aggregate.append(value.groupby("new_time_step").sum()["AwardedPowerInMWH"])
+            res_generation_to_aggregate.append(extract_values(val, "AwardedPowerInMWH", -operators_offset))
         elif key in DEMAND:
-            value = val.copy()
-            value["new_time_step"] = value["TimeStep"] + demand_offset
-            overall_demand = value.set_index("new_time_step")["RequestedEnergyInMWH"]
-            overall_demand = overall_demand.loc[overall_demand.notna()]
+            demand_to_aggregate.append(extract_values(val, "RequestedEnergyInMWH", demand_offset))
         else:
             raise ValueError("Received invalid key for residual_load_results!")
 
-    overall_res_generation = pd.Series(index=res_generation_to_aggregate[0].index, data=0)
-    for res_generation in res_generation_to_aggregate:
-        overall_res_generation += res_generation
+    overall_res_generation = calculate_overall_value(res_generation_to_aggregate)
+    overall_demand = calculate_overall_value(demand_to_aggregate)
 
     residual_load = overall_demand - overall_res_generation
     residual_load.name = "residual_load"
@@ -658,6 +654,22 @@ def calculate_residual_load(
     residual_load = residual_load.reset_index().drop(columns="new_time_step")["residual_load"]
 
     return residual_load
+
+
+def extract_values(val: pd.DataFrame, col_name: str, offset: int):
+    """Extract time series values for one type of agents"""
+    value = val.loc[val[col_name].notna()]
+    value["new_time_step"] = value["TimeStep"] + offset
+    return value.groupby("new_time_step").sum()[col_name]
+
+
+def calculate_overall_value(to_aggregate: List[pd.DataFrame]):
+    """Calculate overall time series value for one type of agents"""
+    overall_value = pd.Series(index=to_aggregate[0].index, data=0)
+    for entry in to_aggregate:
+        overall_value += entry
+
+    return overall_value
 
 
 def calculate_overall_res_infeed(
@@ -749,6 +761,8 @@ def evaluate_dispatch_per_group(
     for group in conventional_generation.groupby("AgentId"):
         dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
 
+    # Ensure data set is sorted by agent ids in increasing order
+    demand_results = demand_results.sort_values(by=["AgentId", "TimeStep"])
     demand_results["AwardedEnergyInMWH"].fillna(method="bfill", inplace=True)
     demand_dispatch = demand_results.dropna()
     demand_dispatch["Shedding"] = demand_dispatch["RequestedEnergyInMWH"] - demand_dispatch["AwardedEnergyInMWH"]
@@ -757,6 +771,7 @@ def evaluate_dispatch_per_group(
 
     for group in demand_dispatch.groupby("AgentId"):
         dispatch["load_shedding"] += group[1]["Shedding"]
+        dispatch[f"unit_{group[0]}"] = group[1]["Shedding"]
 
     dispatch.reset_index(drop=True, inplace=True)
 

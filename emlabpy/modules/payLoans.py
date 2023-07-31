@@ -53,5 +53,3 @@ class PayForLoansRole(DefaultModule):
                                     self.agent.CF_DOWNPAYMENT -= payment
                                 self.reps.dbrw.set_number_downpayments_done(plant)
                                 plant.downpayment_in_year += payment
-                                # print( "Paying {0} (euro) for downpayment {1}".format(payment, plant.name))
-                                # print("Number of payments done {0}, total needed: {1}".format(downpayment.getNumberOfPaymentsDone(), downpayment.getTotalNumberOfPayments()))

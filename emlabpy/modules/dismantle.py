@@ -2,7 +2,7 @@ from util import globalNames
 from modules.defaultmodule import DefaultModule
 from util.repository import Repository
 import logging
-from spinedb_api import DatabaseMapping
+from domain.CandidatePowerPlant import *
 import pandas as pd
 
 class Dismantle(DefaultModule):
@@ -22,6 +22,7 @@ class Dismantle(DefaultModule):
         self.check_ids(reps)
 
     def act(self):
+
         if self.reps.current_tick > 0: # on the first year the age shouldnt be increased
             # add one year to the age of power plants
             self.add_one_year_to_age()
@@ -56,28 +57,17 @@ class Dismantle(DefaultModule):
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
-            if self.reps.current_tick >= self.reps.start_profit_based_dismantling_tick:
-                profit = self.calculateAveragePastOperatingProfit(plant, horizon)
-
-                if profit <= requiredProfit:
-                   # operating loss (incl O&M cost)
-                    print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
-                          .format(plant.name, horizon, profit, requiredProfit))
-                    self.set_plant_dismantled(plant)
-                else:
-                    self.increase_fixed_cost(plant)
-
+            profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+            if profit <= requiredProfit:
+                print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                      .format(plant.name, horizon, profit, requiredProfit))
+                self.set_plant_dismantled(plant)
             else:
-                # if the plants cannot be deommmissioned yet, decrease efficiency
-                if plant.age < plant.technology.getExpectedLifetime():
-                    print("Age is less than expected life time!!! shouldnt be")
-                else:
-                    self.increase_fixed_cost(plant)
+                self.increase_fixed_cost(plant)
 
     def increase_fixed_cost(self, plant):
         print("dont dismantle but increase FOM of  {} ".format(plant.name))
-        passed_years = plant.age - plant.technology.getExpectedLifetime()
-        ModifiedOM = plant.getTechnology().get_fixed_operating_by_time_series(passed_years) * plant.getActualNominalCapacity()
+        ModifiedOM = plant.getTechnology().get_fixed_operating_by_time_series(plant.age, plant.commissionedYear) * plant.get_actual_nominal_capacity()
         plant.setActualFixedOperatingCost(ModifiedOM)
         self.reps.dbrw.stage_fixed_operating_costs(plant)
 
@@ -121,11 +111,21 @@ class Dismantle(DefaultModule):
                 if  self.reps.current_tick >= powerplant.endOfLife :
                     self.set_plant_dismantled(powerplant)
                     print(powerplant.name + "decommissioned from input")
+
             elif powerplant.age >= technology.expected_lifetime + technology.maximumLifeExtension:
-                self.set_plant_dismantled(powerplant)
-                print("decommissioned cause of passed age "  + powerplant.name)
-            elif powerplant.age > technology.expected_lifetime:
-                powerplant.status = globalNames.power_plant_status_to_be_decommissioned
+                if self.reps.current_tick >= self.reps.start_dismantling_tick:
+                    self.set_plant_dismantled(powerplant)
+                else:
+                    powerplant.status = globalNames.power_plant_status_operational
+                    self.increase_fixed_cost(powerplant)
+
+            elif  powerplant.age >= technology.expected_lifetime:
+                if self.reps.current_tick >= self.reps.start_dismantling_tick:
+                    powerplant.status = globalNames.power_plant_status_to_be_decommissioned
+                else:
+                    # dont decommission yet but increase costs
+                    powerplant.status = globalNames.power_plant_status_operational
+                    self.increase_fixed_cost(powerplant)
             elif powerplant.age >= 0:
                 powerplant.status = globalNames.power_plant_status_operational
             elif powerplant.age < 0:

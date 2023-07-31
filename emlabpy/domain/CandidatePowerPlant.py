@@ -20,11 +20,13 @@ class CandidatePowerPlant(PowerPlant):
         self.viableInvestment = True # initially all candidate power plants should be investable
         self.expectedEndOfLife = 0
         self.actualNominalCapacity = 0
-        self.capacity = 1 # all power plants are first tested for a capacity of 1 # capacity is the one being tested
+
         self.historicalCvarDummyPlant = 0
         self.electricityOutput = 0
         self.flagOutputChanged = True
+        self.capacity = 1 # all power plants are first tested for a capacity of 1 # capacity is the one being tested
         self.capacityTobeInstalled = 0
+        self.capacityRealistic = 1
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'Id':
@@ -39,15 +41,20 @@ class CandidatePowerPlant(PowerPlant):
         # capacityTobeInstalled is the one being really installed, after the test of dummy capacity has been tested
 
         elif parameter_name == "Realistic_capacity":
-            if reps.realistic_candidate_capacities_tobe_installed == True:
+            self.capacityRealistic = int(parameter_value)
+            if reps.last_investable_technology == True:
                 self.capacityTobeInstalled = int(parameter_value)
-            elif reps.realistic_candidate_capacities_tobe_installed == False:
-                self.capacityTobeInstalled = reps.dummy_capacity_to_be_installed
-        # capacity is the one being tested
-            if reps.realistic_candidate_capacities_to_test == True :
                 self.capacity = int(parameter_value)
-            elif reps.realistic_candidate_capacities_to_test == False:
-                self.capacity = reps.dummy_capacity_to_test
+            else:
+                if reps.realistic_candidate_capacities_tobe_installed == True:
+                    self.capacityTobeInstalled = int(parameter_value)
+                elif reps.realistic_candidate_capacities_tobe_installed == False:
+                    self.capacityTobeInstalled = reps.dummy_capacity_to_be_installed
+            # capacity is the one being tested
+                if reps.realistic_candidate_capacities_to_test == True :
+                    self.capacity = int(parameter_value)
+                elif reps.realistic_candidate_capacities_to_test == False:
+                    self.capacity = reps.dummy_capacity_to_test
 
     def specifyCandidatePPCapacityLocationOwner(self, reps, energyProducer):
         self.setOwner(energyProducer)

@@ -1,8 +1,759 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c49df8db-7577-4816-87b0-abcbf1afb1be" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.spinetoolbox/project.json" beforeDir="false" afterPath="$PROJECT_DIR$/.spinetoolbox/project.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/amiris_workflow/amiris_data_structure.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/amiris_workflow/amiris_data_structure.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emlabpy/plots/AMIRIS results-industrialDemandaselectrolyzer.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/AMIRIS results-industrialDemandaselectrolyzer.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emlabpy/plots/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/plots.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emlabpy/plots/visualizing load and yield profiles.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/visualizing load and yield profiles.ipynb" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2MMUqOgLXxvep8BFG6tCizb2za1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;last_opened_file_path&quot;: &quot;C:/Programs/Anaconda3/python.exe&quot;
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/isanchezjimene/Desktop/emlab-generation2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.build&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\toolbox-amiris-emlab\emlabpy\domain" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\toolbox-amiris-emlab\preparation_scripts" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.plots">
+    <configuration name="AMIRIS" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/amiris_workflow" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/amiris_workflow/run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Capacity_Market" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\amiris_db\AMIRIS db.sqlite&quot; &quot;run_capacity_market&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Strategic reserve ger" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\amiris_db\AMIRIS db.sqlite&quot; &quot;run_strategic_reserve_ger&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dates to matrix" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/preparation_scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/preparation_scripts/dates to matrix.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="delete" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/delete.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="delete_ungrouped_plants" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/delete_ungrouped_plants.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dismantle" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;none&quot; &quot;run_decommission_module&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="financial_reports" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\amiris_db\AMIRIS db.sqlite&quot; &quot;run_financial_results&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="futuremarket" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;none&quot; &quot;run_future_market&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="increment clock" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy/util" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/util/clock.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;increment_clock&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="initialize clock" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy/util" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/util/clock.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;initialize_clock&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="initialize power plants" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;none&quot; &quot;run_initialize_power_plants&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="invest" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;none&quot; &quot;run_investment_module&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plots" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/plots/plots.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\amiris_db\AMIRIS db.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\energy_exchange\energy exchange.sqlite&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="prepare market" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;none&quot; &quot;run_prepare_next_year_market_clearing&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="prepare_power_plants" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/preparation_scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/preparation_scripts/prepare_power_plants.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="testEMLABPY" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/testEMLABPY.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_merit_order" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy/plots" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/plots/test_merit_order.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.Capacity_Market" />
+      <item itemvalue="Python.Strategic reserve ger" />
+      <item itemvalue="Python.testEMLABPY" />
+      <item itemvalue="Python.plots" />
+      <item itemvalue="Python.financial_reports" />
+      <item itemvalue="Python.prepare market" />
+      <item itemvalue="Python.initialize power plants" />
+      <item itemvalue="Python.dismantle" />
+      <item itemvalue="Python.futuremarket" />
+      <item itemvalue="Python.invest" />
+      <item itemvalue="Python.AMIRIS" />
+      <item itemvalue="Python.initialize clock" />
+      <item itemvalue="Python.increment clock" />
+      <item itemvalue="Python.test_merit_order" />
+      <item itemvalue="Python.delete" />
+      <item itemvalue="Python.delete_ungrouped_plants" />
+      <item itemvalue="Python.prepare_power_plants" />
+      <item itemvalue="Python.dates to matrix" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.test_merit_order" />
+        <item itemvalue="Python.delete" />
+        <item itemvalue="Python.delete_ungrouped_plants" />
+        <item itemvalue="Python.prepare_power_plants" />
+        <item itemvalue="Python.dates to matrix" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c49df8db-7577-4816-87b0-abcbf1afb1be" name="Changes" comment="" />
+      <created>1677577135218</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1677577135218</updated>
+      <workItem from="1677577136484" duration="3041000" />
+      <workItem from="1677663888700" duration="9736000" />
+      <workItem from="1677747916407" duration="13886000" />
+      <workItem from="1677797514971" duration="10596000" />
+      <workItem from="1677870671450" duration="14425000" />
+      <workItem from="1678053124989" duration="3374000" />
+      <workItem from="1678093902769" duration="13013000" />
+      <workItem from="1678179655047" duration="6717000" />
+      <workItem from="1678188253116" duration="11907000" />
+      <workItem from="1678262455464" duration="6711000" />
+      <workItem from="1678273545983" duration="695000" />
+      <workItem from="1678274662677" duration="969000" />
+      <workItem from="1678279060389" duration="640000" />
+      <workItem from="1678354478642" duration="165000" />
+      <workItem from="1678458970876" duration="2174000" />
+      <workItem from="1678656252937" duration="2074000" />
+      <workItem from="1678658969678" duration="992000" />
+      <workItem from="1678699089866" duration="3191000" />
+      <workItem from="1678782750135" duration="19192000" />
+      <workItem from="1679304330132" duration="17354000" />
+      <workItem from="1679387993162" duration="9698000" />
+      <workItem from="1679406364573" duration="9200000" />
+      <workItem from="1679475768093" duration="3783000" />
+      <workItem from="1679483820236" duration="52020000" />
+      <workItem from="1679843189821" duration="9292000" />
+      <workItem from="1679924639933" duration="1255000" />
+      <workItem from="1680034799594" duration="36000" />
+      <workItem from="1680097910795" duration="28000" />
+      <workItem from="1680262901192" duration="1332000" />
+      <workItem from="1680526157388" duration="15425000" />
+      <workItem from="1680593887587" duration="35511000" />
+      <workItem from="1680791958116" duration="7801000" />
+      <workItem from="1681240373975" duration="7792000" />
+      <workItem from="1681281849224" duration="13629000" />
+      <workItem from="1681375384528" duration="18017000" />
+      <workItem from="1681454443695" duration="17165000" />
+      <workItem from="1681589328729" duration="6638000" />
+      <workItem from="1681671493292" duration="29824000" />
+      <workItem from="1681804658850" duration="40424000" />
+      <workItem from="1681976076379" duration="11729000" />
+      <workItem from="1682003415464" duration="5960000" />
+      <workItem from="1682063422869" duration="2143000" />
+      <workItem from="1682320256282" duration="33290000" />
+      <workItem from="1682459971135" duration="1376000" />
+      <workItem from="1682494770529" duration="10189000" />
+      <workItem from="1682526115260" duration="3661000" />
+      <workItem from="1682668745504" duration="22038000" />
+      <workItem from="1683014726952" duration="14550000" />
+      <workItem from="1683097905386" duration="72119000" />
+      <workItem from="1683530390143" duration="31314000" />
+      <workItem from="1683615563749" duration="5353000" />
+      <workItem from="1683707503139" duration="3816000" />
+      <workItem from="1683792470923" duration="13022000" />
+      <workItem from="1683879312797" duration="1775000" />
+      <workItem from="1683897750678" duration="10709000" />
+      <workItem from="1684098772727" duration="11065000" />
+      <workItem from="1684172305459" duration="1372000" />
+      <workItem from="1684224375967" duration="22281000" />
+      <workItem from="1684258335783" duration="8196000" />
+      <workItem from="1684298993915" duration="6667000" />
+      <workItem from="1684405535003" duration="37033000" />
+      <workItem from="1684658502063" duration="10477000" />
+      <workItem from="1684740908238" duration="10901000" />
+      <workItem from="1684757934084" duration="11315000" />
+      <workItem from="1684793078179" duration="4219000" />
+      <workItem from="1684828575153" duration="16161000" />
+      <workItem from="1684919838077" duration="16649000" />
+      <workItem from="1685088211242" duration="19875000" />
+      <workItem from="1685183654544" duration="3598000" />
+      <workItem from="1685189568219" duration="1279000" />
+      <workItem from="1685210916750" duration="3498000" />
+      <workItem from="1685217299532" duration="1562000" />
+      <workItem from="1685260153661" duration="8939000" />
+      <workItem from="1685433294502" duration="215000" />
+      <workItem from="1685433523625" duration="368000" />
+      <workItem from="1685433926951" duration="3299000" />
+      <workItem from="1685519380983" duration="14383000" />
+      <workItem from="1685605786552" duration="13195000" />
+      <workItem from="1685694569637" duration="32459000" />
+      <workItem from="1685946226795" duration="12357000" />
+      <workItem from="1685985065252" duration="4730000" />
+      <workItem from="1685997824823" duration="2676000" />
+      <workItem from="1686038128913" duration="1787000" />
+      <workItem from="1686148183741" duration="927000" />
+      <workItem from="1686644499639" duration="673000" />
+      <workItem from="1686645203290" duration="23000" />
+      <workItem from="1686668162849" duration="2146000" />
+      <workItem from="1686730870123" duration="3259000" />
+      <workItem from="1686816909784" duration="613000" />
+      <workItem from="1686902946145" duration="1519000" />
+      <workItem from="1687109528186" duration="8767000" />
+      <workItem from="1687260559578" duration="3042000" />
+      <workItem from="1687282001539" duration="5178000" />
+      <workItem from="1687333629941" duration="9357000" />
+      <workItem from="1687418860661" duration="4946000" />
+      <workItem from="1687463731745" duration="8774000" />
+      <workItem from="1687765993760" duration="48516000" />
+      <workItem from="1687896724132" duration="7741000" />
+      <workItem from="1687930687541" duration="2219000" />
+      <workItem from="1688126190283" duration="40781000" />
+      <workItem from="1688545753967" duration="30540000" />
+      <workItem from="1688986620756" duration="1148000" />
+      <workItem from="1689327333636" duration="1181000" />
+      <workItem from="1689584768923" duration="6852000" />
+      <workItem from="1689666997713" duration="11109000" />
+      <workItem from="1689768314433" duration="6327000" />
+      <workItem from="1689836379473" duration="12726000" />
+      <workItem from="1689948283190" duration="7498000" />
+      <workItem from="1689962368099" duration="2622000" />
+      <workItem from="1690191087634" duration="13029000" />
+      <workItem from="1690276084558" duration="1598000" />
+      <workItem from="1690358966102" duration="2203000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../Programs/Anaconda3/envs/emlabpy/Lib/site-packages/util/spinedb_reader_writer.py</url>
+          <line>877</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../Programs/Anaconda3/envs/emlabpy/Lib/site-packages/modules/prepareFutureMarketClearing.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../Programs/Anaconda3/envs/emlabpy/Lib/site-packages/domain/markets.py</url>
+          <line>34</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
+          <line>1746</line>
+          <option name="timeStamp" value="350" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/domain/trends.py</url>
+          <line>102</line>
+          <option name="timeStamp" value="399" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/util/clock.py</url>
+          <line>172</line>
+          <option name="timeStamp" value="460" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/util/clock.py</url>
+          <line>187</line>
+          <option name="timeStamp" value="480" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/util/clock.py</url>
+          <line>185</line>
+          <option name="timeStamp" value="481" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/modules/capacitymarket.py</url>
+          <line>84</line>
+          <option name="timeStamp" value="491" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/modules/dismantle.py</url>
+          <line>29</line>
+          <option name="timeStamp" value="536" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
+          <line>2308</line>
+          <option name="timeStamp" value="546" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/modules/prepareMarketClearing.py</url>
+          <line>65</line>
+          <option name="timeStamp" value="575" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="financialPowerPlantReport.capacityMarketRevenues_in_year - fixed_on_m_cost - dispatch.variable_costs" language="Python" />
+        <watch expression="dispatch.revenues" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$increment_clock.coverage" NAME="increment clock Coverage Results" MODIFIED="1688401578803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/util" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$delete.coverage" NAME="delete Coverage Results" MODIFIED="1682685723189" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$convert6hrto1hr.coverage" NAME="convert_tomonthly_demand Coverage Results" MODIFIED="1678896976325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepareFutureMarketClearing.coverage" NAME="prepareFutureMarketClearing Coverage Results" MODIFIED="1681679073060" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/modules" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$delete_ungrouped_plants.coverage" NAME="delete_ungrouped_plants Coverage Results" MODIFIED="1682681375194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_heating_demand.coverage" NAME="prepare_heating_demand Coverage Results" MODIFIED="1679305933013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$dismantle.coverage" NAME="dismantle Coverage Results" MODIFIED="1689802870048" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$test_merit_order.coverage" NAME="test_merit_order Coverage Results" MODIFIED="1685987758472" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/plots" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$invest.coverage" NAME="invest Coverage Results" MODIFIED="1688577496687" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$financial_reports.coverage" NAME="financial_reports Coverage Results" MODIFIED="1690207599071" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$Strategic_reserve.coverage" NAME="Strategic reserve ger Coverage Results" MODIFIED="1688652593859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$AMIRIS.coverage" NAME="AMIRIS Coverage Results" MODIFIED="1689606150787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amiris_workflow" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$initialize_power_plants.coverage" NAME="initialize power plants Coverage Results" MODIFIED="1687811273941" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$convert_tomonthly_demand.coverage" NAME="convert_tomonthly_demand Coverage Results" MODIFIED="1679584433565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$testEMLABPY.coverage" NAME="testEMLABPY Coverage Results" MODIFIED="1687770642779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$plots.coverage" NAME="plots Coverage Results" MODIFIED="1690365896145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$Strategic_reserve_ger.coverage" NAME="Strategic reserve ger Coverage Results" MODIFIED="1690287556545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepareweatherdata.coverage" NAME="prepareweatherdata Coverage Results" MODIFIED="1679666242682" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$initialize_clock.coverage" NAME="initialize clock Coverage Results" MODIFIED="1688480016809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/util" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_market.coverage" NAME="prepare market Coverage Results" MODIFIED="1690289061367" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$futuremarket.coverage" NAME="futuremarket Coverage Results" MODIFIED="1688652568148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_power_plants.coverage" NAME="prepare_power_plants Coverage Results" MODIFIED="1682428463164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$Capacity_Market.coverage" NAME="Capacity_Market Coverage Results" MODIFIED="1688585326177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$dates_to_matrix.coverage" NAME="dates to matrix Coverage Results" MODIFIED="1681740129859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+  </component>
 </project>

@@ -3,19 +3,11 @@
 The soft linking of AMIRIS and EMLabpy intends to investigate the investment incentives in a future flexible power
 system. EMLabpy is based in EMLab and is rewritten in a modular way into python to easily couple with AMIRIS.
 
-<p align="center">
-  <a href="#workflow">Workflow</a> •
-  <a href="#how_run">How to run it</a> •
-  <a href="organization">Project Organization</a> •
-  <a href="inputs">Input Data</a> •
-  <a href="#page_with_curl-license">License</a> •
-</p>
-
-# :workflow: Workflow
+## Workflow 
 
 The integration is best illustrated with following diagram.
 ![](data/workflow.jpg)
-# :how_run: How to run it
+## How to run it
 To run EMLabpy from the spinetoolbox, it needs to be packed as a python module. 
 To do so, run the following commands in the toolbox-amiris-emlab folder:
 
@@ -81,7 +73,7 @@ add the empty folder amiris_workflow\amiris\result
 everytime there is a new change in the code (including git pull) , the emlabpy environment has to be updated. For that double click file install_emlabpy.bat
 in the AMIRIS make sure the output files is adjusted to ...toolbox-amiris-emlab\amiris_workflow\output\amiris_results.csv
 
-# :organization: Folder structure
+# Folder structure
 
 ## EMLABpy
 
@@ -143,12 +135,12 @@ The log4j.properties, fame setup YAML and the amiris jar should be stored here
 The file traderes.pb contain the encrypted results. 
 
 
-### :inputs:  Input Data
+### Input Data 
 The simulation configuration can be specified in the excel : Coupling Config.xls
 The specifications for the EMLab modules (investment, capacity mechanism and CO2) should be added in : EMLAbparameters.xls 
 The power plants per country as saved in : Power_plants.xls
-
-## :page_with_curl: License and Terms of Use
+[workflow](#workflow)
+## License and Terms of Use 
 
 The Spine Toolbox project example provided here can be used without any limitations. This does not apply to any data
 files contained within or any parts of the models EMLab and AMIRIS.

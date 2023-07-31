@@ -83,7 +83,7 @@ class ForwardCapacityMarketClearing(MarketModule):
 
         # Calculate the peak load for 4 years in the future
         future_year = self.reps.current_year + 4
-        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            future_year)

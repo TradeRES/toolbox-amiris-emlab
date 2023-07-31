@@ -55,9 +55,15 @@ class Repository:
         self.current_year = 0
         self.simulation_length = 0
         self.start_tick_fuel_trends = 0
-        self.start_profit_based_dismantling_tick = 0
+        self.start_dismantling_tick = 0
         self.initialization_investment = True
         self.monthly_hydrogen_demand = False
+        self.minimal_last_years_IRR = "NOTSET"
+        self.minimal_last_years_NPV = "NOTSET"
+        self.last_investable_technology = False
+        self.groups_plants_per_installed_year = True
+        self.scenarioWeatheryearsExcel = ""
+        self.last_years_IRR_or_NPV = 0
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""
         self.max_permit_build_time = 0
@@ -66,14 +72,17 @@ class Repository:
         self.fix_fuel_prices_to_year = False
         self.fix_price_year = 2030
         self.writeALLcostsinOPEX = False
-        self.fix_profiles_to_initial_year = True
-        self.iteration_weather = ""
-        self.fix_demand_to_initial_year = True
+        self.fix_profiles_to_representative_year = True
+        self.fix_demand_to_representative_year = True
+        self.increase_demand = False
+        self.iteration_weather = "NOTSET"
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
         # section --------------------------------------------------------------------------------------investments
         self.investmentIteration = 0
         self.targetinvestment_per_year = True
+        # self.testing_intermittent_technologies = True
+        # self.test_first_intermittent_technologies = False
         self.target_investments_done = False
         self.install_missing_capacity_as_one_pp = True
         self.decommission_from_input = False
@@ -104,14 +113,16 @@ class Repository:
         self.power_plant_dispatch_plans_in_year = dict()
         self.bids = dict()
         self.power_generating_technologies = dict()
-        self.hydrogen_demand = dict()
+        self.loadShifterDemand = dict()
         self.market_clearing_points = dict()
+        self.loadShedders = dict()
         self.power_grid_nodes = dict()
         self.trends = dict()
         self.zones = dict()
         self.national_governments = dict()
         self.governments = dict()
-        self.investments = dict()
+        self.candidatesNPV = dict()
+        self.weatherYears = dict()
         self.investmentDecisions = dict()
         self.installedCapacity = dict()
         self.installedFuturePowerPlants = dict()
@@ -224,6 +235,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_totalProfitswLoans_for_plant(self, plant_name):
+        try:
+            return next(i.totalProfitswLoans for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
+
     def get_irrs_for_plant(self, plant_name):
         try:
             return next(i.irr for i in self.financialPowerPlantReports.values() if i.name == plant_name)
@@ -233,12 +250,6 @@ class Repository:
     def get_npvs_for_plant(self, plant_name):
         try:
             return next(i.npv for i in self.financialPowerPlantReports.values() if i.name == plant_name)
-        except StopIteration:
-            return None
-
-    def get_total_profits_for_plant(self, plant_name):
-        try:
-            return next(i.totalProfits for i in self.financialPowerPlantReports.values() if i.name == plant_name)
         except StopIteration:
             return None
 
@@ -287,11 +298,38 @@ class Repository:
             return None
 
     # Hourly Demand
-    def get_hourly_demand_by_country(self, country):
+    # def get_hourly_demand_by_country(self, country):
+    #     try:
+    #         return next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.country == country)
+    #     except StopIteration:
+    #         return None
+
+    def get_realized_peak_demand_by_year(self, year):
         try:
-            return next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.country == country)
+            return next(i.realized_demand_peak.loc[year] for i in self.electricity_spot_markets.values() if i.country == self.country)
         except StopIteration:
             return None
+
+    def get_peak_future_demand_by_year(self, year):
+        try:
+            # the load was already updated in the clock step
+            return next(i.future_demand_peak.loc[year] for i in self.electricity_spot_markets.values() if i.country == self.country)
+        except StopIteration:
+            return None
+
+    def get_peak_future_demand(self):
+        try:
+            # the load was already updated in the clock step
+            return next(i.future_demand_peak for i in self.electricity_spot_markets.values() if i.country == self.country)
+        except StopIteration:
+            return None
+    def get_realized_peak_demand(self):
+        try:
+            # the load was already updated in the clock step
+            return next(i.realized_demand_peak for i in self.electricity_spot_markets.values() if i.country == self.country)
+        except StopIteration:
+            return None
+
 
     def get_electricity_voll(self) -> Optional[ElectricitySpotMarket]:
         try:
@@ -348,15 +386,76 @@ class Repository:
 
     def get_investable_and_targeted_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True and
-                i.technology.name in ["WTG_onshore",
-                                      "WTG_offshore",
-                                      "PV_utility_systems"
-                                      ]
+                i.technology.name in globalNames.vRES
                 ]
 
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
+    # def filter_intermittent_candidate_power_plants(self, powerplant_list) -> List[CandidatePowerPlant]:
+    #     return [i for i in powerplant_list if i.viableInvestment is True
+    #             and i.technology.intermittent == True
+    #             ]
+    def get_investable_candidate_power_plants_minimal_irr_or_npv(self) -> List[CandidatePowerPlant]:
+        investable_candidates = self.get_investable_candidate_power_plants()
+        if self.minimal_last_years_IRR != "NOTSET":
+            self.filter_candidates_by_minimal_irr(investable_candidates)
+            return self.get_investable_candidate_power_plants()
+        elif self.minimal_last_years_NPV != "NOTSET":
+            self.filter_candidates_by_minimal_npv(investable_candidates)
+            return self.get_investable_candidate_power_plants()
+        else:
+            return investable_candidates
+    def filter_candidates_by_minimal_irr(self, investable_candidates):
+        simulation_years = list(range(self.current_tick - self.last_years_IRR_or_NPV, self.current_tick + 1))
+        irrs_per_tech_per_year = pd.DataFrame(index=simulation_years).fillna(0)
+        for candidate in investable_candidates:
+            powerplants_per_tech = self.get_power_plants_by_technology(candidate.technology.name)
+            irrs_per_year = pd.DataFrame(index=simulation_years).fillna(0)
+            for plant in powerplants_per_tech:
+                irr_per_plant = self.get_irrs_for_plant(plant.name)
+                if irr_per_plant is None:
+                    pass
+                else:
+                    irrs_per_year[plant.name] = irr_per_plant
+            irrs_per_year.replace(to_replace=-100, value=np.nan,
+                                  inplace=True)# the -100 was hard coded in the financial reports
+            if irrs_per_year.size != 0:
+                irrs_per_tech_per_year[candidate.technology.name] = np.nanmean(irrs_per_year, axis=1)
+        meanirr = irrs_per_tech_per_year.mean()
+
+        for candidatepowerplant in investable_candidates:
+            if candidatepowerplant.technology.name in meanirr.index.values:
+                if meanirr[candidatepowerplant.technology.name]>=self.minimal_last_years_IRR:
+                    pass
+                else:
+                    candidatepowerplant.setViableInvestment(False)
+                    self.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+        return
+    def filter_candidates_by_minimal_npv(self, investable_candidates):
+        simulation_years = list(range(self.current_tick - self.last_years_IRR_or_NPV, self.current_tick + 1))
+        npvs_per_tech_per_MW = pd.DataFrame(index=simulation_years).fillna(0)
+        for candidate in investable_candidates:
+            powerplants_per_tech = self.get_power_plants_by_technology(candidate.technology.name)
+            npvs_per_year_perMW = pd.DataFrame(index=simulation_years).fillna(0)
+            for plant in powerplants_per_tech:
+                npv_per_plant = self.get_npvs_for_plant(plant.name)
+                if npv_per_plant is None:
+                    pass
+                else:
+                    npvs_per_year_perMW[plant.name] = npv_per_plant
+            if npvs_per_year_perMW.size != 0:
+                npvs_per_tech_per_MW[candidate.technology.name] = np.nanmean(npvs_per_year_perMW, axis=1)
+        mean_npv = npvs_per_tech_per_MW.mean()
+        for candidatepowerplant in investable_candidates:
+            if candidatepowerplant.technology.name in mean_npv.index.values:
+                if mean_npv[candidatepowerplant.technology.name]>=self.minimal_last_years_NPV:
+                    pass
+                else:
+                    print("due to last irrs not investable"+ candidatepowerplant.technology.name)
+                    candidatepowerplant.setViableInvestment(False)
+                    self.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+        return
     def get_target_technologies(self):
         return [i.targetTechnology for i in self.target_investors.values()]
 
@@ -432,7 +531,7 @@ class Repository:
             capacity = 0
             for plant in self.power_plants.values():
                 if plant.id in future_installed_plants_ids: # this list was kept in the future expected power plants
-                    if plant.technology.name == candidate.technology.name :
+                    if plant.technology.name == candidate.technology.name:
                         capacity += plant.capacity
 
             if investbyTarget == True and self.install_missing_capacity_as_one_pp == True:
@@ -463,6 +562,10 @@ class Repository:
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
                     and pp.status == globalNames.power_plant_status_inPipeline])  # pp.isInPipeline(tick)
+
+    def calculateCapacityOfPowerPlantsByTechnologyInstalledinYear(self, commissionedYear, technology):
+        new_power_plants =  self.get_power_plants_invested_in_tick_by_technology(commissionedYear,technology.name)
+        return sum([pp.capacity for pp in new_power_plants])
 
     def calculateCapacityOfPowerPlantsInPipeline(self):
         return sum(
@@ -528,11 +631,22 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.status == globalNames.power_plant_status_operational]
 
-    def get_power_plants_invested_in_tick(self, tick) -> List[PowerPlant]:
-        return self.investmentDecisions[str(tick)].invested_in_iteration.values()
 
-    def get_power_plants_invested_in_tick_per_iteration(self, tick) -> List[PowerPlant]:
-        return self.investmentDecisions[str(tick)]
+    def get_load_shedder_by_VOLL(self, VOLL) :
+        try:
+            return next(i.name for i in self.loadShedders.values() if i.VOLL == VOLL)
+        except StopIteration:
+            return None
+
+    def get_power_plants_invested_in_future_tick(self, futuretick) -> List[PowerPlant]:
+        year = futuretick + self.start_simulation_year
+        return [i for i in self.power_plants.values()
+                if i.name[:4] == str(year)]
+
+    def get_power_plants_invested_in_tick_by_technology(self, commissionedYear, technology_name) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.name[:4] == str(commissionedYear) and i.technology.name == technology_name]
+
 
     def get_power_plants_by_owner(self, owner: str) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -610,7 +724,8 @@ class Repository:
     def get_all_power_plant_dispatch_plans_by_tick(self, tick: int) -> \
             List[PowerPlantDispatchPlan]:
         try:
-            return next(i for i in self.power_plant_dispatch_plans.values() if i.name == str(tick))
+          #  return next(i for i in self.power_plant_dispatch_plans.values() if str(int(float(i.name))) == str(tick))
+            return next(i for i in self.power_plant_dispatch_plans.values() if str(i.name) == str(tick))
         except StopIteration:
             return None
 

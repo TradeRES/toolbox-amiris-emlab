@@ -49,23 +49,25 @@ class FinancialPowerPlantReport(ImportObject):
                 self.npv = pd_series
             elif parameter_name == 'totalProfitswLoans':
                 self.totalProfitswLoans = pd_series
-            elif parameter_name == 'totalProfits':
+            elif parameter_name == 'totalProfits': # todo: can be deleted - > only for plots
                 self.totalProfits = pd_series
             elif  parameter_name == 'capacityMechanismRevenues':
                 self.capacityMarketRevenues = pd_series
-            elif parameter_name == 'variableCosts':
+            elif parameter_name == 'variableCosts': # todo: can be deleted - > only for plots real obtained operational profits
                 self.variableCosts = pd_series
             elif  parameter_name == 'spotMarketRevenue':
                 self.spotMarketRevenue = pd_series
 
-            # # todo: erase THESE are to test
-            # elif parameter_name == 'totalCosts' and self.name == "112":
-            #     self.totalCosts = pd_series
-            # elif  parameter_name == 'fixedCosts' and self.name == "112":
-            #     self.fixedCosts = pd_series
-            # elif parameter_name == 'overallRevenue' and self.name == "112":
-            #     self.overallRevenue = pd_series
-
+        if reps.runningModule == "run_future_market" and  parameter_name in \
+                ['irr','npv']:
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
+            if parameter_name == 'irr':
+                self.irr = pd_series
+            elif parameter_name == 'npv':
+                self.npv = pd_series
 
         elif parameter_name == 'capacityMechanismRevenues':
             # to making financial results, only retrieve the CM of that year

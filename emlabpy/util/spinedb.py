@@ -371,3 +371,10 @@ class SpineDB(object):
         for value_row
             in self._db_map.query(subquery).filter(subquery.c.object_class_name == object_class_name).filter(
             subquery.c.alternative_name == alternative_name).all()]
+
+    def delete_ids(self, parametername, values):
+        subquery = self._db_map.object_parameter_value_sq
+        objects_to_clear = {row.object_id: from_database(row.value, row.type) for row in self._db_map.query(subquery).filter(subquery.c.parameter_name == parametername)}
+        removable_object_ids = {object_id for object_id, object_value in objects_to_clear.items() if object_value in values}
+        self._db_map.cascade_remove_items(object=removable_object_ids)
+        self._db_map.commit_session("Removed unacceptable objects.")

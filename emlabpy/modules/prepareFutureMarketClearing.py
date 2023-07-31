@@ -30,6 +30,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         if reps.current_tick == 0 and reps.initialization_investment == True:
             if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))
+                # in the initialization round there are not past NPVs (calculated in financial results)
                 self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.investment_initialization_years
             else:
@@ -42,8 +43,40 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 self.power_plants_list = []
                 self.look_ahead_years = reps.lookAhead
             else:  # no target investments, test as normal
-                self.power_plants_list = reps.get_investable_candidate_power_plants()
+                if reps.investmentIteration == 0:
+                    self.power_plants_list = reps.get_investable_candidate_power_plants_minimal_irr_or_npv()
+                else:
+                    self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.lookAhead
+
+        # Test first intermittent technologies
+        # if reps.test_first_intermittent_technologies == True and reps.testing_intermittent_technologies == True:
+        #     self.power_plants_list = reps.filter_intermittent_candidate_power_plants(self.power_plants_list)
+        #     print([i.technology.name for i in self.power_plants_list ])
+        # changing efficency and variable costs of candidate power plants
+        for pp in self.power_plants_list:
+            pp.actualVariableCost = pp.technology.variable_operating_costs
+
+        if len(self.power_plants_list) == 1: # if it is zero, then it is because of target investment or investment iteration 0
+            uniquepp = self.power_plants_list[0]
+            if reps.investmentIteration == 0:
+                # in the first iteration: test realitist capacity if there is only one power plant
+                uniquepp.capacity = uniquepp.capacityRealistic
+                self.reps.dbrw.stage_last_testing_technology(True)
+            else:
+                year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
+                NPV_last_investment_decision = next((i['parameter_value'] for i in reps.dbrw.db.query_object_parameter_values_by_object_class_and_object_name(
+                                                        "CandidatePlantsNPV", uniquepp.name) if i['parameter_name'] == year_iteration), 0)
+                print(NPV_last_investment_decision)
+                if NPV_last_investment_decision< 10000:
+                    print("last investment decision")
+                    uniquepp.capacity = uniquepp.capacityRealistic
+                    self.reps.dbrw.stage_last_testing_technology(True)
+                else:
+                    if reps.investmentIteration == 1:
+                        # if in the first iteration the NPV was very high, then change back to larger installation volumes
+                        self.reps.dbrw.stage_last_testing_technology(False)
+
 
     def act(self):
         self.setTimeHorizon()
@@ -55,7 +88,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.openwriter()
         self.write_renewables()
         self.write_storage()
-        self.write_electrolysers()
+        self.write_load_shifter_with_price_cap()
+        self.write_load_shedders()
         self.write_conventionals()
         self.write_biogas()
         self.write_scenario_data_emlab("futurePrice")
@@ -79,60 +113,66 @@ class PrepareFutureMarketClearing(PrepareMarket):
             if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
                 powerPlantsinSR = i.list_of_plants
                 SR_price = i.reservePriceSR
-
         decommissioned_list = []
 
         for powerplant in powerPlantsfromAgent:
-
             fictional_age = powerplant.age + self.look_ahead_years
             # for plants that have passed their lifetime, assume that these will be decommissioned
             if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:
                 if self.simulation_tick >= powerplant.endOfLife:
                     # decommissioned as specified by input
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                    decommissioned_list.append(powerplant.name)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
             elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-                powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                print("passed maximum life extension" + powerplant.name)
-                decommissioned_list.append(powerplant.name)
+                if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead):
+                    powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                    decommissioned_list.append(powerplant.name)
+                else:
+                    self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+
             elif fictional_age > powerplant.technology.expected_lifetime:
-                # print(powerplant.name + " age  " + str(fictional_age) + " to be decommissioned ")
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
-                elif self.reps.current_tick >= horizon:  # there are enough past simulations
-                    profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
-                    if profit <= requiredProfit:
-                        # dont add this plant to future scenario
-                        powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                        print(
-                            "{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
-                            .format(powerplant.name, horizon, profit, requiredProfit))
-                    else:  # power plants in pipeline are also considered to be operational in the future
+                elif self.reps.current_tick >= horizon:
+                    if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
+                        profit = self.calculateExpectedOperatingProfitfrompastIterations(powerplant, horizon)
+                        if profit <= requiredProfit:
+                            # dont add this plant to future scenario
+                            powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                            decommissioned_list.append(powerplant.name)
+                            print(
+                                "{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                                .format(powerplant.name, horizon, profit, requiredProfit))
+                        else:  # power plants in pipeline are also considered to be operational in the future
+                            self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+                    else:
                         self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
                 else:  # there are not enough past simulations calculate profits if there are any. can be 1, 2 or 3 results
-                    if isinstance(powerplant.expectedTotalProfits,pd.Series):
+                    if isinstance(powerplant.expectedTotalProfits, pd.Series):
                         profit = powerplant.expectedTotalProfits.mean()
                         if profit <= requiredProfit:
                             powerplant.status = globalNames.power_plant_status_decommissioned
                             print("{} expected operating loss {} : was {} which is less than required:  {} " \
                                   .format(powerplant.name, horizon, profit, requiredProfit))
+                            decommissioned_list.append(powerplant.name)
                         else:
                             self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
                     else:
-                        print("decommissioned " + powerplant.name)
+                        print("passed lifetime, no expected profits, decomission " + powerplant.name)
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                        decommissioned_list.append(powerplant.name)
 
                 # todo better to make decisions according to expected participation in capacity market/strategic reserve?
             elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
                 powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                 # set the power plant costs to the strategic reserve price
                 # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
-                # todo: if plant is in strategic reserve , it should be decommissioned after 4 years so make an
                 # exception for the power plants that were contracted earlier
                 powerplant.owner = 'StrategicReserveOperator'
                 powerplant.technology.variable_operating_costs = SR_price
@@ -179,8 +219,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         :return:
         """
         for k, substance in self.reps.substances.items():
-            future_price = substance.get_price_for_tick(self.reps, self.simulation_year,
-                                                        True)  # True = simulating future prices
+            future_price = substance.get_price_for_tick(self.reps, self.simulation_year, True)  # True = simulating future prices
             substance.futurePrice_inYear = future_price
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)

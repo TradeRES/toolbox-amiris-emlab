@@ -32,9 +32,9 @@ Agents:
       - attribute: Attributes/Strategy/Simple/ProductionTargetIntervalInHours
         value: 730
       - attribute: Attributes/Strategy/Simple/PriceSensitivityFunction
-        value: [0.0, 0.01]
+        value: [0]
       - attribute: Attributes/Strategy/Simple/PowerStepInMW
-        value: 10
+        value: 100
 
 
 Contracts:

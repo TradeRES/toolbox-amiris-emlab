@@ -7,18 +7,33 @@ import sys
 from functools import reduce
 import pandas as pd
 import math
-a = 365/12*24
-mylist = []
-for i in list(range(1,13)):
-    temporal = [i] * int(a)
-    mylist.extend(temporal)
-    print(i)
-df = pd.DataFrame(mylist)
-writer = pd.ExcelWriter('test.xlsx')
-df.to_excel(writer, sheet_name='welcome', index=False)
-writer.save()
 
-xp = [1, 2, 3]
+
+df = pd.read_csv("C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv")
+column = df["unit_25000000"]
+max_ENS_in_a_row = pd.DataFrame()
+for column_name, column_data in df.iteritems():
+    continuous_hours = 0  # Counter for continuous hours
+    max_continuous_hours = 0  # Counter for maximum continuous hours
+    prev_value = 0  # Variable to store the previous value
+    filtered = [column_data>0]
+    for value in filtered[0]:
+        if value == True:
+            continuous_hours += 1
+        else:
+            continuous_hours = 0
+        if continuous_hours > max_continuous_hours:
+            max_continuous_hours = continuous_hours
+
+    max_ENS_in_a_row.at[0,column_name] =  max_continuous_hours
+print(max_ENS_in_a_row)
+
+    #max_continuous_hours[year] = max_continuous_hours
+
+
+
+
+
 # fp = [3, 2, 0]
 # a = np.interp(5, xp, fp)
 # b = np.interp([0, 1, 1.5, 2.72, 3.14], xp, fp)

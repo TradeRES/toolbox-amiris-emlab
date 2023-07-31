@@ -9,7 +9,6 @@ import os
 import pandas as pd
 from util import globalNames
 
-
 class Market(EMLabAgent):
     """
     The parent class of all markets.
@@ -21,27 +20,57 @@ class ElectricitySpotMarket(Market):
     def __init__(self, name):
         super().__init__(name)
         self.valueOfLostLoad = 0
-        self.hourlyDemand = None
-        self.future_demand = None
-        self.demandGrowthTrend = 0.0
+        self.realized_demand_peak = None
+        self.future_demand_peak = None
         self.country = ""
+        self.hourlyDemand = None
+        self.future_hourly_demand = None
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'valueOfLostLoad':
             self.valueOfLostLoad = int(parameter_value)
-        if parameter_name == 'country':
+        elif parameter_name == 'country':
             self.country = str(parameter_value)
-        if parameter_name == 'growthTrend':
-            self.demandGrowthTrend = str(parameter_value)
-            load_path = globalNames.load_file_for_amiris
-            if reps.available_years_data == False:
-                self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
-                self.future_demand = self.hourlyDemand # no dynamic load for other cases yet
-            else:
-                future_load_path =globalNames.future_load_file_for_amiris
-                self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
-                self.future_demand = pd.read_csv(future_load_path,  delimiter= ";", header=None)
+        elif parameter_name == 'future_demand_peak':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.future_demand_peak = pd.Series(values, index=index)
+        elif parameter_name == 'next_year__demand_peak':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.realized_demand_peak = pd.Series(values, index=index)
+        # elif parameter_name == 'totalDemand':
+        #     load_path = globalNames.load_file_for_amiris
+        #     if reps.available_years_data == False:
+        #         self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None)
+        #         self.future_hourly_demand = self.hourlyDemand # no dynamic load for other cases yet
+        #     else:
+        #         future_load_path = globalNames.future_load_file_for_amiris
+        #         self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None) # inflexible load
+        #         self.future_hourly_demand = pd.read_csv(future_load_path, delimiter=";", header=None) # inflexible load
 
+class LoadShedder(ImportObject):
+    def __init__(self, name):
+        super().__init__(name)
+        self.VOLL = None
+        self.TimeSeriesFile = 0
+        self.TimeSeriesFileFuture = 0
+        self.ShedderCapacityMW = 0
+        self.percentageLoad = 0
+
+    def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
+        if parameter_name == 'TimeSeriesFile':
+            self.TimeSeriesFile = str(parameter_value)
+        elif parameter_name == 'TimeSeriesFileFuture':
+            self.TimeSeriesFileFuture =  str(parameter_value)
+        elif parameter_name == 'VOLL':
+            self.VOLL = int(parameter_value)
+        elif parameter_name == 'ShedderCapacityMW':
+            self.ShedderCapacityMW = parameter_value
+        elif parameter_name == 'percentage_load':
+            self.percentageLoad = parameter_value
 
 class CapacityMarket(Market):
     """"""
