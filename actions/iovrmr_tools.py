@@ -21,7 +21,7 @@ OPERATOR_AGENTS = [
     "ElectrolysisTrader",
 ]
 SUPPORTED_AGENTS = ["RenewableTrader", "SystemOperatorTrader"]
-EXCHANGE = ["EnergyExchangeMulti"]
+EXCHANGE = ["EnergyExchange"]
 DEMAND = ["DemandTrader"]
 CONVENTIONAL_AGENT_RESULTS = {
     "ConventionalPlantOperator_VariableCostsInEURperPlant": "VariableCostsInEURperPlant",
@@ -56,6 +56,7 @@ class AmirisOutputs(Enum):
     CONTRIBUTION_MARGIN_IN_EURO = auto()
     PRODUCTION_IN_MWH = auto()
     CONSUMPTION_IN_MWH = auto()
+    ENERGY_SHEDDED_IN_MWH = auto()
 
 
 def raise_and_log_critical_error(error_message: str) -> NoReturn:
@@ -211,12 +212,19 @@ def insert_agents_from_map(data: pd.DataFrame, translation_map: list, template: 
             if marketer["Type"] == "RenewableTrader":
                 marketer["Attributes"]["MarketValueForecastMethod"] = "PREVIOUS_MONTH"
         res_operators_and_marketers = []
+        res_energy_carriers_and_operators = []
         for operator in operators:
             res_operators_and_marketers.append(add_trader_mapping(operator))
+            res_energy_carriers_and_operators.append(add_energy_carrier_mapping(operator))
 
         template["Agents"].extend(agent_list)
 
-        return template, all_registered_agents, res_operators_and_marketers
+        return (
+            template,
+            all_registered_agents,
+            res_operators_and_marketers,
+            res_energy_carriers_and_operators,
+        )
 
     if not template["Agents"]:
         template["Agents"] = agent_list
@@ -273,8 +281,9 @@ def create_agent(row, translation: List[Dict]) -> Dict:
     return agent
 
 
-def get_elements_from_list(value: List, row) -> List[Dict]:
+def get_elements_from_list(value: List, row: pd.Series) -> List[Dict]:
     """Obtain list-like elements"""
+    value = value.copy()
     length = value.pop(0)["length"]
     attr_dict = {col_count: {} for col_count in range(length)}
     for entry in value:
@@ -294,7 +303,7 @@ def get_elements_from_list(value: List, row) -> List[Dict]:
     return list(attr_dict.values())
 
 
-def add_trader_mapping(operator: Dict):
+def add_trader_mapping(operator: Dict) -> Dict:
     """Add mapping between operator and trader and remove SupportInstrument attribute in case of no support"""
     try:
         support_instrument = operator["Attributes"]["SupportInstrument"]
@@ -306,6 +315,15 @@ def add_trader_mapping(operator: Dict):
         "Operator": operator["Id"],
         "Trader": int(str(operator["Id"]) + str(TRADER_SUFFIX)),
     }
+
+
+def add_energy_carrier_mapping(operator: Dict) -> Dict:
+    """Add mapping between operator and energy carrier for renewable energies"""
+    try:
+        energy_carrier = operator["Attributes"]["EnergyCarrier"]
+    except KeyError:
+        raise ValueError("Missing energy carrier specification!")
+    return {"Operator": operator["Id"], "EnergyCarrier": energy_carrier}
 
 
 def add_trader_by_support_instrument(agent: Dict, template: Dict):
@@ -634,30 +652,40 @@ def calculate_residual_load(
 ) -> pd.Series:
     """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
     res_generation_to_aggregate = []
-    overall_demand = None
+    demand_to_aggregate = []
     for key, val in residual_load_results.items():
         if key in OPERATOR_AGENTS:
-            value = val.loc[val["AwardedPowerInMWH"].notna()]
-            value["new_time_step"] = value["TimeStep"] - operators_offset
-            res_generation_to_aggregate.append(value.groupby("new_time_step").sum()["AwardedPowerInMWH"])
+            res_generation_to_aggregate.append(extract_values(val, "AwardedPowerInMWH", -operators_offset))
         elif key in DEMAND:
-            value = val.copy()
-            value["new_time_step"] = value["TimeStep"] + demand_offset
-            overall_demand = value.set_index("new_time_step")["RequestedEnergyInMWH"]
-            overall_demand = overall_demand.loc[overall_demand.notna()]
+            demand_to_aggregate.append(extract_values(val, "RequestedEnergyInMWH", demand_offset))
         else:
             raise ValueError("Received invalid key for residual_load_results!")
 
-    overall_res_generation = pd.Series(index=res_generation_to_aggregate[0].index, data=0)
-    for res_generation in res_generation_to_aggregate:
-        overall_res_generation += res_generation
+    overall_vres_generation = calculate_overall_value(res_generation_to_aggregate)
+    overall_demand = calculate_overall_value(demand_to_aggregate)
 
-    residual_load = overall_demand - overall_res_generation
+    residual_load = overall_demand - overall_vres_generation
     residual_load.name = "residual_load"
     residual_load = residual_load.round(4)
     residual_load = residual_load.reset_index().drop(columns="new_time_step")["residual_load"]
 
     return residual_load
+
+
+def extract_values(val: pd.DataFrame, col_name: str, offset: int):
+    """Extract time series values for one type of agents"""
+    value = val.loc[val[col_name].notna()]
+    value["new_time_step"] = value["TimeStep"] + offset
+    return value.groupby("new_time_step").sum()[col_name]
+
+
+def calculate_overall_value(to_aggregate: List[pd.DataFrame]):
+    """Calculate overall time series value for one type of agents"""
+    overall_value = pd.Series(index=to_aggregate[0].index, data=0)
+    for entry in to_aggregate:
+        overall_value += entry
+
+    return overall_value
 
 
 def calculate_overall_res_infeed(
@@ -691,10 +719,11 @@ def evaluate_dispatch_per_group(
     operator_results: Dict,
     conventional_results: pd.DataFrame,
     demand_results: pd.DataFrame,
+    renewables_energy_carriers: pd.DataFrame = None,
     operators_offset: int = 5,
     trader_offset: int = 4,
     demand_offset: int = 1,
-) -> (pd.DataFrame, pd.DataFrame):
+    ) -> (pd.DataFrame, pd.DataFrame):
     """Evaluate the dispatch per group (res, conventionals, storages) as well as final storage states"""
     final_storage_levels = pd.DataFrame()
     dispatch = pd.DataFrame()
@@ -707,6 +736,8 @@ def evaluate_dispatch_per_group(
                 dispatch = initialize_dispatch(operator_results)
             for group in operator_results.groupby("AgentId"):
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
+            if key == "VariableRenewableOperator":
+                dispatch = extract_generation_by_energy_carrier(operator_results, renewables_energy_carriers, dispatch)
         elif key == "StorageTrader":
             storage_results = val[
                 [
@@ -732,7 +763,14 @@ def evaluate_dispatch_per_group(
                 dispatch["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
                 final_storage_levels.at[group[0], "value"] = group[1]["StoredEnergyInMWH"].iloc[-1]
         elif key == "ElectrolysisTrader":
-            electrolysis_results = val[["TimeStep", "AgentId", "AwardedEnergyInMWH", "ProducedHydrogenInMWH"]].dropna()
+            electrolysis_results = val[
+                [
+                    "TimeStep",
+                    "AgentId",
+                    "AwardedEnergyInMWH",
+                    "ProducedHydrogenInMWH",
+                ]
+            ].dropna()
             electrolysis_results["new_time_step"] = electrolysis_results["TimeStep"] - trader_offset
             electrolysis_results = electrolysis_results.set_index("new_time_step")
             if dispatch.empty:
@@ -749,6 +787,8 @@ def evaluate_dispatch_per_group(
     for group in conventional_generation.groupby("AgentId"):
         dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
 
+    # Ensure data set is sorted by agent ids in increasing order
+    demand_results = demand_results.sort_values(by=["AgentId", "TimeStep"])
     demand_results["AwardedEnergyInMWH"].fillna(method="bfill", inplace=True)
     demand_dispatch = demand_results.dropna()
     demand_dispatch["Shedding"] = demand_dispatch["RequestedEnergyInMWH"] - demand_dispatch["AwardedEnergyInMWH"]
@@ -757,6 +797,7 @@ def evaluate_dispatch_per_group(
 
     for group in demand_dispatch.groupby("AgentId"):
         dispatch["load_shedding"] += group[1]["Shedding"]
+        dispatch[f"unit_{group[0]}"] = group[1]["Shedding"]
 
     dispatch.reset_index(drop=True, inplace=True)
 
@@ -779,3 +820,20 @@ def initialize_dispatch(dispatch_df) -> pd.DataFrame:
         ],
         data=0,
     )
+
+
+def extract_generation_by_energy_carrier(
+    operator_results: pd.DataFrame, renewables_energy_carriers: pd.DataFrame, dispatch: pd.DataFrame
+) -> pd.DataFrame:
+    """Extract generation from variable renewables per energy carrier"""
+    combined_df = pd.merge(
+        operator_results.reset_index(), renewables_energy_carriers, how="left", left_on="AgentId", right_on="Operator"
+    )
+    combined_df = combined_df.set_index("new_time_step")
+    for energy_carrier, values in combined_df.groupby("EnergyCarrier"):
+        if energy_carrier not in dispatch.columns:
+            dispatch[energy_carrier] = 0
+        for group in values.groupby("AgentId"):
+            dispatch[energy_carrier] += group[1]["AwardedPowerInMWH"]
+
+    return dispatch

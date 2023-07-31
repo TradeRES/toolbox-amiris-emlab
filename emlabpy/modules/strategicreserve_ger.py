@@ -28,16 +28,13 @@ class StrategicReserveSubmitBids_ger(MarketModule):
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
 
             # Get Variable and Fixed Operating Costs
-            fixed_operating_costs = powerplant.getActualFixedOperatingCost()
-            variable_costs =  self.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
-            # Calculate normalised costs
-            normalised_costs = variable_costs + (fixed_operating_costs/power_plant_capacity)
+            variable_costs = powerplant.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
 
             # Place bids on market only if plant is conventional (full capacity at cost price per MW)
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
                                                                            market, power_plant_capacity,
-                                                                           normalised_costs, self.reps.current_tick)
+                                                                           variable_costs, self.reps.current_tick)
 
 class StrategicReserveAssignment_ger(MarketModule):
     """
@@ -58,7 +55,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
         # Retrieve peak load volume of market
-        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        peak_load =self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
@@ -77,7 +74,8 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Retrieve plants already contracted in reserve
         list_of_plants = self.operator.list_of_plants
         # Remove decommissioned plants from reserve
-        for plant in (self.reps.decommissioned["Decommissioned"]).Decommissioned:
+
+        for plant in (self.reps.decommissioned["Decommissioned"]).Done:
             if plant in list_of_plants:
                 list_of_plants.remove(plant)
 

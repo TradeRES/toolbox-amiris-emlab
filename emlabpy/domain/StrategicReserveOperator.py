@@ -1,8 +1,8 @@
 
 from domain.import_object import *
 import pandas as pd
-
-class StrategicReserveOperator(ImportObject):
+from domain.actors import EMLabAgent
+class StrategicReserveOperator(EMLabAgent):
 
     def __init__(self, name):
         super().__init__(name)
@@ -10,10 +10,12 @@ class StrategicReserveOperator(ImportObject):
         self.reservePriceSR = 0
         self.reserveVolumePercentSR = 0
         self.cash = 0
+        self.reserveVolume = 0
         self.revenues_per_year = 0
-        self.reserveVolume = dict()
         self.list_of_plants = []
         self.list_of_plants_all = dict()
+        self.revenues_per_year_all = dict()
+        self.reserveVolume_all = dict()
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative):
         # for list of plants and reserve volume, pass the tick as alternative
@@ -30,9 +32,9 @@ class StrategicReserveOperator(ImportObject):
         elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
             self.list_of_plants_all[alternative] = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
-            self.reserveVolume[alternative] = parameter_value
+            self.reserveVolume_all[alternative] = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == "revenues_per_year":
-            self.revenues_per_year[alternative] = parameter_value
+            self.revenues_per_year_all[alternative] = parameter_value
 
 
     def getReserveVolume(self):

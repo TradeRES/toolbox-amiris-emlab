@@ -25,16 +25,75 @@ Agents:
       - attribute: Attributes/Device/InstalledPowerInMW
         column: InstalledPowerInMW
       - attribute: Attributes/Strategy/StrategistType
-        column: Strategist
+        value: SINGLE_AGENT_MIN_SYSTEM_COST
       - attribute: Attributes/Strategy/ForecastPeriodInHours
         value: 168
       - attribute: Attributes/Strategy/ScheduleDurationInHours
         value: 24
-      - attribute: Attributes/Strategy/SingleAgent/PurchaseLeviesAndTaxesInEURperMWH
-        value: 0
       - attribute: Attributes/Strategy/SingleAgent/ModelledChargingSteps
         value: 50
-      - attribute: Attributes/Strategy/MultiAgent/AssessmentFunctionPrefactors
-        value: [0.0, 1.0, 2.0]
 
-Contracts: []  # taken from dedicated files
+
+Contracts:
+##########################
+# -- Price Forecaster -- #
+##########################
+###############################
+## use with SINGLE* strategies#
+###############################
+#  - SenderType: StorageTrader
+#    ReceiverId: *forecaster
+#    ProductName: MeritOrderForecastRequest
+#    FirstDeliveryTime: -21
+#    DeliveryIntervalInSteps: 3600
+#
+#  - SenderId: *forecaster
+#    ReceiverType: StorageTrader
+#    ProductName: MeritOrderForecast
+#    FirstDeliveryTime: -19
+#    DeliveryIntervalInSteps: 3600
+
+###############################
+## use with MULTI strategy    #
+###############################
+  - SenderId: *forecaster
+    ReceiverType: StorageTrader
+    ProductName: PriceForecast
+    FirstDeliveryTime: -19
+    DeliveryIntervalInSteps: 3600
+
+  - SenderType: StorageTrader
+    ReceiverId: *forecaster
+    ProductName: PriceForecastRequest
+    FirstDeliveryTime: -21
+    DeliveryIntervalInSteps: 3600
+
+###############################
+## required for all strategies#
+###############################
+  - SenderId: *exchange
+    ReceiverType: StorageTrader
+    ProductName: GateClosureInfo
+    FirstDeliveryTime: -10
+    DeliveryIntervalInSteps: 3600
+
+  - SenderType: StorageTrader
+    ReceiverId: *exchange
+    ProductName: Bids
+    FirstDeliveryTime: 0
+    DeliveryIntervalInSteps: 3600
+
+  - SenderId: *exchange
+    ReceiverType: StorageTrader
+    ProductName: Awards
+    FirstDeliveryTime: 4
+    DeliveryIntervalInSteps: 3600
+
+####################
+#   -- Output --   #
+####################
+#   - SenderType: StorageTrader
+#     ReceiverType: StorageTrader
+#     ProductName: AnnualCostReport
+#     FirstDeliveryTime: 1
+#     DeliveryIntervalInSteps: 31536000

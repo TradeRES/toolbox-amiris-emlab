@@ -4,7 +4,7 @@ class InvestmentDecisions(ImportObject):
     def __init__(self, name):
         super().__init__(name)
         self.invested_in_iteration = dict()
-        self.invested_in_tick = dict()
+
 
     def add_parameter_value(self, reps, parameter_name: str, id, alternative: str):
         """"
@@ -18,7 +18,7 @@ class InvestmentDecisions(ImportObject):
 
 
 
-class Investments(ImportObject):
+class CandidatesNPV(ImportObject):
     def __init__(self, name):
         super().__init__(name)
        # self.invested_times_per_year = dict()

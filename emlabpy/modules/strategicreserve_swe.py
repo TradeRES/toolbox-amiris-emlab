@@ -56,7 +56,7 @@ class StrategicReserveAssignment_swe(MarketModule):
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
         # Retrieve peak load volume of market
-        peak_load = max(self.reps.get_hourly_demand_by_country(market.country)[1])
+        peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)

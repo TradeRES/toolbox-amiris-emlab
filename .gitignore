@@ -56,6 +56,7 @@ amiris_workflow/amiris-config/data/future_load.csv
 amiris_workflow/amiris-config/data/future_windoff.csv
 amiris_workflow/amiris-config/data/future_windon.csv
 amiris_workflow/amiris-config/data/load_shedding/*
+amiris_workflow/amiris-config/data/demand_processed/*
 emlabpy/years.txt
 amiris_workflow/amiris-config/data/hoho_cluster_shedding_timeseries.csv
 amiris_workflow/amiris-config/data/ind_cluster-2_shedding_timeseries.csv
@@ -66,3 +67,34 @@ emlabpy/continue.txt
 data/backbone/*
 data/renewableninja/*
 data/sources/*
+.idea/workspace.xml
+
+amiris_workflow/amiris-config/data/first_year_pv.csv
+amiris_workflow/amiris-config/data/first_year_windoff.csv
+amiris_workflow/amiris-config/data/first_year_windon.csv
+amiris_workflow/amiris-config/data/future_LS_high.csv
+amiris_workflow/amiris-config/data/future_LS_low.csv
+amiris_workflow/amiris-config/data/future_LS_mid.csv
+amiris_workflow/amiris-config/data/future_pv.csv
+
+amiris_workflow/amiris-config/data/LS_high.csv
+amiris_workflow/amiris-config/data/LS_hydrogen.csv
+amiris_workflow/amiris-config/data/LS_low.csv
+amiris_workflow/amiris-config/data/LS_mid.csv
+data/~$Coupling Config.xlsx
+emlabpy/plots/print_load.ipynb
+emlabpy/plots/supply_book.csv
+
+emlabpy/plots/test_merit_order.py
+*.csv
+emlabpy/plots/merit order curve.ipynb
+*.png
+.idea/workspace.xml
+amiris_workflow/amiris-config/data/future_pv.csv
+amiris_workflow/originalmid
+amiris_workflow/originallow
+amiris_workflow/originalhigh
+amiris_workflow/originalbase
+amiris_workflow/amiris_data_structure.xlsx
+emlabpy/plots/merit_order_plot.png
+emlabpy/plots/NPV_per_technology.xlsx

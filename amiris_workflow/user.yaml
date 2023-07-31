@@ -150,7 +150,7 @@ workflow:
       call: write_amiris_config
       data:
         read_from_dmgr: renewables
-        write_to_dmgr: null
+        write_to_dmgr: renewables_energy_carriers
       args:
         AMIRISConfigFieldMap: amiris-config/renewablesFieldMap.yaml
         templateFile: amiris-config/scenario.yaml
@@ -203,7 +203,7 @@ workflow:
       args:
         input: "amiris-config/config.pb"
         model:
-          jar: 'amiris/amiris-core_1.2.10-jar-with-dependencies.jar'
+          jar: 'amiris/amiris-core_2.0.0-alpha.3-jar-with-dependencies.jar'
           vm: '-ea -Xmx2000M'
           fame_args: '-Dlog4j.configuration=file:amiris/log4j.properties'
           runner: 'de.dlr.gitlab.fame.setup.FameRunner'
@@ -217,7 +217,7 @@ workflow:
       project: general
       call: aggregate_results
       data:
-        read_from_dmgr: null
+        read_from_dmgr: renewables_energy_carriers
         write_to_dmgr: all_outputs_per_agent
       args:
         write: True

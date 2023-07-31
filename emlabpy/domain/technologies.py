@@ -18,7 +18,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.capacity = 0
         # self.annuity = 0
         self.investment_cost_eur_MW = pd.Series(dtype='float64')
-        self.fixed_operating_costs = None
+        self.fixed_cost_eur_MW = pd.Series(dtype='float64')
         self.variable_operating_costs = 0.0
         self.efficiency = 0
         self.depreciation_time = 0
@@ -77,9 +77,13 @@ class PowerGeneratingTechnology(ImportObject):
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
-            self.fixed_operating_costs = float(parameter_value)
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.fixed_cost_eur_MW = pd.Series(values, index=index)
+            self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
             self.fixed_operating_cost_time_series = reps.trends[self.name + "FixedOperatingCostTimeSeries"] # geometric Trends
-            self.fixed_operating_cost_time_series.start = self.fixed_operating_costs
+
         elif parameter_name == 'vom_cost':
             self.variable_operating_costs = float(parameter_value)
             self.variable_operating_cost_time_series = reps.trends[self.name + "VariableCostTimeSeries"] # geometric Trends
@@ -132,23 +136,39 @@ class PowerGeneratingTechnology(ImportObject):
     def get_investment_costs_perMW_by_year(self, year):
         if year in self.investment_cost_eur_MW.index.values:  # value is present
             return self.investment_cost_eur_MW[year]
-        elif self.investment_cost_eur_MW.index.min() > year: # take first year
+        elif self.investment_cost_eur_MW.index.min() > year: # if the year is lower than data, take first year
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
             return self.investment_cost_eur_MW.iloc[0]
-        else: # interpolate years
+        else: # interpolate years. If the year is larger then the maximum value is taken
             self.investment_cost_eur_MW.at[year] = np.nan
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
             self.investment_cost_eur_MW.interpolate(method='linear',  inplace=True)
             return self.investment_cost_eur_MW[year]
 
+    def get_fixed_costs_by_commissioning_year(self, year):
+        if year in self.fixed_cost_eur_MW.index.values:  # value is present
+            return self.fixed_cost_eur_MW[year]
+        elif self.fixed_cost_eur_MW.index.min() > year: # if the year is lower than data available, take first year
+            self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
+            return self.fixed_cost_eur_MW.iloc[0]
+        elif self.fixed_cost_eur_MW.index.max() < year: # todo: delete this!!!!!!!!!
+            self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
+            return self.fixed_cost_eur_MW.iloc[0]
+        else: # interpolate years AND if the year is higher than data, take the last value
+            self.fixed_cost_eur_MW.at[year] = np.nan
+            self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
+            self.fixed_cost_eur_MW.interpolate(method='linear',  inplace=True)
+            return self.fixed_cost_eur_MW[year]
 
     def getInvestmentCostbyTimeSeries(self, time):
-        return self.investment_cost_time_series.get_value(time)
+        return self.investment_cost_time_series.get_value(time) # geometric trend
 
-    def get_fixed_operating_by_time_series(self, time):
+    def get_fixed_operating_by_time_series(self, age, commissionedYear):
         # time = passed years in dismantle
         # time = commissioned tick in initialization
-        return self.fixed_operating_cost_time_series.get_value(time) # geometric trend
+        passed_years = age - self.getExpectedLifetime()
+        self.fixed_operating_cost_time_series.start = self.get_fixed_costs_by_commissioning_year(commissionedYear)
+        return self.fixed_operating_cost_time_series.get_value(passed_years) # geometric trend
 
     def get_variable_operating_by_time_series(self, time):
         return self.variable_operating_cost_time_series.get_value(time) # geometric trend

@@ -4,14 +4,14 @@ This file contains all Trend classes: mathematical definitions of functions.
 Jim Hommes - 13-5-2021
 Ingrid Sanchez 02-03-22
 """
-from random import random
+import random
 
 from domain.import_object import *
 
 import math
 import numpy as np
 from sklearn import linear_model
-
+import pandas as pd
 
 class Trend(ImportObject):
     """
@@ -94,28 +94,13 @@ class TriangularTrend(Trend):
             self.max = float(parameter_value)
         elif parameter_name == 'Min':
             self.min = float(parameter_value)
-        #elif parameter_name == 'Start': # the EMLAB value was  the start in the Fuel Price Trends table
-        #    self.values.append(float(parameter_value))
 
-    def get_value(self, time, substance):
-        try:
-            fuels =  self.dbrw.query_object_parameter_values_by_object_class("node")
-            self.values = [i['parameter_value'] for i in fuels
-                       if i['object_name'] == substance
-                       and i['parameter_name'] == "expected price"]
-        except StopIteration:
-            return None
-
-        while len(self.values) <= time:
-            last_value = self.values[-1]
-            random_number = random.triangular(-1, 0, 1) # TODO this was (-1,  1, 0 ) for competes integration
-            if random_number < 0:
-                self.values.append(last_value * (self.top + (random_number * (self.top - self.min))))
-            else:
-                self.values.append(last_value * (self.top + (random_number * (self.max - self.top))))
-
-        self.reps.dbrw.stage_fuel_prices(self.values)
-        return self.values[time]
+    def get_value(self, time):
+        for t in range(time):
+            while len(self.values) <= t:
+                random_number = random.triangular(self.min, self.max, self.top )
+                self.values.append(random_number)
+        return self.values
 
 class TimeSeriesImpl():
 
@@ -154,22 +139,3 @@ class GeometricTrendRegression(Trend):
         y_pred = regr.predict([[predictedYear]])
         #print(self.X, self.Y, "predictedYear", predictedYear, 'y_pred', y_pred[0][0])
         return  y_pred[0][0]# todo is this correct? before it was with exponent
-
-    # def removeData(self, x, y):
-    #     list.remove(x, math.log(y))
-
-    # def addData(self, x, y):
-    #     super().addData(x, math.log(y))
-    #
-    # def removeData(self, x, y):
-    #     super().removeData(x, math.log(y))
-
-    # def addData(self, data):
-    #     for d in data:
-    #         self.addData(d[0], d[1])
-    #
-    # def removeData(self, data):
-    #     i = 0
-    #     while i < len(data) and super().getN() > 0:
-    #         self.removeData(data[i][0], math.log(data[i][1]))
-    #         i += 1

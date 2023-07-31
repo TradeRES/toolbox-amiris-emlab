@@ -15,8 +15,10 @@ Agents:
         value: ElectrolysisTrader
       - attribute: Id
         column: identifier
-      - attribute: Attributes/ForecastRequestOffsetInSeconds
+      - attribute: Attributes/ElectricityPriceForecastRequestOffsetInSeconds
         value: 22
+      - attribute: Attributes/HydrogenPriceForecastRequestOffsetInSeconds
+        value: 25
       - attribute: Attributes/Device/PeakConsumptionInMW
         column: PeakConsumptionInMW
       - attribute: Attributes/Device/ConversionFactor
@@ -27,14 +29,16 @@ Agents:
         value: 168
       - attribute: Attributes/Strategy/ScheduleDurationInHours
         value: 24
+      - attribute: Attributes/Strategy/BidToleranceInEURperMWH
+        value: 0
       - attribute: Attributes/Strategy/Simple/HydrogenProductionTargetInMWH
         column: HydrogenProductionTargetInMWH
       - attribute: Attributes/Strategy/Simple/ProductionTargetIntervalInHours
         value: 730
       - attribute: Attributes/Strategy/Simple/PriceSensitivityFunction
-        value: [0.0, 0.01]
+        value: [0]
       - attribute: Attributes/Strategy/Simple/PowerStepInMW
-        value: 10
+        value: 100
 
 
 Contracts:
@@ -57,6 +61,18 @@ Contracts:
 ## use with SIMPLE strategy   #
 ###############################
   - SenderType: ElectrolysisTrader
+    ReceiverId: *fuelsmarket
+    ProductName: FuelPriceForecastRequest
+    FirstDeliveryTime: -24
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderId: *fuelsmarket
+    ReceiverType: ElectrolysisTrader
+    ProductName: FuelPriceForecast
+    FirstDeliveryTime: -23
+    DeliveryIntervalInSteps: *hourly
+
+  - SenderType: ElectrolysisTrader
     ReceiverId: *forecaster
     ProductName: PriceForecastRequest
     FirstDeliveryTime: -21
@@ -68,17 +84,6 @@ Contracts:
     FirstDeliveryTime: -19
     DeliveryIntervalInSteps: *hourly
 
-  - SenderType: ElectrolysisTrader
-    ReceiverId: *fuelsmarket
-    ProductName: HydrogenPriceForecastRequest
-    FirstDeliveryTime: -21
-    DeliveryIntervalInSteps: *hourly
-
-  - SenderId: *fuelsmarket
-    ReceiverType: ElectrolysisTrader
-    ProductName: HydrogenPriceForecast
-    FirstDeliveryTime: -19
-    DeliveryIntervalInSteps: *hourly
 ###############################
 ## required for all strategies#
 ###############################
@@ -102,13 +107,13 @@ Contracts:
 
   - SenderType: ElectrolysisTrader
     ReceiverId: *fuelsmarket
-    ProductName: HydrogenOffer
+    ProductName: FuelBid
     FirstDeliveryTime: 5
     DeliveryIntervalInSteps: *hourly
 
   - SenderId: *fuelsmarket
     ReceiverType: ElectrolysisTrader
-    ProductName: FuelsReward
+    ProductName: FuelBill
     FirstDeliveryTime: 6
     DeliveryIntervalInSteps: *hourly
 
