@@ -4,15 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e4b9f05-fe8e-46e1-acba-0b32b254226c" name="Changes" comment="Changes">
+    <list default="true" id="c49df8db-7577-4816-87b0-abcbf1afb1be" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.spinetoolbox/project.json" beforeDir="false" afterPath="$PROJECT_DIR$/.spinetoolbox/project.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/amiris_workflow/amiris_data_structure.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/amiris_workflow/amiris_data_structure.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/Analysis/Weather_years_analysis.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/Analysis/Weather_years_analysis.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emlabpy/modules/prepareMarketClearing.py" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/modules/prepareMarketClearing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/emlabpy/plots/AMIRIS results-industrialDemandaselectrolyzer.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/AMIRIS results-industrialDemandaselectrolyzer.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emlabpy/plots/compare_scenarios.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/compare_scenarios.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/emlabpy/plots/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/plots.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emlabpy/testEMLABPY.py" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/testEMLABPY.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emlabpy/plots/visualizing load and yield profiles.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/emlabpy/plots/visualizing load and yield profiles.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,8 +45,9 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/toolbox-amiris-emlab&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/isanchezjimene/Desktop/emlab-generation2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -83,6 +82,52 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/amiris_workflow/run.py" />
       <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Capacity_Market" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\amiris_db\AMIRIS db.sqlite&quot; &quot;run_capacity_market&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Strategic reserve ger" type="PythonConfigurationType" factoryName="Python">
+      <module name="toolbox-amiris-emlab" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/emlabpy/emlab.py" />
+      <option name="PARAMETERS" value="&quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite&quot; &quot;sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\amiris_db\AMIRIS db.sqlite&quot; &quot;run_strategic_reserve_ger&quot;" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -300,6 +345,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -411,7 +457,8 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Programs\Anaconda3\envs\emlabpy\python.exe" />
+      <option name="SDK_NAME" value="Python 3.8 (emlabpy)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/emlabpy/plots" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -427,6 +474,8 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.Capacity_Market" />
+      <item itemvalue="Python.Strategic reserve ger" />
       <item itemvalue="Python.testEMLABPY" />
       <item itemvalue="Python.plots" />
       <item itemvalue="Python.financial_reports" />
@@ -457,7 +506,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="7e4b9f05-fe8e-46e1-acba-0b32b254226c" name="Changes" comment="" />
+      <changelist id="c49df8db-7577-4816-87b0-abcbf1afb1be" name="Changes" comment="" />
       <created>1677577135218</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -553,6 +602,27 @@
       <workItem from="1686816909784" duration="613000" />
       <workItem from="1686902946145" duration="1519000" />
       <workItem from="1687109528186" duration="8767000" />
+      <workItem from="1687260559578" duration="3042000" />
+      <workItem from="1687282001539" duration="5178000" />
+      <workItem from="1687333629941" duration="9357000" />
+      <workItem from="1687418860661" duration="4946000" />
+      <workItem from="1687463731745" duration="8774000" />
+      <workItem from="1687765993760" duration="48516000" />
+      <workItem from="1687896724132" duration="7741000" />
+      <workItem from="1687930687541" duration="2219000" />
+      <workItem from="1688126190283" duration="40781000" />
+      <workItem from="1688545753967" duration="30540000" />
+      <workItem from="1688986620756" duration="1148000" />
+      <workItem from="1689327333636" duration="1181000" />
+      <workItem from="1689584768923" duration="6852000" />
+      <workItem from="1689666997713" duration="11109000" />
+      <workItem from="1689768314433" duration="6327000" />
+      <workItem from="1689836379473" duration="12726000" />
+      <workItem from="1689948283190" duration="7498000" />
+      <workItem from="1689962368099" duration="2622000" />
+      <workItem from="1690191087634" duration="13029000" />
+      <workItem from="1690276084558" duration="1598000" />
+      <workItem from="1690358966102" duration="2203000" />
     </task>
     <servers />
   </component>
@@ -601,48 +671,48 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
-          <line>1149</line>
-          <option name="timeStamp" value="55" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/modules/makefinancialreports.py</url>
-          <line>31</line>
-          <option name="timeStamp" value="296" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/testEMLABPY.py</url>
-          <line>41</line>
-          <option name="timeStamp" value="329" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/modules/prepareMarketClearing.py</url>
-          <line>32</line>
-          <option name="timeStamp" value="342" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
-          <line>2110</line>
-          <option name="timeStamp" value="345" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
-          <line>2082</line>
-          <option name="timeStamp" value="348" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
-          <line>1683</line>
+          <line>1746</line>
           <option name="timeStamp" value="350" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
-          <line>1836</line>
-          <option name="timeStamp" value="353" />
+          <url>file://$PROJECT_DIR$/emlabpy/domain/trends.py</url>
+          <line>102</line>
+          <option name="timeStamp" value="399" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/util/clock.py</url>
+          <line>172</line>
+          <option name="timeStamp" value="460" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/util/clock.py</url>
+          <line>187</line>
+          <option name="timeStamp" value="480" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/util/clock.py</url>
+          <line>185</line>
+          <option name="timeStamp" value="481" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/modules/capacitymarket.py</url>
+          <line>84</line>
+          <option name="timeStamp" value="491" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/modules/dismantle.py</url>
+          <line>29</line>
+          <option name="timeStamp" value="536" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/emlabpy/plots/plots.py</url>
-          <line>2136</line>
-          <option name="timeStamp" value="354" />
+          <line>2308</line>
+          <option name="timeStamp" value="546" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/emlabpy/modules/prepareMarketClearing.py</url>
+          <line>65</line>
+          <option name="timeStamp" value="575" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -655,31 +725,35 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="[i * 100000 for i in VOLLs]" language="Python" />
+        <watch expression="financialPowerPlantReport.capacityMarketRevenues_in_year - fixed_on_m_cost - dispatch.variable_costs" language="Python" />
+        <watch expression="dispatch.revenues" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$increment_clock.coverage" NAME="increment clock Coverage Results" MODIFIED="1685218820667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/util" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$increment_clock.coverage" NAME="increment clock Coverage Results" MODIFIED="1688401578803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/util" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$delete.coverage" NAME="delete Coverage Results" MODIFIED="1682685723189" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$convert6hrto1hr.coverage" NAME="convert_tomonthly_demand Coverage Results" MODIFIED="1678896976325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepareFutureMarketClearing.coverage" NAME="prepareFutureMarketClearing Coverage Results" MODIFIED="1681679073060" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/modules" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$delete_ungrouped_plants.coverage" NAME="delete_ungrouped_plants Coverage Results" MODIFIED="1682681375194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_heating_demand.coverage" NAME="prepare_heating_demand Coverage Results" MODIFIED="1679305933013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$dismantle.coverage" NAME="dismantle Coverage Results" MODIFIED="1683581076041" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$dismantle.coverage" NAME="dismantle Coverage Results" MODIFIED="1689802870048" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$test_merit_order.coverage" NAME="test_merit_order Coverage Results" MODIFIED="1685987758472" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/plots" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$invest.coverage" NAME="invest Coverage Results" MODIFIED="1685217185600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$financial_reports.coverage" NAME="financial_reports Coverage Results" MODIFIED="1685535920210" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$AMIRIS.coverage" NAME="AMIRIS Coverage Results" MODIFIED="1686835289701" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amiris_workflow" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$initialize_power_plants.coverage" NAME="initialize power plants Coverage Results" MODIFIED="1683813169683" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$invest.coverage" NAME="invest Coverage Results" MODIFIED="1688577496687" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$financial_reports.coverage" NAME="financial_reports Coverage Results" MODIFIED="1690207599071" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$Strategic_reserve.coverage" NAME="Strategic reserve ger Coverage Results" MODIFIED="1688652593859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$AMIRIS.coverage" NAME="AMIRIS Coverage Results" MODIFIED="1689606150787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amiris_workflow" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$initialize_power_plants.coverage" NAME="initialize power plants Coverage Results" MODIFIED="1687811273941" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$convert_tomonthly_demand.coverage" NAME="convert_tomonthly_demand Coverage Results" MODIFIED="1679584433565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$testEMLABPY.coverage" NAME="testEMLABPY Coverage Results" MODIFIED="1685916208511" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$plots.coverage" NAME="plots Coverage Results" MODIFIED="1687125129997" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$testEMLABPY.coverage" NAME="testEMLABPY Coverage Results" MODIFIED="1687770642779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$plots.coverage" NAME="plots Coverage Results" MODIFIED="1690365896145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$Strategic_reserve_ger.coverage" NAME="Strategic reserve ger Coverage Results" MODIFIED="1690287556545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepareweatherdata.coverage" NAME="prepareweatherdata Coverage Results" MODIFIED="1679666242682" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$initialize_clock.coverage" NAME="initialize clock Coverage Results" MODIFIED="1685216997552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/util" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_market.coverage" NAME="prepare market Coverage Results" MODIFIED="1686668747548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
-    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$futuremarket.coverage" NAME="futuremarket Coverage Results" MODIFIED="1686829886512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$initialize_clock.coverage" NAME="initialize clock Coverage Results" MODIFIED="1688480016809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy/util" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_market.coverage" NAME="prepare market Coverage Results" MODIFIED="1690289061367" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$futuremarket.coverage" NAME="futuremarket Coverage Results" MODIFIED="1688652568148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$prepare_power_plants.coverage" NAME="prepare_power_plants Coverage Results" MODIFIED="1682428463164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
+    <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$Capacity_Market.coverage" NAME="Capacity_Market Coverage Results" MODIFIED="1688585326177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/emlabpy" />
     <SUITE FILE_PATH="coverage/toolbox_amiris_emlab$dates_to_matrix.coverage" NAME="dates to matrix Coverage Results" MODIFIED="1681740129859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preparation_scripts" />
   </component>
 </project>
