@@ -39,20 +39,25 @@ class CapacityMarketSubmitBids(MarketModule):
 
             # Bid price is zero, unless net revenues are negative
             price_to_bid = 0
-
+            loan = powerplant.getLoan()
+            if loan is not None:
+                if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
+                    pending_loan = loan.getAmountPerPayment()
+                else:
+                    pending_loan = 0
             # if power plant is not dispatched, the net revenues are minus the fixed operating costs
             if dispatch is None:
                 #print("no dispatch found for " + str(powerplant.id)+  " with name "+str(powerplant.name))
-                net_revenues = - fixed_on_m_cost
+                net_revenues = - fixed_on_m_cost - pending_loan
             # if power plant is dispatched, the net revenues are the revenues minus the total costs
             else:
                 # todo: should add loans to fixed costs?
-                net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost #-loans
+                net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost - pending_loan
 
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
-
+                print(str(powerplant.name) + "   "+str(price_to_bid))
             # all power plants place a bid pair of price and capacity on the market
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, \
                                                                        capacity * powerplant.technology.peak_segment_dependent_availability,\

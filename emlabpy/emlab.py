@@ -247,13 +247,6 @@ try:  # Try statement to always close DB properly
         short_investing.act_and_commit()
         logging.info('End Run short term Investment')
 
-    if run_create_results:
-        logging.info('Start logging results')
-        strategic_reserve_operator = StrategicReserveOperator('StrategicReserveOperator')
-        create_results = CreatingResultsExcel(reps, strategic_reserve_operator)
-        create_results.act_and_commit()
-        logging.info('End logging results')
-
     logging.info('End Run Modules')
     spinedb_reader_writer.commit('Initialize all module import structures')
     logging.info('Commit Initialization Modules')
