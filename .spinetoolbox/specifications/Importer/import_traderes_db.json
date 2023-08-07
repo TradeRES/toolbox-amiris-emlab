@@ -511,7 +511,10 @@
             },
             "danish": {},
             "nodecostsgraph": {},
-            "fixedCosts": {}
+            "fixedCosts": {
+                "read_until_row": false,
+                "read_until_col": true
+            }
         },
         "table_types": {
             "node": {

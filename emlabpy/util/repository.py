@@ -607,7 +607,15 @@ class Repository:
     def get_operational_and_to_be_decommissioned_but_no_RES_support(self) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.technology.intermittent == False and (
-                        i.status == globalNames.power_plant_status_operational or i.status == globalNames.power_plant_status_to_be_decommissioned)]
+                        i.status == globalNames.power_plant_status_operational
+                        or i.status == globalNames.power_plant_status_to_be_decommissioned)]
+
+    def get_operational_and_to_be_decommissioned(self) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if (   i.status == globalNames.power_plant_status_operational
+                        or i.status == globalNames.power_plant_status_to_be_decommissioned)]
+
+
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -772,8 +780,8 @@ class Repository:
 
     def get_accepted_CM_bids(self, tick):
         return [i for i in self.bids.values() if i.tick == tick and
-                (
-                        i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted or i.status == globalNames.power_plant_dispatch_plan_status_accepted)]
+                (       i.status == globalNames.power_plant_dispatch_plan_status_partly_accepted
+                        or i.status == globalNames.power_plant_dispatch_plan_status_accepted)]
 
     def create_or_update_power_plant_CapacityMarket_plan(self, plant: PowerPlant,
                                                          bidder: EnergyProducer,

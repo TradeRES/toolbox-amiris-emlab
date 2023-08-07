@@ -931,7 +931,7 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -160.6391685847951,
+            "x": -162.8191631193183,
             "y": -487.1954945937124,
             "url": {
                 "dialect": "sqlite",
@@ -1167,7 +1167,7 @@
                 },
                 {
                     "type": "literal",
-                    "arg": "run_strategic_reserve_ger"
+                    "arg": "run_capacity_market"
                 }
             ]
         }

@@ -28,7 +28,7 @@ class CapacityMarketSubmitBids(MarketModule):
     def act(self):
         # in the future : do for every EnergyProducer
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_but_no_RES_support():
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned():
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             market = self.reps.get_capacity_market_for_plant(powerplant)
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
@@ -47,7 +47,8 @@ class CapacityMarketSubmitBids(MarketModule):
             # if power plant is dispatched, the net revenues are the revenues minus the total costs
             else:
                 # todo: should add loans to fixed costs?
-                net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost
+                net_revenues = dispatch.revenues - dispatch.variable_costs - fixed_on_m_cost #-loans
+
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
