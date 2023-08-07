@@ -362,6 +362,7 @@ class PrepareMarket(DefaultModule):
         InitialEnergyLevelInMWH = []
         InstalledPowerInMW = []
         StorageType = []
+        Strategist= []
         for pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
@@ -370,12 +371,13 @@ class PrepareMarket(DefaultModule):
                 InitialEnergyLevelInMWH.append(pp.initialEnergyLevelInMWH)
                 EnergyToPowerRatio.append(pp.technology.energyToPowerRatio)
                 InstalledPowerInMW.append(pp.capacity)
+                Strategist.append("MULTI_AGENT_SIMPLE")
                 StorageType.append("STORAGE")
 
         d = {'identifier': identifier, 'StorageType': StorageType, 'EnergyToPowerRatio': EnergyToPowerRatio,
              'ChargingEfficiency': ChargingEfficiency,
              'DischargingEfficiency': DischargingEfficiency, 'InitialEnergyLevelInMWH': InitialEnergyLevelInMWH,
-             'InstalledPowerInMW': InstalledPowerInMW, }
+             'InstalledPowerInMW': InstalledPowerInMW, "Strategist" : Strategist }
         # @DLR: missing SelfDischargeRatePerHour in excel
 
         df = pd.DataFrame(data=d)
