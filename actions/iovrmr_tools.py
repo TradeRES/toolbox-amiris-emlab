@@ -649,25 +649,30 @@ def calculate_residual_load(
     residual_load_results: Dict[str, pd.DataFrame],
     operators_offset: int = 5,
     demand_offset: int = 1,
-) -> pd.Series:
+    offer_offset: int = 2,
+) -> pd.DataFrame:
     """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
-    res_generation_to_aggregate = []
-    demand_to_aggregate = []
+    residual_load = pd.DataFrame(
+        columns=["residual_load_actual_infeed", "planned_demand", "res_potential", "residual_load_res_potential"]
+    )
+    to_aggregate = {"res_generation": [], "res_potential": [], "planned_demand": []}
     for key, val in residual_load_results.items():
         if key in OPERATOR_AGENTS:
-            res_generation_to_aggregate.append(extract_values(val, "AwardedPowerInMWH", -operators_offset))
+            to_aggregate["res_generation"].append(extract_values(val, "AwardedPowerInMWH", -operators_offset))
+            to_aggregate["res_potential"].append(extract_values(val, "OfferedPowerInMW", offer_offset))
         elif key in DEMAND:
-            demand_to_aggregate.append(extract_values(val, "RequestedEnergyInMWH", demand_offset))
+            to_aggregate["planned_demand"].append(extract_values(val, "RequestedEnergyInMWH", demand_offset))
         else:
             raise ValueError("Received invalid key for residual_load_results!")
 
-    overall_vres_generation = calculate_overall_value(res_generation_to_aggregate)
-    overall_demand = calculate_overall_value(demand_to_aggregate)
+    overall_vres_generation = calculate_overall_value(to_aggregate["res_generation"])
+    residual_load["res_potential"] = calculate_overall_value(to_aggregate["res_potential"])
+    residual_load["planned_demand"] = calculate_overall_value(to_aggregate["planned_demand"])
 
-    residual_load = overall_demand - overall_vres_generation
-    residual_load.name = "residual_load"
+    residual_load["residual_load_actual_infeed"] = residual_load["planned_demand"] - overall_vres_generation
+    residual_load["residual_load_res_potential"] = residual_load["planned_demand"] - residual_load["res_potential"]
     residual_load = residual_load.round(4)
-    residual_load = residual_load.reset_index().drop(columns="new_time_step")["residual_load"]
+    residual_load.reset_index(drop=True, inplace=True)
 
     return residual_load
 
