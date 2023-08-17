@@ -735,10 +735,48 @@
                         ]
                     }
                 }
+            ],
+            "S1_2015_50retro": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "groupedDecarbonizedNL"
+            "S1_2015_50retro"
         ],
         "table_options": {
             "germany2019": {
@@ -796,7 +834,11 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "groupedDecarbNL_equilib2009": {}
+            "groupedDecarbNL_equilib2009": {},
+            "S1_2015_50retro": {
+                "read_until_row": true,
+                "read_until_col": true
+            }
         },
         "table_types": {
             "germany2019": {
@@ -1041,6 +1083,15 @@
                 "11": "float",
                 "12": "float",
                 "13": "float"
+            },
+            "S1_2015_50retro": {
+                "0": "string",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "string",
+                "5": "float",
+                "6": "float"
             }
         },
         "table_default_column_type": {},
