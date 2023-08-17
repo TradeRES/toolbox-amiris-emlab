@@ -151,9 +151,9 @@ class PowerGeneratingTechnology(ImportObject):
         elif self.fixed_cost_eur_MW.index.min() > year: # if the year is lower than data available, take first year
             self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
             return self.fixed_cost_eur_MW.iloc[0]
-        elif self.fixed_cost_eur_MW.index.max() < year: # todo: delete this!!!!!!!!!
-            self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
-            return self.fixed_cost_eur_MW.iloc[0]
+        # elif self.fixed_cost_eur_MW.index.max() < year: # todo: already deleted this
+        #     self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
+        #     return self.fixed_cost_eur_MW.iloc[0]
         else: # interpolate years AND if the year is higher than data, take the last value
             self.fixed_cost_eur_MW.at[year] = np.nan
             self.fixed_cost_eur_MW.sort_index(ascending=True, inplace=True)
