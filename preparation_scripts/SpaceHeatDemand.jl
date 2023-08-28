@@ -1,4 +1,5 @@
 # By David Ribo
+# this code assigs the calculated demand and COPS per temperature
 using Pkg, JuMP, XLSX, DataFrames, DelimitedFiles, Dates
 import XLSX, DataFrames, CSV, Dates
 
@@ -9,6 +10,9 @@ SH_corr = XLSX.readdata(full_path, "sh_corr!B3:C26")
 AS_corr = XLSX.readdata(full_path, "sh_corr!F3:G3")
 GS_corr = XLSX.readdata(full_path, "sh_corr!J3:K3")
 Temp = XLSX.readdata(full_path_2, "weather_data!B2:B350641")
+
+# HD = heat demand
+# FD = final demand
 
 #HD = DataFrame(T = [], HD = [])
 HD_pred = zeros(length(Temp),4)
@@ -51,7 +55,7 @@ end
 
 #Market share per technology 
 ASHP_MS = 0.6 
-GSHP_MS = 0.4 
+GSHP_MS = 0.4
 
 HD_pred[:,4] = GSHP_MS*HD_pred[:,1]./HD_pred[:,2] + ASHP_MS*HD_pred[:,1]./HD_pred[:,3]
 

@@ -26,6 +26,7 @@ import numpy as np
 logging.basicConfig(level=logging.ERROR)
 
 
+plt.rcParams.update({'font.size': 14})
 
 
 def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW, installed_capacity_per_iteration,
@@ -38,7 +39,7 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     if installed_capacity_per_iteration.size != 0:
         installed_capacity_per_iteration.plot(ax=ax2, color=colors_unique_candidates, linestyle='None', marker='o')
     ax1.set_xlabel('Iterations', fontsize='medium')
-    ax1.set_ylabel('NPV [Eur] (lines)', fontsize='medium')
+    ax1.set_ylabel('NPV [€] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
     ax1.set_title('Investments and NPV per MW per iterations ' + '\n for future year ' + str(future_year))
     # ax1.set_ylim(bottom=0)
@@ -56,7 +57,7 @@ def plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, c
     axs13 = profits_per_iteration.plot(color=colors_unique_candidates)
     axs13.set_axisbelow(True)
     plt.xlabel('iterations', fontsize='medium')
-    plt.ylabel('Revenues - Operational Costs Eur', fontsize='medium')
+    plt.ylabel('Revenues - Operational Costs €', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs13.annotate('legend = with tested capacity',
@@ -164,7 +165,7 @@ def plot_revenues_per_iteration_for_one_tech(all_future_operational_profit, path
         axs11 = all_future_operational_profit.plot()
         axs11.set_axisbelow(True)
         plt.xlabel('Iterations', fontsize='medium')
-        plt.ylabel('Revenues - Operational Costs [Eur]', fontsize='medium')
+        plt.ylabel('Revenues - Operational Costs [€]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1), ncol=5)
         plt.grid()
         axs11.set_title('Operational profits of installed plants \n in tick '
@@ -193,7 +194,7 @@ def plot_expected_candidate_profits_real_profits(candidates_profits_per_iteratio
         label.set(rotation=30, horizontalalignment='right')
     axs11.set_axisbelow(True)
     plt.xlabel('Iterations', fontsize='medium')
-    plt.ylabel('Revenues - Operational Costs [Eur]', fontsize='medium')
+    plt.ylabel('Revenues - Operational Costs [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1), ncol=5)
     plt.grid()
     axs11.set_title(
@@ -213,7 +214,7 @@ def plot_average_revenues_per_iteration(revenues_iteration, path_to_plots, first
     axs15 = revenues_iteration.plot(color=colors)
     axs15.set_axisbelow(True)
     plt.xlabel('Iterations', fontsize='medium')
-    plt.ylabel('Revenues [Eur]', fontsize='medium')
+    plt.ylabel('Revenues [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1,1))
     plt.grid()
     axs15.set_title('Average revenues per technologies for year ' + str(first_year))
@@ -260,7 +261,7 @@ def plot_screening_curve(yearly_costs, marginal_costs_per_hour, path_to_plots, t
     axs14 = marginal_costs_per_hour.reset_index().plot.scatter(x="index", y=0)
     axs14.set_axisbelow(True)
     plt.xticks(rotation=90)
-    plt.ylabel('Prices (Eur/MWh per hour', fontsize='medium')
+    plt.ylabel('Prices (€/MWh per hour', fontsize='medium')
     # axs14.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs14.set_title('Marginal price at year ' + str(test_year))
     fig14 = axs14.get_figure()
@@ -300,7 +301,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     axs15 = CM_revenues_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
     axs15.set_axisbelow(True)
     plt.xlabel('tick', fontsize='medium')
-    plt.ylabel('Revenues CM [Eur]', fontsize='medium')
+    plt.ylabel('Revenues CM [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs15.set_title('Capacity Mechanisms revenues per technology')
@@ -321,7 +322,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs28 = CM_clearing_price.plot()
         axs28.set_axisbelow(True)
         plt.xlabel('Simulation year', fontsize='medium')
-        plt.ylabel('CM clearing price [Eur/MW]', fontsize='medium')
+        plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
         axs28.set_title('Capacity Mechanism clearing price')
@@ -331,7 +332,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs29 = total_costs_CM.plot()
         axs29.set_axisbelow(True)
         plt.xlabel('tick', fontsize='medium')
-        plt.ylabel('total costs [Eur]', fontsize='medium')
+        plt.ylabel('total costs [€]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
         axs29.set_title('Capacity Mechanism total costs')
@@ -342,7 +343,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs29 = revenues_from_SR.plot()
         axs29.set_axisbelow(True)
         plt.xlabel('tick', fontsize='medium')
-        plt.ylabel('[Eur]', fontsize='medium')
+        plt.ylabel('[€]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
         axs29.set_title('Strategic Reserve operator revenues')
@@ -370,7 +371,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     axs27 = npvs_per_tech_per_MW.plot(color=colors)
     axs27.set_axisbelow(True)
     plt.xlabel('Simulation years', fontsize='medium')
-    plt.ylabel('mill. Eur', fontsize='medium')
+    plt.ylabel('mill. €', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs27.set_title('Average NPVs per MW (discount rate=0%)')
@@ -382,7 +383,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     axs29 = profits_with_loans_all.plot(color=colors)
     axs29.set_axisbelow(True)
     plt.xlabel('Simulation years', fontsize='medium')
-    plt.ylabel('Eur', fontsize='medium')
+    plt.ylabel('€', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs29.set_title('Average profits per technology')
@@ -419,7 +420,7 @@ def plot_total_profits_per_tech_per_year(average_profits_per_tech_per_year_perMW
     axs25 = average_profits_per_tech_per_year_perMW.plot(color=colors)
     axs25.set_axisbelow(True)
     plt.xlabel('Simulation years', fontsize='medium')
-    plt.ylabel('operational profits [Eur]', fontsize='medium')
+    plt.ylabel('operational profits [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs25.annotate('Annual profits = revenues + CM revenues - variable costs - fixed costs',
@@ -437,7 +438,7 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, path_to_plots, color
     axs26 = new_pp_profits_for_tech.plot(color=colors)
     axs26.set_axisbelow(True)
     plt.xlabel('Simulation years', fontsize='medium')
-    plt.ylabel('operational profits [Eur]', fontsize='medium')
+    plt.ylabel('operational profits [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1), ncol=5)
     plt.grid()
     axs26.set_title('Operational profits per year \n for ' + test_tech)
@@ -460,12 +461,12 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     all_techs_capacity_nozeroes.dropna(how='all', axis=1, inplace=True)
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
     all_techs_capacity_nozeroes = all_techs_capacity_nozeroes/1000
-    axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None)
+    axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize = (5,5))
     axs17.set_axisbelow(True)
     plt.xlabel('Years', fontsize='large')
-    plt.ylabel('Installed Capacity [GW]', fontsize='medium')
+    plt.ylabel('Installed Capacity [GW]', fontsize='large')
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
-    axs17.set_title(scenario_name + "\n Installed Capacity ")
+    # axs17.set_title(scenario_name + "\n Installed Capacity ")
     # plt.legend(fontsize='large')
     results_file = os.path.join(path_to_plots, 'capacities.csv')
     all_techs_capacity_nozeroes.to_csv(results_file, header=True, sep=';', index=True)
@@ -526,13 +527,14 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     # if calculate_investments == False:
     #     all_techs_generation_nozeroes = pd.concat([all_techs_generation_nozeroes] * 2, ignore_index=True)
 
-    axs18 = all_techs_generation_nozeroes.plot.area(color=colors)
+    axs18 = all_techs_generation_nozeroes.plot.area(color=colors, figsize = (5,5))
+
     axs18.set_axisbelow(True)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Annual Generation [TWh]', fontsize='large')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs18.set_title(scenario_name + ' \n Annual Generation')
+   # axs18.set_title(scenario_name + ' \n Annual Generation')
     fig18 = axs18.get_figure()
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -606,7 +608,7 @@ def plot_yearly_VRES_support(yearl_vres_support, path_to_plots):
     axs33 = yearl_vres_support.plot()
     axs33.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('[Eur]', fontsize='medium')
+    plt.ylabel('[€]', fontsize='medium')
     plt.grid()
     for label in axs33.get_xticklabels(which='major'):
         label.set(rotation=45, horizontalalignment='right')
@@ -635,7 +637,7 @@ def plot_average_and_weighted(total_electricity_price, simple_electricity_prices
     average_weighted.plot(ax=axs3[0], grid=True, legend=False)
     simple_electricity_prices_average.plot(ax=axs3[1], grid=True, legend=False)
     plt.xlabel('Years', fontsize='medium')
-    axs3[0].set_ylabel('weighted average \n electricity price\n Eur/Mwh', fontsize='large')
+    axs3[0].set_ylabel('weighted average \n electricity price\n €/Mwh', fontsize='large')
     axs3[1].set_ylabel('simple', fontsize='large')
 
     axs3[0].set_title('Average and weighted average electricity price')
@@ -649,7 +651,7 @@ def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_uniq
     axs21.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     # plt.ylim([-5, 300])
-    plt.ylabel('Market value (Euro/MWh)', fontsize='medium')
+    plt.ylabel('Market value (€/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
     axs21.set_title('Market values (Market revenues / Production)')
@@ -678,7 +680,7 @@ def plot_yearly_average_electricity_prices_and_RES_share(electricity_price, shar
     axs22 = electricity_price.plot(legend=False,  figsize=(6,3), grid=True)
     axs22.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Weighted-average \n electricity prices (Eur/MWh)', fontsize='large',)
+    plt.ylabel('Weighted-average \n electricity prices (€/MWh)', fontsize='large',)
     axs22.set_title('Weighted-average yearly electricity prices')
     fig22 = axs22.get_figure()
     fig22.savefig(path_to_plots + '/' + 'Electricity prices.png', bbox_inches='tight', dpi=300)
@@ -708,7 +710,7 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     axs24[0].set_title('Price duration curve')
     axs24[1] = sorted_prices.plot(color=colors, ax=axs24[1], legend=None)
     plt.xlabel('hours', fontsize='medium')
-    plt.ylabel('Wholesale market price (Eur/MWh)', fontsize='medium')
+    plt.ylabel('Wholesale market price (€/MWh)', fontsize='medium')
     axs24[1].yaxis.set_label_coords(-0.1, 1.02)
     fig24.savefig(path_to_plots + '/' + 'Price duration curve.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -720,9 +722,9 @@ def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
         label.set(rotation=45, horizontalalignment='right')
     plt.xlabel('hours', fontsize='medium')
     plt.ylim([-5, 300])
-    plt.ylabel('Wholesale market price (Eur/MWh)', fontsize='medium')
+    plt.ylabel('Wholesale market price (€/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs25.set_title('Hourly electricity prices [prices limited to 300 Eur/MWh]')
+    axs25.set_title('Hourly electricity prices [prices limited to 300 €/MWh]')
     fig25 = axs25.get_figure()
     fig25.savefig(path_to_plots + '/' + 'Hourly Electricity prices boxplot.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -734,13 +736,13 @@ def plot_cash_flows(cash_flows_with_zeroes, new_plants_loans, calculate_capacity
     cash_flows = cash_flows_with_zeroes[cash_flows_with_zeroes != 0]
     cash_flows.dropna(how='all', axis=1, inplace=True)
     cash_flows = cash_flows/1000000000
-    axs29 = cash_flows.plot.area()
+    axs29 = cash_flows.plot.area( figsize = (5,5))
     axs29.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Cash [bn Eur]', fontsize='medium')
+    plt.ylabel('Cash [bn €]', fontsize='medium')
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    axs29.set_title(scenario_name + ' \nTotal Cash Flows')
+    #axs29.set_title(scenario_name + ' \nTotal Cash Flows')
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'Cash Flows.png', bbox_inches='tight', dpi=300)
     results_file = os.path.join(path_to_plots, 'cash_flows.csv')
@@ -749,7 +751,7 @@ def plot_cash_flows(cash_flows_with_zeroes, new_plants_loans, calculate_capacity
     axs30 = new_plants_loans.plot.bar()
     axs30.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Cash [bn Eur]', fontsize='medium')
+    plt.ylabel('Cash [bn €]', fontsize='medium')
     plt.grid()
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs30.set_title('Downpayments Energy Producer')
@@ -760,7 +762,7 @@ def plot_cash_flows(cash_flows_with_zeroes, new_plants_loans, calculate_capacity
     # axs32 = total_costs.plot()
     # axs32.set_axisbelow(True)
     # plt.xlabel('Years', fontsize='medium')
-    # plt.ylabel('Cash [Eur]', fontsize='medium')
+    # plt.ylabel('Cash [€]', fontsize='medium')
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     # axs32.set_title('Total Profits (with loans)')
     # fig32 = axs32.get_figure()
@@ -775,7 +777,7 @@ def plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots):
     cost_recovery.plot(ax=axs31[0], grid=True, legend=False)
     cumulative_cost_recovery.plot(ax=axs31[1], grid=True, legend=False)
     axs31[0].set_ylabel('Cost recovery [%]', fontsize='large')
-    axs31[1].set_ylabel('Cummulative \n cost recovery [bn Eur]', fontsize='large')
+    axs31[1].set_ylabel('Cummulative \n cost recovery [bn €]', fontsize='large')
     # axs33.annotate('(Revenues - Costs) Include Capacity Mechanisms',
     #                xy=(1, 1.1), xycoords='figure fraction',
     #                horizontalalignment='right', verticalalignment='bottom',
@@ -795,7 +797,7 @@ def plot_financial_results_new_plants(overall_NPV_per_technology, overall_IRR_pe
    # plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs31[0].set_title('NPV r = 7%')
     axs31[1].set_title('IRR %')
-    axs31[0].set_xlabel('mill. EUR')
+    axs31[0].set_xlabel('mill. €')
     axs31[1].set_xlabel('%')
     fig31.tight_layout()
 
@@ -811,7 +813,7 @@ def plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per
     npvs_per_year_perMW_strategic_reseve.plot(ax = axs30)
     npvs_per_tech_per_MW.plot(ax = axs30)
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('Eur', fontsize='medium')
+    plt.ylabel('€', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
     axs30.set_title('yearly NPV strategic reserve plants')
     axs30.annotate('legend = name, capacity, age',
@@ -849,7 +851,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
             test_npvs = data
 
     plt.xlabel('Years', fontsize='medium')
-    plt.ylabel('mill. Eur', fontsize='medium')
+    plt.ylabel('mill. €', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
     axs31.set_title('NPV per MW for new plants (discount rate = 0)')
     fig31.savefig(path_to_plots + '/' + 'NPV per MW for new plants.png', bbox_inches='tight', dpi=300)
@@ -872,7 +874,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
         NPVNewPlants = NPVNewPlants/1000000
         axs32 = NPVNewPlants.plot()
         plt.xlabel('Years', fontsize='medium')
-        plt.ylabel('mill. Eur', fontsize='medium')
+        plt.ylabel('mill. €', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
         axs32.set_title('NPV new plants \n of tech ' + test_tech)
         axs32.annotate('legend = name, capacity, age',
@@ -907,7 +909,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
             npvs_testTech = test_npvs[pp_installed_in_test_year].iloc[installed_tick]
             npvs_testTech.reset_index(inplace=True, drop=True)
             npvs_testTech.plot(ax=axs33, style='.', label="Installed in " + str(installed_year))
-            plt.ylabel('[Eur]/MW', fontsize='medium')
+            plt.ylabel('[€]/MW', fontsize='medium')
             plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
             for label in axs33.get_xticklabels(which='major'):
                 label.set(rotation=30, horizontalalignment='right')
@@ -1977,7 +1979,7 @@ def prepare_monthly_electricity_prices(electricity_prices):
     #monthly_electricity_price_grouped = pd.melt(grouped, id_vars='index', value_name='Value')#grouped.melt()['value']
     ax1 = monthly_electricity_price_grouped.plot()
     plt.xlabel('Months', fontsize='medium')
-    plt.ylabel('Eur/MWh', fontsize='medium')
+    plt.ylabel('€/MWh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
     ax1.xaxis.set_major_locator(ticker.MultipleLocator(60))
     ax1.xaxis.set_minor_locator(ticker.MultipleLocator(12))
@@ -1999,7 +2001,7 @@ def prepare_monthly_electricity_prices(electricity_prices):
     ax1 = grouped.plot()
     ax1.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.xlabel('Months', fontsize='medium')
-    plt.ylabel('Eur/MWh', fontsize='medium')
+    plt.ylabel('€/MWh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
     plt.legend(fontsize='small', loc='upper right', ncol=5)
     fig1 = ax1.get_figure()
@@ -2076,7 +2078,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         reps, unique_technologies, renewable_technologies, yearly_load,
         years_to_generate)
 
-    plot_total_demand(reps)
+    #plot_total_demand(reps)
 
     plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor.T, all_techs_full_load_hours.T, path_to_plots,
                                              colors_unique_techs)
@@ -2113,7 +2115,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, profits_with_loans_all, path_to_plots,
                                         technology_colors)
 
-    plot_strategic_reserve_plants( npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
     installed_capacity_per_iteration, candidate_plants_project_value_per_MW = prepare_capacity_per_iteration(
         future_year, future_tick, reps, unique_candidate_power_plants)
 
@@ -2166,6 +2167,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             ticks_to_generate)
         plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                          CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, path_to_plots, colors_unique_techs)
+        if ran_CRM == "strategic_reserve":
+            plot_strategic_reserve_plants( npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
 
     if calculate_vres_support == True:
         yearly_vres_support = calculating_RES_support(reps, years_to_generate)
@@ -2481,27 +2484,28 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "Strategic_Reserve2.xlsx"
+results_excel = "S1_S2.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-SCENARIOS = ["NL-strategic_reserve_7_800", "NL-strategic_reserve_15_800", "NL-strategic_reserve_15_1600", ]
+#SCENARIOS = ["NL-strategic_reserve_7_800", "NL-strategic_reserve_15_800", "NL-strategic_reserve_15_1600", ]
 
 #SCENARIOS = ["NL-noSR", "NL-strategic_reserve_7", "NL-strategic_reserve_15"]
 
-# SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
-#SCENARIOS = ["NL-noSR", "NL-SR_ger_15percent"]
+#SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
+#SCENARIOS = ["NL-S1", "NL-S2"]
 # SCENARIOS = ["NL-fix_profiles", "NL-stochastic_increase_demand", "NL-iteration1", "NL-iteration2",
 #              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
-
+#SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
+SCENARIOS = [ "NL-iteration1"]
 existing_scenario = True
-save_excel = True
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech =  None #"hydrogen_turbine" # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
+test_tech = None #"hydrogen_turbine" # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
 industrial_demand_as_flex_demand_with_cap = True
 calculate_monthly_generation = True #!!!!!!!!!!!!!!For the new plots
@@ -2514,7 +2518,7 @@ calculate_profits_candidates_per_iteration = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 
 global calculate_capacity_mechanisms
-calculate_capacity_mechanisms = True
+calculate_capacity_mechanisms = False
 calculate_vres_support = False
 electrolyzer_read = True
 
