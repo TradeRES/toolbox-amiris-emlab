@@ -20,7 +20,7 @@ AgentTypes:
         Mandatory: true
     Products: [ 'Awards', 'GateClosureInfo' ]
 
-  EnergyExchangeMulti:
+  EnergyExchange:
     Attributes:
       DistributionMethod:
         AttributeType: enum

@@ -14,7 +14,7 @@ Variables:
   - &portfolioBuildingOffset 60
 
 Agents:
-  - Type: EnergyExchangeMulti
+  - Type: EnergyExchange
     Id: 1
     Attributes:
       DistributionMethod: SAME_SHARES

@@ -21,7 +21,7 @@ OPERATOR_AGENTS = [
     "ElectrolysisTrader",
 ]
 SUPPORTED_AGENTS = ["RenewableTrader", "SystemOperatorTrader"]
-EXCHANGE = ["EnergyExchangeMulti"]
+EXCHANGE = ["EnergyExchange"]
 DEMAND = ["DemandTrader"]
 CONVENTIONAL_AGENT_RESULTS = {
     "ConventionalPlantOperator_VariableCostsInEURperPlant": "VariableCostsInEURperPlant",
