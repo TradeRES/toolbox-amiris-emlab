@@ -92,6 +92,7 @@ class Repository:
         self.dummy_capacity_to_be_installed = 1000
         self.dummy_capacity_to_test = 1
         self.run_quick_investments = False
+        self.capacity_market_active = False
         self.limit_investments = True
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
@@ -534,6 +535,20 @@ class Repository:
                 capacity += candidate.capacityTobeInstalled
             expectedOperationalcapacity[candidate.technology.name ] = capacity
         return expectedOperationalcapacity
+
+    def calculateEffectiveCapacityExpectedofListofPlants(self, future_installed_plants_ids, investable_candidate_plants):
+        expected_effective_operationalcapacity = dict()
+        installedcapacity = 0
+        for plant in self.power_plants.values():
+            if plant.id in future_installed_plants_ids: # this list was kept in the future expected power plants
+                installedcapacity += plant.capacity * plant.technology.peak_segment_dependent_availability
+
+        for candidate in investable_candidate_plants:
+            # capacity from installed power plant
+            capacity = 0
+            capacity = installedcapacity + (candidate.capacityTobeInstalled * candidate.technology.peak_segment_dependent_availability)
+            expected_effective_operationalcapacity[candidate.technology.name] = capacity
+        return expected_effective_operationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
         """ in the market preparation file, the plants that are decommissioned are filtered out,

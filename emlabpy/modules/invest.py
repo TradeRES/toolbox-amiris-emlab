@@ -130,6 +130,7 @@ class Investmentdecision(DefaultModule):
                 #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants, False)
+
                 self.capacity_calculations()
 
                 for candidatepowerplant in self.investable_candidate_plants:
@@ -152,7 +153,13 @@ class Investmentdecision(DefaultModule):
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
-                        cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent)
+                        if self.reps.capacity_market_active == True:
+                            effectiveExpectedCapacityperTechnology = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
+                                self.future_installed_plants_ids, self.investable_candidate_plants)
+                            capacity_market_revenue = self.calculate_capacity_market_revenues(effectiveExpectedCapacityperTechnology, candidatepowerplant)
+                        else:
+                            capacity_market_revenue = 0
+                        cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, capacity_market_revenue)
                         projectvalue = self.npv(cashflow)
 
                         # saving the list of power plants values that have been candidates per investmentIteration.
@@ -167,7 +174,6 @@ class Investmentdecision(DefaultModule):
                         elif projectvalue < 0:
                             # the power plant should not be investable in next rounds
                             # saving if the candidate power plant remains or not as investable
-
                             candidatepowerplant.setViableInvestment(False)
                             self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                         else:
@@ -307,14 +313,14 @@ class Investmentdecision(DefaultModule):
         self.futureTick = self.reps.current_tick + lookAhead  # self.agent.getInvestmentFutureTimeHorizon()
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTick
 
-    def getProjectCashFlow(self, candidatepowerplant, agent):
+    def getProjectCashFlow(self, candidatepowerplant, agent, capacity_market_revenue):
         technology = candidatepowerplant.technology
         totalInvestment = self.getActualInvestedCapitalperMW(
             technology) * candidatepowerplant.capacity  # candidate power plants only have 1MW installed
         depreciationTime = technology.depreciation_time
         technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
-        operatingProfit = candidatepowerplant.get_Profit()
+        operatingProfit = candidatepowerplant.get_Profit()  + capacity_market_revenue # per MW
         fixed_costs = self.getActualFixedCostsperMW(technology) * candidatepowerplant.capacity
         equity = (1 - agent.debtRatioOfInvestments)
         equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
@@ -456,15 +462,25 @@ class Investmentdecision(DefaultModule):
 
         return new_target_power_plants
 
-    # expectedTechnologyCapacity = reps.powerPlantRepository.calculateCapacityOfExpectedOperationalPowerPlantsInMarketAndTechnology(market, pggt.getPowerGeneratingTechnology(), time)
-    # targetDifference = pggt.getTrend().getValue(time) - expectedTechnologyCapacity
-    # if targetDifference > 0:
-    #     plant = PowerPlant()
-    #     plant.specifyNotPersist(getCurrentTick(), EnergyProducer(), reps.powerGridNodeRepository.findFirstPowerGridNodeByElectricitySpotMarket(market), pggt.getPowerGeneratingTechnology())
-    #     plant.setActualNominalCapacity(targetDifference)
-    #     plantMarginalCost = determineExpectedMarginalCost(plant, fuelPrices, co2price)
-    #     marginalCostMap.put(plant, plantMarginalCost)
-    #     capacitySum += targetDifference
+
+    def calculate_capacity_market_revenues(self, effectiveExpectedCapacityperTechnology, candidatepowerplant):
+        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
+        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
+        totalPeakDemandAtFuturePoint = spot_market.get_peak_load_per_year(self.futureInvestmentyear)
+        sdc = capacity_market.get_sloping_demand_curve(totalPeakDemandAtFuturePoint)
+        capacityRevenue = 0
+        if effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] <= sdc.um_volume:
+            capacityRevenue = candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability * capacity_market.PriceCap
+        elif effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] > sdc.lm_volume\
+                and effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] < sdc.um_volume:
+            clearing_price = sdc.get_price_at_volume(effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name])
+            capacityRevenue = candidatepowerplant.capacity * candidatepowerplant.technology.availability * clearing_price
+        elif effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] > sdc.lm_volume:
+            capacityRevenue = 0
+        else:
+            raise Exception
+        return  capacityRevenue
+
     def group_power_plants(self):
         plants_to_delete = []
         for candidate_technology in self.reps.get_unique_candidate_technologies():
