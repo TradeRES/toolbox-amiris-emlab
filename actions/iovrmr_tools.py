@@ -653,7 +653,7 @@ def calculate_residual_load(
 ) -> pd.DataFrame:
     """Calculate the residual load based on RES infeed and planned load (not considering storage / shedding etc.)"""
     residual_load = pd.DataFrame(
-        columns=["residual_load_actual_infeed", "planned_demand", "res_potential", "residual_load_res_potential"]
+        columns=["residual_load_actual_infeed", "planned_demand", "res_potential", "curtailed_res"]
     )
     to_aggregate = {"res_generation": [], "res_potential": [], "planned_demand": []}
     for key, val in residual_load_results.items():
@@ -668,9 +668,9 @@ def calculate_residual_load(
     overall_vres_generation = calculate_overall_value(to_aggregate["res_generation"])
     residual_load["res_potential"] = calculate_overall_value(to_aggregate["res_potential"])
     residual_load["planned_demand"] = calculate_overall_value(to_aggregate["planned_demand"])
-
+    residual_load["curtailed_res"]  =  residual_load["res_potential"] - to_aggregate["res_generation"][0]
     residual_load["residual_load_actual_infeed"] = residual_load["planned_demand"] - overall_vres_generation
-    residual_load["residual_load_res_potential"] = residual_load["planned_demand"] - residual_load["res_potential"]
+   # residual_load["residual_load_res_potential"] = residual_load["planned_demand"] - residual_load["res_potential"]
     residual_load = residual_load.round(4)
     residual_load.reset_index(drop=True, inplace=True)
 
