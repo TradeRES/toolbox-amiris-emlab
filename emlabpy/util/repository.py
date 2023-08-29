@@ -297,12 +297,6 @@ class Repository:
         except StopIteration:
             return None
 
-    # Hourly Demand
-    # def get_hourly_demand_by_country(self, country):
-    #     try:
-    #         return next(i.hourlyDemand for i in self.electricity_spot_markets.values() if i.country == country)
-    #     except StopIteration:
-    #         return None
 
     def get_realized_peak_demand_by_year(self, year):
         try:

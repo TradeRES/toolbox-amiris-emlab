@@ -101,8 +101,8 @@ class PrepareMarket(DefaultModule):
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else:  # for now, only have dynamic data for NL case
                     peakdemand = 0
-                    print("FUEL_PRICE")
-                    print(fuel_price) # fuel price can also be seen as price increase
+                    # print("FUEL_PRICE")
+                    # print(fuel_price) # fuel price can also be seen as price increase
                     load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
                     if self.reps.increase_demand == True  and self.reps.investmentIteration <= 0:                        # =======  demand with increase
                         for load_shedder_name , load_shedder in self.reps.loadShedders.items():
@@ -135,7 +135,7 @@ class PrepareMarket(DefaultModule):
                     total_peak_demand = max(peakdemand)
                     total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                     market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-                    demand_name = calculatedprices[:-5] + "_demand_peak"
+                    demand_name = calculatedprices[:-5] + "demand_peak"
                     self.reps.dbrw.stage_total_demand(market.name , total_peak_demand, self.simulation_year , demand_name)
 
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":

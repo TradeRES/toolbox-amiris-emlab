@@ -37,7 +37,7 @@ class ElectricitySpotMarket(Market):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.future_demand_peak = pd.Series(values, index=index)
-        elif parameter_name == 'next_year__demand_peak':
+        elif parameter_name == 'next_year_demand_peak':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
