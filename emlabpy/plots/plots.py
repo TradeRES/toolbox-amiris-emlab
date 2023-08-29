@@ -1709,7 +1709,7 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
         df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load", "hourly_generation"])
         yearly_electricity_prices.at[:, year] = df['energy_exchange']["ElectricityPriceInEURperMWH"]
         TotalAwardedPowerInMW.at[:, year] = df['energy_exchange'].TotalAwardedPowerInMW
-        residual_load.at[:, year] = df['residual_load']['residual_load']
+        residual_load.at[:, year] = df['residual_load']['residual_load_actual_infeed']
         hourly_load_shedded.at[:, year] = df['hourly_generation'].load_shedding
         hourly_industrial_heat.at[:, year] = df['hourly_generation'].electrolysis_power_consumption
 
@@ -2499,8 +2499,8 @@ results_excel = "S1_S2.xlsx"
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #              ]  # add a dash before!
 #SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
-SCENARIOS = [ "NL-iteration1"]
-existing_scenario = True
+SCENARIOS = [ "NL-capacity_market_test"]
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
@@ -2518,7 +2518,7 @@ calculate_profits_candidates_per_iteration = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 
 global calculate_capacity_mechanisms
-calculate_capacity_mechanisms = False
+calculate_capacity_mechanisms = True
 calculate_vres_support = False
 electrolyzer_read = True
 

@@ -827,6 +827,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_spot_market_in_country(self, country):
+        try:
+            return next(i for i in self.electricity_spot_markets.values() if i.country == country)
+        except StopIteration:
+            return None
+
         # MarketClearingPoints
 
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:

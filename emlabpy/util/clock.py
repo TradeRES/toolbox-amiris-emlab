@@ -160,8 +160,6 @@ def update_load_current_year(excel, current_year):
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_original_" + lshedder_name + ".csv"))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
-        # print(lshedder_name + "TWH")
-        # print(load_shedder.sum()/1000000)
 
 def update_load_current_year_by_sequence_year(excel, sequence_year):
     """
@@ -171,8 +169,6 @@ def update_load_current_year_by_sequence_year(excel, sequence_year):
         load_shedder = excel['Load'][sequence_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder_name,"TimeSeriesFile"]))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
-        # print(lshedder_name)
-        # print(load_shedder.sum()/1000000)
 
 def prepare_initialization_load_for_future_year(excel):
     # writing FUTURE load shedders
@@ -187,8 +183,6 @@ def prepare_hydrogen_initilization(excel):
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFileFuture"]))
     hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
     # hydrogen demand keeps constant
-    # hydrogen_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFile"]))
-    # hydrogen_series.to_csv(hydrogen_file_for_amiris, header=False, sep=';', index=True)
 
 def prepare_initialization_profiles_for_future_year(excel):
     future_wind_offshore = excel['Wind Offshore profiles'][investment_year]
@@ -197,7 +191,6 @@ def prepare_initialization_profiles_for_future_year(excel):
     future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
     future_pv = excel['Sun PV profiles'][investment_year]
     future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
-    print("total load for investment year")
 
 def update_profiles_first_year(excel, current_year):
     wind_onshore = excel['Wind Onshore profiles'][current_year]

@@ -57,7 +57,7 @@ class CapacityMarketSubmitBids(MarketModule):
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
-                print(str(powerplant.name) + "   "+str(price_to_bid))
+                #print(str(powerplant.name) + "   "+str(price_to_bid))
             # all power plants place a bid pair of price and capacity on the market
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, \
                                                                        capacity * powerplant.technology.peak_segment_dependent_availability,\
@@ -79,13 +79,18 @@ class CapacityMarketClearing(MarketModule):
 
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         market = self.reps.get_capacity_market_in_country(self.reps.country)
-        peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
+        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
+
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.future_prices,
                                                                                            self.reps.current_year + 1 )
-        # todo: replace this by expected future demand?
+        #peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year) - >
+        # changed to fix number because peak load can change per weather year.
+        # changing peak load according to higher than median year.
+        peak_load = spot_market.get_peak_load_per_year(self.reps.current_year)
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
+
         print("peak load" + str(peakExpectedDemand))
         # Retrieve the sloping demand curve for the expected peak load volume
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
