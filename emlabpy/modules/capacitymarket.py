@@ -56,7 +56,8 @@ class CapacityMarketSubmitBids(MarketModule):
 
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                price_to_bid = -1 * net_revenues / (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
+                price_to_bid = -1 * net_revenues /\
+                               (powerplant.get_actual_nominal_capacity() * powerplant.technology.peak_segment_dependent_availability)
                 #print(str(powerplant.name) + "   "+str(price_to_bid))
             # all power plants place a bid pair of price and capacity on the market
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, \
@@ -91,7 +92,7 @@ class CapacityMarketClearing(MarketModule):
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
 
-        print("peak load" + str(peakExpectedDemand))
+        print("peak load " + str(peakExpectedDemand))
         # Retrieve the sloping demand curve for the expected peak load volume
         sdc = market.get_sloping_demand_curve(peakExpectedDemand)
 
@@ -104,20 +105,28 @@ class CapacityMarketClearing(MarketModule):
         for ppdp in sorted_ppdp:
             # As long as the market is not cleared
             if self.isTheMarketCleared == False:
-                if ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
-                    # print(ppdp.name , " ACCEPTED ", ppdp.price, "", sdc.get_price_at_volume(total_supply + ppdp.amount))
-                    total_supply += ppdp.amount
-                    clearing_price = ppdp.price
+                total_supply += ppdp.amount
+                if total_supply < sdc.um_volume:
+                    clearing_price = sdc.get_price_at_volume(total_supply)
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                     ppdp.accepted_amount = ppdp.amount
+                    #print(ppdp.name , " ACCEPTED ", ppdp.price, "", clearing_price)
 
-                elif ppdp.price < sdc.get_price_at_volume(total_supply):
-                    # print(ppdp.name , " partly ACCEPTED ")
-                    clearing_price = ppdp.price
+                elif total_supply > sdc.lm_volume:
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
+                    clearing_price = ppdp.price
                     ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
                     total_supply += sdc.get_volume_at_price(clearing_price)
                     self.isTheMarketCleared = True
+                    #print(ppdp.name , " partly ACCEPTED ", ppdp.price, "", clearing_price)
+
+                elif total_supply > sdc.lm_volume: # and total_supply < sdc.um
+                    ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
+                    ppdp.accepted_amount = ppdp.amount
+                    total_supply += ppdp.amount
+                    clearing_price = sdc.get_price_at_volume(total_supply)
+                    #print(ppdp.name , " ACCEPTED ", ppdp.price, "", clearing_price)
+
             # When the market is cleared
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
