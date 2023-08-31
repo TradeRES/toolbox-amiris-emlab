@@ -104,28 +104,31 @@ class CapacityMarketClearing(MarketModule):
         for ppdp in sorted_ppdp:
             # As long as the market is not cleared
             if self.isTheMarketCleared == False:
-                total_supply += ppdp.amount
 
-                if total_supply < sdc.um_volume:
+                if ppdp.price <= sdc.get_price_at_volume(total_supply + ppdp.amount):
+                    total_supply += ppdp.amount
+                    clearing_price = ppdp.price
                     ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
-                    clearing_price = sdc.get_price_at_volume(total_supply) # this should result in price cap
                     ppdp.accepted_amount = ppdp.amount
                     #print(ppdp.name , " ACCEPTED ", total_supply, "", clearing_price)
 
-                elif total_supply > sdc.lm_volume:
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
+                elif ppdp.price < sdc.get_price_at_volume(total_supply):
                     clearing_price = ppdp.price
+                    ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                     ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply
                     total_supply = sdc.get_volume_at_price(clearing_price)
-                    self.isTheMarketCleared = True
-                    #print(ppdp.name , " partly ACCEPTED ", total_supply, "", clearing_price)
+                    #print(ppdp.name , " partially ACCEPTED ", total_supply, "", clearing_price)
+                    self.isTheMarketCleared == True
                     break
-
-            # When the market is cleared
+                else:
+                    ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
+                    ppdp.accepted_amount = 0
+                    #print(ppdp.name , " too expensive", total_supply, "", ppdp.price)
+                    break
             else:
-                ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
-                ppdp.accepted_amount = 0
-
+                raise Exception
+        # print("clearing price ", clearing_price)
+        # print("total_supply", total_supply)
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(market, clearing_price)
 
