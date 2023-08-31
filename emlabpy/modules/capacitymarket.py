@@ -127,8 +127,8 @@ class CapacityMarketClearing(MarketModule):
                     break
             else:
                 raise Exception
-        # print("clearing price ", clearing_price)
-        # print("total_supply", total_supply)
+        print("clearing price ", clearing_price)
+        print("total_supply", total_supply)
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(market, clearing_price)
 

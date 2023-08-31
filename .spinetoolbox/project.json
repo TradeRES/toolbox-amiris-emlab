@@ -555,17 +555,6 @@
                 ]
             },
             {
-                "name": "from EmlabDB2 to CRM",
-                "from": [
-                    "EmlabDB2",
-                    "bottom"
-                ],
-                "to": [
-                    "CRM",
-                    "right"
-                ]
-            },
-            {
                 "name": "from Invest to Next year",
                 "from": [
                     "Invest",
@@ -585,28 +574,6 @@
                 "to": [
                     "prepare future market",
                     "right"
-                ]
-            },
-            {
-                "name": "from CRM to Financial Results",
-                "from": [
-                    "CRM",
-                    "right"
-                ],
-                "to": [
-                    "Financial Results",
-                    "right"
-                ]
-            },
-            {
-                "name": "from AMIRIS DB to CRM",
-                "from": [
-                    "AMIRIS DB",
-                    "right"
-                ],
-                "to": [
-                    "CRM",
-                    "left"
                 ]
             },
             {
@@ -1077,8 +1044,8 @@
         "Financial Results": {
             "type": "Tool",
             "description": "",
-            "x": 85.616504055198,
-            "y": -302.27355326265376,
+            "x": -30.419835627280946,
+            "y": -346.2873372801457,
             "specification": "Financial Results",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -1148,28 +1115,6 @@
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": []
-        },
-        "CRM": {
-            "type": "Tool",
-            "description": "",
-            "x": -31.07975837782992,
-            "y": -488.9211399952574,
-            "specification": "Capacity Mechanism",
-            "execute_in_work": false,
-            "cmd_line_args": [
-                {
-                    "type": "resource",
-                    "arg": "db_url@EmlabDB2"
-                },
-                {
-                    "type": "resource",
-                    "arg": "db_url@AMIRIS DB"
-                },
-                {
-                    "type": "literal",
-                    "arg": "run_capacity_market"
-                }
-            ]
         }
     }
 }

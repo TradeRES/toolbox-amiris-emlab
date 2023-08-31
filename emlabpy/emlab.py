@@ -154,6 +154,14 @@ try:  # Try statement to always close DB properly
         logging.info('End Run dismantle')
 
     if run_financial_results:
+        if reps.capacity_market_active == True:
+            print('Start Run Capacity Market')
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
+            capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
+            capacity_market_submit_bids.act_and_commit()
+            capacity_market_clear.act_and_commit()
+            print('End Run Capacity Market')
+
         logging.info('Start Saving Financial Results')
         paying_loans = PayForLoansRole(reps)
         paying_loans.act_and_commit()
@@ -229,13 +237,6 @@ try:  # Try statement to always close DB properly
         investing.act_and_commit()
         logging.info('End Run Investment')
 
-    if run_capacity_market:
-        print('Start Run Capacity Market')
-        capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-        capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
-        capacity_market_submit_bids.act_and_commit()
-        capacity_market_clear.act_and_commit()
-        print('End Run Capacity Market')
 
     if run_pay_loans:
         paying_loans = PayForLoansRole(reps)
