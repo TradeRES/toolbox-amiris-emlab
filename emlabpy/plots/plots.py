@@ -594,12 +594,12 @@ def plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots):
 def plot_shortages_and_ENS(shortages, ENS_in_simulated_years, path_to_plots):
     fig3, axs3 = plt.subplots(2,1)
     fig3.tight_layout()
-    ENS_in_simulated_years = ENS_in_simulated_years/1000000
+    ENS_in_simulated_years_gwh = ENS_in_simulated_years/1000
     shortages.plot(ax=axs3[0], grid=True, legend=False)
-    ENS_in_simulated_years.plot(ax=axs3[1], grid=True, legend=False)
+    ENS_in_simulated_years_gwh.plot(ax=axs3[1], grid=True, legend=False)
     axs3[0].set_ylabel('Shortage hours', fontsize='large')
     axs3[0].set_xlabel('Years', fontsize='large')
-    axs3[1].set_ylabel('Energy not supplied \n [TWh]', fontsize='large')
+    axs3[1].set_ylabel('Energy not supplied \n [GWh]', fontsize='large')
     fig3.savefig(path_to_plots + '/' + 'LOLE_ENS.png', bbox_inches='tight', dpi=300)
     plt.close()
 
@@ -627,7 +627,18 @@ def plot_costs_to_society(total_electricity_price, path_to_plots):
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs30.set_title('Total costs to society')
     fig30 = axs30.get_figure()
-    fig30.savefig(path_to_plots + '/' + 'Costs to society.png', bbox_inches='tight', dpi=300)
+    fig30.savefig(path_to_plots + '/' + 'Price to society.png', bbox_inches='tight', dpi=300)
+
+    axs31 = DispatchSystemCostInEUR.plot.area()
+    axs31.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Total price', fontsize='medium')
+    plt.grid()
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs31.set_title('Total costs to society')
+    fig31 = axs31.get_figure()
+    fig31.savefig(path_to_plots + '/' + 'Costs to society.png', bbox_inches='tight', dpi=300)
+
 
 
 def plot_average_and_weighted(total_electricity_price, simple_electricity_prices_average, path_to_plots):
@@ -1687,6 +1698,9 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
     TotalAwardedPowerInMW = pd.DataFrame()
     residual_load = pd.DataFrame()
 
+    global DispatchSystemCostInEUR
+    DispatchSystemCostInEUR =  pd.DataFrame()
+
     global hourly_load_shedded
     hourly_load_shedded = pd.DataFrame()
 
@@ -1709,7 +1723,9 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
         df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load", "hourly_generation"])
         yearly_electricity_prices.at[:, year] = df['energy_exchange']["ElectricityPriceInEURperMWH"]
         TotalAwardedPowerInMW.at[:, year] = df['energy_exchange'].TotalAwardedPowerInMW
-        residual_load.at[:, year] = df['residual_load']['residual_load_actual_infeed']
+
+        DispatchSystemCostInEUR.at[year,0] = df['energy_exchange'].DispatchSystemCostInEUR.sum()
+       # residual_load.at[:, year] = df['residual_load']['residual_load_actual_infeed']
         hourly_load_shedded.at[:, year] = df['hourly_generation'].load_shedding
         hourly_industrial_heat.at[:, year] = df['hourly_generation'].electrolysis_power_consumption
 
@@ -1919,6 +1935,7 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
                                        yearly_load):
     simple_electricity_prices_average = yearly_electricity_prices.sum(axis=0) / 8760
     # average electricity prices calculated in prepare capacpity and generation are the same
+
     # weighted_electricity_prices_average = average( yearly_electricity_prices,  weights =TotalAwardedPowerInMW,axis=0 )
     shortage_hours = pd.DataFrame(index=years_to_generate)
     VOLL = reps.loadShedders["base"].VOLL
@@ -1928,7 +1945,9 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
             total_voluntary.append(loadshedder.percentageLoad)
     total_voluntary_load = sum(total_voluntary)
 
-    inflexible_shedding = hourly_load_shedded -  reps.loadShedders["hydrogen"].ShedderCapacityMW - (yearly_load * total_voluntary_load)
+    #inflexible_shedding = hourly_load_shedded -  reps.loadShedders["hydrogen"].ShedderCapacityMW - (yearly_load * total_voluntary_load)
+    inflexible_shedding = hourly_load_shedded -  reps.loadShedders["hydrogen"].ShedderCapacityMW
+
     shortage_hours["from prices > VOLL"] = yearly_electricity_prices.eq(VOLL).sum()
     # todo energy not supplied = load - total generation. so far total generation seem to be wrong
     energy_not_supplied_per_year = inflexible_shedding[yearly_electricity_prices.eq(VOLL)]
@@ -1944,6 +1963,7 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     reserve margin 
     available generation capacty - peak demand / peak demand
     """
+
     # supply_ratio = dispatched_demand[years_to_generate].min()
 
     # total_capacity = all_techs_capacity.sum(axis=0)
@@ -2024,6 +2044,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     unique_candidate_power_plants += ["Lithium_ion_battery_charge"]  # adding technology for negative production
     start_tick = 0
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
+
     years_to_generate_initialization = list(
         range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1))  # control the current year
     list_ticks = list(range(0, reps.current_tick + 1))
@@ -2181,7 +2202,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             = get_shortage_hours_and_power_ratio(reps, years_to_generate, electricity_prices, TotalAwardedPowerInMW,
                                                  yearly_load)
         plot_average_and_weighted(average_electricity_price, simple_electricity_prices_average, path_to_plots)
-        plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots)
+       # plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots)
         plot_shortages_and_ENS(shortages, ENS_in_simulated_years, path_to_plots)
 
         # plotting costs to society
@@ -2215,8 +2236,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         CostRecovery_data = pd.read_excel(path_to_results, sheet_name='CostRecovery', index_col=0)
         LOL_data = pd.read_excel(path_to_results, sheet_name='LOL', index_col=0)
         ENS_data = pd.read_excel(path_to_results, sheet_name='ENS', index_col=0)
+        Inflexible_load = pd.read_excel(path_to_results, sheet_name='Inflexible_load', index_col=0)
         SupplyRatio_data = pd.read_excel(path_to_results, sheet_name='SupplyRatio', index_col=0)
         ElectricityPrices_data = pd.read_excel(path_to_results, sheet_name='ElectricityPrices', index_col=0)
+
+        TotalSystemCosts_data = pd.read_excel(path_to_results, sheet_name='TotalSystemCosts', index_col=0)
         Monthly_electricity_data = pd.read_excel(path_to_results, sheet_name='MonthlyElectricityPrices', index_col=0)
         H2_production_data = pd.read_excel(path_to_results, sheet_name='H2Production', index_col=0)
         IndustrialHeat_data = pd.read_excel(path_to_results, sheet_name='IndustrialHeat', index_col=0)
@@ -2264,14 +2288,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Overall_NPV_data[scenario_name]= overall_NPV_per_technology.T
         Overall_IRR_data[scenario_name]= overall_IRR_per_technology.T
         ElectricityPrices_data[scenario_name] = average_electricity_price["wholesale price"]
+        TotalSystemCosts_data[scenario_name] = DispatchSystemCostInEUR
         ENS_data[scenario_name] = ENS_in_simulated_years
+        Inflexible_load[scenario_name] = yearly_load.sum(axis=0)
         ShareRES_data[scenario_name] = share_RES
         Dismantled_capacity_data[scenario_name] = capacity_per_status.Decommissioned
         Commissioned_capacity_data[scenario_name] = capacity_per_status.InPipeline
 
         if calculate_capacity_mechanisms == True:
-
-
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
             CRM_data[scenario_name] = average_electricity_price['CRM_Costs']
             if ran_CRM == "strategic_reserve":
@@ -2290,12 +2314,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                             mode="a",
                             engine="openpyxl",
                             if_sheet_exists="overlay") as writer:
-            ENS_data.to_excel(writer, sheet_name="ENS")
+
+            Inflexible_load.to_excel(writer, sheet_name="Inflexible_load")
             CostRecovery_data.to_excel(writer, sheet_name='CostRecovery')
             LOL_data.to_excel(writer, sheet_name='LOL')
             ENS_data.to_excel(writer, sheet_name='ENS')
             SupplyRatio_data.to_excel(writer, sheet_name='SupplyRatio')
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
+            TotalSystemCosts_data.to_excel(writer, sheet_name='TotalSystemCosts')
             Monthly_electricity_data.to_excel(writer, sheet_name='MonthlyElectricityPrices')
             NPVNewPlants_data.to_excel(writer, sheet_name='NPVNewPlants')
             AverageNPVpertechnology_data.to_excel(writer, sheet_name='AverageNPVpertechnology')
@@ -2484,7 +2510,7 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "S1_S2.xlsx"
+results_excel = "extremes5.xlsx"
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
@@ -2492,16 +2518,16 @@ results_excel = "S1_S2.xlsx"
 
 #SCENARIOS = ["NL-noSR", "NL-strategic_reserve_7", "NL-strategic_reserve_15"]
 
-#SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
+SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
 #SCENARIOS = ["NL-S1", "NL-S2"]
 # SCENARIOS = ["NL-fix_profiles", "NL-stochastic_increase_demand", "NL-iteration1", "NL-iteration2",
 #              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
-#              ]  # add a dash before!
+#             ]  # add a dash before!
 #SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
-SCENARIOS = [ "NL-capacity_market_test"]
-existing_scenario = False
-save_excel = False
+#SCENARIOS = [ "NL-iteration7"]
+existing_scenario = True
+save_excel = True
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
