@@ -92,7 +92,7 @@ class Repository:
         self.dummy_capacity_to_be_installed = 1000
         self.dummy_capacity_to_test = 1
         self.run_quick_investments = False
-        self.capacity_market_active = False
+        self.capacity_remuneration_mechanism = None
         self.limit_investments = True
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()

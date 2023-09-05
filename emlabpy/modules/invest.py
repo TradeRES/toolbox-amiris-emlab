@@ -153,7 +153,7 @@ class Investmentdecision(DefaultModule):
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
-                        if self.reps.capacity_market_active == True:
+                        if self.reps.capacity_remuneration_mechanism == "capacity_market":
                             effectiveExpectedCapacityperTechnology = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
                                 self.future_installed_plants_ids, self.investable_candidate_plants)
                             capacity_market_revenue = self.calculate_capacity_market_revenues(effectiveExpectedCapacityperTechnology, candidatepowerplant)

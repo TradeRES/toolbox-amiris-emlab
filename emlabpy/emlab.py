@@ -35,11 +35,7 @@ logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.tx
 # Log to console? Uncomment next line
 #logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
-run_capacity_market = False
-run_forward_market = False
-run_strategic_reserve = False
-run_strategic_reserve_swe = False
-run_strategic_reserve_ger = False
+
 run_electricity_spot_market = False
 run_future_market = False
 run_co2_market = False
@@ -58,16 +54,7 @@ run_create_results = False
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
 
 for arg in sys.argv[3:]:
-    if arg == 'run_capacity_market':
-        run_capacity_market = True
-    if arg == 'run_forward_market':
-        run_forward_market = True
-    if arg == 'run_strategic_reserve':
-        run_strategic_reserve = True
-    if arg == 'run_strategic_reserve_swe':
-        run_strategic_reserve_swe = True
-    if arg == 'run_strategic_reserve_ger':
-        run_strategic_reserve_ger = True
+
     if arg == 'run_future_market':
         run_future_market = True
     if arg == 'run_co2_market':
@@ -154,13 +141,47 @@ try:  # Try statement to always close DB properly
         logging.info('End Run dismantle')
 
     if run_financial_results:
-        if reps.capacity_market_active == True:
+        if reps.capacity_remuneration_mechanism == "capacity_market":
             print('Start Run Capacity Market')
             capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
             capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
             capacity_market_submit_bids.act_and_commit()
             capacity_market_clear.act_and_commit()
             print('End Run Capacity Market')
+
+        if reps.capacity_remuneration_mechanism == "forward_capacity_market":
+            print('Start Run Capacity Market')
+            capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
+            capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
+            capacity_market_clear = ForwardCapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
+            capacity_market_submit_bids.act_and_commit()
+            capacity_market_clear.act_and_commit()
+            print('End Run Capacity Market')
+
+        if reps.capacity_remuneration_mechanism == "strategic_reserve":
+            print('Start strategic reserve')
+            strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
+            strategic_reserve = StrategicReserveAssignment(reps)
+            strategic_reserve_submit_bids.act_and_commit()
+            strategic_reserve.act_and_commit()
+            print('End strategic reserve')
+
+        if reps.capacity_remuneration_mechanism == "strategic_reserve_swe":
+            print('Start strategic reserve')
+            strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
+            strategic_reserve = StrategicReserveAssignment_swe(reps)
+            strategic_reserve_submit_bids.act_and_commit()
+            strategic_reserve.act_and_commit()
+            print('End strategic reserve')
+
+        if  reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
+            print('Start strategic reserve')
+            strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
+            strategic_reserve = StrategicReserveAssignment_ger(reps)
+            strategic_reserve_submit_bids.act_and_commit()
+            strategic_reserve.act_and_commit()
+            print('End strategic reserve')
+
 
         logging.info('Start Saving Financial Results')
         paying_loans = PayForLoansRole(reps)
@@ -186,38 +207,10 @@ try:  # Try statement to always close DB properly
         logging.info('Start creating future power plants')
 
 
-    if run_forward_market:
-        print('Start Run Capacity Market')
-        capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-        capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
-        capacity_market_clear = ForwardCapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
-        capacity_market_submit_bids.act_and_commit()
-        capacity_market_clear.act_and_commit()
-        print('End Run Capacity Market')
 
-    if run_strategic_reserve:
-        print('Start strategic reserve')
-        strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
-        strategic_reserve = StrategicReserveAssignment(reps)
-        strategic_reserve_submit_bids.act_and_commit()
-        strategic_reserve.act_and_commit()
-        print('End strategic reserve')
 
-    if run_strategic_reserve_swe:
-        print('Start strategic reserve')
-        strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
-        strategic_reserve = StrategicReserveAssignment_swe(reps)
-        strategic_reserve_submit_bids.act_and_commit()
-        strategic_reserve.act_and_commit()
-        print('End strategic reserve')
 
-    if run_strategic_reserve_ger:
-        print('Start strategic reserve')
-        strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
-        strategic_reserve = StrategicReserveAssignment_ger(reps)
-        strategic_reserve_submit_bids.act_and_commit()
-        strategic_reserve.act_and_commit()
-        print('End strategic reserve')
+
 
     if run_co2_market:
         logging.info('Start Run CO2 Market')

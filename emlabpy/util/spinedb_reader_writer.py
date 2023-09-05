@@ -165,8 +165,8 @@ class SpineDBReaderWriter:
                 reps.groups_plants_per_installed_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'scenarioWeatheryearsExcel':
                 reps.scenarioWeatheryearsExcel = str(row['parameter_value'])
-            elif row['parameter_name'] == 'capacity_market_active':
-                reps.capacity_market_active = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'capacity_remuneration_mechanism':
+                reps.capacity_remuneration_mechanism = (row['parameter_value'])
 
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
