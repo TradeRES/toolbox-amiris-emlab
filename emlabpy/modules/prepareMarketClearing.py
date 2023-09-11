@@ -135,7 +135,7 @@ class PrepareMarket(DefaultModule):
                     total_peak_demand = max(peakdemand)
                     total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                     market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-                    demand_name = calculatedprices[:-5] + "demand_peak"
+                    demand_name = calculatedprices[:-5] + "demand_peak" # futuredemand_peak or next_year_demand_peak
                     self.reps.dbrw.stage_total_demand(market.name , total_peak_demand, self.simulation_year , demand_name)
 
                     if self.reps.runningModule == "run_prepare_next_year_market_clearing":
