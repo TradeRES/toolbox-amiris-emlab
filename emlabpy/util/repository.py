@@ -613,7 +613,7 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner == owner and i.status == globalNames.power_plant_status_operational]
 
-    def get_operational_and_to_be_decommissioned_but_no_RES_support(self) -> List[PowerPlant]:
+    def get_operational_and_to_be_decommissioned_but_no_RES(self) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.technology.intermittent == False and (
                         i.status == globalNames.power_plant_status_operational
