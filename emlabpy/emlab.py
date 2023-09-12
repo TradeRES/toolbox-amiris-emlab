@@ -206,12 +206,6 @@ try:  # Try statement to always close DB properly
         future_market.act_and_commit()
         logging.info('Start creating future power plants')
 
-
-
-
-
-
-
     if run_co2_market:
         logging.info('Start Run CO2 Market')
         market_stability_reserve = DetermineMarketStabilityReserveFlow(reps)

@@ -125,7 +125,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     decommissioned_list.append(powerplant.name)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-            elif fictional_age >= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
+            elif fictional_age > powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                 if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                     decommissioned_list.append(powerplant.name)
@@ -137,6 +137,17 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+
+                elif powerplant.name in powerPlantsinSR:
+                    #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
+                    #  todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
+                    powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
+                    # set the power plant costs to the strategic reserve price
+                    # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+                    # exception for the power plants that were contracted earlier
+                    powerplant.owner = 'StrategicReserveOperator'
+                    powerplant.technology.variable_operating_costs = SR_price
+                    self.power_plants_list.append(powerplant)
 
                 elif self.reps.current_tick >= horizon:
                     if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
@@ -168,17 +179,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                         decommissioned_list.append(powerplant.name)
 
-                # todo better to make decisions according to expected participation in capacity market/strategic reserve?
-            # elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
-            #     powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
-            #     # set the power plant costs to the strategic reserve price
-            #     # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
-            #     # exception for the power plants that were contracted earlier
-            #     powerplant.owner = 'StrategicReserveOperator'
-            #     powerplant.technology.variable_operating_costs = SR_price
-            #     #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
-            #     # # todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
-            #     self.power_plants_list.append(powerplant)
             elif fictional_age < 0:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
             else:  # powerplant.commissionedYear > self.simulation_year

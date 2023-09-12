@@ -112,7 +112,7 @@ class Dismantle(DefaultModule):
                     self.set_plant_dismantled(powerplant)
                     print(powerplant.name + "decommissioned from input")
 
-            elif powerplant.age >= technology.expected_lifetime + technology.maximumLifeExtension:
+            elif powerplant.age > technology.expected_lifetime + technology.maximumLifeExtension:
                 if self.reps.current_tick >= self.reps.start_dismantling_tick:
                     self.set_plant_dismantled(powerplant)
                 else:
