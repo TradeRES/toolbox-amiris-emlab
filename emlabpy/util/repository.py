@@ -677,6 +677,13 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner.name == owner and i.status == globalNames.power_plant_status_to_be_decommissioned]
 
+    def get_power_plants_to_be_decommissioned_and_no_RES(self) -> List[PowerPlant]:
+        return [i for i in self.power_plants.values()
+                if i.technology.intermittent == False and
+                i.status == globalNames.power_plant_status_to_be_decommissioned]
+
+
+
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
         for power_plant in [i for i in self.power_plants.values() if

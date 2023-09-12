@@ -169,16 +169,16 @@ class PrepareFutureMarketClearing(PrepareMarket):
                         decommissioned_list.append(powerplant.name)
 
                 # todo better to make decisions according to expected participation in capacity market/strategic reserve?
-            elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
-                powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
-                # set the power plant costs to the strategic reserve price
-                # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
-                # exception for the power plants that were contracted earlier
-                powerplant.owner = 'StrategicReserveOperator'
-                powerplant.technology.variable_operating_costs = SR_price
-                #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
-                # # todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
-                self.power_plants_list.append(powerplant)
+            # elif powerplant.commissionedYear <= self.simulation_year and powerplant.name in powerPlantsinSR:
+            #     powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
+            #     # set the power plant costs to the strategic reserve price
+            #     # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
+            #     # exception for the power plants that were contracted earlier
+            #     powerplant.owner = 'StrategicReserveOperator'
+            #     powerplant.technology.variable_operating_costs = SR_price
+            #     #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
+            #     # # todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
+            #     self.power_plants_list.append(powerplant)
             elif fictional_age < 0:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
             else:  # powerplant.commissionedYear > self.simulation_year

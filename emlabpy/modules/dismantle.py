@@ -117,6 +117,9 @@ class Dismantle(DefaultModule):
                     self.set_plant_dismantled(powerplant)
                 else:
                     powerplant.status = globalNames.power_plant_status_operational
+                    # print("INCREASED LIFETIME")
+                    # print(powerplant.name)
+                    # print(powerplant.technology.name)
                     self.increase_fixed_cost(powerplant)
 
             elif  powerplant.age >= technology.expected_lifetime:

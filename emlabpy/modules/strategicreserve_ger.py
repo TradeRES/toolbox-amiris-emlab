@@ -22,11 +22,10 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned_but_no_RES():
+        for powerplant in self.reps.get_power_plants_to_be_decommissioned_and_no_RES():
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
-
             # Get Variable and Fixed Operating Costs
             variable_costs = powerplant.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
 
