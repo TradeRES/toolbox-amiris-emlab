@@ -59,7 +59,7 @@ class StrategicReserveAssignment_ger(MarketModule):
 
         # get peak load from weather
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.simulated_prices,
+                                                                                           globalNames.future_prices,
                                                                                            (self.reps.current_year + self.operator.forward_years_SR) )
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
