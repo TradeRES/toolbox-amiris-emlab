@@ -680,10 +680,9 @@ class Repository:
     def get_power_plants_to_be_decommissioned_and_no_RES(self) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.technology.intermittent == False and
-                i.status == globalNames.power_plant_status_to_be_decommissioned]
-
-
-
+                i.status in [globalNames.power_plant_status_to_be_decommissioned ,
+                             globalNames.power_plant_status_strategic_reserve,
+                             globalNames.power_plant_status_operational ]]
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
         for power_plant in [i for i in self.power_plants.values() if
@@ -760,7 +759,6 @@ class Repository:
         for i in self.power_plants.values():
             if i.name == plant.name:
                 i.status = new_status
-                # todo: Bart, no need to change the owner?
                 i.technology.variable_operating_costs = new_price
                 self.dbrw.stage_power_plant_status(i)
 

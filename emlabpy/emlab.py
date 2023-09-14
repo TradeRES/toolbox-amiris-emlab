@@ -188,6 +188,7 @@ try:  # Try statement to always close DB properly
         paying_loans.act_and_commit()
         financial_report = CreatingFinancialReports(reps)
         financial_report.act_and_commit()
+
         if reps.run_quick_investments == True:
             print("running investment decisions")
             short_investing = ShortInvestmentdecision(reps)

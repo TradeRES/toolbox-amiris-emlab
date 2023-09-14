@@ -54,7 +54,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         #     self.power_plants_list = reps.filter_intermittent_candidate_power_plants(self.power_plants_list)
         #     print([i.technology.name for i in self.power_plants_list ])
         # changing efficency and variable costs of candidate power plants
-        for pp in self.power_plants_list:
+        for pp in self.power_plants_list: # candidate technologues get variable costs from the technology
             pp.actualVariableCost = pp.technology.variable_operating_costs
 
         if len(self.power_plants_list) == 1: # if it is zero, then it is because of target investment or investment iteration 0

@@ -57,6 +57,8 @@ class Dismantle(DefaultModule):
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
+            # TODO if the power plant estimates that it can be used in the future SR, dont dismantle
+
             profit = self.calculateAveragePastOperatingProfit(plant, horizon)
             if profit <= requiredProfit:
                 print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
@@ -105,6 +107,7 @@ class Dismantle(DefaultModule):
         return averagePastOperatingProfit
 
     def set_powerplants_status(self):
+        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
         for powerplantname, powerplant in self.reps.power_plants.items():
             technology = self.reps.power_generating_technologies[powerplant.technology.name]
             if self.reps.decommission_from_input == True and powerplant.decommissionInYear is not None:
@@ -117,16 +120,16 @@ class Dismantle(DefaultModule):
                     self.set_plant_dismantled(powerplant)
                 else:
                     powerplant.status = globalNames.power_plant_status_operational
-                    # print("INCREASED LIFETIME")
-                    # print(powerplant.name)
-                    # print(powerplant.technology.name)
                     self.increase_fixed_cost(powerplant)
 
-            elif  powerplant.age >= technology.expected_lifetime:
+            elif  powerplant.age >= technology.expected_lifetime: # hasnt passed maximum lifetime extension
                 if self.reps.current_tick >= self.reps.start_dismantling_tick:
                     powerplant.status = globalNames.power_plant_status_to_be_decommissioned
-                else:
+                elif  powerplant.name in operator.list_of_plants:
+                    powerplant.status = globalNames.power_plant_status_strategic_reserve
                     # dont decommission yet but increase costs
+                    self.increase_fixed_cost(powerplant)
+                else:
                     powerplant.status = globalNames.power_plant_status_operational
                     self.increase_fixed_cost(powerplant)
             elif powerplant.age >= 0:

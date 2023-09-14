@@ -19,7 +19,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         reps.dbrw.stage_init_bids_structure()
         reps.dbrw.stage_init_sr_results_structure()
         self.agent = reps.energy_producers[reps.agent]
-
+        self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_power_plants_to_be_decommissioned_and_no_RES():
@@ -27,8 +27,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
             # Get Variable and Fixed Operating Costs
-            variable_costs = powerplant.technology.fuel.get_price_for_tick( self.reps, self.reps.current_year + 1, True)
-
+            variable_costs = powerplant.technology.get_variable_operating_by_time_series(powerplant.age + self.operator.forward_years_SR) # actually this could be raised to one year more
             # Place bids on market only if plant is conventional (full capacity at cost price per MW)
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
@@ -57,10 +56,11 @@ class StrategicReserveAssignment_ger(MarketModule):
         # peak_load =self.reps.get_realized_peak_demand_by_year(self.reps.current_year) this was making volatile reserve
         spot_market = self.reps.get_spot_market_in_country(self.reps.country)
         peak_load = spot_market.get_peak_load_per_year(self.reps.current_year)
+
         # get peak load from weather
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
-                                                                                           self.reps.current_year)
+                                                                                           (self.reps.current_year + self.operator.forward_years_SR) )
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
 
@@ -92,6 +92,7 @@ class StrategicReserveAssignment_ger(MarketModule):
                 ppdp.accepted_amount = ppdp.amount
                 # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
                 self.reps.update_power_plant_status(ppdp.plant, SR_price)
+
             # If strategic reserve is not filled yet contract additional new plants
             elif (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
                 contracted_strategic_reserve_capacity += ppdp.amount

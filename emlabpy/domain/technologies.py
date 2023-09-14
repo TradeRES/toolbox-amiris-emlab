@@ -88,6 +88,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.variable_operating_costs = float(parameter_value)
             self.variable_operating_cost_time_series = reps.trends[self.name + "VariableCostTimeSeries"] # geometric Trends
             self.variable_operating_cost_time_series.start = self.variable_operating_costs
+
         elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
