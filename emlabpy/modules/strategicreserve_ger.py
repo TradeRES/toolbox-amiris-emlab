@@ -9,6 +9,7 @@ from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.StrategicReserveOperator import StrategicReserveOperator
 
+
 class StrategicReserveSubmitBids_ger(MarketModule):
     """
     The class that submits all bids to the Strategic Reserve Market
@@ -20,19 +21,30 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         reps.dbrw.stage_init_sr_results_structure()
         self.agent = reps.energy_producers[reps.agent]
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_power_plants_to_be_decommissioned_and_no_RES():
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
-            # Get Variable and Fixed Operating Costs
-            variable_costs = powerplant.technology.get_variable_operating_by_time_series(powerplant.age + self.operator.forward_years_SR) # actually this could be raised to one year more
+            Bid = powerplant.technology.get_variable_operating_by_time_series(
+                powerplant.age + self.operator.forward_years_SR)
+            Bid = Bid + powerplant.technology.fuel.futurePrice[
+                self.operator.forward_years_SR + self.reps.current_year] / powerplant.technology.get_efficiency_by_time_series(
+                powerplant.age + self.operator.forward_years_SR)
+
+            # Bid = powerplant.getActualFixedOperatingCost()
+            # if powerplant.age < powerplant.technology.expected_lifetime:
+            #     Bid += powerplant.getLoan().getAmountPerPayment()  # if power plant is reaches its lifetime it should not have anymore payments left
+            # Bid = Bid/powerplant.capacity
+            # variable_costs = powerplant.technology.get_variable_operating_by_time_series(powerplant.age + self.operator.forward_years_SR) # actually this could be raised to one year more
             # Place bids on market only if plant is conventional (full capacity at cost price per MW)
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
                                                                            market, power_plant_capacity,
-                                                                           variable_costs, self.reps.current_tick)
+                                                                           Bid, self.reps.current_tick)
+
 
 class StrategicReserveAssignment_ger(MarketModule):
     """
@@ -60,7 +72,8 @@ class StrategicReserveAssignment_ger(MarketModule):
         # get peak load from weather
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.future_prices,
-                                                                                           (self.reps.current_year + self.operator.forward_years_SR) )
+                                                                                           (
+                                                                                                       self.reps.current_year + self.operator.forward_years_SR))
         # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
 
@@ -71,7 +84,8 @@ class StrategicReserveAssignment_ger(MarketModule):
         SR_price = self.operator.getReservePriceSR()
 
         # Retrieve the bids on the capacity market, sorted in descending order on price
-        sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
+        sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market,
+                                                                                             self.reps.current_tick)
 
         # Retrieve plants already contracted in reserve
         list_of_plants = self.operator.list_of_plants
@@ -87,10 +101,11 @@ class StrategicReserveAssignment_ger(MarketModule):
         for ppdp in sorted_ppdp:
             # If plants are already in strategic reserve they have to be until end of life
             # todo: owner to 'StrategicReserveOperator' and price to SR price?
+            power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
             if ppdp.plant in list_of_plants:
                 power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
                 if (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
-                    if power_plant.years_in_SR >= 4: # Has already been in reserve for 4 years
+                    if power_plant.years_in_SR >= 4:  # Has already been in reserve for 4 years
                         power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
                         self.reps.dbrw.stage_power_plant_status(power_plant)
                         list_of_plants.remove(ppdp.plant)
@@ -166,7 +181,6 @@ class StrategicReserveAssignment_ger(MarketModule):
                                      self.reps.power_plants[accepted.plant])
             # saving the revenues to the power plants
             self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
-
 
             # Payment (market revenues) from market to operator
             self.reps.createCashFlow(market, self.operator,
