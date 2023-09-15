@@ -41,7 +41,9 @@ def plot_investments_and_NPV_per_iteration(candidate_plants_project_value_per_MW
     ax1.set_xlabel('Iterations', fontsize='medium')
     ax1.set_ylabel('NPV [€] (lines)', fontsize='medium')
     ax2.set_ylabel('Investments MW (dotted)', fontsize='medium')
-    ax1.set_title('Investments and NPV per MW per iterations ' + '\n for future year ' + str(future_year))
+    if write_titles == True:
+        ax1.set_title(scenario_name + 'Investments and NPV per MW per iterations ' + '\n for future year ' + str(future_year))
+
     # ax1.set_ylim(bottom=0)
     ax2.set_ylim(bottom=0)  # void showing zero investments
     ax1.legend(candidate_plants_project_value_per_MW.columns.values.tolist(), fontsize='medium', loc='upper left',
@@ -64,7 +66,9 @@ def plot_candidate_profits_per_iteration(profits_per_iteration, path_to_plots, c
                    xy=(1.1, 1.1), xycoords='figure fraction',
                    horizontalalignment='right', verticalalignment='top',
                    fontsize='small')
-    axs13.set_title('Expected future operational profits\n candidates in tick ' + str(test_tick))
+    if write_titles == True:
+        axs13.set_title(scenario_name + 'Expected future operational profits\n candidates in tick ' + str(test_tick))
+
     fig13 = axs13.get_figure()
     fig13.savefig(path_to_plots + '/' + 'Expected profits Candidates in tick ' + str(test_tick) + '.png',
                   bbox_inches='tight',
@@ -113,7 +117,8 @@ def plot_investments(annual_installed_capacity, annual_commissioned, annual_deco
     axs6[2].set_ylabel('Decommissioned GW', fontsize='small')
 
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
-    axs6[0].set_title(scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
+    if write_titles == True:
+        axs6[0].set_title(scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
                       str(reps.maximum_investment_capacity_per_year / 1000) + 'GW')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
@@ -138,7 +143,8 @@ def plot_power_plants_last_year_status(power_plants_last_year_status, path_to_pl
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Capacity per status (MW)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
-    axs9.set_title('Power plants status ' + str(last_year))
+    if write_titles == True:
+        axs9.set_title(scenario_name +'Power plants status ' + str(last_year))
     fig9 = axs9.get_figure()
     fig9.savefig(path_to_plots + '/' + 'Power plants status ' + str(last_year) + '.png', bbox_inches='tight', dpi=300)
 
@@ -304,7 +310,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     plt.ylabel('Revenues CM [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs15.set_title('Capacity Mechanisms revenues per technology')
+    axs15.set_title('Capacity Mechanisms \n revenues per technology')
     fig15 = axs15.get_figure()
     fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms revenues per technology.png', bbox_inches='tight', dpi=300)
 
@@ -386,7 +392,8 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     plt.ylabel('€', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs29.set_title('Average profits per technology')
+    if write_titles == True:
+        axs29.set_title(scenario_name + 'Average profits (with loans )per technology')
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'Profits with loans per MW.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -456,13 +463,17 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
                             technology_colors
                             ):
     print('plotting installed Capacity per technology ')
-    installed_capacity = all_techs_capacity.loc[years_to_generate_initialization]
+    installed_capacity = all_techs_capacity.loc[years_to_generate]
     all_techs_capacity_nozeroes = installed_capacity[installed_capacity > 0]
     all_techs_capacity_nozeroes.dropna(how='all', axis=1, inplace=True)
+
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
     all_techs_capacity_nozeroes = all_techs_capacity_nozeroes/1000
+    all_techs_capacity_nozeroes.rename(columns=technology_names, inplace=True)
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize = (5,5))
     axs17.set_axisbelow(True)
+  #  plt.xticks(all_techs_capacity_nozeroes.index, (SIMULATION_YEARS) )
+  #  plt.locator_params(nbins=4)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [GW]', fontsize='large')
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
@@ -526,7 +537,7 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
     # if calculate_investments == False:
     #     all_techs_generation_nozeroes = pd.concat([all_techs_generation_nozeroes] * 2, ignore_index=True)
-
+    all_techs_generation_nozeroes.rename(columns=technology_names, inplace=True)
     axs18 = all_techs_generation_nozeroes.plot.area(color=colors, figsize = (5,5))
 
     axs18.set_axisbelow(True)
@@ -534,7 +545,11 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     plt.ylabel('Annual Generation [TWh]', fontsize='large')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-   # axs18.set_title(scenario_name + ' \n Annual Generation')
+    all_techs_generation_nozeroes.rename(columns=technology_names, inplace=True)
+    # plt.xticks(all_techs_generation_nozeroes.index, SIMULATION_YEARS)
+    # plt.locator_params(nbins=4)
+    if write_titles == True:
+        axs18.set_title(scenario_name + ' \n Annual Generation')
     fig18 = axs18.get_figure()
     fig18.savefig(path_to_plots + '/' + 'Annual generation per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -559,7 +574,9 @@ def plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots):
     axs19 = supply_ratio.plot()
     axs19.set_axisbelow(True)
     plt.xlabel('Supply ratio %', fontsize='medium')
-    axs19.set_title('Supply ratio')
+
+    if write_titles == True:
+        axs19.set_title(scenario_name + ' \n Supply ratio')
     plt.xlabel('Years', fontsize='medium')
     plt.grid()
     fig19 = axs19.get_figure()
@@ -613,7 +630,9 @@ def plot_yearly_VRES_support(yearl_vres_support, path_to_plots):
     for label in axs33.get_xticklabels(which='major'):
         label.set(rotation=45, horizontalalignment='right')
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs33.set_title('Yearly VRES support from target investment')
+
+    if write_titles == True:
+        axs33.set_title(scenario_name + ' \n Yearly VRES support from target investment')
     fig33 = axs33.get_figure()
     fig33.savefig(path_to_plots + '/' + 'VRES support.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -625,7 +644,8 @@ def plot_costs_to_society(total_electricity_price, path_to_plots):
     plt.ylabel('Total price', fontsize='medium')
     plt.grid()
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs30.set_title('Total costs to society')
+    if write_titles == True:
+        axs30.set_title(scenario_name + ' \n Total costs to society')
     fig30 = axs30.get_figure()
     fig30.savefig(path_to_plots + '/' + 'Price to society.png', bbox_inches='tight', dpi=300)
 
@@ -650,7 +670,6 @@ def plot_average_and_weighted(total_electricity_price, simple_electricity_prices
     plt.xlabel('Years', fontsize='medium')
     axs3[0].set_ylabel('weighted average \n electricity price\n €/Mwh', fontsize='large')
     axs3[1].set_ylabel('simple', fontsize='large')
-
     axs3[0].set_title('Average and weighted average electricity price')
     fig3.savefig(path_to_plots + '/' + 'Electricity price average and weighted.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -665,7 +684,8 @@ def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_uniq
     plt.ylabel('Market value (€/MWh)', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    axs21.set_title('Market values (Market revenues / Production)')
+    if write_titles == True:
+        axs21.set_title(scenario_name + ' \n Market values (Market revenues / Production)')
     fig21 = axs21.get_figure()
     fig21.savefig(path_to_plots + '/' + 'Market values per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -677,7 +697,8 @@ def plot_full_load_hours_values(all_techs_full_load_hours, path_to_plots, colors
     colors = [technology_colors[tech] for tech in vRES_full_load_hours.columns.values]
     axs21 = vRES_full_load_hours.plot(color=colors)
     axs21.set_axisbelow(True)
-    axs21.set_title('Full load hours renewables(production/capacity)')
+    if write_titles == True:
+        axs21.set_title(scenario_name + ' \n Full load hours renewables(production/capacity)')
     plt.xlabel('Years', fontsize='medium')
     fig21 = axs21.get_figure()
     fig21.savefig(path_to_plots + '/' + 'RenewablesFullLoadHours.png', bbox_inches='tight', dpi=300)
@@ -749,11 +770,14 @@ def plot_cash_flows(cash_flows_with_zeroes, new_plants_loans, calculate_capacity
     cash_flows = cash_flows/1000000000
     axs29 = cash_flows.plot.area( figsize = (5,5))
     axs29.set_axisbelow(True)
+    # plt.xticks(cash_flows.index, SIMULATION_YEARS)
+    # plt.locator_params(nbins=4)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Cash [bn €]', fontsize='medium')
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    #axs29.set_title(scenario_name + ' \nTotal Cash Flows')
+    if write_titles == True:
+        axs29.set_title(scenario_name + ' \nTotal Cash Flows')
     fig29 = axs29.get_figure()
     fig29.savefig(path_to_plots + '/' + 'Cash Flows.png', bbox_inches='tight', dpi=300)
     results_file = os.path.join(path_to_plots, 'cash_flows.csv')
@@ -821,12 +845,15 @@ def plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per
     fig30, axs30 = plt.subplots()
    # colors = [technology_colors[tech] for tech in npvs_per_tech_per_MW.columns.values]
     # key gives the group name (i.e. category), data gives the actual values
-    npvs_per_year_perMW_strategic_reseve.plot(ax = axs30)
+    if npvs_per_year_perMW_strategic_reseve.empty == False:
+        npvs_per_year_perMW_strategic_reseve.plot(ax = axs30)
     npvs_per_tech_per_MW.plot(ax = axs30)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('€', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
-    axs30.set_title('yearly NPV strategic reserve plants')
+    if write_titles == True:
+        axs30.set_title(scenario_name + ' \n yearly NPV strategic reserve plants')
+
     axs30.annotate('legend = name, capacity, age',
                    xy=(0, 1), xycoords='figure fraction',
                    horizontalalignment='left', verticalalignment='bottom',
@@ -846,7 +873,8 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('%', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
-    axs30.set_title('yearly IRR new plants')
+    if write_titles == True:
+        axs30.set_title(scenario_name + ' \n yearly IRR new plants')
     axs30.annotate('legend = name, capacity, age',
                    xy=(0, 1), xycoords='figure fraction',
                    horizontalalignment='left', verticalalignment='bottom',
@@ -1393,12 +1421,13 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks
     profits_with_loans_all =pd.DataFrame(index=ticks_to_generate).fillna(0)
     npvs_per_year_new_plants_perMW_all = dict()
     irrs_per_year_new_plants_all = dict()
-
+    sr_operator = reps.get_strategic_reserve_operator(reps.country)
+    SR_powerplants = [j for i in sr_operator.list_of_plants_all.values() for j in i]
+    npvs_per_year_perMW_strategic_reseve = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
         powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
         irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
         npvs_per_year_perMW = pd.DataFrame(index=ticks_to_generate).fillna(0)
-        npvs_per_year_perMW_strategic_reseve = pd.DataFrame(index=ticks_to_generate).fillna(0)
         npvs_per_year_new_plants = pd.DataFrame(index=ticks_to_generate).fillna(0)
         irrs_per_year_new_plants = pd.DataFrame(index=ticks_to_generate).fillna(0)
         totalProfitswLoans = pd.DataFrame(index=ticks_to_generate).fillna(0)
@@ -1414,8 +1443,7 @@ def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks
                     npvs_per_year_new_plants[info] = a
                     irrs_per_year_new_plants[info] = irr_per_plant
 
-                if plant.status == globalNames.power_plant_status_strategic_reserve:
-
+                if plant.name in SR_powerplants:
                     info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
                     npvs_per_year_perMW_strategic_reseve[info] = a
                 else:
@@ -1725,7 +1753,12 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
         TotalAwardedPowerInMW.at[:, year] = df['energy_exchange'].TotalAwardedPowerInMW
 
         DispatchSystemCostInEUR.at[year,0] = df['energy_exchange'].DispatchSystemCostInEUR.sum()
-       # residual_load.at[:, year] = df['residual_load']['residual_load_actual_infeed']
+
+        if "residual_load_actual_infeed" in df['residual_load'].columns:
+            residual_load.at[:, year] = df['residual_load']['residual_load_actual_infeed']
+        else:
+            residual_load.at[:, year] = df['residual_load']['residual_load']
+
         hourly_load_shedded.at[:, year] = df['hourly_generation'].load_shedding
         hourly_industrial_heat.at[:, year] = df['hourly_generation'].electrolysis_power_consumption
 
@@ -2268,11 +2301,16 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
         npvs_per_tech_per_MW = pd.DataFrame(npvs_per_tech_per_MW)
         npvs_per_tech_per_MW.at["scenario_name",:] = scenario_name
-        AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, npvs_per_tech_per_MW], axis=1)
+        last_row = npvs_per_tech_per_MW.iloc[-1]
+        df = npvs_per_tech_per_MW.iloc[:-1]
+        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
+        AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, df], axis=1)
 
-  #      profits_with_loans_all = pd.DataFrame(npvs_per_tech_per_MW)
         profits_with_loans_all.at["scenario_name",:] = scenario_name
-        Profits_data = pd.concat([Profits_data, profits_with_loans_all], axis=1)
+        last_row = profits_with_loans_all.iloc[-1]
+        df = profits_with_loans_all.iloc[:-1]
+        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
+        Profits_data = pd.concat([Profits_data, df], axis=1)
 
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
@@ -2375,6 +2413,9 @@ def writeInfo(reps, path_to_plots, scenario_name):
     info.append("look ahead " + str(reps.lookAhead) + "\n")
     file.write("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends) + "\n")
     info.append("start_tick_fuel_trends " + str(reps.start_tick_fuel_trends) + "\n")
+    Strategic_operator = reps.get_strategic_reserve_operator(reps.country)
+    file.write("SR " + str(Strategic_operator.reservePriceSR) + " "+ str(Strategic_operator.reserveVolumePercentSR) +   "\n")
+    info.append("SR " + str(Strategic_operator.reservePriceSR) + " "+ str(Strategic_operator.reserveVolumePercentSR) + "\n")
 
     if reps.fix_fuel_prices_to_year != False:
         print("fix_prices_to_2020")
@@ -2510,26 +2551,50 @@ technology_colors = {
     "hydrogen_combined_cycle": "coral"
 }
 
-results_excel = "extremes5.xlsx"
+technology_names = {
+    'Biomass_CHP_wood_pellets_DH': "Biomass",
+    "Biomass_CHP_wood_pellets_PH": "Biomass",
+    'Hydropower_reservoir_medium': "Hydro",
+    'PV_utility_systems': "PV utility",
+    'PV_residential': "PV residential",
+    'WTG_onshore': "Wind onshore",
+    "WTG_offshore": "Wind offhore",
+    "Lithium_ion_battery": "Lithium battery",
+    "Lithium_ion_battery_charge": "Lithium battery charge",
+    "Pumped_hydro": "Pumped hydro",
+    "CCGT_CHP_backpressure_DH": "CCGT CHP",
+    "hydrogen_turbine": "Hydrogen turbine",
+}
+
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-#SCENARIOS = ["NL-strategic_reserve_7_800", "NL-strategic_reserve_15_800", "NL-strategic_reserve_15_1600", ]
 
 #SCENARIOS = ["NL-noSR", "NL-strategic_reserve_7", "NL-strategic_reserve_15"]
 
-SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
-#SCENARIOS = ["NL-S1", "NL-S2"]
+# SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
+# SCENARIOS = ["NL-SR_10_1500_with_loans", "NL-Strategic_Reserve_10_1500"]
+# "S1_S2"
 # SCENARIOS = ["NL-fix_profiles", "NL-stochastic_increase_demand", "NL-iteration1", "NL-iteration2",
 #              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
 #              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
 #             ]  # add a dash before!
 #SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
-#SCENARIOS = [ "NL-iteration7"]
-existing_scenario = True
-save_excel = True
+#SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
+SCENARIOS = ["NL-4years_test"]
+
+results_excel = "SR_expectations_4years.xlsx"
+#SCENARIOS = [ "NL-S1"]
+
+#SIMULATION_YEARS = list(range(0,40) )
+
+# Set the x-axis ticks and labels
+
+write_titles = True
+existing_scenario = False
+save_excel = False
 #  None if no specific technology should be tested
-test_tick = 0
+test_tick = 4
 # write None is no investment is expected,g
 test_tech = None #"hydrogen_turbine" # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
