@@ -24,6 +24,7 @@ class PayForLoansRole(DefaultModule):
                 # loans are paid only when the power plant is installed
                 if plant.age >= 0:
                     loan = plant.getLoan()
+
                     if loan is not None:
                         if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                             payment = loan.getAmountPerPayment()

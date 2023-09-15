@@ -85,7 +85,7 @@ class StrategicReserveAssignment_swe(MarketModule):
                 # Add plant to the list of the StrategicReserveOperator
                 list_of_plants.append(ppdp.plant)
                 # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
-                self.reps.update_power_plant_status(ppdp.plant, SR_price)
+                self.reps.increase_year_in_sr(ppdp.plant, SR_price)
             else:
                 # When strategic reserve is full nothing actually changes for the power plant
                 ppdp.accepted_amount = 0

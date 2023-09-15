@@ -14,7 +14,6 @@ class StrategicReserveOperator(EMLabAgent):
         self.revenues_per_year = 0
         self.list_of_plants = []
         self.list_of_plants_all = dict()
-        self.plants_to_decommission_passed_SR = dict()
         self.forward_years_SR = 1
         self.revenues_per_year_all = dict()
         self.reserveVolume_all = dict()
@@ -31,8 +30,6 @@ class StrategicReserveOperator(EMLabAgent):
             self.reservePriceSR = parameter_value
         elif parameter_name == 'forward_years_SR':
             self.forward_years_SR = parameter_value
-        elif parameter_name == 'plants_to_decommission_passed_SR':
-            self.plants_to_decommission_passed_SR = parameter_value
         elif parameter_name == 'list_of_plants' and   reps.runningModule != "plotting" and alternative == reps.current_tick:
             self.list_of_plants = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':

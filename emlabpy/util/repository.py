@@ -752,16 +752,6 @@ class Repository:
         except StopIteration:
             return None
 
-    def update_power_plant_status(self, plant: PowerPlant, price):
-        new_status = globalNames.power_plant_status_strategic_reserve
-        new_owner = 'StrategicReserveOperator'
-        new_price = price
-        for i in self.power_plants.values():
-            if i.name == plant.name:
-                i.status = new_status
-                i.technology.variable_operating_costs = new_price
-                self.dbrw.stage_power_plant_status(i)
-
         # ----------------------------------------------------------------------------section Capacity Mechanisms
 
     def get_strategic_reserve_operator(self, zone) -> Optional[StrategicReserveOperator]:
@@ -956,28 +946,14 @@ class Repository:
 
         # todo: better to force them to be dismantled after the 4th year because their life can be extednde if thery profitable
 
-    def update_power_plant_status_ger_first_year(self, plant: PowerPlant, price):
-        new_status = globalNames.power_plant_status_strategic_reserve
-        new_owner = 'StrategicReserveOperator'
-        new_price = price
-        for i in self.power_plants.values():
-            if i.name == plant:
-                new_age = i.technology.expected_lifetime - 4
-                i.age = new_age
-                i.status = new_status
-                i.technology.variable_operating_costs = new_price
-                self.dbrw.stage_power_plant_status(i)
+    def update_power_plant_status_ger_first_year(self, power_plant):
+        power_plant.status = globalNames.power_plant_status_strategic_reserve
+        self.dbrw.stage_power_plant_status(power_plant)
+        self.dbrw.stage_years_in_SR(power_plant.name, 0)
 
-    def update_power_plant_status(self, plant: PowerPlant, price):
-        new_status = globalNames.power_plant_status_strategic_reserve
-        new_owner = 'StrategicReserveOperator'
-        new_price = price
-        for i in self.power_plants.values():
-            if i.name == plant:
-                i.status = new_status
-                i.technology.variable_operating_costs = new_price
-                self.power_plants[i.name] = i
-                self.dbrw.stage_power_plant_status(i)
+    def increase_year_in_sr(self, power_plant):
+        power_plant.years_in_SR += 1
+        self.dbrw.stage_years_in_SR(power_plant.name, power_plant.years_in_SR)
 
     def get_operational_and_in_pipeline_conventional_power_plants_by_owner(self, owner: EnergyProducer) -> List[
         PowerPlant]:

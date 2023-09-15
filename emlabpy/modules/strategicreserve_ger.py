@@ -86,12 +86,24 @@ class StrategicReserveAssignment_ger(MarketModule):
 
         for ppdp in sorted_ppdp:
             # If plants are already in strategic reserve they have to be until end of life
+            # todo: owner to 'StrategicReserveOperator' and price to SR price?
             if ppdp.plant in list_of_plants:
-                contracted_strategic_reserve_capacity += ppdp.amount
-                ppdp.status = globalNames.power_plant_status_strategic_reserve
-                ppdp.accepted_amount = ppdp.amount
-                # Change plant status to 'InStrategicReserve', owner to 'StrategicReserveOperator' and price to SR price
-                self.reps.update_power_plant_status(ppdp.plant, SR_price)
+                power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+                if (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
+                    if power_plant.years_in_SR >= 4: # Has already been in reserve for 4 years
+                        power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                        self.reps.dbrw.stage_power_plant_status(power_plant)
+                        list_of_plants.remove(ppdp.plant)
+                    else:  # Has been less than 4 years. Keep contracting
+                        contracted_strategic_reserve_capacity += ppdp.amount
+                        ppdp.status = globalNames.power_plant_status_strategic_reserve
+                        ppdp.accepted_amount = ppdp.amount
+                        self.reps.increase_year_in_sr(power_plant)
+                else:
+                    power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                    self.reps.dbrw.stage_power_plant_status(power_plant)
+                    list_of_plants.remove(ppdp.plant)
+                    print("reserve is full")
 
             # If strategic reserve is not filled yet contract additional new plants
             elif (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
@@ -101,10 +113,13 @@ class StrategicReserveAssignment_ger(MarketModule):
                 # Add plant to the list of the StrategicReserveOperator so that next year they are also accepted
                 list_of_plants.append(ppdp.plant)
                 # Change plant status and increase age
-                self.reps.update_power_plant_status_ger_first_year(ppdp.plant, SR_price)
+                power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+                self.reps.update_power_plant_status_ger_first_year(power_plant)
+
             else:
                 # When strategic reserve is full nothing actually changes for the power plant
                 ppdp.accepted_amount = 0
+                break
 
         # Pass the contracted plants to the strategic reserve operator
         self.operator.setPlants(list_of_plants)
@@ -140,6 +155,11 @@ class StrategicReserveAssignment_ger(MarketModule):
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues
 
+            if plant.age < plant.technology.expected_lifetime:
+                # if power plant is reaches its lifetime it should not have anymore payments left
+                SR_payment_to_plant += plant.getLoan().getAmountPerPayment()
+                print("SR_payment_to_plant")
+                print(plant.getLoan().getAmountPerPayment())
             # Payment (fixed costs and variable costs ) from operator to plant
             self.reps.createCashFlow(self.operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,

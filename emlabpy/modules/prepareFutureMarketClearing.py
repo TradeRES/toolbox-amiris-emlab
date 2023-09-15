@@ -140,7 +140,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
                 elif powerplant.name in powerPlantsinSR:
                     #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
-                    #  todo: but if they are in the german SR, the generators should consider that they will be decommmsisioned after 4 years!!!
+                    #  todo: but if they are in the german SR,
+                    #   the generators should consider that they will be decommmsioned after 4 years!!!
                     powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
                     # set the power plant costs to the strategic reserve price
                     # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)

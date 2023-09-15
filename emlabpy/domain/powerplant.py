@@ -24,6 +24,7 @@ class PowerPlant(EMLabAgent):
         self.expectedTotalProfits = 0
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
+        self.years_in_SR = 0
         self.fictional_status = globalNames.power_plant_status_not_set
         self.loan = Loan()
         self.loan_payments_in_year = 0
@@ -106,8 +107,8 @@ class PowerPlant(EMLabAgent):
             self.OfferedPowerinMW = float(parameter_value)
         elif parameter_name == 'ReceivedMoneyInEUR':
             self.ReceivedMoneyinEUR = float(parameter_value)
-        elif parameter_name == 'label':
-            self.label = parameter_value
+        elif parameter_name == 'years_in_SR':
+            self.years_in_SR = int(parameter_value)
         elif parameter_name == 'label':
             self.label = parameter_value
         elif parameter_name == 'LastEnergyLevels':
