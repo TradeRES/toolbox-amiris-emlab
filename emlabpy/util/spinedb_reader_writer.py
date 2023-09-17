@@ -459,6 +459,7 @@ class SpineDBReaderWriter:
                                             ('list_of_plants', SRO.list_of_plants)], "0")
 
     def stage_years_in_SR(self, pp_name, years_in_SR):
+        self.stage_object(self.powerplant_installed_classname, pp_name)
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameter(self.powerplant_installed_classname, "years_in_SR")
         self.stage_object_parameter_values(self.powerplant_installed_classname, pp_name,
