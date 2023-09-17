@@ -1119,6 +1119,7 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
     last_year_not_set_status_capacity = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
     last_year_in_pipeline = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
     last_year_decommissioned = pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
+    last_year_power_plant_status_decommissioned_from_SR =pd.DataFrame(columns=unique_technologies, index=[last_year]).fillna(0)
 
     for pp_name, pp in reps.power_plants.items():
         # some power plants have age higher than tick becuase they were installed during initialization
@@ -1158,6 +1159,8 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
             last_year_strategic_reserve_capacity.at[last_year, pp.technology.name] += pp.capacity
         elif pp.status == globalNames.power_plant_status_not_set:
             last_year_not_set_status_capacity.at[last_year, pp.technology.name] += pp.capacity
+        elif pp.status == globalNames.power_plant_status_decommissioned_from_SR:
+            last_year_power_plant_status_decommissioned_from_SR.at[last_year, pp.technology.name] += pp.capacity
             print(pp_name, "has not status set")
 
     data_per_year = {
@@ -2581,9 +2584,9 @@ technology_names = {
 #             ]  # add a dash before!
 #SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 #SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-SCENARIOS = ["NL-4years_test"]
+SCENARIOS = ["NL-GermanSR"]
 
-results_excel = "SR_expectations_4years.xlsx"
+results_excel = "GermanSR.xlsx"
 #SCENARIOS = [ "NL-S1"]
 
 #SIMULATION_YEARS = list(range(0,40) )
@@ -2591,7 +2594,7 @@ results_excel = "SR_expectations_4years.xlsx"
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = False
+existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 4

@@ -24,7 +24,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_power_plants_to_be_decommissioned_and_no_RES():
+        for powerplant in self.reps.get_power_plants_to_participate_inSR():
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
@@ -56,7 +56,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         reps.dbrw.stage_init_sr_results_structure()
         reps.dbrw.stage_init_capacitymechanisms_structure()
         self.operator = None
-
+        self.reserveFull = False
     def act(self):
         # Retrieve the active capacity market
         market = self.reps.get_capacity_market_in_country(self.reps.country)
@@ -99,42 +99,51 @@ class StrategicReserveAssignment_ger(MarketModule):
         contracted_strategic_reserve_capacity = 0
 
         for ppdp in sorted_ppdp:
+            if self.reserveFull == True:
+                break
+            else:
             # If plants are already in strategic reserve they have to be until end of life
             # todo: owner to 'StrategicReserveOperator' and price to SR price?
-            power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
-            if ppdp.plant in list_of_plants:
-                power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
-                if (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
-                    if power_plant.years_in_SR >= 4:  # Has already been in reserve for 4 years
-                        power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
-                        self.reps.dbrw.stage_power_plant_status(power_plant)
-                        list_of_plants.remove(ppdp.plant)
-                    else:  # Has been less than 4 years. Keep contracting
-                        contracted_strategic_reserve_capacity += ppdp.amount
-                        ppdp.status = globalNames.power_plant_status_strategic_reserve
-                        ppdp.accepted_amount = ppdp.amount
-                        self.reps.increase_year_in_sr(power_plant)
+                if ppdp.plant in list_of_plants:
+                    power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+                    if self.reserveFull == False:
+                        if power_plant.years_in_SR >= 4:  # Has already been in reserve for 4 years
+                            power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                            self.reps.dbrw.stage_power_plant_status(power_plant)
+                            list_of_plants.remove(ppdp.plant)
+                            print("removing from SR because of 4 years " + power_plant.name)
+                        else:  # Has been less than 4 years. Keep contracting
+                            ppdp.status = globalNames.power_plant_status_strategic_reserve
+                            ppdp.accepted_amount = ppdp.amount
+                            self.reps.increase_year_in_sr(power_plant)
+                            contracted_strategic_reserve_capacity += ppdp.amount
+                            print("years in reserve " + str(power_plant.years_in_SR))
+
+                            if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
+                                self.reserveFull = True
+                                break
+                            else:
+                                pass
+                    else:
+                        raise Exception("should have stopped earlier")
+
+
+                # If strategic reserve is not filled yet contract additional new plants
+                elif self.reserveFull == False:
+                    ppdp.status = globalNames.power_plant_status_strategic_reserve
+                    ppdp.accepted_amount = ppdp.amount
+                    # Add plant to the list of the StrategicReserveOperator so that next year they are also accepted
+                    list_of_plants.append(ppdp.plant)
+                    # Change plant status and increase age
+                    power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+                    self.reps.update_power_plant_status_ger_first_year(power_plant)
+                    contracted_strategic_reserve_capacity += ppdp.amount
+                    if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
+                        self.reserveFull = True
+                        break
                 else:
-                    power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
-                    self.reps.dbrw.stage_power_plant_status(power_plant)
-                    list_of_plants.remove(ppdp.plant)
-                    print("reserve is full")
-
-            # If strategic reserve is not filled yet contract additional new plants
-            elif (contracted_strategic_reserve_capacity + ppdp.amount) <= strategic_reserve_capacity:
-                contracted_strategic_reserve_capacity += ppdp.amount
-                ppdp.status = globalNames.power_plant_status_strategic_reserve
-                ppdp.accepted_amount = ppdp.amount
-                # Add plant to the list of the StrategicReserveOperator so that next year they are also accepted
-                list_of_plants.append(ppdp.plant)
-                # Change plant status and increase age
-                power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
-                self.reps.update_power_plant_status_ger_first_year(power_plant)
-
-            else:
-                # When strategic reserve is full nothing actually changes for the power plant
-                ppdp.accepted_amount = 0
-                break
+                    print(self.isReservedCleared )
+                    raise Exception("Sorry, no numbers below zero")
 
         # Pass the contracted plants to the strategic reserve operator
         self.operator.setPlants(list_of_plants)
@@ -166,15 +175,17 @@ class StrategicReserveAssignment_ger(MarketModule):
             if dispatch is None:
                 SR_payment_to_plant = fixed_operating_costs
                 SR_payment_to_operator = 0
+                print("fixed_operating_costs " + str(fixed_operating_costs))
             else:
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues
+                print("variable costs " + str(dispatch.variable_costs))
+                print("fixed_operating_costs " + str(fixed_operating_costs))
 
             if plant.age < plant.technology.expected_lifetime:
                 # if power plant is reaches its lifetime it should not have anymore payments left
+                print("SR_payment_to_plant " + plant.name)
                 SR_payment_to_plant += plant.getLoan().getAmountPerPayment()
-                print("SR_payment_to_plant")
-                print(plant.getLoan().getAmountPerPayment())
             # Payment (fixed costs and variable costs ) from operator to plant
             self.reps.createCashFlow(self.operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
