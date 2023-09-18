@@ -133,23 +133,18 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
+            elif powerplant.name  in powerPlantsinSR:
+                #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
+                powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
+                powerplant.owner = 'StrategicReserveOperator'
+                powerplant.technology.variable_operating_costs = SR_price
+                self.power_plants_list.append(powerplant)
+
             elif fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-
-                elif powerplant.name  in powerPlantsinSR:
-                    #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
-                    #  todo: but if they are in the german SR,
-                    #   the generators should consider that they will be decommmsioned after 4 years!!!
-                    powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
-                    # set the power plant costs to the strategic reserve price
-                    # powerplant.technology.variable_operating_costs = self.reps.get_strategic_reserve_price(StrategicReserveOperator)
-                    # exception for the power plants that were contracted earlier
-                    powerplant.owner = 'StrategicReserveOperator'
-                    powerplant.technology.variable_operating_costs = SR_price
-                    self.power_plants_list.append(powerplant)
 
                 elif self.reps.current_tick >= horizon:
                     if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
