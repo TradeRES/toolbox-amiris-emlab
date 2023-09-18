@@ -268,7 +268,7 @@ class PrepareMarket(DefaultModule):
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
-                if pp.name in operator.list_of_plants_inSR_in_current_year:
+                if pp.status == globalNames.power_plant_status_strategic_reserve:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
                     OpexVarInEURperMWH.append(pp.actualVariableCost)

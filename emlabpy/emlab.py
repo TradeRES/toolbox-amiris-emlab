@@ -182,7 +182,6 @@ try:  # Try statement to always close DB properly
             strategic_reserve.act_and_commit()
             print('End strategic reserve')
 
-
         logging.info('Start Saving Financial Results')
         paying_loans = PayForLoansRole(reps)
         paying_loans.act_and_commit()

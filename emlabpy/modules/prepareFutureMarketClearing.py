@@ -107,13 +107,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
         """
         powerPlantsfromAgent = self.reps.get_power_plants_by_owner(self.reps.agent)
         powerPlantsinSR = []
-        SR_price = 0
+
         requiredProfit = self.reps.energy_producers[self.reps.agent].getDismantlingRequiredOperatingProfit()
         horizon = self.reps.pastTimeHorizon
-        for i in self.reps.sr_operator.values():
-            if len(i.list_of_plants_inSR_in_current_year) != 0 and i.zone == self.reps.country:
-                powerPlantsinSR = i.list_of_plants_inSR_in_current_year
-                SR_price = i.reservePriceSR
+
+        SR_operator = self.reps.get_strategic_reserve_operator(self.reps.country)
         decommissioned_list = []
 
         for powerplant in powerPlantsfromAgent:
@@ -133,12 +131,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
-            elif powerplant.name  in powerPlantsinSR:
+            elif powerplant.status ==  globalNames.power_plant_status_strategic_reserve:
                 #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
-                powerplant.fictional_status = globalNames.power_plant_status_strategic_reserve
-                powerplant.owner = 'StrategicReserveOperator'
-                powerplant.technology.variable_operating_costs = SR_price
+                powerplant.technology.variable_operating_costs = SR_operator.reservePriceSR
                 self.power_plants_list.append(powerplant)
+                print("in SR" + powerplant.name)
 
             elif fictional_age > powerplant.technology.expected_lifetime:
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:

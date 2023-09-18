@@ -1,6 +1,7 @@
 
 from domain.import_object import *
 import pandas as pd
+
 from domain.actors import EMLabAgent
 class StrategicReserveOperator(EMLabAgent):
 
@@ -40,7 +41,7 @@ class StrategicReserveOperator(EMLabAgent):
         elif reps.runningModule == "plotting" and  parameter_name == "revenues_per_year":
             self.revenues_per_year_all[alternative] = parameter_value
         elif parameter_name == 'max_years_in_reserve':
-            self.max_years_in_reserve
+            self.max_years_in_reserve = int(parameter_value)
 
 
     def getReserveVolume(self):

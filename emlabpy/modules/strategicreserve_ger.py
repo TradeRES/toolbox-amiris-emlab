@@ -106,6 +106,7 @@ class StrategicReserveAssignment_ger(MarketModule):
                             ppdp.accepted_amount = ppdp.amount
                             self.reps.increase_year_in_sr(power_plant)
                             contracted_strategic_reserve_capacity += ppdp.amount
+                            list_of_plants.append(ppdp.plant)
                             print("years in reserve " + str(power_plant.years_in_SR))
 
                             if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
