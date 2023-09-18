@@ -107,7 +107,7 @@ class StrategicReserveAssignment_ger(MarketModule):
                 if ppdp.plant in list_of_plants:
                     power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
                     if self.reserveFull == False:
-                        if power_plant.years_in_SR >= 4:  # Has already been in reserve for 4 years
+                        if power_plant.years_in_SR >= 2:  # Has already been in reserve for 4 years
                             power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
                             self.reps.dbrw.stage_power_plant_status(power_plant)
                             list_of_plants.remove(ppdp.plant)
