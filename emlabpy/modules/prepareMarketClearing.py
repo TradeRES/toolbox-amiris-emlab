@@ -268,7 +268,7 @@ class PrepareMarket(DefaultModule):
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
                 FuelType.append(self.reps.dictionaryFuelNames[pp.technology.fuel.name])
-                if pp.name in operator.list_of_plants:
+                if pp.name in operator.list_of_plants_inSR_in_current_year:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
                     OpexVarInEURperMWH.append(pp.actualVariableCost)
@@ -301,7 +301,7 @@ class PrepareMarket(DefaultModule):
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
                 # todo: make exception for forward Capacity market.
-                if pp.name in operator.list_of_plants:
+                if pp.name in operator.list_of_plants_inSR_in_current_year:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
                     OpexVarInEURperMWH.append(pp.actualVariableCost)
@@ -334,7 +334,7 @@ class PrepareMarket(DefaultModule):
                 pp.technology.name] == "Biogas":
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
-                if pp.name in operator.list_of_plants:
+                if pp.name in operator.list_of_plants_inSR_in_current_year:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
                     OpexVarInEURperMWH.append(pp.actualVariableCost)

@@ -97,7 +97,7 @@ class ForwardCapacityMarketClearing(MarketModule):
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
         # Retrieve power plants with longterm contract
-        list_of_plants_long_term_contracts = self.operator.list_of_plants
+        list_of_plants_long_term_contracts = self.operator.list_of_plants_inSR_in_current_year
 
         clearing_price = 0
         total_supply = 0

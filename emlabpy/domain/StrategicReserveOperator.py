@@ -12,11 +12,12 @@ class StrategicReserveOperator(EMLabAgent):
         self.cash = 0
         self.reserveVolume = 0
         self.revenues_per_year = 0
-        self.list_of_plants = []
+        self.list_of_plants_inSR_in_current_year = []
         self.list_of_plants_all = dict()
         self.forward_years_SR = 1
         self.revenues_per_year_all = dict()
         self.reserveVolume_all = dict()
+        self.max_years_in_reserve = 0
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative):
         # for list of plants and reserve volume, pass the tick as alternative
@@ -31,13 +32,15 @@ class StrategicReserveOperator(EMLabAgent):
         elif parameter_name == 'forward_years_SR':
             self.forward_years_SR = parameter_value
         elif parameter_name == 'list_of_plants' and   reps.runningModule != "plotting" and alternative == reps.current_tick:
-            self.list_of_plants = parameter_value
+            self.list_of_plants_inSR_in_current_year = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':
             self.list_of_plants_all[alternative] = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == "reserveVolume":
             self.reserveVolume_all[alternative] = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == "revenues_per_year":
             self.revenues_per_year_all[alternative] = parameter_value
+        elif parameter_name == 'max_years_in_reserve':
+            self.max_years_in_reserve
 
 
     def getReserveVolume(self):
@@ -59,8 +62,8 @@ class StrategicReserveOperator(EMLabAgent):
         return self.cash
 
     def getPlants(self):
-        return self.list_of_plants
+        return self.list_of_plants_inSR_in_current_year
 
     def setPlants(self, plants):
-        self.list_of_plants = plants
+        self.list_of_plants_inSR_in_current_year = plants
 

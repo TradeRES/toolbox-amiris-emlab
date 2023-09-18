@@ -938,7 +938,7 @@ class Repository:
         SRO.revenues_per_year = revenues_per_year
         SRO.reserveVolume = volumeSR
         SRO.cash = cash
-        SRO.list_of_plants = list_of_plants
+        SRO.list_of_plants_inSR_in_current_year = list_of_plants
         self.sr_operator[SRO.name] = SRO
         self.dbrw.stage_sr_operator_cash(SRO)
         self.dbrw.stage_sr_operator_results(SRO, self.current_tick)

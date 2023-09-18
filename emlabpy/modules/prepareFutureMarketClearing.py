@@ -97,6 +97,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.writer.close()
 
 
+
     def filter_power_plants_to_be_operational(self):
         """
         This function assign a fictional future status to power plants by adding the look ahead years to the age of the power plants
@@ -110,8 +111,8 @@ class PrepareFutureMarketClearing(PrepareMarket):
         requiredProfit = self.reps.energy_producers[self.reps.agent].getDismantlingRequiredOperatingProfit()
         horizon = self.reps.pastTimeHorizon
         for i in self.reps.sr_operator.values():
-            if len(i.list_of_plants) != 0 and i.zone == self.reps.country:
-                powerPlantsinSR = i.list_of_plants
+            if len(i.list_of_plants_inSR_in_current_year) != 0 and i.zone == self.reps.country:
+                powerPlantsinSR = i.list_of_plants_inSR_in_current_year
                 SR_price = i.reservePriceSR
         decommissioned_list = []
 
@@ -138,7 +139,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
-                elif powerplant.name in powerPlantsinSR:
+                elif powerplant.name  in powerPlantsinSR:
                     #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                     #  todo: but if they are in the german SR,
                     #   the generators should consider that they will be decommmsioned after 4 years!!!
@@ -255,7 +256,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 identifier.append(pp.id)
                 InstalledPowerInMW.append(pp.capacity)
                 # todo: make exception for forward Capacity market.
-                if pp.name in operator.list_of_plants:
+                if pp.name in operator.list_of_plants_inSR_in_current_year:
                     OpexVarInEURperMWH.append(operator.reservePriceSR)
                 else:
                     OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)

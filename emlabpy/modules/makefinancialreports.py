@@ -142,15 +142,15 @@ class CreatingFinancialReports(DefaultModule):
         else:
             return round(IRR, 4), npv
 
-    def addingMarketClearingIncome(self):
-        print("adding again dispatch revenues????")
-        all_dispatch = self.reps.power_plant_dispatch_plans_in_year
-        SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
-        all_revenues = 0
-        for k, dispatch in all_dispatch.items():
-            if k not in SRO.list_of_plants:
-                all_revenues += dispatch.revenues
-                self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
+    # def addingMarketClearingIncome(self):
+    #     print("adding again dispatch revenues????")
+    #     all_dispatch = self.reps.power_plant_dispatch_plans_in_year
+    #     SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
+    #     all_revenues = 0
+    #     for k, dispatch in all_dispatch.items():
+    #         if k not in SRO.list_of_plants:
+    #             all_revenues += dispatch.revenues
+    #             self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
 
         # adding market revenues to energy producer
         # wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
