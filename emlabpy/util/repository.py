@@ -949,7 +949,7 @@ class Repository:
     def update_power_plant_status_ger_first_year(self, power_plant):
         power_plant.status = globalNames.power_plant_status_strategic_reserve
         self.dbrw.stage_power_plant_status(power_plant)
-        self.dbrw.stage_years_in_SR(power_plant.name, 0)
+        self.dbrw.stage_years_in_SR(power_plant.name, 1)
 
     def increase_year_in_sr(self, power_plant):
         power_plant.years_in_SR += 1
