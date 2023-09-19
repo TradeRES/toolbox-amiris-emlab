@@ -11,7 +11,7 @@ electricity = "" to dont graph the electricity prices
 Sanchez
 """
 import shutil
-
+import json
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import os
@@ -472,8 +472,8 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     all_techs_capacity_nozeroes.rename(columns=technology_names, inplace=True)
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize = (5,5))
     axs17.set_axisbelow(True)
-  #  plt.xticks(all_techs_capacity_nozeroes.index, (SIMULATION_YEARS) )
-  #  plt.locator_params(nbins=4)
+    # plt.xticks(all_techs_capacity_nozeroes.index, (SIMULATION_YEARS) )
+    # plt.locator_params(nbins=4)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [GW]', fontsize='large')
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
@@ -1094,6 +1094,32 @@ def prepare_pp_decommissioned(reps):
     fig2.savefig(path_to_plots + '/' + 'DecommissionedExpected.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
+def prepare_pp_lifetime_extension( reps):
+    extended_lifetime = pd.DataFrame(columns=["Extension", "Technology", "Capacity", "Age"] )
+    row = 0
+    for pp_name, pp in reps.power_plants.items():
+        # some power plants have age higher than tick becuase they were installed during initialization
+        if pp.status in  [globalNames.power_plant_status_to_be_decommissioned,
+                          globalNames.power_plant_status_strategic_reserve,
+                          globalNames.power_plant_status_decommissioned
+                          ]:
+            row = row + 1
+            pp.decommissionInYear
+            extended_lifetime.at[row,"Extension"] =  pp.age - pp.technology.expected_lifetime
+            extended_lifetime.at[row,"Technology"] = pp.technology.name
+            extended_lifetime.at[row,"Capacity"] =pp.capacity
+            extended_lifetime.at[row,"Age"] =pp.age
+            extended_lifetime.at[row,"Status"] =pp.status
+    sns.set_theme(style="whitegrid")
+    sns.set(font_scale=1.2)
+    colors = [technology_colors[tech] for tech in extended_lifetime["Technology"].unique()]
+    fig1 = sns.relplot(x="Age", y="Extension", hue="Technology", size="Capacity",
+                       sizes=(40, 400), alpha=.5, palette=colors,
+                       height=6, data=extended_lifetime)
+    plt.xlabel("Age", fontsize="large")
+    plt.ylabel("Extension", fontsize="large")
+    fig1.savefig(path_to_plots + '/' + 'Initial_power_plants.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def prepare_pp_status(years_to_generate, reps, unique_technologies):
     if reps.decommission_from_input == True:  # the initial power plants have negative age to avoid all to be commmissioned in one year
@@ -1123,26 +1149,27 @@ def prepare_pp_status(years_to_generate, reps, unique_technologies):
 
     for pp_name, pp in reps.power_plants.items():
         # some power plants have age higher than tick becuase they were installed during initialization
-        if pp.age <= reps.current_tick or (pp.is_new_installed()):
+
+        if reps.install_at_look_ahead_year == True:
+            year_investment_decision = pp.commissionedYear - reps.lookAhead
+        else:
+            year_investment_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
+
+        if pp.commissionedYear >= years_to_generate_and_build[0] or pp.is_new_installed():
             # graphed according to commissioned year which is determined by age.
-            if reps.install_at_look_ahead_year == True:
-                year_investment_decision = pp.commissionedYear - reps.lookAhead
+            if year_investment_decision < years_to_generate_and_build[0]:
+                pass
             else:
-                year_investment_decision = pp.commissionedYear - pp.technology.expected_leadtime - pp.technology.expected_permittime
-            # the year when the investment decision was made
-            annual_in_pipeline_capacity.at[year_investment_decision, pp.technology.name] += pp.capacity
+                annual_in_pipeline_capacity.at[year_investment_decision, pp.technology.name] += pp.capacity
             #  the year when the investment entered in operation
             annual_commissioned_capacity.at[pp.commissionedYear, pp.technology.name] += pp.capacity
-            if last_year != pp.commissionedYear + pp.age:
-                print("the age and the commissioned year dont add up")
+
         # if the age at the start was larger than zero then they count as being installed.
-        elif pp.age > (reps.current_year - reps.start_simulation_year):
+        elif pp.commissionedYear < years_to_generate_and_build[0]:
             initial_power_plants.loc[:, pp.technology.name] += pp.capacity
 
-        # power plants are commissioned and decommissioned
         if pp.status == globalNames.power_plant_status_decommissioned:
-            year = pp.decommissionInYear
-            annual_decommissioned_capacity.at[year, pp.technology.name] += pp.capacity
+            annual_decommissioned_capacity.at[pp.decommissionInYear, pp.technology.name] += pp.capacity
             # if pp.age + pp.decommissionInYear - reps.start_simulation_year > (reps.current_tick):
             #     initial_power_plants.loc[:, pp.technology.name] += pp.capacity
 
@@ -1402,20 +1429,7 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     return cash_per_agent, cost_recovery * 100, cumulative_cost_recovery, new_plants_loans
 
 
-def prepare_extension_lifetime_per_tech(reps, unique_technologies):
-    # calculate for all power plants the extended lifetime in average
-    # todo finish
-    life_extension = pd.DataFrame(columns=unique_technologies)
-    for technology_name in unique_technologies:
-        tech_power_plants = reps.get_power_plants_by_technology(technology_name)
-        extension = []
-        for pp in tech_power_plants:
-            if pp.age >= pp.technology.expected_lifetime:
-                years = pp.age - pp.technology.expected_lifetime
-                extension.append(years / len(tech_power_plants))
-        life_extension.loc[:, technology_name] = np.mean(extension)
-        # life_extension = pd.DataFrame(data=data,columns=unique_technologies)
-    return life_extension
+
 
 
 def prepare_irr_and_npv_per_technology_per_year(reps, unique_technologies, ticks_to_generate, years_to_generate):
@@ -2113,17 +2127,19 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     elif test_tech not in reps.get_unique_candidate_technologies_names():
         raise Exception("Test other technology, this is not installed until year" + str(years_to_generate[-1]))
 
+
     yearly_load = reading_original_load(years_to_generate, list_ticks)
-    monthly_electricity_price_grouped = prepare_monthly_electricity_prices(electricity_prices)
+    if reading_electricity_prices == True:
+        monthly_electricity_price_grouped = prepare_monthly_electricity_prices(electricity_prices)
     if calculate_hourly_shedders == True:
         total_load_shedded_per_year, max_continuous_hours = prepare_percentage_load_shedded_new(reps, years_to_generate)
 
-    percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation = prepare_percentage_load_shedded(
-        yearly_load, electricity_prices,
-        years_to_generate)
-    plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh, percentage_load_shedded)
-    if calculate_monthly_generation  == True:
-        plot_grouped_monthly_production_per_type(average_yearly_generation)
+        percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation = prepare_percentage_load_shedded(
+            yearly_load, electricity_prices,
+            years_to_generate)
+        plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh, percentage_load_shedded)
+        if calculate_monthly_generation  == True:
+            plot_grouped_monthly_production_per_type(average_yearly_generation)
     overall_NPV_per_technology, overall_IRR_per_technology = prepare_retrospectively_npv_and_irr(reps,
                                                                                                  unique_candidate_power_plants)
     plot_financial_results_new_plants(overall_NPV_per_technology, overall_IRR_per_technology, path_to_plots)
@@ -2264,8 +2280,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_screening_curve(yearly_costs, marginal_costs_per_hour, path_to_plots, test_year)
     future_fuel_prices = prepare_future_fuel_prices(reps)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
+    # section -----------------------------------------------------------------------------------------------Write Excel
 
-
+    prepare_pp_lifetime_extension(reps)
     # section -----------------------------------------------------------------------------------------------Write Excel
     if save_excel == True:
         path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
@@ -2345,7 +2362,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
 
 
-
         if calculate_vres_support == True:
             VRES_data[scenario_name] = average_electricity_price['VRES support']
         last_year_operational_capacity_data[scenario_name] = all_techs_capacity.loc[years_to_generate[-1]].T
@@ -2387,7 +2403,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     # section -----------------------------------------------------------------------------------------------Capacity Markets
     # # # #check extension of power plants.
-    # # # extension = prepare_extension_lifetime_per_tech(reps, unique_technologies)
 
     print('Showing plots...')
     # plt.show()
@@ -2419,6 +2434,12 @@ def writeInfo(reps, path_to_plots, scenario_name):
     Strategic_operator = reps.get_strategic_reserve_operator(reps.country)
     file.write("SR " + str(Strategic_operator.reservePriceSR) + " "+ str(Strategic_operator.reserveVolumePercentSR) +   "\n")
     info.append("SR " + str(Strategic_operator.reservePriceSR) + " "+ str(Strategic_operator.reserveVolumePercentSR) + "\n")
+
+    file.write("SR " + str(Strategic_operator.reservePriceSR) + " " + str(Strategic_operator.reserveVolumePercentSR) + "\n")
+    file.write(json.dumps(Strategic_operator.list_of_plants_all))
+    info.append("SR " + str(Strategic_operator.reservePriceSR) + " "+ str(Strategic_operator.reserveVolumePercentSR) + "\n")
+
+
 
     if reps.fix_fuel_prices_to_year != False:
         print("fix_prices_to_2020")
@@ -2584,12 +2605,13 @@ technology_names = {
 #             ]  # add a dash before!
 #SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 #SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-SCENARIOS = ["NL-GermanSR"]
+# SCENARIOS = [ "NL-GermanSR"]
 
-results_excel = "GermanSR.xlsx"
-#SCENARIOS = [ "NL-S1"]
+results_excel = "SR_4years.xlsx"
+SCENARIOS = [ "NL-lifetime_extension_EOM"]
 
-#SIMULATION_YEARS = list(range(0,40) )
+
+# SIMULATION_YEARS = list(range(0,40) )
 
 # Set the x-axis ticks and labels
 
@@ -2609,7 +2631,7 @@ load_shedding_plots = True
 calculate_investments = True
 calculate_investments_per_iteration = False  # ProfitsC
 calculate_profits_candidates_per_iteration = False
-read_electricity_prices = True  # write False if not wished to graph electricity prices"
+read_electricity_prices = False  # write False if not wished to graph electricity prices"
 
 global calculate_capacity_mechanisms
 calculate_capacity_mechanisms = True

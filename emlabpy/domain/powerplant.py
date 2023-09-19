@@ -88,16 +88,19 @@ class PowerPlant(EMLabAgent):
                 self.commissionedYear = reps.current_year - int(parameter_value) - reps.add_initial_age_years
             else:
                 self.age = int(parameter_value)  # for emlab data the commissioned year can be read from the age
-                self.commissionedYear = reps.current_year - int(parameter_value)
+                if self.name in (reps.decommissioned["Decommissioned"]).Done :
+                    pass # commissioned year set in decommissioned year
+                else:
+                    self.commissionedYear = reps.current_year - int(parameter_value)
 
             if self.is_new_installed() and reps.runningModule == "run_initialize_power_plants":
                 if self.age > reps.current_tick:
                     raise Exception("age is higher than it should be " + str(self.id) + " Name " + str(self.name))
         elif parameter_name == 'DecommissionInYear':
             self.decommissionInYear = int(parameter_value)
-            self.commissionedYear = int(parameter_value) - self.age
-            self.age = reps.current_year - self.commissionedYear
-            # the plant was added the age and immediately decommissioned.
+            if self.name in (reps.decommissioned["Decommissioned"]).Done :
+                self.commissionedYear = int(parameter_value) - self.age
+
 
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
@@ -174,7 +177,6 @@ class PowerPlant(EMLabAgent):
         self.setActualPermittime(self.technology.getExpectedPermittime())
         self.setActualNominalCapacity(self.getCapacity())
         self.setConstructionStartTick()  # minus age, permit and lead time
-        self.commissionedYear = reps.current_year - self.age
 
         if self.actualEfficiency == 'NOTSET':  # if there is not initial efficiency, then assign the efficiency by the technology
             self.calculateAndSetActualEfficiency(self.age)  # initialDB

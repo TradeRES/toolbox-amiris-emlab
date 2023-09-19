@@ -669,9 +669,9 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner.name == owner]
 
-    def get_power_plants_commissioned_inyear(self, year) -> List[PowerPlant]:
-        return [i.name for i in self.power_plants.values()
-                if i.commissionedYear == year]
+    # def get_power_plants_commissioned_inyear(self, year) -> List[PowerPlant]:
+    #     return [i.name for i in self.power_plants.values()
+    #             if i.commissionedYear == year]
 
     def get_power_plants_to_be_decommissioned(self, owner) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
