@@ -33,7 +33,6 @@ class StrategicReserveSubmitBids_ger(MarketModule):
             Bid = Bid + powerplant.technology.fuel.futurePrice[
                 self.operator.forward_years_SR + self.reps.current_year] / powerplant.technology.get_efficiency_by_time_series(
                 powerplant.age + self.operator.forward_years_SR)
-
             # Bid = powerplant.getActualFixedOperatingCost()
             # if powerplant.age < powerplant.technology.expected_lifetime:
             #     Bid += powerplant.getLoan().getAmountPerPayment()  # if power plant is reaches its lifetime it should not have anymore payments left
@@ -120,13 +119,13 @@ class StrategicReserveAssignment_ger(MarketModule):
 
                 # If strategic reserve is not filled yet contract additional new plants
                 elif self.reserveFull == False:
-                    print("new in Reserve")
                     ppdp.status = globalNames.power_plant_status_strategic_reserve
                     ppdp.accepted_amount = ppdp.amount
                     # Add plant to the list of the StrategicReserveOperator so that next year they are also accepted
                     list_of_plants.append(ppdp.plant)
                     # Change plant status and increase age
                     power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+                    print("new in Reserve"  + power_plant.name)
                     self.reps.update_power_plant_status_ger_first_year(power_plant)
                     contracted_strategic_reserve_capacity += ppdp.amount
                     if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
@@ -157,7 +156,9 @@ class StrategicReserveAssignment_ger(MarketModule):
     def createCashFlowforSR(self, market):
         accepted_ppdp = self.reps.get_accepted_SR_bids()
         for accepted in accepted_ppdp:
+            SR_payment_to_plant = 0
             plant = self.reps.power_plants[accepted.plant]
+            print("-------------------------------------------------------------" + str(plant.name))
             # Fixed operating costs of plants
             fixed_operating_costs = plant.actualFixedOperatingCost
             # Retrieve dispatch data of plants for variable costs and revenues
@@ -166,24 +167,21 @@ class StrategicReserveAssignment_ger(MarketModule):
             if dispatch is None:
                 SR_payment_to_plant = fixed_operating_costs
                 SR_payment_to_operator = 0
-                print("fixed_operating_costs " + str(fixed_operating_costs))
             else:
                 SR_payment_to_plant = fixed_operating_costs + dispatch.variable_costs
                 SR_payment_to_operator = dispatch.revenues
-                print("variable costs " + str(dispatch.variable_costs))
-                print("fixed_operating_costs " + str(fixed_operating_costs))
 
-            if plant.age < plant.technology.expected_lifetime:
-                # if power plant is reaches its lifetime it should not have anymore payments left
-                print("SR_payment_to_plant " + plant.name)
-                SR_payment_to_plant += plant.getLoan().getAmountPerPayment()
+            if plant.loan.getNumberOfPaymentsDone() < plant.loan.getTotalNumberOfPayments(): # that year the plant should still pay the loans
+                print("plus loans" + str(plant.loan.getAmountPerPayment()))
+                SR_payment_to_plant = SR_payment_to_plant +  plant.loan.getAmountPerPayment()
+            print("SR_payment_to_plant" + str(SR_payment_to_plant))
             # Payment (fixed costs and variable costs ) from operator to plant
             self.reps.createCashFlow(self.operator, plant,
                                      SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,
                                      self.reps.power_plants[accepted.plant])
             # saving the revenues to the power plants
             self.reps.dbrw.stage_CM_revenues(accepted.plant, SR_payment_to_plant, self.reps.current_tick)
-
+            plant.crm_payments_in_year += SR_payment_to_plant
             # Payment (market revenues) from market to operator
             self.reps.createCashFlow(market, self.operator,
                                      SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick,

@@ -59,7 +59,8 @@ class CreatingFinancialReports(DefaultModule):
             # CO2 costs + fuel costs
             self.agent.CF_COMMODITY -= dispatch.variable_costs
 
-            loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year # todo: there are no downpayments because its only for operational plants
+            loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
+            # todo: there are no downpayments because its only for operational plants
             # # attention: this is only to check
             # if powerplant.downpayment_in_year> 0:
             #     print("downpayment is paid during construction. why is it paid here")
@@ -74,20 +75,24 @@ class CreatingFinancialReports(DefaultModule):
             self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
 
             financialPowerPlantReport.setOverallRevenue(  # saved as overallRevenue
-                financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
+                powerplant.crm_payments_in_year  + dispatch.revenues)
 
-            self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
+            self.agent.CF_CAPMARKETPAYMENT += powerplant.crm_payments_in_year
             # total profits are used to decide for decommissioning saved as totalProfits
 
             if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
-                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + fixed_and_variable_costs
+                operational_profit = powerplant.crm_payments_in_year + fixed_and_variable_costs
+                operational_profit_with_loans = operational_profit - loans
+                if abs(operational_profit_with_loans) > 10:
+                    print("WRONG CRM ")
+                    print(operational_profit_with_loans)
+                    raise Exception
             else:
-                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + fixed_and_variable_costs
+                operational_profit = powerplant.crm_payments_in_year + dispatch.revenues + fixed_and_variable_costs
+                operational_profit_with_loans = operational_profit - loans
 
             financialPowerPlantReport.totalProfits = operational_profit  # saved as totalProfits
-
             # total profits with loans are to calculate RES support. saved as totalProfitswLoans
-            operational_profit_with_loans = operational_profit - loans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
             irr, npv = self.getProjectIRR(powerplant, operational_profit, loans, self.agent)
             financialPowerPlantReport.irr = irr

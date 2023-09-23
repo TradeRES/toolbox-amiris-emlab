@@ -28,6 +28,7 @@ class PowerPlant(EMLabAgent):
         self.fictional_status = globalNames.power_plant_status_not_set
         self.loan = Loan()
         self.loan_payments_in_year = 0
+        self.crm_payments_in_year = 0
         self.downpayment_in_year = 0
         self.downpayment = Loan()
         self.decommissionInYear = None
