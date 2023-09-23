@@ -59,7 +59,7 @@ class FinancialPowerPlantReport(ImportObject):
                 self.spotMarketRevenue = pd_series
 
         if reps.runningModule == "run_future_market" and  parameter_name in \
-                ['irr','npv']:
+                ['irr','npv', 'totalProfitswLoans', 'totalProfits' ]:
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
@@ -68,6 +68,10 @@ class FinancialPowerPlantReport(ImportObject):
                 self.irr = pd_series
             elif parameter_name == 'npv':
                 self.npv = pd_series
+            elif parameter_name == 'totalProfitswLoans':
+                self.totalProfitswLoans = pd_series
+            elif parameter_name == 'totalProfits':
+                self.totalProfits = pd_series
 
         elif parameter_name == 'capacityMechanismRevenues':
             # to making financial results, only retrieve the CM of that year

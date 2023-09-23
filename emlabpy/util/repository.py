@@ -230,6 +230,11 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_financial_report_for_plant_KPI(self, plant_name, KPI):
+        try:
+            return next(getattr(i, KPI) for i in self.financialPowerPlantReports.values() if i.name == plant_name)
+        except StopIteration:
+            return None
     def get_financial_report_for_plant(self, plant_name):
         try:
             return next(i for i in self.financialPowerPlantReports.values() if i.name == plant_name)
