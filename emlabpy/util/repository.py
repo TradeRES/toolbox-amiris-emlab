@@ -682,12 +682,15 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner.name == owner and i.status == globalNames.power_plant_status_to_be_decommissioned]
 
-    def get_power_plants_to_participate_inSR(self) -> List[PowerPlant]:
+    def get_power_plants_to_participate_inGermanSR(self) -> List[PowerPlant]:
+        # operational power plants should not enter the SR because then the lifetime of the power plant can be reduced, which is undesirable
         return [i for i in self.power_plants.values()
                 if i.technology.intermittent == False and
                 i.status in [globalNames.power_plant_status_to_be_decommissioned ,
-                             globalNames.power_plant_status_strategic_reserve,
-                             globalNames.power_plant_status_operational ]]
+                             globalNames.power_plant_status_strategic_reserve
+                             ]]
+
+
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
         for power_plant in [i for i in self.power_plants.values() if

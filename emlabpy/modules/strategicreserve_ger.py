@@ -24,7 +24,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_power_plants_to_participate_inSR():
+        for powerplant in self.reps.get_power_plants_to_participate_inGermanSR():
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()

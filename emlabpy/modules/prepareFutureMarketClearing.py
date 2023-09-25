@@ -134,15 +134,16 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
             elif powerplant.status ==  globalNames.power_plant_status_strategic_reserve:
-                #  If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
+                # If there is SR, the power plants are considered to be in the SR also in the future with high MC prices
                 if (powerplant.years_in_SR + self.look_ahead_years) >= SR_operator.max_years_in_reserve:
+                    # But new plants might enter the reserve!
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                     decommissioned_list.append(powerplant.name)
                 else:
                     powerplant.technology.variable_operating_costs = SR_operator.reservePriceSR
                     self.power_plants_list.append(powerplant)
 
-            elif fictional_age > powerplant.technology.expected_lifetime:
+            elif fictional_age >= powerplant.technology.expected_lifetime:
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
