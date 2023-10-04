@@ -28,9 +28,10 @@ class StrategicReserveSubmitBids_ger(MarketModule):
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
-            Bid = powerplant.technology.get_variable_operating_by_time_series(
+            variable_costs = powerplant.technology.get_variable_operating_by_time_series(
                 powerplant.age + self.operator.forward_years_SR)
-            Bid = Bid + powerplant.technology.fuel.futurePrice[
+
+            Bid = variable_costs + powerplant.technology.fuel.futurePrice[
                 self.operator.forward_years_SR + self.reps.current_year] / powerplant.technology.get_efficiency_by_time_series(
                 powerplant.age + self.operator.forward_years_SR)
             # Bid = powerplant.getActualFixedOperatingCost()
