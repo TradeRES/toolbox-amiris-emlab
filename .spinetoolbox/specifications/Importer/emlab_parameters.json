@@ -1315,7 +1315,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "weatherYears40": {},
+            "weatherYears40": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
             "TechnologyTargets": {
                 "read_until_col": true,
                 "read_until_row": true
