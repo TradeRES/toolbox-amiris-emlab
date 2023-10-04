@@ -234,31 +234,35 @@ class PrepareMarket(DefaultModule):
         VOLLs = []
         TimeSeries = []
         Type_ls = []
+        Identifiers = []
 
         if self.reps.runningModule == "run_prepare_next_year_market_clearing":
             for name, loadshedder in self.reps.loadShedders.items():
                 Type_ls.append("SHEDDING")
                 if name == "hydrogen":
-                    h2_price = self.reps.substances["OTHER"].simulatedPrice_inYear \
+                    VOLL = self.reps.substances["OTHER"].simulatedPrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
-                    VOLLs.append(h2_price)
                 else:
-                    VOLLs.append(loadshedder.VOLL)
+                    VOLL = loadshedder.VOLL
+
+                VOLLs.append(VOLL)
+                Identifiers.append(int(VOLL* 100000))
                 TimeSeries.append(loadshedder.TimeSeriesFile)
 
         elif self.reps.runningModule == "run_future_market":
             for name, loadshedder in self.reps.loadShedders.items():
                 Type_ls.append("SHEDDING")
                 if name == "hydrogen":
-                    h2_price = self.reps.substances["OTHER"].futurePrice_inYear \
+                    VOLL = self.reps.substances["OTHER"].futurePrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
-                    VOLLs.append(h2_price)
                 else:
-                    VOLLs.append(loadshedder.VOLL)
+                    VOLL = loadshedder.VOLL
 
+                VOLLs.append(VOLL)
+                Identifiers.append(int(VOLL* 100000))
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
 
-        d = {'identifier':   [i * 100000 for i in VOLLs], # assigning random identifier
+        d = {'identifier':   Identifiers, 
              'Type': Type_ls,
              'VOLL': VOLLs,
              'TimeSeries': TimeSeries
