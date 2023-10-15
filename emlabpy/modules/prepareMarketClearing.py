@@ -262,7 +262,7 @@ class PrepareMarket(DefaultModule):
                 Identifiers.append(int(VOLL* 100000))
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
 
-        d = {'identifier':   Identifiers, 
+        d = {'identifier':   Identifiers,
              'Type': Type_ls,
              'VOLL': VOLLs,
              'TimeSeries': TimeSeries

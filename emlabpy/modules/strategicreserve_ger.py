@@ -1,7 +1,5 @@
 """
-The file responsible for all German strategic reserve operations.
-
-Bart van Nobelen - 26-05-2022
+The file simulates the German strategic reserve operations.
 """
 
 from util import globalNames
@@ -157,7 +155,6 @@ class StrategicReserveAssignment_ger(MarketModule):
     def createCashFlowforSR(self, market):
         accepted_ppdp = self.reps.get_accepted_SR_bids()
         for accepted in accepted_ppdp:
-            SR_payment_to_plant = 0
             plant = self.reps.power_plants[accepted.plant]
             print("-------------------------------------------------------------" + str(plant.name))
             # Fixed operating costs of plants
