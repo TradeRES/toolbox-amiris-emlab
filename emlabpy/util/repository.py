@@ -687,7 +687,7 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner.name == owner and i.status == globalNames.power_plant_status_to_be_decommissioned]
 
-    def get_plants_to_be_decommissioned_and_inSR(self) -> List[PowerPlant]:
+    def get_plants_to_be_decommissioned_and_inSR(self, forward_years_SR) -> List[PowerPlant]:
         # operational power plants should not enter the SR because
         # then the lifetime of the power plant can be reduced, which is undesirable
         # unless they are about to be decommissioned
@@ -696,7 +696,7 @@ class Repository:
                 if i.technology.intermittent == False and
                 ((
                              i.status == globalNames.power_plant_status_operational \
-                             and i.age - i.technology.expected_lifetime >= -1)
+                             and i.age - i.technology.expected_lifetime >= -forward_years_SR)
                  or
                  i.status in [globalNames.power_plant_status_to_be_decommissioned,
                               globalNames.power_plant_status_strategic_reserve

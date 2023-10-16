@@ -22,7 +22,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR():
+        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.forward_years_SR):
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
@@ -89,9 +89,7 @@ class StrategicReserveAssignment_ger(MarketModule):
             if self.reserveFull == True:
                 break
             else:
-            # If plants are already in strategic reserve they have to be until end of life
-            # todo: owner to 'StrategicReserveOperator' and price to SR price?
-
+            # If plants are already in strategic reserve they have to be until max years in reserve
                 power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
                 if power_plant.status == globalNames.power_plant_status_strategic_reserve: # last year in Strategic reserve
                     if self.reserveFull == False:
@@ -114,7 +112,6 @@ class StrategicReserveAssignment_ger(MarketModule):
                                 pass
                     else:
                         raise Exception("should have stopped earlier")
-
 
                 # If strategic reserve is not filled yet contract additional new plants
                 elif self.reserveFull == False:
