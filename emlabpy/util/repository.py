@@ -687,7 +687,7 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner.name == owner and i.status == globalNames.power_plant_status_to_be_decommissioned]
 
-    def get_power_plants_to_participate_inGermanSR(self) -> List[PowerPlant]:
+    def get_plants_to_be_decommissioned_and_inSR(self) -> List[PowerPlant]:
         # operational power plants should not enter the SR because
         # then the lifetime of the power plant can be reduced, which is undesirable
         # unless they are about to be decommissioned
