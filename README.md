@@ -63,7 +63,7 @@ Finally in Settings specify the path to toolbox-amiris-emlab
 
 ###  kernel
 after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool
-Then click kernel spec editor and make a new kernel called emlabpy referencing to your miniconda environment
+Then click kernel spec editor and make a new kernel called emlabpy referencing to your anaconda environment
 
 
 ## Other steps to run AMIRIS

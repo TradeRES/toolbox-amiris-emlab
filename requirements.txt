@@ -2,9 +2,7 @@ twine~=3.8.0
 spinedb_api
 numpy_financial
 sqlalchemy~=1.3.24
-
 numpy~=1.21.1
-sklearn~=0.0
 scikit-learn
 pandas~=1.4.1
 matplotlib~=3.5.1
@@ -15,3 +13,4 @@ fameio>=1.6
 pyyaml~=5.4.1
 setuptools~=52.0.0
 seaborn
+ipykernel

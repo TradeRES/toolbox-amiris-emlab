@@ -1,0 +1,1 @@
+TotalAwardedPowerInMW can be higher than raw demand due to charging flexibilities
