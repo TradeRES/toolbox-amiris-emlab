@@ -304,11 +304,23 @@ try:
                 for f in glob.iglob(amiris_ouput_path + '/*.xlsx', recursive=True):
                     os.remove(f)
 
-                for f in glob.iglob(amiris_data_path + '/*.csv', recursive=True):
-                    os.remove(f)
-
             except Exception as e:
                 print(e)
+
+            try:  # removing excels from previous rounds
+                files_to_keep = ['otherres.csv', 'biomass.csv', "runofriver.csv"]
+
+                # Get a list of all files in the folder
+                all_files = os.listdir(amiris_data_path)
+
+                # Iterate through the files and delete CSV files that are not in the 'files_to_keep' list
+                for file_name in all_files:
+                    if file_name.endswith('.csv') and file_name not in files_to_keep:
+                        file_path = os.path.join(amiris_data_path, file_name)
+                        os.remove(file_path)
+            except Exception as e:
+                print(e)
+
 
             print('Initializing clock (tick 0)')
             db_emlab.import_object_classes([class_name])
