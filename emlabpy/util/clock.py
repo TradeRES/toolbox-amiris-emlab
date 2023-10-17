@@ -104,7 +104,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 update_load_current_year(excel, representative_year_investment)
                 update_profiles_current_year(excel, representative_year_investment)
                 prepare_initialization_load_for_future_year(excel)
-                prepare_hydrogen_initilization(excel)
+                prepare_hydrogen_initilization_future(excel)
             else:
                 pass
 
@@ -132,7 +132,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 """
                 print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(representative_year_investment))
                 prepare_initialization_load_for_future_year(excel)
-                prepare_hydrogen_initilization(excel)
+                prepare_hydrogen_initilization_future(excel)
                 prepare_initialization_profiles_for_future_year(excel)
                 update_profiles_first_year(excel, sequence_year)
             else:
@@ -178,6 +178,7 @@ def prepare_hydrogen_initilization_future(excel):
     hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
 
 def prepare_hydrogen_initilization(excel):
+    # TODO: make hydrogen dynamic
     hydrogen_series = pd.DataFrame( [load_shedders.loc[ "hydrogen","ShedderCapacityMW"]]*8760, index = excel['Load'].index)
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFile"]))
     hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
