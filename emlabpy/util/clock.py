@@ -32,6 +32,7 @@ from spinedb_api import DatabaseMapping, from_database
 grandparentpath = dirname(dirname(realpath(os.getcwd())))
 parentpath = os.path.dirname(os.getcwd())
 
+amiris_data_path = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data')
 amiris_ouput_path = os.path.join(grandparentpath, 'amiris_workflow\\output\\')
 amiris_worfklow_path = os.path.join(grandparentpath, 'amiris_workflow\\')
 #
@@ -66,10 +67,6 @@ def reset_target_investments_done():
     db_emlab.import_object_parameter_values(
         [(class_name, "SimulationYears", "target_investments_done", bool(0), '0')])
 
-# def reset_testing_intermittent_technologies():
-#     class_name = "Configuration"
-#     db_emlab.import_object_parameter_values(
-#         [(class_name, "SimulationYears", "testing_intermittent_technologies", bool(1), '0')])
 
 def update_years_file(current_year, initial, final_year, lookAhead):
     print("updated years file")
@@ -84,7 +81,7 @@ def update_years_file(current_year, initial, final_year, lookAhead):
 
 def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_profiles_to_representative_year,
                         modality):
-    print("preparing data for years " + str(year) + " and investment " + str(investment_year) + " for NL")
+    print("preparing data for years " + str(year) + " and investment " + str(representative_year_investment) + " for NL")
     """
     load files are updated in market preparation. 
     The VRES profiles have to be prepared in this step
@@ -101,12 +98,12 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
             raise Exception
 
         elif fix_demand_to_representative_year == True and fix_profiles_to_representative_year == True:
-            print("--------fix demand and fix profiles to representative year " + str(investment_year))
+            print("--------fix demand and fix profiles to representative year " + str(representative_year_investment))
 
             if modality == "initialize":
-                update_load_current_year(excel, investment_year)
-                update_profiles_current_year(excel, investment_year)
-                # market preparation changed the name of file to future
+                update_load_current_year(excel, representative_year_investment)
+                update_profiles_current_year(excel, representative_year_investment)
+                prepare_initialization_load_for_future_year(excel)
                 prepare_hydrogen_initilization(excel)
             else:
                 pass
@@ -133,7 +130,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 All initialization loop investments are made according to representative year.
                 Profiles are prepared for first year, so that these are overwritten in the 
                 """
-                print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(investment_year))
+                print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(representative_year_investment))
                 prepare_initialization_load_for_future_year(excel)
                 prepare_hydrogen_initilization(excel)
                 prepare_initialization_profiles_for_future_year(excel)
@@ -154,8 +151,6 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
     return 0
 
 def update_load_current_year(excel, current_year):
-    # load = excel['Load'].iloc[:,current_year] *load_shedders.loc["base", "percentage_load"]
-    # load.to_csv(load_file_for_amiris, header=False, sep=';', index=True)
     for lshedder_name in ["base", "low", "mid", "high"]:
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_original_" + lshedder_name + ".csv"))
@@ -174,22 +169,26 @@ def prepare_initialization_load_for_future_year(excel):
     # writing FUTURE load shedders
     for lshedder_name in ["low", "mid", "high", "base"]:
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[lshedder_name,"TimeSeriesFileFuture"]))
-        load_shedder = excel['Load'][investment_year] * load_shedders.loc[lshedder_name, "percentage_load"]
+        load_shedder = excel['Load'][representative_year_investment] * load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
+def prepare_hydrogen_initilization_future(excel):
+    hydrogen_series = pd.DataFrame( [load_shedders.loc[ "hydrogen","ShedderCapacityMW"]]*8760, index = excel['Load'].index)
+    hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFileFuture"]))
+    hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
 
 def prepare_hydrogen_initilization(excel):
     hydrogen_series = pd.DataFrame( [load_shedders.loc[ "hydrogen","ShedderCapacityMW"]]*8760, index = excel['Load'].index)
-    hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFileFuture"]))
+    hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[ "hydrogen","TimeSeriesFile"]))
     hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
     # hydrogen demand keeps constant
 
 def prepare_initialization_profiles_for_future_year(excel):
-    future_wind_offshore = excel['Wind Offshore profiles'][investment_year]
+    future_wind_offshore = excel['Wind Offshore profiles'][representative_year_investment]
     future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
-    future_wind_onshore = excel['Wind Onshore profiles'][investment_year]
+    future_wind_onshore = excel['Wind Onshore profiles'][representative_year_investment]
     future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
-    future_pv = excel['Sun PV profiles'][investment_year]
+    future_pv = excel['Sun PV profiles'][representative_year_investment]
     future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
 
 def update_profiles_first_year(excel, current_year):
@@ -256,8 +255,8 @@ try:
                                              class_name, object_name) \
                                          if i['parameter_name'] == 'Representative year')
         if representative_year != "NOTSET":
-            global investment_year
-            investment_year = int(representative_year)
+            global representative_year_investment
+            representative_year_investment = int(representative_year)
         else:
             raise Exception
         input_weather_years_excel_name = next(i['parameter_value'] for i in
@@ -299,10 +298,14 @@ try:
 
         if sys.argv[2] == 'initialize_clock':
             print('delete excels in output')
-            path = amiris_ouput_path
+
             try:  # removing excels from previous rounds
-                for f in glob.iglob(path + '/*.xlsx', recursive=True):
+                for f in glob.iglob(amiris_ouput_path + '/*.xlsx', recursive=True):
                     os.remove(f)
+
+                for f in glob.iglob(amiris_data_path + '/*.csv', recursive=True):
+                    os.remove(f)
+
             except Exception as e:
                 print(e)
 
