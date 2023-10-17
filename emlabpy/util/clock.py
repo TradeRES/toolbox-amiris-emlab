@@ -101,7 +101,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
             print("--------fix demand and fix profiles to representative year " + str(representative_year_investment))
 
             if modality == "initialize":
-                update_load_current_year(excel, representative_year_investment)
+                update_load_shedders_current_year(excel, representative_year_investment)
                 update_profiles_current_year(excel, representative_year_investment)
                 prepare_initialization_load_for_future_year(excel)
                 prepare_hydrogen_initilization_future(excel)
@@ -150,7 +150,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
         raise Exception
     return 0
 
-def update_load_current_year(excel, current_year):
+def update_load_shedders_current_year(excel, current_year):
     for lshedder_name in ["base", "low", "mid", "high"]:
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_original_" + lshedder_name + ".csv"))
