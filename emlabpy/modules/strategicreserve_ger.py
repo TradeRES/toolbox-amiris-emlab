@@ -79,8 +79,16 @@ class StrategicReserveAssignment_ger(MarketModule):
         strategic_reserve_capacity = peakExpectedDemand * self.operator.getReserveVolumePercentSR()
 
         # Retrieve the bids on the capacity market, sorted in descending order on price
-        sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market,
-                                                                                             self.reps.current_tick)
+
+        order_status =  {
+            globalNames.power_plant_status_strategic_reserve:0,
+            # globalNames.power_plant_status_to_be_decommissioned:1,
+            # globalNames.power_plant_status_operational:2,
+        }
+
+        sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
+
+
         list_of_plants = []
         # Contract plants to Strategic Reserve Operator
         contracted_strategic_reserve_capacity = 0
