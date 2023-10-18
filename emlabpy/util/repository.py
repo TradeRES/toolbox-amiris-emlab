@@ -946,7 +946,7 @@ class Repository:
         sortedbids = sorted([i for i in self.bids.values()
                              if i.market == market.name and i.tick == time], key=lambda i: i.price, reverse=True)
 
-        return = sorted(sortedbids,
+        return sorted(sortedbids,
                             key=lambda item: order_status[self.power_plants[item.plant].status]
                             if self.power_plants[item.plant].status in order_status else 10, reverse =False)
 
