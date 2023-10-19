@@ -79,6 +79,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
 
     def act(self):
+        print("investment iteration " + str(self.reps.investmentIteration))
         self.setTimeHorizon()
         self.setFuelPrices()
         self.filter_power_plants_to_be_operational()

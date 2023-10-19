@@ -125,37 +125,37 @@ class PrepareMarket(DefaultModule):
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
                                     originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
 
-                    total_peak_demand = max(peakdemand)
-                    total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
-                    market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-                    demand_name = calculatedprices[:-5] + "demand_peak" # futuredemand_peak or next_year_demand_peak
-                    self.reps.dbrw.stage_total_demand(market.name , total_peak_demand, self.simulation_year , demand_name)
-                    # --------------------------------------------------------------------- preparing yield profiles
-                    if self.reps.fix_profiles_to_representative_year == False:
-                        if self.reps.runningModule == "run_prepare_next_year_market_clearing":
-                            if self.reps.current_tick == 0:
-                                # profiles were changed for the initialization step
-                                print("copy profiles from first year that were changed in initialization")
-                                shutil.copy(globalNames.windoff_firstyear_file_for_amiris,
-                                            globalNames.windoff_file_for_amiris)
-                                shutil.copy(globalNames.windon_firstyear_file_for_amiris,
-                                            globalNames.windon_file_for_amiris)
-                                shutil.copy(globalNames.pv_firstyear_file_for_amiris,
-                                            globalNames.pv_file_for_amiris)
-                            else:
-                                pass # the profiles were not changed
+                        total_peak_demand = max(peakdemand)
+                        total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
+                        market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
+                        demand_name = calculatedprices[:-5] + "demand_peak" # futuredemand_peak or next_year_demand_peak
+                        self.reps.dbrw.stage_total_demand(market.name , total_peak_demand, self.simulation_year , demand_name)
+                        # --------------------------------------------------------------------- preparing yield profiles
+                        if self.reps.fix_profiles_to_representative_year == False:
+                            if self.reps.runningModule == "run_prepare_next_year_market_clearing":
+                                if self.reps.current_tick == 0:
+                                    # profiles were changed for the initialization step
+                                    print("copy profiles from first year that were changed in initialization")
+                                    shutil.copy(globalNames.windoff_firstyear_file_for_amiris,
+                                                globalNames.windoff_file_for_amiris)
+                                    shutil.copy(globalNames.windon_firstyear_file_for_amiris,
+                                                globalNames.windon_file_for_amiris)
+                                    shutil.copy(globalNames.pv_firstyear_file_for_amiris,
+                                                globalNames.pv_file_for_amiris)
+                                else:
+                                    pass # the profiles were not changed
 
-                        elif self.reps.runningModule == "run_future_market":
-                            if self.reps.investmentIteration <= 0:
-                                # only update data in first iteration of each year
-                                # ================================================== Updating profiles for investment
-                                print("copy profiles prepared in clock from future")
-                                shutil.copy(globalNames.future_windoff_file_for_amiris,
-                                            globalNames.windoff_file_for_amiris)
-                                shutil.copy(globalNames.future_windon_file_for_amiris,
-                                            globalNames.windon_file_for_amiris)
-                                shutil.copy(globalNames.future_pv_file_for_amiris,
-                                            globalNames.pv_file_for_amiris)
+                            elif self.reps.runningModule == "run_future_market":
+                                if self.reps.investmentIteration <= 0:
+                                    # only update data in first iteration of each year
+                                    # ================================================== Updating profiles for investment
+                                    print("copy profiles prepared in clock from future")
+                                    shutil.copy(globalNames.future_windoff_file_for_amiris,
+                                                globalNames.windoff_file_for_amiris)
+                                    shutil.copy(globalNames.future_windon_file_for_amiris,
+                                                globalNames.windon_file_for_amiris)
+                                    shutil.copy(globalNames.future_pv_file_for_amiris,
+                                                globalNames.pv_file_for_amiris)
 
                         else:
                             # next iterations have same market conditions, no need to update the demand or profile
