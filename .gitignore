@@ -106,3 +106,9 @@ amiris_workflow/amiris-config/data/LS_original_base.csv
 amiris_workflow/amiris-config/data/future_LS_hydrogen.csv
 amiris_workflow/amiris-config/data/future_LS_base.csv
 amiris_workflow/amiris-config/data/future_LS_base.csv
+amiris_workflow/amiris-config/data/LS_base.csv
+amiris_workflow/amiris-config/data/originalFuturebase.csv
+amiris_workflow/amiris-config/data/originalFuturehigh.csv
+amiris_workflow/amiris-config/data/originalFuturemid.csv
+amiris_workflow/amiris-config/data/originalFuturelow.csv
+amiris_workflow/amiris-config/data/originalFuturelow.csv

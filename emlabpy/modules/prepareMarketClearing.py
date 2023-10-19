@@ -92,7 +92,7 @@ class PrepareMarket(DefaultModule):
                 fuel_price = substance.simulatedPrice_inYear
             else:
                 fuel_price = substance.futurePrice_inYear
-            # --------------------------------------------------------------------- preparing demand and yield profiles
+            # --------------------------------------------------------------------- preparing demand
             if substance.name == "electricity":
                 if self.reps.available_years_data == False: # for germany the load is calculated with a trend.
                     demand = 0
@@ -101,47 +101,40 @@ class PrepareMarket(DefaultModule):
                     new_demand.to_csv(globalNames.load_file_for_amiris, header=False, sep=';', index=False)
                 else:  # for now, only have dynamic data for NL case
                     peakdemand = 0
-                    # print("FUEL_PRICE")
-                    # print(fuel_price) # fuel price can also be seen as price increase
                     load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
-                    if self.reps.increase_demand == True  and self.reps.investmentIteration <= 0:                        # =======  demand with increase
-                        for load_shedder_name , load_shedder in self.reps.loadShedders.items():
-                            if load_shedder_name == "hydrogen":
-                                pass
-                            else:
-                                load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, ( "LS_original_" + load_shedder_name + ".csv"))
-                                originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
-                                originalload[1] = (originalload[1] * fuel_price)
-                                peakdemand += originalload[1]
-                                if calculatedprices == "next_year_price":
-                                    load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
-                                else: # calculatedprices == "future market":
-                                    load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
-                                originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
-
-                    else: # =======  no demand increase
+                    if self.reps.investmentIteration <= 0:
                         for load_shedder_name , load_shedder in self.reps.loadShedders.items():
                             if load_shedder_name == "hydrogen":
                                 pass
                             else:
                                 if calculatedprices == "next_year_price":
+                                    print("changing original load times to next year " + str(fuel_price))
+                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data,
+                                                                                os.path.normpath( self.reps.loadShedders[load_shedder_name].TimeSeriesFile))
+                                    originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
+                                    originalload[1] = (originalload[1] * fuel_price)
+                                    peakdemand += originalload[1]
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
-                                else: # calculatedprices == "future market":
+                                    originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
+                                else:
+                                    print("changing original load times to future "+ str(fuel_price))
+                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, "originalFuture" + load_shedder_name + ".csv"  )
+                                    originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
+                                    originalload[1] = (originalload[1] * fuel_price)
+                                    peakdemand += originalload[1]
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFileFuture))
-                                originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
-                                originalload[1] = (originalload[1] * fuel_price)
-                                peakdemand += originalload[1]
+                                    originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
 
                     total_peak_demand = max(peakdemand)
                     total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                     market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
                     demand_name = calculatedprices[:-5] + "demand_peak" # futuredemand_peak or next_year_demand_peak
                     self.reps.dbrw.stage_total_demand(market.name , total_peak_demand, self.simulation_year , demand_name)
-
-                    if self.reps.runningModule == "run_prepare_next_year_market_clearing":
-                        if self.reps.current_tick == 0:
-                            # profiles were changed for the initialization step
-                            if self.reps.fix_profiles_to_representative_year == False:
+                    # --------------------------------------------------------------------- preparing yield profiles
+                    if self.reps.fix_profiles_to_representative_year == False:
+                        if self.reps.runningModule == "run_prepare_next_year_market_clearing":
+                            if self.reps.current_tick == 0:
+                                # profiles were changed for the initialization step
                                 print("copy profiles from first year that were changed in initialization")
                                 shutil.copy(globalNames.windoff_firstyear_file_for_amiris,
                                             globalNames.windoff_file_for_amiris)
@@ -151,16 +144,10 @@ class PrepareMarket(DefaultModule):
                                             globalNames.pv_file_for_amiris)
                             else:
                                 pass # the profiles were not changed
-                        else:
-                            pass # the load was already updated in the clock step
-                        # this is only to test that the files are copied correctly
-                        # a = pd.read_csv(globalNames.windon_file_for_amiris, sep=";", header=None)
-                        # print(a.sum()[1])
 
-                    elif self.reps.runningModule == "run_future_market":
-                        if self.reps.investmentIteration == 0:
-                            # only update data in first iteration of each year
-                            if self.reps.fix_profiles_to_representative_year == False:
+                        elif self.reps.runningModule == "run_future_market":
+                            if self.reps.investmentIteration <= 0:
+                                # only update data in first iteration of each year
                                 # ================================================== Updating profiles for investment
                                 print("copy profiles prepared in clock from future")
                                 shutil.copy(globalNames.future_windoff_file_for_amiris,

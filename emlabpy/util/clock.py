@@ -35,9 +35,7 @@ parentpath = os.path.dirname(os.getcwd())
 amiris_data_path = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data')
 amiris_ouput_path = os.path.join(grandparentpath, 'amiris_workflow\\output\\')
 amiris_worfklow_path = os.path.join(grandparentpath, 'amiris_workflow\\')
-#
-# input_yearly_profiles_demand = os.path.join(grandparentpath,
-#                                             'data\\VREprofilesandload2019-2050.xlsx')
+
 
 windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windon.csv')
 windoff_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\windoff.csv')
@@ -46,9 +44,7 @@ pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-conf
 windon_firstyear_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\first_year_windon.csv')
 windoff_firstyear_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\first_year_windoff.csv')
 pv_firstyear_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\first_year_pv.csv')
-
 future_windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_windon.csv')
-
 future_windoff_file_for_amiris = os.path.join(grandparentpath,
                                               'amiris_workflow\\amiris-config\\data\\future_windoff.csv')
 future_pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_pv.csv')
@@ -87,6 +83,8 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
     The VRES profiles have to be prepared in this step
     """
     try:
+
+        #=======================================================================================updating profiles
         excel = pd.read_excel(input_weather_years_excel, index_col=0,
                                  sheet_name=["Wind Onshore profiles",
                                              "Wind Offshore profiles",
@@ -94,22 +92,19 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                                              "Load"])
 
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
-            print("--------INCREASE DEMAND and fix profiles   ") # todo: increase demand
+            print("--------load and profiles should be related")
             raise Exception
-
         elif fix_demand_to_representative_year == True and fix_profiles_to_representative_year == True:
-            print("--------fix demand and fix profiles to representative year " + str(representative_year_investment))
-
+            # future profiles are upated for representative year
             if modality == "initialize":
-                update_load_shedders_current_year(excel, representative_year_investment)
                 update_profiles_current_year(excel, representative_year_investment)
-                prepare_initialization_load_for_future_year(excel)
-                prepare_hydrogen_initilization_future(excel)
-            else:
-                pass
+                prepare_initialization_load_for_future_year(excel, representative_year_investment)
+                update_load_shedders_current_year(excel, representative_year_investment)
+                prepare_hydrogen_initilization_future(excel) # todo make this changing for future
+
 
         elif fix_demand_to_representative_year == False and fix_profiles_to_representative_year == False:
-            print("---------fix demand and update profiles")
+            print("---------update demand and update profiles")
             iteration = next(i['parameter_value'] for i in
                              db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                     object_name) \
@@ -122,7 +117,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
             weatherYears = pd.DataFrame(weatherYears_data.values, index=weatherYears_data.indexes)
             sequence_year = weatherYears.values[new_tick]
             print("preparing year profiles to RANDOM year " + str(sequence_year))
-            update_load_current_year_by_sequence_year(excel, sequence_year)
+            update_load_current_year_by_sequence_year(excel, sequence_year) # uplad Load
 
             if modality == "initialize":
                 """"
@@ -131,9 +126,9 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 Profiles are prepared for first year, so that these are overwritten in the 
                 """
                 print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(representative_year_investment))
-                prepare_initialization_load_for_future_year(excel)
+                prepare_initialization_load_for_future_year(excel, representative_year_investment)
                 prepare_hydrogen_initilization_future(excel)
-                prepare_initialization_profiles_for_future_year(excel)
+                prepare_initialization_profiles_for_future_year(excel) # future profiles
                 update_profiles_first_year(excel, sequence_year)
             else:
                 # current year profile change, but future profiles remain
@@ -145,6 +140,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
         else:
             raise Exception
+
     except Exception as e:
         print("failed updating AMIRIS data")
         raise Exception
@@ -153,7 +149,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
 def update_load_shedders_current_year(excel, current_year):
     for lshedder_name in ["base", "low", "mid", "high"]:
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
-        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_original_" + lshedder_name + ".csv"))
+        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_" + lshedder_name + ".csv"))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
 def update_load_current_year_by_sequence_year(excel, sequence_year):
@@ -161,14 +157,14 @@ def update_load_current_year_by_sequence_year(excel, sequence_year):
     Demand is not increasing but the load is changing in every weather year due to heat demand
     """
     for lshedder_name in ["base", "low", "mid", "high"]:
-        load_shedder = excel['Load'][sequence_year] *load_shedders.loc[lshedder_name,"percentage_load"]
+        load_shedder = excel['Load'][sequence_year] * load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder_name,"TimeSeriesFile"]))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
-def prepare_initialization_load_for_future_year(excel):
+def prepare_initialization_load_for_future_year(excel, representative_year_investment ):
     # writing FUTURE load shedders
     for lshedder_name in ["low", "mid", "high", "base"]:
-        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath( load_shedders.loc[lshedder_name,"TimeSeriesFileFuture"]))
+        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config" ,"data" , "originalFuture" + lshedder_name + ".csv" )
         load_shedder = excel['Load'][representative_year_investment] * load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
@@ -247,8 +243,7 @@ try:
                        if i['parameter_name'] == 'Country')
 
         targetinvestment_per_year = next(i['parameter_value'] for i in
-                                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(
-                                             class_name, object_name) \
+                                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                                          if i['parameter_name'] == 'targetinvestment_per_year')
 
         representative_year = next(i['parameter_value'] for i in
