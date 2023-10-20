@@ -96,11 +96,13 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
             raise Exception
         elif fix_demand_to_representative_year == True and fix_profiles_to_representative_year == True:
             # future profiles are upated for representative year
+            print("--------fix demand and profiles")
             if modality == "initialize":
                 update_profiles_current_year(excel, representative_year_investment)
                 prepare_initialization_load_for_future_year(excel, representative_year_investment)
                 update_load_shedders_current_year(excel, representative_year_investment)
                 prepare_hydrogen_initilization_future(excel) # todo make this changing for future
+                prepare_hydrogen_initilization(excel)
 
 
         elif fix_demand_to_representative_year == False and fix_profiles_to_representative_year == False:
@@ -128,6 +130,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(representative_year_investment))
                 prepare_initialization_load_for_future_year(excel, representative_year_investment)
                 prepare_hydrogen_initilization_future(excel)
+                prepare_hydrogen_initilization(excel)
                 prepare_initialization_profiles_for_future_year(excel) # future profiles
                 update_profiles_first_year(excel, sequence_year)
             else:
