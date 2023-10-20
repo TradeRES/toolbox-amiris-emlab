@@ -81,3 +81,4 @@ amiris_RAWresults_path = os.path.join(parentpath,'amiris_workflow\\output\\raw\\
 power_plants_path = os.path.join(parentpath,'data\\Power_plants.xlsx')
 scenarios_path = os.path.join(parentpath,'emlabpy\\plots\\Scenarios\\')
 amiris_config_data = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data' )
+amiris_worklow = os.path.join(parentpath, 'amiris_workflow' )

@@ -109,7 +109,7 @@ class PrepareMarket(DefaultModule):
                             else:
                                 if calculatedprices == "next_year_price":
                                     print("changing original load times to next year " + str(fuel_price))
-                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data,
+                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_worklow,
                                                                                 os.path.normpath( self.reps.loadShedders[load_shedder_name].TimeSeriesFile))
                                     originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                     originalload[1] = (originalload[1] * fuel_price)
