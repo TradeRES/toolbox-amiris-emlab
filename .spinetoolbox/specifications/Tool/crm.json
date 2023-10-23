@@ -1,14 +1,13 @@
 {
-    "name": "Capacity Mechanisms",
+    "name": "CRM",
     "tooltype": "python",
     "includes": [
         "emlab.py"
     ],
-    "description": "the thid argument should be one of these \"run_capacity_market\"",
+    "description": "Runs Capacity remuneration mechanisms if there are any",
     "inputfiles": [],
     "inputfiles_opt": [],
     "outputfiles": [],
     "cmdline_args": [],
-    "execute_in_work": false,
     "includes_main_path": "../../../emlabpy"
 }

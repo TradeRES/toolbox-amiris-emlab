@@ -1,7 +1,10 @@
 {
     "project": {
-        "version": 10,
+        "version": 11,
         "description": "",
+        "settings": {
+            "enable_execute_all": true
+        },
         "specifications": {
             "Tool": [
                 {
@@ -118,6 +121,11 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/initialization_invest.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/crm.json"
                 }
             ],
             "Importer": [
@@ -555,17 +563,6 @@
                 ]
             },
             {
-                "name": "from Invest to Next year",
-                "from": [
-                    "Invest",
-                    "left"
-                ],
-                "to": [
-                    "Next year",
-                    "bottom"
-                ]
-            },
-            {
                 "name": "from Financial Results to prepare future market",
                 "from": [
                     "Financial Results",
@@ -585,6 +582,39 @@
                 "to": [
                     "Financial Results",
                     "left"
+                ]
+            },
+            {
+                "name": "from Invest to CRM",
+                "from": [
+                    "Invest",
+                    "left"
+                ],
+                "to": [
+                    "CRM",
+                    "right"
+                ]
+            },
+            {
+                "name": "from EmlabDB2 to CRM",
+                "from": [
+                    "EmlabDB2",
+                    "bottom"
+                ],
+                "to": [
+                    "CRM",
+                    "right"
+                ]
+            },
+            {
+                "name": "from CRM to Next year",
+                "from": [
+                    "CRM",
+                    "left"
+                ],
+                "to": [
+                    "Next year",
+                    "bottom"
                 ]
             }
         ],
@@ -753,7 +783,9 @@
                     "type": "literal",
                     "arg": "initialize_clock"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "EmlabDB": {
             "type": "Data Store",
@@ -791,7 +823,9 @@
                     "type": "literal",
                     "arg": "run_prepare_next_year_market_clearing"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "decommission": {
             "type": "Tool",
@@ -813,7 +847,9 @@
                     "type": "literal",
                     "arg": "run_decommission_module"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "prepare future market": {
             "type": "Tool",
@@ -835,7 +871,9 @@
                     "type": "literal",
                     "arg": "run_future_market"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "AMIRIS future": {
             "type": "Tool",
@@ -844,7 +882,9 @@
             "y": -47.97424765122079,
             "specification": "Amiris future",
             "execute_in_work": false,
-            "cmd_line_args": []
+            "cmd_line_args": [],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "EmlabDB2": {
             "type": "Data Store",
@@ -893,7 +933,9 @@
                     "type": "literal",
                     "arg": "\"increment_clock\""
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "AMIRIS DB": {
             "type": "Data Store",
@@ -986,7 +1028,9 @@
                     "type": "resource",
                     "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "Invest": {
             "type": "Tool",
@@ -1008,7 +1052,9 @@
                     "type": "literal",
                     "arg": "run_investment_module"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "AMIRIS": {
             "type": "Tool",
@@ -1017,7 +1063,9 @@
             "y": -472.8779156419659,
             "specification": "Amiris future",
             "execute_in_work": false,
-            "cmd_line_args": []
+            "cmd_line_args": [],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "Initialize power plants": {
             "type": "Tool",
@@ -1039,7 +1087,9 @@
                     "type": "literal",
                     "arg": "run_initialize_power_plants"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "Financial Results": {
             "type": "Tool",
@@ -1061,7 +1111,9 @@
                     "type": "literal",
                     "arg": "run_financial_results"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "initialization future market": {
             "type": "Tool",
@@ -1083,7 +1135,9 @@
                     "type": "literal",
                     "arg": "run_future_market"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "intialization Invest": {
             "type": "Tool",
@@ -1105,7 +1159,9 @@
                     "type": "literal",
                     "arg": "run_investment_module"
                 }
-            ]
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         },
         "initialization AMIRIS": {
             "type": "Tool",
@@ -1114,7 +1170,33 @@
             "y": -877.8806136385374,
             "specification": "Amiris future",
             "execute_in_work": false,
-            "cmd_line_args": []
+            "cmd_line_args": [],
+            "kill_completed_processes": false,
+            "log_process_output": false
+        },
+        "CRM": {
+            "type": "Tool",
+            "description": "",
+            "x": -735.0995220929651,
+            "y": -90.24239657407246,
+            "specification": "CRM",
+            "execute_in_work": true,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@EmlabDB2"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
+                },
+                {
+                    "type": "literal",
+                    "arg": "run_CRM"
+                }
+            ],
+            "kill_completed_processes": false,
+            "log_process_output": false
         }
     }
 }

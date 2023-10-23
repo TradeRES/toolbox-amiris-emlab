@@ -109,11 +109,12 @@ class PrepareMarket(DefaultModule):
                             else:
                                 if calculatedprices == "next_year_price":
                                     print("changing original load times to next year " + str(fuel_price))
-                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_worklow,
-                                                                                os.path.normpath( self.reps.loadShedders[load_shedder_name].TimeSeriesFile))
+                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, "originalFuture" + load_shedder_name + ".csv"  )
                                     originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                     originalload[1] = (originalload[1] * fuel_price)
                                     peakdemand += originalload[1]
+                                    # print("original peak demand" )
+                                    # print(max(originalload[1] ))
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
                                     originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
                                 else:
@@ -126,6 +127,8 @@ class PrepareMarket(DefaultModule):
                                     originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
 
                         total_peak_demand = max(peakdemand)
+
+                        print(total_peak_demand)
                         total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                         market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
                         demand_name = calculatedprices[:-5] + "demand_peak" # futuredemand_peak or next_year_demand_peak

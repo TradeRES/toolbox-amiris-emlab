@@ -48,6 +48,7 @@ run_prepare_next_year_market_clearing = False
 run_initialize_power_plants = False
 run_pay_loans = False
 run_create_results = False
+run_CRM = False
 #tic = time.perf_counter()
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
@@ -75,6 +76,8 @@ for arg in sys.argv[3:]:
         run_create_results = True
     if arg == 'run_pay_loans':
         run_pay_loans = True
+    if arg == 'run_CRM':
+        run_CRM = True
 
 # following modules need the results from AMIRIS that are being stored in a DB
 if sys.argv[3] in globalNames.modules_need_AMIRIS:
@@ -141,23 +144,19 @@ try:  # Try statement to always close DB properly
         logging.info('End Run dismantle')
 
     if run_financial_results:
-        if reps.capacity_remuneration_mechanism == "capacity_market":
-            print('Start Run Capacity Market')
-            capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-            capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
-            capacity_market_submit_bids.act_and_commit()
-            capacity_market_clear.act_and_commit()
-            print('End Run Capacity Market')
+        logging.info('Start Saving Financial Results')
+        paying_loans = PayForLoansRole(reps)
+        paying_loans.act_and_commit()
+        financial_report = CreatingFinancialReports(reps)
+        financial_report.act_and_commit()
+        logging.info('End saving Financial Results')
 
-        if reps.capacity_remuneration_mechanism == "forward_capacity_market":
-            print('Start Run Capacity Market')
-            capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-            capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
-            capacity_market_clear = ForwardCapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
-            capacity_market_submit_bids.act_and_commit()
-            capacity_market_clear.act_and_commit()
-            print('End Run Capacity Market')
+        if reps.run_quick_investments == True:
+            print("running investment decisions")
+            short_investing = ShortInvestmentdecision(reps)
+            short_investing.act_and_commit()
 
+    if run_CRM == True:
         if reps.capacity_remuneration_mechanism == "strategic_reserve":
             print('Start strategic reserve')
             strategic_reserve_submit_bids = StrategicReserveSubmitBids(reps)
@@ -166,33 +165,41 @@ try:  # Try statement to always close DB properly
             strategic_reserve.act_and_commit()
             print('End strategic reserve')
 
-        if reps.capacity_remuneration_mechanism == "strategic_reserve_swe":
+        elif  reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
+            print('Start strategic reserve german')
+            strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
+            strategic_reserve = StrategicReserveAssignment_ger(reps)
+            strategic_reserve_submit_bids.act_and_commit()
+            strategic_reserve.act_and_commit()
+            print('End strategic reserve german')
+
+        elif reps.capacity_remuneration_mechanism == "capacity_market":
+            print('Start Run Capacity Market')
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
+            capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
+            capacity_market_submit_bids.act_and_commit()
+            capacity_market_clear.act_and_commit()
+            print('End Run Capacity Market')
+
+        elif reps.capacity_remuneration_mechanism == "forward_capacity_market":
+            print('Start Run Capacity Market')
+            capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
+            capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
+            capacity_market_clear = ForwardCapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
+            capacity_market_submit_bids.act_and_commit()
+            capacity_market_clear.act_and_commit()
+            print('End Run Capacity Market')
+
+        elif reps.capacity_remuneration_mechanism == "strategic_reserve_swe":
             print('Start strategic reserve')
             strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
             strategic_reserve = StrategicReserveAssignment_swe(reps)
             strategic_reserve_submit_bids.act_and_commit()
             strategic_reserve.act_and_commit()
             print('End strategic reserve')
+        else:
+            print('no CRM')
 
-        if  reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
-            print('Start strategic reserve')
-            strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
-            strategic_reserve = StrategicReserveAssignment_ger(reps)
-            strategic_reserve_submit_bids.act_and_commit()
-            strategic_reserve.act_and_commit()
-            print('End strategic reserve')
-
-        logging.info('Start Saving Financial Results')
-        paying_loans = PayForLoansRole(reps)
-        paying_loans.act_and_commit()
-        financial_report = CreatingFinancialReports(reps)
-        financial_report.act_and_commit()
-
-        if reps.run_quick_investments == True:
-            print("running investment decisions")
-            short_investing = ShortInvestmentdecision(reps)
-            short_investing.act_and_commit()
-        logging.info('End saving Financial Results')
 
     if run_prepare_next_year_market_clearing:
         logging.info('Start Run preparing market for next year')

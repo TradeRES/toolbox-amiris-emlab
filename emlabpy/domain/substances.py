@@ -32,7 +32,7 @@ class Substance(ImportObject):
             self.resource_limit2020 = float(parameter_value)
         elif parameter_name == 'trend':
             self.trend = reps.trends[parameter_value]
-        elif parameter_name == 'futurePrice' and reps.runningModule in ["run_financial_results", "plotting"]:
+        elif parameter_name == 'futurePrice' and reps.runningModule in ["run_CRM", "plotting"]:
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
