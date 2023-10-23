@@ -14,7 +14,7 @@ To do so, run the following commands in the toolbox-amiris-emlab folder:
 ### Requirements
 - install Anaconda - not miniconda (with miniconda there have been some errors)
 - install Git https://git-scm.com/download/win
-- Make sure that java > 8 is installed
+- Make sure that java 8, 11 or 17 is installed 
 
 ## Prepare environments
 To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created:
