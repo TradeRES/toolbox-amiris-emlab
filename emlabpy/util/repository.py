@@ -573,14 +573,18 @@ class Repository:
                                                globalNames.power_plant_status_strategic_reserve]]
         return sum(plantsoftechnology)
 
-    # def calculateCapacityOfOperationalPlantsforallTechnologies(self):
-    #     uniquetechnologies = self.get_unique_technologies_names()
-    #     start_capacity = dict.fromkeys(uniquetechnologies, 0)
-    #     for pp in self.power_plants.values():
-    #         if pp.status not in [globalNames.power_plant_status_inPipeline,
-    #                              globalNames.power_plant_status_decommissioned]:
-    #             start_capacity[pp.technology.name] += pp.capacity
-    #     return start_capacity
+    def calculate_marginal_costs(self, powerplant, year_ahead):
+        simulation_year = year_ahead + self.current_year
+        fuel = powerplant.technology.fuel
+        variable_costs = powerplant.technology.get_variable_operating_by_time_series(
+            powerplant.age + year_ahead)
+        fuel_price =  fuel.futurePrice[simulation_year]
+        co2_TperMWh = fuel.co2_density
+        co2price = self.substances["CO2"].get_price_for_tick(self, simulation_year, True)
+        commodities = (powerplant.technology.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) /
+                       powerplant.technology.get_efficiency_by_time_series(
+            powerplant.age + year_ahead))
+        return   variable_costs + commodities
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name
@@ -774,6 +778,9 @@ class Repository:
 
         # ----------------------------------------------------------------------------section Capacity Mechanisms
 
+
+
+
     def get_strategic_reserve_operator(self, zone) -> Optional[StrategicReserveOperator]:
         try:
             return next(i for i in self.sr_operator.values() if
@@ -958,23 +965,21 @@ class Repository:
     def create_or_update_StrategicReserveOperator(self, name: str,
                                                   zone: str,
                                                   volumeSR: float,
-                                                  cash: float,
-                                                  revenues_per_year: float,
                                                   list_of_plants: list) -> StrategicReserveOperator:
         SRO = next((SRO for SRO in self.sr_operator.values() if SRO.name == name), None)
         if SRO is None:
             name = ("SRO_" + zone)
             SRO = StrategicReserveOperator(name)
-        SRO.revenues_per_year = revenues_per_year
         SRO.reserveVolume = volumeSR
-        SRO.cash = cash
         SRO.list_of_plants_inSR_in_current_year = list_of_plants
         self.sr_operator[SRO.name] = SRO
-        self.dbrw.stage_sr_operator_cash(SRO)
         self.dbrw.stage_sr_operator_results(SRO, self.current_tick)
         return SRO
 
-        # todo: better to force them to be dismantled after the 4th year because their life can be extednde if thery profitable
+
+    def update_StrategicReserveOperator(self, SRO) -> StrategicReserveOperator:
+        self.dbrw.stage_sr_operator_cash(SRO)
+        self.dbrw.stage_sr_operator_revenues_results(SRO, self.current_tick - 1)
 
     def update_power_plant_status_ger_first_year(self, power_plant):
         power_plant.status = globalNames.power_plant_status_strategic_reserve

@@ -3,6 +3,7 @@ import pandas as pd
 from domain.powerplantDispatchPlan import PowerPlantDispatchPlan
 from modules.defaultmodule import DefaultModule
 from domain.financialReports import FinancialPowerPlantReport
+from modules.strategicreserve_ger import StrategicReserveAssignment_ger
 from util import globalNames
 import numpy as np
 
@@ -51,13 +52,18 @@ class CreatingFinancialReports(DefaultModule):
 
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
-            financialPowerPlantReport.setPowerPlantStatus(powerplant.status)  # todo: is this needed?
+
             fixed_on_m_cost = powerplant.getActualFixedOperatingCost()
             financialPowerPlantReport.setFixedCosts(fixed_on_m_cost)  # saved as fixedCosts
 
-            self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
-            # CO2 costs + fuel costs
+            if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
+                operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+                dispatch.variable_costs = StrategicReserveAssignment_ger.createCashFlowforSR(self, powerplant, operator)
+
+            else:
+                pass
             self.agent.CF_COMMODITY -= dispatch.variable_costs
+            self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
 
             loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
             # todo: there are no downpayments because its only for operational plants
@@ -77,7 +83,7 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.setOverallRevenue(  # saved as overallRevenue
                 powerplant.crm_payments_in_year  + dispatch.revenues)
 
-            self.agent.CF_CAPMARKETPAYMENT += powerplant.crm_payments_in_year
+
             # total profits are used to decide for decommissioning saved as totalProfits
 
             if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
@@ -91,6 +97,8 @@ class CreatingFinancialReports(DefaultModule):
                 operational_profit = powerplant.crm_payments_in_year + dispatch.revenues + fixed_and_variable_costs
                 operational_profit_with_loans = operational_profit - loans
 
+
+            self.agent.CF_CAPMARKETPAYMENT += powerplant.crm_payments_in_year
             financialPowerPlantReport.totalProfits = operational_profit  # saved as totalProfits
             # total profits with loans are to calculate RES support. saved as totalProfitswLoans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
@@ -101,6 +109,11 @@ class CreatingFinancialReports(DefaultModule):
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
+
+        if self.reps.capacity_remuneration_mechanism in ["strategic_reserve_ger","strategic_reserve_swe", "strategic_reserve" ] :
+            # Save the SR operator variables to the SR operator of the country
+            self.reps.update_StrategicReserveOperator( self.reps.get_strategic_reserve_operator(self.reps.country))
+
 
     def getProjectIRR(self, pp, operational_profit_withFixedCosts, loans, agent):
         totalInvestment = pp.getActualInvestedCapital()
