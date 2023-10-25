@@ -292,7 +292,7 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
 
 
 def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                     CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, path_to_plots, colors_unique_techs):
+                     CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, cm_revenues_per_pp, path_to_plots, colors_unique_techs):
     # df.plot(x='Team', kind='bar', stacked=True,
     axs26 = accepted_pp_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
     axs26.set_axisbelow(True)
@@ -324,6 +324,20 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     axs27.set_title('Capacity Mechanism capacity per technology')
     fig27 = axs27.get_figure()
     fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight', dpi=300)
+
+    cm_revenues_per_pp.replace(0, pd.NA, inplace=True)
+    cm_revenues_per_pp.dropna(how='all', axis=1, inplace=True)
+    axs28 = cm_revenues_per_pp.plot()
+    axs28.set_axisbelow(True)
+    plt.xlabel('tick', fontsize='medium')
+    plt.ylabel('Revenues SR', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+    plt.grid()
+    axs28.set_title('SR_results_per_pp')
+    fig28 = axs28.get_figure()
+    fig28.savefig(path_to_plots + '/' + 'SR_results_per_pp.png', bbox_inches='tight', dpi=300)
+
+
 
     if ran_CRM == "capacity_market":
         axs28 = CM_clearing_price.plot()
@@ -848,7 +862,7 @@ def plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per
     # key gives the group name (i.e. category), data gives the actual values
     if npvs_per_year_perMW_strategic_reseve.empty == False:
         npvs_per_year_perMW_strategic_reseve.plot(ax=axs30)
-    npvs_per_tech_per_MW.plot(ax=axs30)
+    npvs_per_tech_per_MW.hydrogen_turbine.plot(ax=axs30)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('€', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
@@ -981,9 +995,10 @@ def plot_initial_power_plants(path_to_plots, sheetname):
     fig1 = sns.relplot(x="Age", y="Efficiency", hue="Technology", size="Capacity",
                        sizes=(40, 400), alpha=.5, palette=colors,
                        height=6, data=df)
+
     plt.xlabel("Age", fontsize="large")
     plt.ylabel("Efficiency", fontsize="large")
-    fig1.savefig(path_to_plots + '/' + 'Initial_power_plants.png', bbox_inches='tight', dpi=300)
+    fig1.savefig(path_to_plots + '/' + 'Initial_power_plants_efficiency.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
 
@@ -1114,13 +1129,12 @@ def prepare_pp_decommissioned(reps):
     df2 = groupeddf2.unstack()
     df1['category'] = 'expected'
     df2['category'] = 'decommissioned'
-
     combined_df = pd.concat([df1, df2])
     melted = pd.melt(combined_df ,id_vars=['category'],ignore_index=False)
     melted.index.name = 'year'
     melted = melted.reset_index()
     fig = sns.catplot(data=melted, x="year", y="value", hue="category", col="technology", kind="bar", height=4, aspect=1.2)
-    plt.show()
+    plt.xticks(rotation=90)
     fig.savefig(path_to_plots + '/' + 'DecommissionedvsExpected2.png', bbox_inches='tight', dpi=300)
 
 def prepare_pp_lifetime_extension(reps):
@@ -1139,6 +1153,7 @@ def prepare_pp_lifetime_extension(reps):
             extended_lifetime.at[row, "Capacity"] = pp.capacity
             extended_lifetime.at[row, "Age"] = pp.age
             extended_lifetime.at[row, "Status"] = pp.status
+            extended_lifetime.at[row, "Name"] = pp.name
     extended_lifetime_tech = extended_lifetime.groupby(by=["Technology"]).mean()
     sns.set_theme(style="whitegrid")
     sns.set(font_scale=1.2)
@@ -1146,6 +1161,10 @@ def prepare_pp_lifetime_extension(reps):
     fig1 = sns.relplot(x="Age", y="Extension", hue="Technology", size="Capacity",
                        sizes=(40, 400), alpha=.5, palette=colors,
                        height=6, data=extended_lifetime)
+    for row in extended_lifetime.iterrows():
+        plt.text(x=row[1].Age + 0.1, y=row[1].Extension + 0.1, s=row[1].Name,
+                 weight='semibold')
+
     plt.xlabel("Age", fontsize="large")
     plt.ylabel("Extension", fontsize="large")
     if write_titles == True:
@@ -1568,6 +1587,7 @@ def prepare_screening_curves(reps, year):
     return yearly_costs, marginal_costs_per_hour
 
 
+
 def prepare_screening_curves_candidates(reps, year):
     hours = np.array(list(range(1, 8760)))
     agent = reps.energy_producers[reps.agent]
@@ -1613,7 +1633,7 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
     capacity_mechanisms_per_tech = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
     CM_clearing_price = pd.DataFrame(index=ticks_to_generate).fillna(0)
     revenues_from_SR = pd.DataFrame(index=ticks_to_generate).fillna(0)
-
+    ticks_to_generate.pop() # the last year doesnt have the results of the following year
     # attention: FOR STRATEGIC RESERVES
     sr_operator = reps.get_strategic_reserve_operator(reps.country)
     if sr_operator.cash != 0:
@@ -1642,17 +1662,16 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
     for technology_name in unique_technologies:
         cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
         powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
-
         for pp in powerplants_per_tech:
             CMrevenues = reps.get_CM_revenues(pp.name)  # CM revenues from financial results
-            cm_revenues_per_pp[pp.name] = CMrevenues  # matrix with CM revenues)
+            cm_revenues_per_pp[pp.name] = CMrevenues
         number_accepted_pp_per_technology[technology_name] = cm_revenues_per_pp.gt(0).sum(axis=1)
         total_revenues_per_technology = cm_revenues_per_pp.sum(axis=1, skipna=True)
         CM_revenues_per_technology[technology_name] = total_revenues_per_technology
     total_costs_CM = CM_revenues_per_technology.sum(axis=1, skipna=True)
 
     return CM_revenues_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM, \
-        ran_CRM, revenues_from_SR
+        ran_CRM, revenues_from_SR, cm_revenues_per_pp
 
 
 # def market_value_per_technology(reps, unique_technologies, years_to_generate):
@@ -2181,7 +2200,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         reps, unique_technologies, renewable_technologies, yearly_load,
         years_to_generate)
 
-    # plot_total_demand(reps)
+    plot_total_demand(reps)
 
     plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor.T, all_techs_full_load_hours.T, path_to_plots,
                                              colors_unique_techs)
@@ -2266,11 +2285,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
         CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
-            total_costs_CM, ran_CRM, revenues_from_SR = prepare_accepted_CapacityMechanism(
+            total_costs_CM, ran_CRM, revenues_from_SR, cm_revenues_per_pp = prepare_accepted_CapacityMechanism(
             reps, unique_technologies,
             ticks_to_generate)
         plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                         CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, path_to_plots,
+                         CM_clearing_price, total_costs_CM, ran_CRM, revenues_from_SR, cm_revenues_per_pp, path_to_plots,
                          colors_unique_techs)
         if ran_CRM == "strategic_reserve":
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
@@ -2645,9 +2664,9 @@ technology_names = {
 #             ]  # add a dash before!
 # SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-# SCENARIOS = [ "NL-GermanSR"]
-SCENARIOS = ["NL-debuggingSR"]
-results_excel = ""
+SCENARIOS = [ "NL-longertimeinSR"]
+# SCENARIOS = ["NL-longertimeinSR"]
+results_excel = "timeInSR.xlsx"
 # SIMULATION_YEARS = list(range(0,40) )
 
 # Set the x-axis ticks and labels
@@ -2656,9 +2675,9 @@ write_titles = True
 existing_scenario = True
 
 #  None if no specific technology should be tested
-test_tick = -4
+test_tick = 0
 # write None is no investment is expected,g
-test_tech = "hydrogen_turbine"  # "hydrogen_turbine" # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
+test_tech = None # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
 industrial_demand_as_flex_demand_with_cap = True
 
