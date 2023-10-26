@@ -1134,7 +1134,8 @@ def prepare_pp_decommissioned(reps):
     melted.index.name = 'year'
     melted = melted.reset_index()
     fig = sns.catplot(data=melted, x="year", y="value", hue="category", col="technology", kind="bar", height=4, aspect=1.2)
-    plt.xticks(rotation=90)
+    [plt.setp(ax.get_xticklabels(), rotation=90) for ax in fig.axes.flat]
+   # fig.set_xticklabels(fig.get_xticklabels(), rotation=90, horizontalalignment='right')
     fig.savefig(path_to_plots + '/' + 'DecommissionedvsExpected2.png', bbox_inches='tight', dpi=300)
 
 def prepare_pp_lifetime_extension(reps):
@@ -2664,15 +2665,15 @@ technology_names = {
 #             ]  # add a dash before!
 # SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-SCENARIOS = [ "NL-longertimeinSR"]
-# SCENARIOS = ["NL-longertimeinSR"]
+# SCENARIOS = [ "NL-changeinSR"]
+SCENARIOS = ["NL-debug"]
 results_excel = "timeInSR.xlsx"
 # SIMULATION_YEARS = list(range(0,40) )
 
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
+existing_scenario = False
 
 #  None if no specific technology should be tested
 test_tick = 0

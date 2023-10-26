@@ -19,11 +19,10 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         reps.dbrw.stage_init_sr_results_structure()
         self.agent = reps.energy_producers[reps.agent]
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-        self.years_accepted_inSR = 5
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.years_accepted_inSR ):
+        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator .years_accepted_inSR_before_decommissioned ):
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
@@ -73,33 +72,42 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Calculate needed strategic reserve capacity
         strategic_reserve_capacity = peakExpectedDemand * self.operator.getReserveVolumePercentSR()
 
+        # order_status =  {         # Retrieve the bids on the capacity market, sorted in descending order on price and first the ones in SR
+        #     globalNames.power_plant_status_strategic_reserve: 0,
+        # }
+        # sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
         # Retrieve the bids on the capacity market, sorted in descending order on price
 
-        order_status =  {
-            globalNames.power_plant_status_strategic_reserve:0,
-            # globalNames.power_plant_status_to_be_decommissioned:1,
-            # globalNames.power_plant_status_operational:2,
-        }
-
-        sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
-
+        sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
 
         list_of_plants = []
         # Contract plants to Strategic Reserve Operator
         contracted_strategic_reserve_capacity = 0
 
-        for ppdp in sorted_ppdp:
+        for count, ppdp in enumerate(sorted_ppdp):
             if self.reserveFull == True:
                 break
             else:
             # If plants are already in strategic reserve they have to be until max years in reserve
                 power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+
+
                 if power_plant.status == globalNames.power_plant_status_strategic_reserve: # last year in Strategic reserve
                     if self.reserveFull == False:
                         if power_plant.years_in_SR >= self.operator.max_years_in_reserve:  # Has already been in reserve for 4 years
                             power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
                             self.reps.dbrw.stage_power_plant_status(power_plant)
                             print("to be decommissioned because of >" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
+                        elif count < len(sorted_ppdp) -1:
+                            second = sorted_ppdp[count+1]
+                            if (second.price - ppdp.price <= 5):
+                                if (power_plant.technology.expected_lifetime + power_plant.technology.maximumLifeExtension - power_plant.age)<0:
+                                    power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                                    self.reps.dbrw.stage_power_plant_status(power_plant)
+                                    print("plant is very old and next plant has similar bid" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
+                            else:
+                                print("keep with first bid")
+
                         else:  # Has been less than 4 years. Keep contracting
                             ppdp.status = globalNames.power_plant_status_strategic_reserve
                             ppdp.accepted_amount = ppdp.amount
@@ -145,8 +153,12 @@ class StrategicReserveAssignment_ger(MarketModule):
                                                             self.operator.getReserveVolume(),
                                                             self.operator.getPlants())
 
-
-
+        for ppdp in sorted_ppdp:
+            power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+            if ppdp.plant not in list_of_plants and power_plant.status == globalNames.power_plant_status_strategic_reserve:
+                print("power plant in SR, didnt enter the reserve this time")
+                power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                self.reps.dbrw.stage_power_plant_status(power_plant)
 
     # Cashflow function for the operation of the strategic reserve
     def createCashFlowforSR(self, plant, operator):

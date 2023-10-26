@@ -19,6 +19,7 @@ class StrategicReserveOperator(EMLabAgent):
         self.revenues_per_year_all = dict()
         self.reserveVolume_all = dict()
         self.max_years_in_reserve = 0
+        self.years_accepted_inSR_before_decommissioned = 0
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative):
         # for list of plants and reserve volume, pass the tick as alternative
@@ -42,7 +43,8 @@ class StrategicReserveOperator(EMLabAgent):
             self.revenues_per_year_all[alternative] = parameter_value
         elif parameter_name == 'max_years_in_reserve':
             self.max_years_in_reserve = int(parameter_value)
-
+        elif parameter_name == 'years_accepted_inSR_before_decommissioned':
+            self.years_accepted_inSR_before_decommissioned = int(parameter_value)
 
     def getReserveVolume(self):
         return self.reserveVolume

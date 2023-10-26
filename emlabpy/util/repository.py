@@ -219,7 +219,7 @@ class Repository:
             return next(
                 i.capacityMarketRevenues for i in self.financialPowerPlantReports.values() if i.name == plant_name)
         except StopIteration:
-            return None
+            return pd.Series()
 
     def get_operational_profits_pp(self, plant_name):
         try:  # this is only to compare with expected value In reality fixed costs are increased each year by eg .001

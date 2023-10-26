@@ -58,14 +58,14 @@ class Dismantle(DefaultModule):
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
             # TODO if the power plant estimates that it can be used in the future SR, dont dismantle
-
             profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+            print(profit)
             if profit <= requiredProfit:
                 print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                       .format(plant.name, horizon, profit, requiredProfit))
                 self.set_plant_dismantled(plant)
             else:
-                self.increase_fixed_cost(plant)
+                pass
 
     def increase_fixed_cost(self, plant):
         print("dont dismantle but increase FOM of  {} ".format(plant.name))
@@ -90,21 +90,19 @@ class Dismantle(DefaultModule):
             powerplant.age += 1
             powerplant.commissionedYear = self.reps.current_year - powerplant.age
 
+
     def calculateAveragePastOperatingProfit(self, plant, horizon):
         averagePastOperatingProfit = -1
-        rep = self.reps.dbrw.findFinancialValueForPlant(plant, self.reps.typeofProfitforPastHorizon)
-        # self.reps.typeofProfitforPastHorizon is defined in the config exce and can be "totalProfits" or "irr"
-        if rep is not None:
-            # if there is data than the one needed for the horizon then an average of those years are taken
-            if self.reps.current_tick >= horizon:
-                past_operating_profit_all_years = pd.Series(dict(rep["data"]))
-                indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
-                past_operating_profit = past_operating_profit_all_years.loc[list(map(str, indices))].values
-                averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
-            else:  # Attention for now, for the first years the available past data is taken
-                print("no past profits for plant", plant.name)
-                pass
-        return averagePastOperatingProfit
+        past_operating_profit_all_years = self.reps.get_financial_report_for_plant_KPI(plant.name, self.reps.typeofProfitforPastHorizon)
+        if isinstance(past_operating_profit_all_years, pd.Series):
+            indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
+            past_operating_profit = past_operating_profit_all_years.loc[list(map(str, indices))].values
+            averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
+        else:
+            print("no past profits for plant", plant.name)
+            pass
+        return  averagePastOperatingProfit
+
 
     def set_powerplants_status(self):
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)

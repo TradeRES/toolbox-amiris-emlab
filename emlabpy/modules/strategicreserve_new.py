@@ -19,10 +19,11 @@ class StrategicReserveSubmitBids(MarketModule):
         reps.dbrw.stage_init_sr_results_structure()
         self.agent = reps.energy_producers[reps.agent]
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-        self.years_accepted_inSR = 5
+
+
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.years_accepted_inSR ):
+        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.years_accepted_inSR_before_decommissioned):
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
