@@ -58,7 +58,7 @@ class FinancialPowerPlantReport(ImportObject):
             elif  parameter_name == 'spotMarketRevenue':
                 self.spotMarketRevenue = pd_series
 
-        if reps.runningModule in["run_future_market" "run_decommission_module"]  and  parameter_name in \
+        if reps.runningModule in["run_future_market" ,"run_decommission_module"]  and  parameter_name in \
                 ['irr','npv', 'totalProfitswLoans', 'totalProfits' ]:
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]

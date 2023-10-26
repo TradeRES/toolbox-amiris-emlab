@@ -169,7 +169,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
     def check_profitability(self, powerplant,requiredProfit , horizon,  fictional_age):
         profits = self.reps.get_financial_report_for_plant_KPI(powerplant.name, self.reps.typeofProfitforPastHorizon)
         if isinstance(profits, pd.Series):
-            profit = profits.mean()
+            profit = profits[-horizon:].mean()
             if profit <= requiredProfit:
                 powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 print("{} expected operating loss {} : was {} which is less than required:  {} " \
