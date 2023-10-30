@@ -796,7 +796,7 @@
             ]
         },
         "selected_tables": [
-            "superGroupedNL"
+            "groupedDecarbonizedNL"
         ],
         "table_options": {
             "germany2019": {
@@ -954,10 +954,7 @@
                 "4": "float",
                 "5": "float",
                 "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float",
-                "10": "string"
+                "7": "float"
             },
             "groupedNLGAS": {
                 "0": "string",

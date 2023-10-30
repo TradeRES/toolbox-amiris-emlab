@@ -72,60 +72,67 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Calculate needed strategic reserve capacity
         strategic_reserve_capacity = peakExpectedDemand * self.operator.getReserveVolumePercentSR()
 
-        # order_status =  {         # Retrieve the bids on the capacity market, sorted in descending order on price and first the ones in SR
-        #     globalNames.power_plant_status_strategic_reserve: 0,
-        # }
-        # sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
-        # Retrieve the bids on the capacity market, sorted in descending order on price
+        order_status =  {         # Retrieve the bids on the capacity market, sorted in descending order on price and first the ones in SR
+            globalNames.power_plant_status_strategic_reserve: 0,
+        }
+        sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
 
-        sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
+        #Retrieve the bids on the capacity market, sorted in descending order on price
+        #sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
+        bid_in_sr = []
+        similar_bids = []
+        first_prio_bids = [] # similar bids new ones
+        second_prio_bids = [] # similar bid old ones
+        third_prio_bids = [] # more expensive bids
+        for bid in sorted_ppdp:
+            if self.reps.power_plants[bid.plant].status == globalNames.power_plant_status_strategic_reserve:
+                bid_in_sr.append(bid.price)
+
+        if len(bid_in_sr)==0:
+            similar_bids = sorted_ppdp # no filtering third order
+        else:
+            minimum_bid_of_plants_inSR = min(bid_in_sr)
+            for ppdp in sorted_ppdp: # bids with very low marginal costs, chosen at the end.
+                if (minimum_bid_of_plants_inSR - ppdp.price) > 10: # similar bid
+                    third_prio_bids.append(ppdp)
+                else:
+                    similar_bids.append(ppdp)
+
+        for ppdp in similar_bids: # from similar bids give prio to plants that are not passed their max lifetime extension
+            power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+            if (power_plant.technology.expected_lifetime + power_plant.technology.maximumLifeExtension - power_plant.age)<0:
+                second_prio_bids.append(ppdp)
+                print("plant is very old, second prio"  +  power_plant.name)
+            else:
+                first_prio_bids.append(ppdp)
+
 
         list_of_plants = []
         # Contract plants to Strategic Reserve Operator
         contracted_strategic_reserve_capacity = 0
-
-        for count, ppdp in enumerate(sorted_ppdp):
-            if self.reserveFull == True:
+        final_sorted_ppdp = first_prio_bids + second_prio_bids + third_prio_bids
+        for ppdp in final_sorted_ppdp:
+            if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
+                self.reserveFull = True
                 break
             else:
-            # If plants are already in strategic reserve they have to be until max years in reserve
                 power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
-
-
                 if power_plant.status == globalNames.power_plant_status_strategic_reserve: # last year in Strategic reserve
-                    if self.reserveFull == False:
-                        if power_plant.years_in_SR >= self.operator.max_years_in_reserve:  # Has already been in reserve for 4 years
-                            power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
-                            self.reps.dbrw.stage_power_plant_status(power_plant)
-                            print("to be decommissioned because of >" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
-                        elif count < len(sorted_ppdp) -1:
-                            second = sorted_ppdp[count+1]
-                            if (second.price - ppdp.price <= 5):
-                                if (power_plant.technology.expected_lifetime + power_plant.technology.maximumLifeExtension - power_plant.age)<0:
-                                    power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
-                                    self.reps.dbrw.stage_power_plant_status(power_plant)
-                                    print("plant is very old and next plant has similar bid" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
-                            else:
-                                print("keep with first bid")
+                    if power_plant.years_in_SR >= self.operator.max_years_in_reserve:  # Has already been in reserve for 4 years
+                        power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                        self.reps.dbrw.stage_power_plant_status(power_plant)
+                        print("to be decommissioned because of >" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
 
-                        else:  # Has been less than 4 years. Keep contracting
-                            ppdp.status = globalNames.power_plant_status_strategic_reserve
-                            ppdp.accepted_amount = ppdp.amount
-                            self.reps.increase_year_in_sr(power_plant)
-                            contracted_strategic_reserve_capacity += ppdp.amount
-                            list_of_plants.append(ppdp.plant)
-                            print("years in reserve " + str(power_plant.years_in_SR))
+                    else:  # Has been less than 4 years. Keep contracting
+                        ppdp.status = globalNames.power_plant_status_strategic_reserve
+                        ppdp.accepted_amount = ppdp.amount
+                        self.reps.increase_year_in_sr(power_plant)
+                        contracted_strategic_reserve_capacity += ppdp.amount
+                        list_of_plants.append(ppdp.plant)
+                        print("years in reserve " + str(power_plant.years_in_SR))
 
-                            if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
-                                self.reserveFull = True
-                                break
-                            else:
-                                pass
-                    else:
-                        raise Exception("should have stopped earlier")
 
-                # If strategic reserve is not filled yet contract additional new plants
-                elif self.reserveFull == False:
+                else: # If strategic reserve is not filled yet contract additional new plants
                     ppdp.status = globalNames.power_plant_status_strategic_reserve
                     ppdp.accepted_amount = ppdp.amount
                     # Add plant to the list of the StrategicReserveOperator so that next year they are also accepted
@@ -135,12 +142,6 @@ class StrategicReserveAssignment_ger(MarketModule):
                     print("new in Reserve "  + power_plant.name)
                     self.reps.update_power_plant_status_ger_first_year(power_plant)
                     contracted_strategic_reserve_capacity += ppdp.amount
-                    if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
-                        self.reserveFull = True
-                        break
-                else:
-                    print(self.isReservedCleared )
-                    raise Exception("Sorry, no numbers below zero")
 
         # Pass the contracted plants to the strategic reserve operator
         self.operator.setPlants(list_of_plants)

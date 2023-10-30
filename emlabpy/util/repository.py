@@ -950,13 +950,12 @@ class Repository:
 
     def get_descending_bids_and_first_in_SR(self, market: Market, time: int, order_status) -> \
             List[PowerPlantDispatchPlan]:
-        sortedbids = sorted([i for i in self.bids.values()
+        sortedbids_by_price = sorted([i for i in self.bids.values()
                              if i.market == market.name and i.tick == time], key=lambda i: i.price, reverse=True)
 
-        return sorted(sortedbids,
+        return sorted(sortedbids_by_price,
                             key=lambda item: order_status[self.power_plants[item.plant].status]
                             if self.power_plants[item.plant].status in order_status else 10, reverse =False)
-
 
     def get_accepted_SR_bids(self):
         return [i for i in self.bids.values() if
