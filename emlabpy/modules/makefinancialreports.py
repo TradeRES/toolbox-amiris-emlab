@@ -80,20 +80,20 @@ class CreatingFinancialReports(DefaultModule):
             self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
 
             financialPowerPlantReport.setOverallRevenue(  # saved as overallRevenue
-                powerplant.crm_payments_in_year  + dispatch.revenues)
+                financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
 
 
             # total profits are used to decide for decommissioning saved as totalProfits
 
             if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
-                operational_profit = powerplant.crm_payments_in_year + fixed_and_variable_costs
+                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year+ fixed_and_variable_costs
                 operational_profit_with_loans = operational_profit - loans
                 if abs(operational_profit_with_loans) > 10:
                     print("WRONG CRM ")
                     print(operational_profit_with_loans)
                     raise Exception
             else:
-                operational_profit = powerplant.crm_payments_in_year + dispatch.revenues + fixed_and_variable_costs
+                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + fixed_and_variable_costs
                 operational_profit_with_loans = operational_profit - loans
 
             self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
