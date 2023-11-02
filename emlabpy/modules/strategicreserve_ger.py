@@ -193,7 +193,7 @@ class StrategicReserveAssignment_ger(MarketModule):
 
         # saving the revenues in financial reports
         self.reps.dbrw.stage_CM_revenues(plant.name, SR_payment_to_plant, self.reps.current_tick)
-
+        self.reps.financialPowerPlantReports[plant.name].capacityMarketRevenues_in_year = SR_payment_to_plant
         #Payment (fixed costs and variable costs ) from operator to plant
         self.reps.createCashFlow(operator, plant,
                                  SR_payment_to_plant, globalNames.CF_STRRESPAYMENT, self.reps.current_tick, plant)

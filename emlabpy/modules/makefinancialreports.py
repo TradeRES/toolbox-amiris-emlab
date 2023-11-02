@@ -86,7 +86,7 @@ class CreatingFinancialReports(DefaultModule):
             # total profits are used to decide for decommissioning saved as totalProfits
 
             if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
-                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year+ fixed_and_variable_costs
+                operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + fixed_and_variable_costs
                 operational_profit_with_loans = operational_profit - loans
                 if abs(operational_profit_with_loans) > 10:
                     print("WRONG CRM ")
