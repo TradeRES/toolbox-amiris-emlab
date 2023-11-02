@@ -228,45 +228,44 @@ class PrepareFutureMarketClearing(PrepareMarket):
     # this function is to pass the renewables grouped. Amiris_Results would then have to be reassigned to each id.
     # the profits of the installed power plants are saved to account for expected future profits.
     # if no futur
-    def write_renewables_together(self):
-        identifier = []
-        InstalledPowerInMW = []
-        OpexVarInEURperMWH = []
-        Set = []
-        SupportInstrument = []
-        FIT = []
-        Premium = []
-        Lcoe = []
-        operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-        for pp in self.power_plants_list:
-            if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
-                pp.technology.name] != "Biogas":
-                identifier.append(pp.id)
-                InstalledPowerInMW.append(pp.capacity)
-                # todo: make exception for forward Capacity market.
-                if pp.name in operator.list_of_plants_inSR_in_current_year:
-                    OpexVarInEURperMWH.append(operator.reservePriceSR)
-                else:
-                    OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
-                Set.append(self.reps.dictionaryTechSet[pp.technology.name])
-                SupportInstrument.append("NONE")
-                FIT.append("-")
-                Premium.append("-")
-                Lcoe.append("-")
-
-        d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
-             'OpexVarInEURperMWH': OpexVarInEURperMWH,
-             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
-
-        df = pd.DataFrame(data=d)
-        chosenset = [self.reps.dictionaryTechSet[ren] for ren in globalNames.vRES]
-        # grouping installed  renewables for amiris faster dispatch
-        renewables = df[df['Set'].isin(chosenset)]
-        df.drop(df['Set'].isin(chosenset).index, inplace=True)
-        renewables = renewables.groupby('Set').agg({'identifier': 'first', 'InstalledPowerInMW':'sum', 'SupportInstrument': 'first',
-                                                    'FIT': 'first', 'Premium': 'first','Lcoe': 'first',
-                                                    'OpexVarInEURperMWH':'mean'})
-        renewables = renewables.reset_index()
-        groupedres = pd.concat([df, renewables])
-        groupedres.to_excel(self.writer, sheet_name="renewables")
+    # def write_renewables_together(self):
+    #     identifier = []
+    #     InstalledPowerInMW = []
+    #     OpexVarInEURperMWH = []
+    #     Set = []
+    #     SupportInstrument = []
+    #     FIT = []
+    #     Premium = []
+    #     Lcoe = []
+    #     operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+    #     for pp in self.power_plants_list:
+    #         if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
+    #             pp.technology.name] != "Biogas":
+    #             identifier.append(pp.id)
+    #             InstalledPowerInMW.append(pp.capacity)
+    #             if pp.name in operator.list_of_plants_inSR_in_current_year:
+    #                 OpexVarInEURperMWH.append(operator.reservePriceSR)
+    #             else:
+    #                 OpexVarInEURperMWH.append(pp.technology.variable_operating_costs)
+    #             Set.append(self.reps.dictionaryTechSet[pp.technology.name])
+    #             SupportInstrument.append("NONE")
+    #             FIT.append("-")
+    #             Premium.append("-")
+    #             Lcoe.append("-")
+    #
+    #     d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
+    #          'OpexVarInEURperMWH': OpexVarInEURperMWH,
+    #          'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
+    #
+    #     df = pd.DataFrame(data=d)
+    #     chosenset = [self.reps.dictionaryTechSet[ren] for ren in globalNames.vRES]
+    #     # grouping installed  renewables for amiris faster dispatch
+    #     renewables = df[df['Set'].isin(chosenset)]
+    #     df.drop(df['Set'].isin(chosenset).index, inplace=True)
+    #     renewables = renewables.groupby('Set').agg({'identifier': 'first', 'InstalledPowerInMW':'sum', 'SupportInstrument': 'first',
+    #                                                 'FIT': 'first', 'Premium': 'first','Lcoe': 'first',
+    #                                                 'OpexVarInEURperMWH':'mean'})
+    #     renewables = renewables.reset_index()
+    #     groupedres = pd.concat([df, renewables])
+    #     groupedres.to_excel(self.writer, sheet_name="renewables")
 
