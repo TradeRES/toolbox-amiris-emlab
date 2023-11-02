@@ -30,11 +30,6 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/convert_from_common_db_to_bb_db.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/future_power_plants.json"
                 },
                 {
@@ -75,11 +70,6 @@
                 {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/capacity_mechanism.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/define_amiris_results_year.json"
                 },
                 {
@@ -96,16 +86,6 @@
                     "type": "path",
                     "relative": true,
                     "path": ".spinetoolbox/specifications/Tool/financial_results.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/create_results.json"
-                },
-                {
-                    "type": "path",
-                    "relative": true,
-                    "path": ".spinetoolbox/specifications/Tool/capacity_mechanisms.json"
                 },
                 {
                     "type": "path",
@@ -1180,7 +1160,7 @@
             "x": -735.0995220929651,
             "y": -90.24239657407246,
             "specification": "CRM",
-            "execute_in_work": true,
+            "execute_in_work": false,
             "cmd_line_args": [
                 {
                     "type": "resource",

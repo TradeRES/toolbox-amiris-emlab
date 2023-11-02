@@ -15,6 +15,5 @@
         "amiris-jar-with-dependencies.jar",
         "de.dlr.gitlab.fame.setup.FameRunner"
     ],
-    "execute_in_work": false,
     "includes_main_path": "../../../scripts"
 }

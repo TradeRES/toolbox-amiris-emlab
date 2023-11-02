@@ -11,6 +11,5 @@
         "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\amiris_results.csv"
     ],
     "cmdline_args": [],
-    "execute_in_work": false,
     "includes_main_path": "../../../emlabpy/util"
 }
