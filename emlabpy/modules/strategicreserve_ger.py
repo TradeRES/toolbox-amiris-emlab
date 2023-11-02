@@ -152,7 +152,9 @@ class StrategicReserveAssignment_ger(MarketModule):
         self.reps.create_or_update_StrategicReserveOperator(self.operator.name,
                                                             self.operator.getZone(),
                                                             self.operator.getReserveVolume(),
-                                                            self.operator.getPlants())
+                                                            self.operator.getPlants(),
+                                                            self.operator.forward_years_SR
+                                                            )
 
         for ppdp in sorted_ppdp:
             power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
@@ -199,6 +201,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         market = self.reps.get_spot_market_in_country(self.reps.country)
 
         operator.revenues_per_year += SR_payment_to_operator
+
         self.reps.createCashFlow(market, operator,
                                  SR_payment_to_operator, globalNames.CF_STRRESPAYMENT, self.reps.current_tick, plant)
         return real_commodity_costs

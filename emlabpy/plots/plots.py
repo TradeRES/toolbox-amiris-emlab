@@ -656,6 +656,7 @@ def plot_costs_to_society(total_electricity_price, path_to_plots):
     plt.ylabel('Total price', fontsize='medium')
     plt.grid()
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.ylabel('Price to society [Eur/MWh]', fontsize='medium')
     if write_titles == True:
         axs30.set_title(scenario_name + ' \n Total costs to society')
     fig30 = axs30.get_figure()
@@ -667,9 +668,9 @@ def plot_costs_to_society(total_electricity_price, path_to_plots):
     plt.ylabel('Total price', fontsize='medium')
     plt.grid()
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs31.set_title('Total costs to society')
+    axs31.set_title('Wholesale market costs to society')
     fig31 = axs31.get_figure()
-    fig31.savefig(path_to_plots + '/' + 'Costs to society.png', bbox_inches='tight', dpi=300)
+    fig31.savefig(path_to_plots + '/' + 'Costs to society (Wholesale market).png', bbox_inches='tight', dpi=300)
 
 
 def plot_average_and_weighted(total_electricity_price, simple_electricity_prices_average, path_to_plots):
@@ -1638,14 +1639,17 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
     if sr_operator.cash != 0:
         ran_CRM = "strategic_reserve"
         for tick in ticks_to_generate:
-            accepted_per_tick = sr_operator.list_of_plants_all[tick]
-            for technology_name in unique_technologies:
-                for accepted_plant in accepted_per_tick:
-                    if reps.power_plants[accepted_plant].technology.name == technology_name:
-                        capacity_mechanisms_per_tech.loc[tick, technology_name] += reps.power_plants[
-                            accepted_plant].capacity
-
-            SR_operator_revenues.at[tick, 0] = sr_operator.revenues_per_year_all[tick]
+            if tick in sr_operator.list_of_plants_all:
+                accepted_per_tick = sr_operator.list_of_plants_all[tick]
+                for technology_name in unique_technologies:
+                    for accepted_plant in accepted_per_tick:
+                        if reps.power_plants[accepted_plant].technology.name == technology_name:
+                            capacity_mechanisms_per_tech.loc[tick, technology_name] += reps.power_plants[
+                                accepted_plant].capacity
+                # saving
+                SR_operator_revenues.at[tick, 0] = sr_operator.revenues_per_year_all[tick]
+            else:
+                print("no SR in tick" + str(tick))
 
     # attention: FOR CAPACITY MARKETS
     else:
@@ -2321,7 +2325,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             average_electricity_price['CRM_Costs'] = CM_price.values
             if ran_CRM == "strategic_reserve":
                 revenues_SR = SR_operator_revenues[0] / annual_generation
-                average_electricity_price['SR_revenues'] = revenues_SR.values
+                average_electricity_price['SR_revenues'] =  - revenues_SR.values
 
         plot_costs_to_society(average_electricity_price, path_to_plots)
 
@@ -2411,9 +2415,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
         if calculate_capacity_mechanisms == True:
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
-            CRM_data[scenario_name] = average_electricity_price['CRM_Costs']
+            CRM_data[scenario_name] = CM_price.values
             if ran_CRM == "strategic_reserve":
-                SR_data[scenario_name] = average_electricity_price['SR_revenues']
+                SR_data[scenario_name] = revenues_SR.values
             elif ran_CRM == "capaciy_market":
                 clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
 
@@ -2670,12 +2674,13 @@ technology_names = {
 # SCENARIOS = [ "NL-changeinSR"]
 # SCENARIOS = ["NL-SR2000M5", "NL-SR2000M10", "NL-SR2000M15"]
 results_excel = "SR_margin.xlsx"
+# SCENARIOS = ["EOM", "SR1000", "SR1600",  "SR2000M5","SR3000", "SR2000M10","SR2000M15"]
 # SIMULATION_YEARS = list(range(0,40) )
-SCENARIOS = ["NL2090_SD0_PH4_MI1000000000_totalProfitswLoans_NL-debug"]
+SCENARIOS = ["debug"]
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
+existing_scenario = False
 
 #  None if no specific technology should be tested
 test_tick = 0

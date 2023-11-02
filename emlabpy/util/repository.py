@@ -964,7 +964,9 @@ class Repository:
     def create_or_update_StrategicReserveOperator(self, name: str,
                                                   zone: str,
                                                   volumeSR: float,
-                                                  list_of_plants: list) -> StrategicReserveOperator:
+                                                  list_of_plants: list,
+                                                  forward_years: int
+                                                  ) -> StrategicReserveOperator:
         SRO = next((SRO for SRO in self.sr_operator.values() if SRO.name == name), None)
         if SRO is None:
             name = ("SRO_" + zone)
@@ -972,13 +974,13 @@ class Repository:
         SRO.reserveVolume = volumeSR
         SRO.list_of_plants_inSR_in_current_year = list_of_plants
         self.sr_operator[SRO.name] = SRO
-        self.dbrw.stage_sr_operator_results(SRO, self.current_tick)
+        self.dbrw.stage_sr_operator_results(SRO, self.current_tick + forward_years)
         return SRO
 
 
     def update_StrategicReserveOperator(self, SRO) -> StrategicReserveOperator:
         self.dbrw.stage_sr_operator_cash(SRO)
-        self.dbrw.stage_sr_operator_revenues_results(SRO, self.current_tick - 1)
+        self.dbrw.stage_sr_operator_revenues_results(SRO, self.current_tick)
 
     def update_power_plant_status_ger_first_year(self, power_plant):
         power_plant.status = globalNames.power_plant_status_strategic_reserve

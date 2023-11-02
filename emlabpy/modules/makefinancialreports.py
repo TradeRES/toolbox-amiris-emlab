@@ -59,7 +59,6 @@ class CreatingFinancialReports(DefaultModule):
             if powerplant.status == globalNames.power_plant_status_strategic_reserve: # power plants in reserve dont get the dispatch revenues
                 operator = self.reps.get_strategic_reserve_operator(self.reps.country)
                 dispatch.variable_costs = StrategicReserveAssignment_ger.createCashFlowforSR(self, powerplant, operator)
-
             else:
                 pass
             self.agent.CF_COMMODITY -= dispatch.variable_costs
@@ -110,7 +109,7 @@ class CreatingFinancialReports(DefaultModule):
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
 
-        if self.reps.capacity_remuneration_mechanism in ["strategic_reserve_ger","strategic_reserve_swe", "strategic_reserve" ] :
+        if self.reps.capacity_remuneration_mechanism in ["strategic_reserve_ger","strategic_reserve_swe", "strategic_reserve"] :
             # Save the SR operator variables to the SR operator of the country
             self.reps.update_StrategicReserveOperator( self.reps.get_strategic_reserve_operator(self.reps.country))
 

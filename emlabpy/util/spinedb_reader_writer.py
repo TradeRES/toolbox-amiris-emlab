@@ -451,9 +451,9 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.sro_results_classname,
                                      ['reserveVolume', 'list_of_plants','revenues_per_year'])
 
-    def stage_sr_operator_results(self, SRO: StrategicReserveOperator, current_tick):
-        self.stage_object(self.sro_results_classname, str(current_tick))
-        self.stage_object_parameter_values(self.sro_results_classname, str(current_tick),
+    def stage_sr_operator_results(self, SRO: StrategicReserveOperator, tick):
+        self.stage_object(self.sro_results_classname, str(tick))
+        self.stage_object_parameter_values(self.sro_results_classname, str(tick),
                                            [('reserveVolume', SRO.reserveVolume),
                                             ('list_of_plants', SRO.list_of_plants_inSR_in_current_year)], "0")
 
