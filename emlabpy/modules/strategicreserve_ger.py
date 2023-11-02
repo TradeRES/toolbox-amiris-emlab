@@ -93,7 +93,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         else:
             minimum_bid_of_plants_inSR = min(bid_in_sr)
             for ppdp in sorted_ppdp: # bids with very low marginal costs, chosen at the end.
-                if (minimum_bid_of_plants_inSR - ppdp.price) > 10: # similar bid
+                if (minimum_bid_of_plants_inSR - ppdp.price) > 10: # bid maximum 10 less than the minimum bid in the current SR
                     third_prio_bids.append(ppdp)
                 else:
                     similar_bids.append(ppdp)
@@ -165,7 +165,9 @@ class StrategicReserveAssignment_ger(MarketModule):
 
     # Cashflow function for the operation of the strategic reserve
     def createCashFlowforSR(self, plant, operator):
-        """ Pay the contracted plants in the strategic reserve and save the revenues to the power plants
+        """
+        Pay the contracted plants in the strategic reserve and save the revenues to the power plants
+        sr rvenues are stoed in financial reports
         """
         print("-----------------SR plant" + str(plant.name))
         # Fixed operating costs of plants
@@ -189,10 +191,9 @@ class StrategicReserveAssignment_ger(MarketModule):
 
         print("SR_payment_to_plant" + str(SR_payment_to_plant))
 
-        # saving the revenues to the power plants
+        # saving the revenues in financial reports
         self.reps.dbrw.stage_CM_revenues(plant.name, SR_payment_to_plant, self.reps.current_tick)
         plant.crm_payments_in_year += SR_payment_to_plant
-
 
         #Payment (fixed costs and variable costs ) from operator to plant
         self.reps.createCashFlow(operator, plant,

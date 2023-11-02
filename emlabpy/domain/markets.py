@@ -102,9 +102,14 @@ class CapacityMarket(Market):
         self.LowerMargin = 0.0
         self.UpperMargin = 0.0
         self.PriceCap = 0
+        self.forward_years_CM = 0
+
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
-        setattr(self, parameter_name, parameter_value)
+        if parameter_name == 'forward_years_CM':
+            self.forward_years_CM = int(parameter_value)
+        else:
+            setattr(self, parameter_name, parameter_value)
 
     def get_sloping_demand_curve(self, d_peak):
         return SlopingDemandCurve(self.InstalledReserveMargin,
@@ -168,10 +173,11 @@ class SlopingDemandCurve:
     def get_volume_at_price(self, price):
         m = self.price_cap / (self.um_volume - self.lm_volume)
         if price >= self.price_cap:
-            return None
+            raise Exception
         elif price == 0:
             print("BID PRICE IS ZERO")
-            return None
+            raise Exception
+            # return None
         else:
             return ((self.price_cap - price) / m) + self.lm_volume
 

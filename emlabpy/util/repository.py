@@ -747,13 +747,11 @@ class Repository:
             logging.warning('No PPDP Price found for plant' + str(power_plant_id))
         return 0
 
-    # def get_power_plant_electricity_spot_market_revenues_by_tick(self, power_plant_id: str, time: int) -> float:
-    #     try:
-    #         return next(i.revenues for i in self.power_plant_dispatch_plans_in_year.values() if
-    #                     i.power_plant_id == power_plant_id and i.tick == time)
-    #     except StopIteration:
-    #         logging.warning('No PPDP Price found for plant  and at time ' + str(time))
-    #     return 0
+    def get_power_plant_electricity_dispatch_by_tick(self, power_plant_name: int, tick: int) -> float:
+        if tick in self.power_plants[power_plant_name].expectedTotalProfits.index:
+            return self.power_plants[power_plant_name].expectedTotalProfits.loc[tick]
+        else:
+            return None
 
     def get_total_accepted_amounts_by_power_plant_and_tick_and_market(self, power_plant: PowerPlant, time: int,
                                                                       market: Market) -> float:

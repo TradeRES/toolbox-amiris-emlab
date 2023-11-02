@@ -101,7 +101,7 @@ class Investmentdecision(DefaultModule):
             print(" FIRST RUN ONLY TO TEST THE MARKET")
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
             self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, self.pp_dispatched_names, self.pp_profits,
-                                                                       self.future_installed_plants_ids)
+                                                                       self.future_installed_plants_ids, self.futureTick)
             self.continue_iteration()
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
             # todo: these variables could be removed once the model is validated
@@ -226,6 +226,7 @@ class Investmentdecision(DefaultModule):
                         self.group_power_plants()
                     else:
                         pass # not grouping power plants
+
                     # Ids of grouped power plants were removed
                     for pp_id in self.ids_of_future_installed_and_dispatched_pp:
                         if str(pp_id)[:4] == str(self.futureInvestmentyear):
@@ -236,7 +237,7 @@ class Investmentdecision(DefaultModule):
                     # saving profits of installed power plants.
                     print("saving future total profits")
                     self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps,self.pp_dispatched_names, self.pp_profits,
-                                                                               self.future_installed_plants_ids)
+                                                                               self.future_installed_plants_ids, self.futureTick)
             else:
                 print("all technologies are unprofitable")
     def stage_loans_and_downpayments_of_ungrouped(self, newplant):

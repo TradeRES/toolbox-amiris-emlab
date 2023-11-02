@@ -524,8 +524,8 @@ class SpineDBReaderWriter:
                                            [("PowerPlantsC", pp_numbers)], "0")
 
     def stage_future_total_profits_installed_plants(self, reps, pp_dispatched_names,
-                                                    pp_total_profits, available_plants_ids):
-        tick = reps.current_tick + reps.lookAhead
+                                                    pp_total_profits, available_plants_ids, tick):
+      #  tick = reps.current_tick + reps.lookAhead
         parametername = "expectedTotalProfits"
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameter(self.powerplant_installed_classname, parametername)

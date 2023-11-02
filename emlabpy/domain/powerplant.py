@@ -101,8 +101,6 @@ class PowerPlant(EMLabAgent):
             self.decommissionInYear = int(parameter_value)
             if self.name in (reps.decommissioned["Decommissioned"]).Done :
                 self.commissionedYear = int(parameter_value) - self.age
-
-
         elif parameter_name == 'AwardedPowerInMWH':
             self.AwardedPowerinMWh = parameter_value
         elif parameter_name == 'CostsInEUR':
@@ -125,12 +123,12 @@ class PowerPlant(EMLabAgent):
                 self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
             else:
                 self.initialEnergyLevelInMWH = 0
-        elif parameter_name == 'expectedTotalProfits' and reps.runningModule == "run_future_market":
+        elif parameter_name == 'expectedTotalProfits' and (reps.runningModule == "run_future_market" or
+            reps.capacity_remuneration_mechanism in ["capacity_market", "forward_capacity_market"]):
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.expectedTotalProfits = pd.Series(values, index=index)
-
     def add_values_from_df(self, results):
         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
         self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO

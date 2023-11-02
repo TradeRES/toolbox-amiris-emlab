@@ -96,8 +96,7 @@ class CreatingFinancialReports(DefaultModule):
                 operational_profit = powerplant.crm_payments_in_year + dispatch.revenues + fixed_and_variable_costs
                 operational_profit_with_loans = operational_profit - loans
 
-
-            self.agent.CF_CAPMARKETPAYMENT += powerplant.crm_payments_in_year
+            self.agent.CF_CAPMARKETPAYMENT += financialPowerPlantReport.capacityMarketRevenues_in_year
             financialPowerPlantReport.totalProfits = operational_profit  # saved as totalProfits
             # total profits with loans are to calculate RES support. saved as totalProfitswLoans
             financialPowerPlantReport.totalProfitswLoans = operational_profit_with_loans
