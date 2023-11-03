@@ -952,7 +952,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
                 setattr(pp.loan, parameter_name, parameter_value)
             else:
                 setattr(pp.downpayment, parameter_name, parameter_value)
-    elif object_class_name == 'FinancialReports' and reps.runningModule in ["run_financial_results", "run_future_market","plotting"]:
+    elif object_class_name == 'FinancialReports':
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.candidatesNPV, CandidatesNPV)

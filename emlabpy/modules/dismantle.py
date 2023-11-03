@@ -57,9 +57,7 @@ class Dismantle(DefaultModule):
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
             # TODO is the power plant subsidized ? then dismantle
-            # TODO if the power plant estimates that it can be used in the future SR, dont dismantle
             profit = self.calculateAveragePastOperatingProfit(plant, horizon)
-            print(profit)
             if profit <= requiredProfit:
                 print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                       .format(plant.name, horizon, profit, requiredProfit))
@@ -96,7 +94,7 @@ class Dismantle(DefaultModule):
         past_operating_profit_all_years = self.reps.get_financial_report_for_plant_KPI(plant.name, self.reps.typeofProfitforPastHorizon)
         if isinstance(past_operating_profit_all_years, pd.Series):
             indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
-            past_operating_profit = past_operating_profit_all_years.loc[list(map(str, indices))].values
+            past_operating_profit = past_operating_profit_all_years.loc[indices].values
             averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
         else:
             print("no past profits for plant", plant.name)
