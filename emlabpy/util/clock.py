@@ -402,7 +402,7 @@ if sys.argv[2] == 'increment_clock':
         subquery = db_map.object_parameter_value_sq
         statuses = {row.object_id: from_database(row.value, row.type) for row in
                     db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
-        removable_object_ids = {object_id for object_id, status in statuses.items() if status == "Awaiting"}
+        removable_object_ids = {object_id for object_id, status in statuses.items()}
         db_map.cascade_remove_items(object=removable_object_ids)
         print("removed awaiting bids")
         db_map.commit_session("Removed unacceptable objects.")
