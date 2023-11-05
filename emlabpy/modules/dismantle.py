@@ -55,9 +55,8 @@ class Dismantle(DefaultModule):
         producer = self.reps.energy_producers[self.reps.agent]
         horizon = self.reps.pastTimeHorizon
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
-        for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):
-            # TODO is the power plant subsidized ? then dismantle
-            profit = self.calculateAveragePastOperatingProfit(plant, horizon)
+        for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):   # TODO is the power plant subsidized ? then dismantle
+            profit = self.calculateAveragePastOperatingProfit(plant, horizon, requiredProfit)
             if profit <= requiredProfit:
                 print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
                       .format(plant.name, horizon, profit, requiredProfit))
@@ -89,17 +88,15 @@ class Dismantle(DefaultModule):
             powerplant.commissionedYear = self.reps.current_year - powerplant.age
 
 
-    def calculateAveragePastOperatingProfit(self, plant, horizon):
-        averagePastOperatingProfit = -1
-        past_operating_profit_all_years = self.reps.get_financial_report_for_plant_KPI(plant.name, self.reps.typeofProfitforPastHorizon)
-        if isinstance(past_operating_profit_all_years, pd.Series):
-            indices = list(range(self.reps.current_tick - horizon, self.reps.current_tick))
-            past_operating_profit = past_operating_profit_all_years.loc[indices].values
-            averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
+    def calculateAveragePastOperatingProfit(self, plant, horizon, requiredProfit):
+        profits = self.reps.get_financial_report_for_plant_KPI(plant.name, self.reps.typeofProfitforPastHorizon)
+        if isinstance(profits, pd.Series):
+            averagePastOperatingProfit = profits[-horizon:].mean() # takes the last horizon forecasts
         else:
-            print("no past profits for plant", plant.name)
-            pass
-        return  averagePastOperatingProfit
+            averagePastOperatingProfit = requiredProfit - 1
+            print("no past profits for plant, dismantle", plant.name)
+            raise Exception
+        return averagePastOperatingProfit
 
 
     def set_powerplants_status(self):
@@ -123,8 +120,8 @@ class Dismantle(DefaultModule):
                     self.increase_fixed_cost(powerplant)
             elif  powerplant.age >= technology.expected_lifetime: # hasnt passed maximum lifetime extension
                 if self.reps.current_tick >= self.reps.start_dismantling_tick:
-                    powerplant.status = globalNames.power_plant_status_to_be_decommissioned
                     # dont decommission yet but increase costs
+                    powerplant.status = globalNames.power_plant_status_to_be_decommissioned
                     self.increase_fixed_cost(powerplant)
                 else:
                     powerplant.status = globalNames.power_plant_status_operational

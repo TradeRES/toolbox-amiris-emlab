@@ -143,17 +143,11 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-
-                elif self.reps.current_tick >= horizon:
-                    if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
-                        self.check_profitability( powerplant,requiredProfit , horizon,  fictional_age)
-                    else:
-                        self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-
-                else:  # there are not enough past simulations calculate profits if there are any. can be 1, 2 or 3 results
-                    print("passed lifetime, no expected profits, decomission " + powerplant.name)
-                    powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                    decommissioned_list.append(powerplant.name)
+                elif self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
+                    self.check_profitability( powerplant,requiredProfit , horizon,  fictional_age)
+                else:
+                    self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+                    print("passed lifetime, decommission starting in year " + self.reps.start_dismantling_tick)
 
             elif fictional_age < 0:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
@@ -166,18 +160,23 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.save_decommissioned_expected_list(decommissioned_list)
 
 
-    def check_profitability(self, powerplant,requiredProfit , horizon,  fictional_age):
+    def check_profitability(self, powerplant, requiredProfit , horizon,  fictional_age):
         profits = self.reps.get_financial_report_for_plant_KPI(powerplant.name, self.reps.typeofProfitforPastHorizon)
         if isinstance(profits, pd.Series):
-            profit = profits[-horizon:].mean()
+            profit = profits[-horizon:].mean() # takes the last horizon forecasts
             if profit <= requiredProfit:
                 powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                 print("{} expected operating loss {} : was {} which is less than required:  {} " \
                       .format(powerplant.name, horizon, profit, requiredProfit))
                 decommissioned_list.append(powerplant.name)
+            else:
+                print("past profit positive, dont dismantle " , powerplant.name)
+                self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
         else:
-            print("old but profitable " + powerplant.name)
-            self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+            print("no past profits for plant, dismantle", powerplant.name)
+            powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+            decommissioned_list.append(powerplant.name)
+           # self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
     def save_decommissioned_expected_list(self, decommissioned_list):
         self.reps.dbrw.stage_list_decommissioned_expected_plants(decommissioned_list, self.simulation_year)
