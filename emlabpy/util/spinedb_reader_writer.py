@@ -939,7 +939,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.installedCapacity, InstalledCapacity)
     elif object_class_name == "InstalledFuturePowerPlants" and reps.runningModule == "run_investment_module":
         add_parameter_value_to_repository(reps, db_line, reps.installedFuturePowerPlants, InstalledFuturePowerPlants)
-    elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting", "run_capacity_market",
+    elif object_class_name in ['Loans', 'Downpayments'] and reps.runningModule in ["run_financial_results", "plotting", "run_CRM",
                                                                                    "run_investment_module"]:
         if db_line[1] in (reps.decommissioned["Decommissioned"].Done) and reps.runningModule != "plotting":
             pass

@@ -39,7 +39,6 @@ class CapacityMarketSubmitBids(MarketModule):
             total_profits =self.reps.get_power_plant_electricity_dispatch_by_tick( powerplant.name ,
                                                                                    self.reps.current_tick + market.forward_years_CM
                                                                                    )
-
             # Bid price is zero, unless net revenues are negative
             price_to_bid = 0
             loan = powerplant.getLoan()
@@ -54,19 +53,18 @@ class CapacityMarketSubmitBids(MarketModule):
                 net_revenues = - fixed_on_m_cost - pending_loan
             # if power plant is dispatched, the net revenues are the revenues minus the total costs
             else:
-                # todo: should add loans to fixed costs?
                 net_revenues = total_profits - pending_loan
-
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues /\
                                (capacity* powerplant.technology.peak_segment_dependent_availability)
+            else:
+                pass # if positive revenues price_to_bid remains 0
 
             # all power plants place a bid pair of price and capacity on the market
             capacity_to_bid = capacity * powerplant.technology.peak_segment_dependent_availability
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, capacity_to_bid,\
                                                                        price_to_bid, self.reps.current_tick)
-
 
 class CapacityMarketClearing(MarketModule):
     """
@@ -147,7 +145,6 @@ class CapacityMarketClearing(MarketModule):
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
-        print(self.reps.current_tick + market.forward_years_CM )
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             # saving yearly CM revenues to the power plants # todo: the bids could be erased later on if all the values can be read from clearing point

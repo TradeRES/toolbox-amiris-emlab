@@ -16,7 +16,6 @@ class Loan:
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         setattr(self, parameter_name, parameter_value)
-        # todo assign name to energy producer
 
 
     def getLoanStartTime(self):
