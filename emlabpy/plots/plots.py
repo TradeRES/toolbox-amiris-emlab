@@ -760,6 +760,7 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     plt.close('all')
 
 
+
 def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
     axs25 = sns.boxplot(data=electricity_prices)
     for label in axs25.get_xticklabels(which='major'):
@@ -2149,6 +2150,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     unique_candidate_power_plants = reps.get_unique_candidate_technologies_names()
     unique_candidate_power_plants += ["Lithium_ion_battery_charge"]  # adding technology for negative production
     start_tick = 0
+    global years_to_generate
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
 
     years_to_generate_initialization = list(
@@ -2363,13 +2365,13 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
         AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology', index_col=0)
-
         Profits_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
         Overall_NPV_data = pd.read_excel(path_to_results, sheet_name='overallNPV', index_col=0)
         Overall_IRR_data = pd.read_excel(path_to_results, sheet_name='overallIRR', index_col=0)
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
+        Last_year_PDC_data = pd.read_excel(path_to_results, sheet_name='Last_year_pdc', index_col=0)
 
         all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
         df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
@@ -2396,6 +2398,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                                                 index_col=0)
         total_costs_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_total_costs', index_col=0)
 
+        Last_year_PDC_data[scenario_name] = electricity_prices[years_to_generate[-1]]
         CostRecovery_data[scenario_name] = cost_recovery
         LOL_data[scenario_name] = shortages
         SupplyRatio_data[scenario_name] = supply_ratio
@@ -2430,7 +2433,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                             mode="a",
                             engine="openpyxl",
                             if_sheet_exists="overlay") as writer:
-
+            Last_year_PDC_data.to_excel(writer, sheet_name="Last_year_pdc")
             Inflexible_load.to_excel(writer, sheet_name="Inflexible_load")
             CostRecovery_data.to_excel(writer, sheet_name='CostRecovery')
             LOL_data.to_excel(writer, sheet_name='LOL')
@@ -2671,25 +2674,22 @@ technology_names = {
 #             ]  # add a dash before!
 # SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-# SCENARIOS = [ "NL-changeinSR"]
-# SCENARIOS = ["NL-SR2000M5", "NL-SR2000M10", "NL-SR2000M15"]
-results_excel = "SR_margin.xlsx"
-# SCENARIOS = ["EOM", "SR1000", "SR1600",  "SR2000M5","SR3000", "SR2000M10","SR2000M15"]
+
+results_excel = "CM_2.xlsx"
+SCENARIOS = ["NL-debug"]
+
 # SIMULATION_YEARS = list(range(0,40) )
-SCENARIOS = ["debug"]
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = False
-
+existing_scenario = True
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
 test_tech = None # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
 industrial_demand_as_flex_demand_with_cap = True
-
-save_excel = False
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
 calculate_hourly_shedders_new = False
 load_shedding_plots = True
