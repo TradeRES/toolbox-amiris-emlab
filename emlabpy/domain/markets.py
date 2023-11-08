@@ -22,7 +22,7 @@ class ElectricitySpotMarket(Market):
         self.valueOfLostLoad = 0
         self.realized_demand_peak = None
         self.future_demand_peak = None
-        self.peak_load = None
+        self.peak_load_fixed = None # fixed from input
         self.country = ""
         self.hourlyDemand = None
         self.future_hourly_demand = None
@@ -42,23 +42,23 @@ class ElectricitySpotMarket(Market):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.realized_demand_peak = pd.Series(values, index=index)
-        elif parameter_name == 'peakLoad':
+        elif parameter_name == 'peakLoadFixed':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
-            self.peak_load = pd.Series(values, index=index)
+            self.peak_load_fixed = pd.Series(values, index=index)
 
     def get_peak_load_per_year(self, year):
-        if year in self.peak_load.index.values:  # value is present
-            return self.peak_load[year]
-        elif self.peak_load.index.min() > year: # if the year is lower than data, take first year
-            self.peak_load.sort_index(ascending=True, inplace=True)
-            return self.peak_load.iloc[0]
+        if year in self.peak_load_fixed.index.values:  # value is present
+            return self.peak_load_fixed[year]
+        elif self.peak_load_fixed.index.min() > year: # if the year is lower than data, take first year
+            self.peak_load_fixed.sort_index(ascending=True, inplace=True)
+            return self.peak_load_fixed.iloc[0]
         else: # interpolate years. If the year is larger, the maximum value is taken
-            self.peak_load.at[year] = np.nan
-            self.peak_load.sort_index(ascending=True, inplace=True)
-            self.peak_load.interpolate(method='linear',  inplace=True)
-            return self.peak_load[year]
+            self.peak_load_fixed.at[year] = np.nan
+            self.peak_load_fixed.sort_index(ascending=True, inplace=True)
+            self.peak_load_fixed.interpolate(method='linear', inplace=True)
+            return self.peak_load_fixed[year]
 
         # elif parameter_name == 'totalDemand':
         #     load_path = globalNames.load_file_for_amiris

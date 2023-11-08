@@ -36,7 +36,7 @@ class CapacityMarketSubmitBids(MarketModule):
             capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
             powerplant_load_factor = 1  # TODO: Power Plant Load Factor
 
-            total_profits =self.reps.get_power_plant_electricity_dispatch_by_tick( powerplant.name ,
+            profits_with_fixed_costs =self.reps.get_power_plant_electricity_dispatch_by_tick( powerplant.name ,
                                                                                    self.reps.current_tick + market.forward_years_CM
                                                                                    )
             # Bid price is zero, unless net revenues are negative
@@ -48,12 +48,12 @@ class CapacityMarketSubmitBids(MarketModule):
                 else:
                     pending_loan = 0
             # if power plant is not dispatched, the net revenues are minus the fixed operating costs
-            if total_profits is None:
+            if profits_with_fixed_costs is None:
                 #print("no dispatch found for " + str(powerplant.id)+  " with name "+str(powerplant.name))
                 net_revenues = - fixed_on_m_cost - pending_loan
             # if power plant is dispatched, the net revenues are the revenues minus the total costs
             else:
-                net_revenues = total_profits - pending_loan
+                net_revenues = profits_with_fixed_costs - pending_loan
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues /\

@@ -2365,7 +2365,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
         AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology', index_col=0)
-        Profits_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
+        Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
         Overall_NPV_data = pd.read_excel(path_to_results, sheet_name='overallNPV', index_col=0)
         Overall_IRR_data = pd.read_excel(path_to_results, sheet_name='overallIRR', index_col=0)
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
@@ -2391,7 +2391,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         last_row = profits_with_loans_all.iloc[-1]
         df = profits_with_loans_all.iloc[:-1]
         df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
-        Profits_data = pd.concat([Profits_data, df], axis=1)
+        Profits_with_loans_data = pd.concat([Profits_with_loans_data, df], axis=1)
 
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
@@ -2452,7 +2452,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             IndustrialHeat_data.to_excel(writer, sheet_name='IndustrialHeat')
             Commissioned_capacity_data.to_excel(writer, sheet_name='Invested')
             Dismantled_capacity_data.to_excel(writer, sheet_name='Dismantled')
-            Profits_data.to_excel(writer, sheet_name='Profits')
+            Profits_with_loans_data.to_excel(writer, sheet_name='Profits')
             if calculate_capacity_mechanisms == True:
                 CRM_data.to_excel(writer, sheet_name='CRM')
                 clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
@@ -2676,13 +2676,13 @@ technology_names = {
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
 
 results_excel = "CM_2.xlsx"
-SCENARIOS = ["NL-debug"]
+SCENARIOS = ["NL-debug_CMarkey"]
 
 # SIMULATION_YEARS = list(range(0,40) )
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0

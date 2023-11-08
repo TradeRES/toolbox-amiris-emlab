@@ -748,8 +748,8 @@ class Repository:
         return 0
 
     def get_power_plant_electricity_dispatch_by_tick(self, power_plant_name: int, tick: int) -> float:
-        if tick in self.power_plants[power_plant_name].expectedTotalProfits.index:
-            return self.power_plants[power_plant_name].expectedTotalProfits.loc[tick]
+        if tick in self.power_plants[power_plant_name].expectedTotalProfitswFixedCosts.index:
+            return self.power_plants[power_plant_name].expectedTotalProfitswFixedCosts.loc[tick]
         else:
             return None
 
@@ -844,7 +844,7 @@ class Repository:
             for index, result in installed_pp_results.iterrows():
                 ids.append(result.identifier)
                 installed_pp = next(i for i in self.power_plants.values() if i.id == result.identifier)
-                installed_pp.add_values_from_df(result)
+                installed_pp.add_values_from_df(result) # here are the values added
             return ids
         except StopIteration:
             logging.warning('power plant technology not found' + str(result.identifier))

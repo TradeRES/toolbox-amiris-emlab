@@ -78,7 +78,7 @@ class Investmentdecision(DefaultModule):
         self.future_installed_plants_ids = self.reps.get_ids_of_future_installed_plants(self.futureTick)
         # this function adds         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH / self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO /
         # self.ReceivedMoneyinEUR = results.REVENUES_IN_EURO and self.operationalProfit = results.CONTRIBUTION_MARGIN_IN_EURO from csv
-        self.read_csv_results_and_filter_candidate_plants()
+        self.read_csv_results_and_filter_candidate_plants() # attention: here are the results for the year saved
         self.pp_dispatched_names = []
         self.pp_profits = pd.DataFrame()
         pp_dispatched_ids = []
@@ -100,6 +100,7 @@ class Investmentdecision(DefaultModule):
             """
             print(" FIRST RUN ONLY TO TEST THE MARKET")
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+
             self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps, self.pp_dispatched_names, self.pp_profits,
                                                                        self.future_installed_plants_ids, self.futureTick)
             self.continue_iteration()

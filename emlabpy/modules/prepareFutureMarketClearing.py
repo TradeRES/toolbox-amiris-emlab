@@ -218,7 +218,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         indices = list(range(self.reps.current_tick + self.look_ahead_years - horizon,
                              self.reps.current_tick + self.look_ahead_years))
         try:
-            past_operating_profit = plant.expectedTotalProfits.loc[indices].values
+            past_operating_profit = plant.expectedTotalProfitswFixedCosts.loc[indices].values
             averagePastOperatingProfit = sum(list(map(float, past_operating_profit))) / len(indices)
         except: # there are not enough information
             averagePastOperatingProfit = -1
