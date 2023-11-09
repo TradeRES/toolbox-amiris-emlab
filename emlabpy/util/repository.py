@@ -697,7 +697,7 @@ class Repository:
         # unless they are about to be decommissioned
 
         return [i for i in self.power_plants.values()
-                if i.technology.intermittent == False and
+                if i.technology.intermittent == False and i.technology.name != "Nuclear" and
                 ((
                              i.status == globalNames.power_plant_status_operational \
                              and i.age - i.technology.expected_lifetime >= -forward_years_SR)
