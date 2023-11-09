@@ -292,7 +292,8 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
 
 
 def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                     CM_clearing_price, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp, path_to_plots, colors_unique_techs):
+                     CM_clearing_price, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp,
+                     path_to_plots, colors_unique_techs):
     # df.plot(x='Team', kind='bar', stacked=True,
     axs26 = accepted_pp_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
     axs26.set_axisbelow(True)
@@ -311,9 +312,9 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     plt.ylabel('Revenues CM [€]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs15.set_title('Capacity Mechanisms \n revenues per technology')
+    axs15.set_title('Capacity Mechanisms \n costs per technology')
     fig15 = axs15.get_figure()
-    fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms revenues per technology.png', bbox_inches='tight', dpi=300)
+    fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms costs per technology.png', bbox_inches='tight', dpi=300)
 
     axs27 = capacity_mechanisms_per_tech.plot(kind='bar', stacked=True, color=colors_unique_techs)
     axs27.set_axisbelow(True)
@@ -324,7 +325,6 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     axs27.set_title('Capacity Mechanism capacity per technology')
     fig27 = axs27.get_figure()
     fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight', dpi=300)
-
 
     if ran_CRM == "capacity_market":
         axs28 = CM_clearing_price.plot()
@@ -369,6 +369,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs28.set_title('SR_results_per_pp')
         fig28 = axs28.get_figure()
         fig28.savefig(path_to_plots + '/' + 'SR_results_per_pp.png', bbox_inches='tight', dpi=300)
+
 
 def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, profits_with_loans_all,
                                         path_to_plots, technology_colors):
@@ -760,7 +761,6 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     plt.close('all')
 
 
-
 def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
     axs25 = sns.boxplot(data=electricity_prices)
     for label in axs25.get_xticklabels(which='major'):
@@ -1084,7 +1084,7 @@ def prepare_pp_decommissioned(reps):
     years_to_generate_and_build = list(
         range(reps.start_simulation_year - reps.lookAhead, reps.current_year + 1 + reps.max_permit_build_time))
     plants_decommissioned_per_year = pd.DataFrame(columns=["PPname", "decommissionInYear", "technology", "Capacity"])
-    plants_expected_decommissioned_per_year = pd.DataFrame(
+    plants_expected_decommissioned = pd.DataFrame(
         columns=["PPname", "decommissionInYear", "technology", "Capacity"])
     for pp in reps.get_power_plants_by_status([globalNames.power_plant_status_decommissioned]):
         plants_decommissioned_per_year.loc[len(plants_decommissioned_per_year)] = [pp.name, pp.decommissionInYear,
@@ -1095,15 +1095,19 @@ def prepare_pp_decommissioned(reps):
     for expected_decomm_year, power_plants in reps.decommissioned["Expectation"].Expectation.items():
         for pp_name in power_plants:
             pp = reps.get_power_plant_by_name(pp_name)
-            plants_expected_decommissioned_per_year.loc[len(plants_expected_decommissioned_per_year)] = [pp.name,
+            plants_expected_decommissioned.loc[len(plants_expected_decommissioned)] = [pp.name,
                                                                                                          expected_decomm_year,
                                                                                                          pp.technology.name,
                                                                                                          pp.capacity]
+    plants_expected_decommissioned_per_year = plants_expected_decommissioned[
+        plants_expected_decommissioned.groupby('PPname')['decommissionInYear'].transform(
+            'idxmin') == plants_expected_decommissioned.index]
 
     colors = [technology_colors[tech] for tech in plants_expected_decommissioned_per_year["technology"].unique()]
     fig2 = sns.relplot(x="decommissionInYear", y="Capacity", hue="technology",
                        sizes=(40, 400), alpha=.5, palette=colors,
                        height=6, data=plants_expected_decommissioned_per_year)
+
 
     for row in plants_decommissioned_per_year.iterrows():
         if len(row[1].PPname) > 4:
@@ -1130,13 +1134,15 @@ def prepare_pp_decommissioned(reps):
     df1['category'] = 'expected'
     df2['category'] = 'decommissioned'
     combined_df = pd.concat([df1, df2])
-    melted = pd.melt(combined_df ,id_vars=['category'],ignore_index=False)
+    melted = pd.melt(combined_df, id_vars=['category'], ignore_index=False)
     melted.index.name = 'year'
     melted = melted.reset_index()
-    fig = sns.catplot(data=melted, x="year", y="value", hue="category", col="technology", kind="bar", height=4, aspect=1.2)
+    fig = sns.catplot(data=melted, x="year", y="value", hue="category", col="technology", kind="bar", height=4,
+                      aspect=1.2)
     [plt.setp(ax.get_xticklabels(), rotation=90) for ax in fig.axes.flat]
-   # fig.set_xticklabels(fig.get_xticklabels(), rotation=90, horizontalalignment='right')
+    # fig.set_xticklabels(fig.get_xticklabels(), rotation=90, horizontalalignment='right')
     fig.savefig(path_to_plots + '/' + 'DecommissionedvsExpected2.png', bbox_inches='tight', dpi=300)
+
 
 def prepare_pp_lifetime_extension(reps):
     extended_lifetime = pd.DataFrame(columns=["Extension", "Technology", "Capacity", "Age"])
@@ -1588,7 +1594,6 @@ def prepare_screening_curves(reps, year):
     return yearly_costs, marginal_costs_per_hour
 
 
-
 def prepare_screening_curves_candidates(reps, year):
     hours = np.array(list(range(1, 8760)))
     agent = reps.energy_producers[reps.agent]
@@ -1629,12 +1634,12 @@ def prepare_screening_curves_candidates(reps, year):
 
 
 def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_generate):
-    CM_revenues_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
+    CM_costs_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
     number_accepted_pp_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
-    capacity_mechanisms_per_tech = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
+    capacity_mechanisms_volume_per_tech = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies)
     CM_clearing_price = pd.DataFrame(index=ticks_to_generate).fillna(0)
     SR_operator_revenues = pd.DataFrame(index=ticks_to_generate).fillna(0)
-    ticks_to_generate.pop() # the last year doesnt have the results of the following year
+    ticks_to_generate.pop()  # the last year doesnt have the results of the following year
     # attention: FOR STRATEGIC RESERVES
     sr_operator = reps.get_strategic_reserve_operator(reps.country)
     if sr_operator.cash != 0:
@@ -1645,7 +1650,7 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
                 for technology_name in unique_technologies:
                     for accepted_plant in accepted_per_tick:
                         if reps.power_plants[accepted_plant].technology.name == technology_name:
-                            capacity_mechanisms_per_tech.loc[tick, technology_name] += reps.power_plants[
+                            capacity_mechanisms_volume_per_tech.loc[tick, technology_name] += reps.power_plants[
                                 accepted_plant].capacity
                 # saving
                 SR_operator_revenues.at[tick, 0] = sr_operator.revenues_per_year_all[tick]
@@ -1657,28 +1662,37 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
         ran_CRM = "capacity_market"
         market = reps.get_capacity_market_in_country(reps.country)
         for tick in ticks_to_generate:
-            accepted_per_tick = reps.get_accepted_CM_bids(tick)  # accepted amount from bids todo change to erase bids
-            for technology_name in unique_technologies:
-                for accepted_plant in accepted_per_tick:
-                    if reps.power_plants[accepted_plant.plant].technology.name == technology_name:
-                        capacity_mechanisms_per_tech.loc[tick, technology_name] += accepted_plant.amount
+            # accepted_per_tick = reps.get_accepted_CM_bids(tick)  # accepted amount from bids todo change to erase bids
+            # for technology_name in unique_technologies:
+            #     for accepted_plant in accepted_per_tick:
+            #         if reps.power_plants[accepted_plant.plant].technology.name == technology_name:
+            #             capacity_mechanisms_volume_per_tech.loc[tick, technology_name] += accepted_plant.amount
             CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick)
 
     cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
         powerplants_per_tech = reps.get_power_plants_by_technology(technology_name)
         temporal = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        capacity_awarded = pd.DataFrame(index=ticks_to_generate)
         for pp in powerplants_per_tech:
             CMrevenues = reps.get_CM_revenues(pp.name)  # CM revenues from financial results
             cm_revenues_per_pp[pp.name] = CMrevenues
             temporal[pp.name] = CMrevenues
+            if isinstance(CMrevenues, pd.Series):
+                df_whereCMawarded = CMrevenues
+                df_whereCMawarded[
+                    df_whereCMawarded > 0] = pp.capacity * pp.technology.peak_segment_dependent_availability
+                capacity_awarded[pp.name] = df_whereCMawarded
+            else:
+                pass
+        capacity_mechanisms_volume_per_tech[technology_name] = capacity_awarded.sum(axis=1, skipna=True)
         number_accepted_pp_per_technology[technology_name] = temporal.gt(0).sum(axis=1)
         total_revenues_per_technology = temporal.sum(axis=1, skipna=True)
-        CM_revenues_per_technology[technology_name] = total_revenues_per_technology
-
-    total_costs_CM = CM_revenues_per_technology.sum(axis=1, skipna=True)
-
-    return CM_revenues_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, total_costs_CM, \
+        CM_costs_per_technology[technology_name] = total_revenues_per_technology
+    total_costs_CM = CM_costs_per_technology.sum(axis=1, skipna=True)
+    capacity_mechanisms_volume_per_tech.replace(0, np.nan, inplace=True)
+    capacity_mechanisms_volume_per_tech.dropna(axis=1, how='all', inplace=True)
+    return CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech, CM_clearing_price, total_costs_CM, \
         ran_CRM, SR_operator_revenues, cm_revenues_per_pp
 
 
@@ -2013,7 +2027,8 @@ def prepare_percentage_load_shedded(yearly_load, electricity_prices, years_to_ge
                 if load_shedder.name == "hydrogen":
                     production_not_shedded_MWh.at[year, "hydrogen_produced"] = (
                             total_hydrogen_input_demand - load_shedded_per_group)
-                    production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((total_hydrogen_input_demand - load_shedded_per_group) / total_hydrogen_input_demand) * 100
+                    production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((
+                                                                                                       total_hydrogen_input_demand - load_shedded_per_group) / total_hydrogen_input_demand) * 100
                     hourly_hydrogen_produced = hydrogen_input_demand - load_shedded_per_group_filtered
                     total_yearly_electrolysis_consumption[year] = hourly_hydrogen_produced
 
@@ -2293,14 +2308,17 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
-        CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
+        CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
             total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp = prepare_accepted_CapacityMechanism(
             reps, unique_technologies,
             ticks_to_generate)
-        plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                         CM_clearing_price, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp, path_to_plots,
+        plot_CM_revenues(CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
+                         CM_clearing_price, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp,
+                         path_to_plots,
                          colors_unique_techs)
         if ran_CRM == "strategic_reserve":
+            plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
+        elif ran_CRM == "capacity_market":
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
 
     if calculate_vres_support == True:
@@ -2327,7 +2345,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             average_electricity_price['CRM_Costs'] = CM_price.values
             if ran_CRM == "strategic_reserve":
                 revenues_SR = SR_operator_revenues[0] / annual_generation
-                average_electricity_price['SR_revenues'] =  - revenues_SR.values
+                average_electricity_price['SR_revenues'] = - revenues_SR.values
 
         plot_costs_to_society(average_electricity_price, path_to_plots)
 
@@ -2372,7 +2390,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
         Last_year_PDC_data = pd.read_excel(path_to_results, sheet_name='Last_year_pdc', index_col=0)
-
         all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
         df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
         Installed_capacity_data = pd.concat([Installed_capacity_data, df1], axis=1)
@@ -2396,6 +2413,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
                                                                 index_col=0)
+            capacity_market_capacity_data = pd.read_excel(path_to_results, sheet_name='CM_capacity', index_col=0)
+
+            capacity_mechanisms_per_tech.at["scenario_name", :] = scenario_name
+            last_row = capacity_mechanisms_per_tech.iloc[-1]
+            df = capacity_mechanisms_per_tech.iloc[:-1]
+            df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
+            capacity_market_capacity_data = pd.concat([capacity_market_capacity_data, df], axis=1)
+
         total_costs_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_total_costs', index_col=0)
 
         Last_year_PDC_data[scenario_name] = electricity_prices[years_to_generate[-1]]
@@ -2403,7 +2428,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         LOL_data[scenario_name] = shortages
         SupplyRatio_data[scenario_name] = supply_ratio
         Monthly_electricity_data[scenario_name] = monthly_electricity_price_grouped
-
         H2_production_data[scenario_name] = production_not_shedded_MWh["hydrogen_produced"]
         IndustrialHeat_data[scenario_name] = production_not_shedded_MWh["industrial_heat_demand"]
         Overall_NPV_data[scenario_name] = overall_NPV_per_technology.T
@@ -2457,6 +2481,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 CRM_data.to_excel(writer, sheet_name='CRM')
                 clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
                 total_costs_capacity_market_data.to_excel(writer, sheet_name='CM_total_costs')
+                capacity_market_capacity_data.to_excel(writer, sheet_name='CM_capacity')
                 SR_data.to_excel(writer, sheet_name='SR')
             if calculate_vres_support == True:
                 VRES_data.to_excel(writer, sheet_name='VRES')
@@ -2675,19 +2700,20 @@ technology_names = {
 # SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
 
-results_excel = "CM_2.xlsx"
-SCENARIOS = ["NL-debug_CMarkey"]
+SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
+results_excel = "SR_test.xlsx"
+SCENARIOS = ["NL-debugCMarket"]
 
 # SIMULATION_YEARS = list(range(0,40) )
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = False
-save_excel = False
+existing_scenario = True
+save_excel = True
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
-test_tech = None # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
+test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
 industrial_demand_as_flex_demand_with_cap = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"

@@ -1,13 +1,5 @@
 import os
 
-power_plant_dispatch_plan_status_accepted = 'Accepted'
-power_plant_dispatch_plan_status_failed = 'Failed'
-power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
-power_plant_dispatch_plan_status_awaiting = 'Awaiting'
-
-capacity_mechanism_contracted = "contracted"
-capacity_mechanism_not_contracted = "not contracted"
-
 CF_UNCLASSIFIED = "UNCLASSIFIED"
 CF_ELECTRICITY_SPOT = "ELECTRICITY_SPOT"
 CF_ELECTRICITY_LONGTERM = "ELECTRICITY_LONGTERM"
@@ -30,6 +22,15 @@ power_plant_status_decommissioned_from_SR = 'DecommissionedSR'
 power_plant_status_not_set = 'NOTSET'
 power_plant_status_strategic_reserve = 'InStrategicReserve'
 #power_plant_status_capacity_mechanism = 'InCapacityMechanism'
+
+power_plant_dispatch_plan_status_accepted = 'Accepted'
+power_plant_dispatch_plan_status_failed = 'Failed'
+power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'
+power_plant_dispatch_plan_status_awaiting = 'Awaiting'
+
+capacity_mechanism_contracted = "contracted"
+capacity_mechanism_not_contracted = "not contracted"
+
 future_prices = "futurePrice"
 simulated_prices = "simulatedPrice"
 
