@@ -85,7 +85,8 @@ class LoadShedder(ImportObject):
         elif parameter_name == 'TimeSeriesFileFuture':
             self.TimeSeriesFileFuture =  str(parameter_value)
         elif parameter_name == 'VOLL':
-            self.VOLL = int(parameter_value)
+            if isinstance(parameter_value, (int,float)):
+                self.VOLL = int(parameter_value)
         elif parameter_name == 'ShedderCapacityMW':
             self.ShedderCapacityMW = parameter_value
         elif parameter_name == 'percentage_load':
