@@ -1916,12 +1916,19 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     max_ENS_in_a_row = pd.DataFrame()
     for year in years_to_generate:
         for name, values in reps.loadShedders.items():
-            id_shedder = values.VOLL * 100000
             selected_df = hourly_load_shedders_per_year[year]
-            total_load_shedded[name] = selected_df[str(id_shedder)]
+            hydrogen_ids = reps.substances["OTHER"].initialPrice.max()*100000
+            test_list = [int(i) for i in selected_df.columns.values]
+            selected_df.columns = test_list
+            if name == "hydrogen":
+                id_shedder = selected_df.columns[selected_df.columns <= hydrogen_ids]
+                total_load_shedded[name] = selected_df[(id_shedder)]
+            else:
+                id_shedder = values.VOLL * 100000
+                total_load_shedded[name] = selected_df[(id_shedder)]
+
         total_load_shedded_per_year[year] = total_load_shedded.sum()
 
-        continuous_hours = 0  # Counter for continuous hours
         max_continuous_hours = 0  # Counter for maximum continuous hours
 
         for column_name, column_data in total_load_shedded.iteritems():
@@ -2207,10 +2214,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     if calculate_hourly_shedders_new == True:
         total_load_shedded_per_year, max_continuous_hours = prepare_percentage_load_shedded_new(reps, years_to_generate)
     else:
-        percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation = prepare_percentage_load_shedded(
-            yearly_load, electricity_prices, years_to_generate)
-        plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                               percentage_load_shedded)
+        pass
+
+    percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation = prepare_percentage_load_shedded(
+        yearly_load, electricity_prices, years_to_generate)
+    plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
+                           percentage_load_shedded)
     if calculate_monthly_generation == True and calculate_hourly_shedders_new == True:
         plot_grouped_monthly_production_per_type(average_yearly_generation)
     overall_NPV_per_technology, overall_IRR_per_technology = prepare_retrospectively_npv_and_irr(reps,
@@ -2709,7 +2718,7 @@ SCENARIOS = ["NL-debugCMarket"]
 
 write_titles = True
 existing_scenario = True
-save_excel = True
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
@@ -2717,7 +2726,7 @@ test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "
 
 industrial_demand_as_flex_demand_with_cap = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
-calculate_hourly_shedders_new = False
+calculate_hourly_shedders_new = True
 load_shedding_plots = True
 calculate_monthly_generation = True  # !!!!!!!!!!!!!!For the new plots
 calculate_investments = True
