@@ -28,7 +28,7 @@ class CapacityMarketSubmitBids(MarketModule):
     def act(self):
         # in the future : do for every EnergyProducer
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_operational_and_to_be_decommissioned():
+        for powerplant in self.reps.get_operational_and_to_be_decommissioned_but_no_RES():
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             market = self.reps.get_capacity_market_for_plant(powerplant)
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
