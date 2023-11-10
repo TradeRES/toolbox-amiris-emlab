@@ -316,15 +316,19 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     fig15 = axs15.get_figure()
     fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms costs per technology.png', bbox_inches='tight', dpi=300)
 
-    axs27 = capacity_mechanisms_per_tech.plot(kind='bar', stacked=True, color=colors_unique_techs)
-    axs27.set_axisbelow(True)
-    plt.xlabel('tick', fontsize='medium')
-    plt.ylabel('Awarded Capacity [MW]', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
-    plt.grid()
-    axs27.set_title('Capacity Mechanism capacity per technology')
-    fig27 = axs27.get_figure()
-    fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight', dpi=300)
+    if capacity_mechanisms_per_tech.empty:
+        pass
+    else:
+        axs27 = capacity_mechanisms_per_tech.plot(kind='bar', stacked=True, color=colors_unique_techs)
+        axs27.set_axisbelow(True)
+        plt.xlabel('tick', fontsize='medium')
+        plt.ylabel('Awarded Capacity [MW]', fontsize='medium')
+        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid()
+        axs27.set_title('Capacity Mechanism capacity per technology')
+        fig27 = axs27.get_figure()
+        fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight', dpi=300)
+
 
     if ran_CRM == "capacity_market":
         axs28 = CM_clearing_price.plot()
@@ -1692,8 +1696,9 @@ def prepare_accepted_CapacityMechanism(reps, unique_technologies, ticks_to_gener
     total_costs_CM = CM_costs_per_technology.sum(axis=1, skipna=True)
     capacity_mechanisms_volume_per_tech.replace(0, np.nan, inplace=True)
     capacity_mechanisms_volume_per_tech.dropna(axis=1, how='all', inplace=True)
-    return CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech, CM_clearing_price, total_costs_CM, \
-        ran_CRM, SR_operator_revenues, cm_revenues_per_pp
+    return (CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech,
+            CM_clearing_price, total_costs_CM, \
+        ran_CRM, SR_operator_revenues, cm_revenues_per_pp)
 
 
 # def market_value_per_technology(reps, unique_technologies, years_to_generate):
@@ -2708,17 +2713,17 @@ technology_names = {
 #             ]  # add a dash before!
 # SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-
-SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-results_excel = "SR_test.xlsx"
-SCENARIOS = ["NL-debugCMarket"]
+# "NL-EOM-nolifetimeextension", "NL-EOM_5GWNuclear","NL-EOM_3GWNuclear","NL-EOM_lessDSR","NL-EOM_DSR500"
+SCENARIOS = ["NL-CM75000", "NL-CM75000noRES"]
+# SCENARIOS = [ "NL-SRM10-lessNuc",  "NL-SR1600M10NONUCLEAR-lessNuc"]
+results_excel = "NL_CMarketnoRESM.xlsx"
 
 # SIMULATION_YEARS = list(range(0,40) )
 # Set the x-axis ticks and labels
 
 write_titles = True
 existing_scenario = True
-save_excel = False
+save_excel = True
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g
@@ -2726,7 +2731,7 @@ test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "
 
 industrial_demand_as_flex_demand_with_cap = True
 read_electricity_prices = True  # write False if not wished to graph electricity prices"
-calculate_hourly_shedders_new = True
+calculate_hourly_shedders_new = False
 load_shedding_plots = True
 calculate_monthly_generation = True  # !!!!!!!!!!!!!!For the new plots
 calculate_investments = True
