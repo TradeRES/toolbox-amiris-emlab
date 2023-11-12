@@ -113,45 +113,6 @@
                     }
                 }
             ],
-            "unit2020": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Technologies",
-                                "read_start_row": 1
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "unit2040-2050": [
                 {
                     "Mapping 1": {
@@ -341,44 +302,6 @@
                     }
                 }
             ],
-            "unit2030": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Technologies"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "danish": [
                 {
                     "Mapping 1": {
@@ -470,14 +393,132 @@
                         ]
                     }
                 }
+            ],
+            "fixedCostsOLD": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "investmentCostsOLD": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "nodeOLD": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2020OLD": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2030OLD": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "unit2050OLD": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
             "node",
-            "unit2020",
             "unit2050",
             "investmentCosts",
-            "unit2030",
             "fixedCosts"
         ],
         "table_options": {
@@ -487,11 +528,6 @@
             },
             "explanation": {},
             "node2020": {},
-            "unit2020": {
-                "read_until_col": true,
-                "read_until_row": true,
-                "row": 0
-            },
             "unit2040-2050": {},
             "unit2030-none_traderes": {},
             "unit2030-noneWRONG": {},
@@ -505,40 +541,30 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "unit2030": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
             "danish": {},
             "nodecostsgraph": {},
             "fixedCosts": {
-                "read_until_row": false,
+                "read_until_row": true,
                 "read_until_col": true
-            }
+            },
+            "nodeOLD": {},
+            "investmentCostsOLD": {},
+            "fixedCostsOLD": {},
+            "unit2020OLD": {},
+            "unit2030OLD": {},
+            "unit2050OLD": {}
         },
         "table_types": {
             "node": {
                 "0": "string",
                 "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "string"
+                "2": "float"
             },
             "node2020": {
                 "0": "string",
                 "1": "string",
                 "2": "string",
                 "3": "float"
-            },
-            "unit2020": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "string"
             },
             "unit2040-2050": {
                 "0": "string",
@@ -671,7 +697,10 @@
                 "0": "string",
                 "1": "float",
                 "2": "float",
-                "3": "float"
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "string"
             },
             "screening curve": {
                 "0": "string",
@@ -711,15 +740,6 @@
                 "1": "string",
                 "2": "float"
             },
-            "unit2030": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float"
-            },
             "nodecostsgraph": {
                 "0": "string",
                 "1": "string",
@@ -756,9 +776,48 @@
             },
             "fixedCosts": {
                 "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float"
+                "1": "float"
+            },
+            "nodeOLD": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string",
+                "15": "string",
+                "16": "string",
+                "17": "string",
+                "18": "string",
+                "19": "string",
+                "20": "string",
+                "21": "string",
+                "22": "string"
+            },
+            "unit2020OLD": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string"
             }
         },
         "table_default_column_type": {},

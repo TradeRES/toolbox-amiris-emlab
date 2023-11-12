@@ -88,7 +88,7 @@ class LoadShedder(ImportObject):
             if isinstance(parameter_value, (int,float)):
                 self.VOLL = int(parameter_value)
             else:
-                self.VOLL = reps.substances["OTHER"].simulatedPrice.loc[2050]
+                self.VOLL = reps.substances["OTHER"].initialPrice.loc[2050]
         elif parameter_name == 'ShedderCapacityMW':
             self.ShedderCapacityMW = parameter_value
         elif parameter_name == 'percentage_load':

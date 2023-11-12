@@ -708,9 +708,9 @@ def plot_market_values_generation(all_techs_capacity, path_to_plots, colors_uniq
     plt.close('all')
 
 
-def plot_full_load_hours_values(all_techs_full_load_hours, path_to_plots, colors_unique_techs):
+def plot_full_load_hours_values(all_techs_full_load_hours, path_to_plots,  renewable_technologies ,colors_unique_techs):
     # not market values because market values dont consider the installed capacity: only production/capacity
-    vRES_full_load_hours = all_techs_full_load_hours[vRES]
+    vRES_full_load_hours = all_techs_full_load_hours[renewable_technologies]
     colors = [technology_colors[tech] for tech in vRES_full_load_hours.columns.values]
     axs21 = vRES_full_load_hours.plot(color=colors)
     axs21.set_axisbelow(True)
@@ -866,7 +866,7 @@ def plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per
     # key gives the group name (i.e. category), data gives the actual values
     if npvs_per_year_perMW_strategic_reseve.empty == False:
         npvs_per_year_perMW_strategic_reseve.plot(ax=axs30)
-    npvs_per_tech_per_MW.hydrogen_turbine.plot(ax=axs30)
+    #npvs_per_tech_per_MW.hydrogen_turbine.plot(ax=axs30)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('€', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
@@ -2172,8 +2172,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # conventional_technologies = ['Coal PSC', "Fuel oil PGT", 'Lignite PSC', "CCGT_CHP_backpressure_DH", \
     #                             'CCGT', 'OCGT', 'Nuclear', 'fuel_cell', "Pumped_hydro"]
 
-    renewable_technologies = ["Biomass_CHP_wood_pellets_DH", "Hydropower_reservoir_medium", "PV_utility_systems",
-                              "WTG_onshore", "WTG_offshore", "Hydropower_ROR"]
+    renewable_technologies = reps.get_intermittent_technologies_names()
     unique_candidate_power_plants = reps.get_unique_candidate_technologies_names()
     unique_candidate_power_plants += ["Lithium_ion_battery_charge"]  # adding technology for negative production
     start_tick = 0
@@ -2243,7 +2242,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor.T, all_techs_full_load_hours.T, path_to_plots,
                                              colors_unique_techs)
     plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
-    plot_full_load_hours_values(all_techs_full_load_hours.T, path_to_plots, colors_unique_techs)
+    plot_full_load_hours_values(all_techs_full_load_hours.T, path_to_plots, renewable_technologies, colors_unique_techs)
     plot_yearly_average_electricity_prices_and_RES_share(average_electricity_price, share_RES, path_to_plots)
     plot_annual_generation(all_techs_generation.T, all_techs_consumption.T, path_to_plots, technology_colors,
                            )
@@ -2608,14 +2607,17 @@ VOLL = 4000
 fuel_colors = {
     'CO2': "black",
     'biomethane': "green",
+    'BiogasRetro': "green",
     "collectable_residues": "gray",
     'LNG': "darkgoldenrod",
     'hard_coal': "indianred",
     'heavy_oil': "gray",
     'light_oil': "lightsteelblue",
     "oil_shale": "mediumpurple",
+    "Oil": "mediumpurple",
     'lignite': "darkgoldenrod",
     'natural_gas': "darkred",
+    'Derived Gas': "darkred",
     "bioliquids": "lime",
     "electricity": "yellow",
     "hydrogen": "navy",
@@ -2659,29 +2661,43 @@ vRES = ['PV_utility_systems', 'WTG_onshore', 'WTG_offshore', 'PV']
 
 technology_colors = {
     'Biomass_CHP_wood_pellets_DH': "green",
+    'Biofuel': "green",
     "Biomass_CHP_wood_pellets_PH": "greenyellow",
     'Coal PSC': "black",
     "Fuel oil PGT": "gray",
     'Lignite PSC': "darkgoldenrod",
     'CCGT': "indianred",
     'OCGT': "gray",
-    'Hydropower_reservoir_medium': "darkcyan",
     'PV_utility_systems': "gold",
+    "Solar PV large": "gold",
+    "Solar CSP": "gold",
     'PV': "gold",
     'PV_residential': "khaki",
+    'Solar PV rooftop': "khaki",
     'WTG_onshore': "cornflowerblue",
+    'Wind Onshore': "cornflowerblue",
     "WTG_offshore": "navy",
+    "Wind Offshore": "navy",
     "Nuclear": "mediumorchid",
     "Hydropower_ROR": "aquamarine",
+    'Hydropower_reservoir_medium': "darkcyan",
+    "Hydropower": "darkcyan",
     "Lithium_ion_battery": "hotpink",
+    "Lithium ion battery": "hotpink",
     "Lithium_ion_battery_charge": "hotpink",
     "Pumped_hydro": "darkcyan",
+    "Pumped hydro": "darkcyan",
     "CCGT_CHP_backpressure_DH": "orange",
+    "CCGT_CHP_backpressure_PH": "orange",
+    "CCS": "orange",
     "fuel_cell": "gold",
     "electrolyzer": "gray",
     "hydrogen_turbine": "darkred",
+    "hydrogen turbine": "darkred",
     "hydrogen_CHP": "indianred",
-    "hydrogen_combined_cycle": "coral"
+    "hydrogen CHP": "indianred",
+    "hydrogen_combined_cycle": "coral",
+    "hydrogen combined cycle": "coral"
 }
 
 technology_names = {
@@ -2714,7 +2730,7 @@ technology_names = {
 # SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
 # "NL-EOM-nolifetimeextension", "NL-EOM_5GWNuclear","NL-EOM_3GWNuclear","NL-EOM_lessDSR","NL-EOM_DSR500"
-SCENARIOS = ["NL-CM75000", "NL-CM75000noRES"]
+SCENARIOS = ["test" ]
 # SCENARIOS = [ "NL-SRM10-lessNuc",  "NL-SR1600M10NONUCLEAR-lessNuc"]
 results_excel = "NL_CMarketnoRESM.xlsx"
 
@@ -2722,8 +2738,8 @@ results_excel = "NL_CMarketnoRESM.xlsx"
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
-save_excel = True
+existing_scenario = False
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g

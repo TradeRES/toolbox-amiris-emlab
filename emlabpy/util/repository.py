@@ -486,6 +486,12 @@ class Repository:
             return [i.technology.name for name, i in self.candidatePowerPlants.items()]
         except StopIteration:
             return None
+    def get_intermittent_technologies_names(self):
+        try:
+            return [i.name for  i in self.power_generating_technologies.values()  if i.intermittent == True]
+        except StopIteration:
+            return None
+
 
     def get_unique_candidate_technologies(self):
         try:

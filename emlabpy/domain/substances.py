@@ -117,6 +117,7 @@ class Substance(ImportObject):
         return self.newPrice
 
     def interpolate_year(self, year):
+
         if year < self.initialPrice.index.min() and self.name == "CO2":
             interpolated_price = self.initialPrice.values.min()
         else:
