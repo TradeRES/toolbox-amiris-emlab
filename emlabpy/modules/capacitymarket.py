@@ -34,7 +34,6 @@ class CapacityMarketSubmitBids(MarketModule):
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
 
             capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
-            powerplant_load_factor = 1  # TODO: Power Plant Load Factor
 
             profits_with_fixed_costs =self.reps.get_power_plant_electricity_dispatch_by_tick( powerplant.name ,
                                                                                    self.reps.current_tick + market.forward_years_CM

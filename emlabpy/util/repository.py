@@ -579,6 +579,14 @@ class Repository:
                                                globalNames.power_plant_status_strategic_reserve]]
         return sum(plantsoftechnology)
 
+    def calculateEffecticeCapacityOfOperationalPowerPlants(self):
+        plantsoftechnology = [i.capacity*self.power_generating_technologies[i.technology.name].peak_segment_dependent_availability
+                              for i in self.power_plants.values() if i.status in [globalNames.power_plant_status_operational,
+                                               globalNames.power_plant_status_to_be_decommissioned,
+                                               globalNames.power_plant_status_strategic_reserve]]
+        return sum(plantsoftechnology)
+
+
     def calculate_marginal_costs(self, powerplant, year_ahead):
         simulation_year = year_ahead + self.current_year
         fuel = powerplant.technology.fuel
