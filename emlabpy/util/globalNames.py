@@ -45,6 +45,9 @@ used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", 
                      "CCGT_CHP_backpressure_DH", "Biomass_CHP_wood_pellets_PH",
                      "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP", "PV", "PV_residential", "PV_utility_systems",
                      "hydrogen_combined_cycle"]
+
+technologies_not_in_SR =[ "Nuclear","Lithium ion battery" ]
+
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)
 
 years_file = "years.txt"
