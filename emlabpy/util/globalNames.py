@@ -1,4 +1,6 @@
 import os
+# in the initialization if there is missing too much capacity, too much of one caapacity would be installed
+maximum_installed_share_initialization = 0.15
 
 CF_UNCLASSIFIED = "UNCLASSIFIED"
 CF_ELECTRICITY_SPOT = "ELECTRICITY_SPOT"
