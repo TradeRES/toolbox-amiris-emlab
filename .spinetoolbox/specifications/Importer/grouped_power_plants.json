@@ -872,7 +872,6 @@
             ]
         },
         "selected_tables": [
-            "superGroupedNL",
             "groupedDecarbonizedNL_S1"
         ],
         "table_options": {
@@ -1222,7 +1221,7 @@
                 "6": "float"
             },
             "groupedDecarbonizedNL_S1": {
-                "0": "float",
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
