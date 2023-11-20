@@ -653,7 +653,8 @@ class Repository:
 
     def get_operational_and_to_be_decommissioned(self) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if (i.status == globalNames.power_plant_status_operational
+                if i.technology.name not in globalNames.technologies_not_in_CM and
+                (i.status == globalNames.power_plant_status_operational
                     or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
