@@ -3,7 +3,7 @@ __authors__ = "Felix Nitsch"
 __maintainer__ = "Felix Nitsch"
 __email__ = "felix.nitsch@dlr.de"
 
-
+import math
 import os
 from enum import Enum, auto
 from typing import List, Callable, Dict, NoReturn, Any, Union, Hashable
@@ -277,7 +277,8 @@ def create_agent(row, translation: List[Dict]) -> Dict:
         else:
             raise_and_log_critical_error("No 'value' or `column` found for attribute '{}'".format(item))
         # noinspection PyUnboundLocalVariable
-        agent.update({field: value})
+        if not (isinstance(value, float) and math.isnan(value)):
+            agent.update({field: value})
     return agent
 
 
