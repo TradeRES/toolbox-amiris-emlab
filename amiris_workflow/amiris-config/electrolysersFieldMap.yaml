@@ -15,9 +15,9 @@ Agents:
         value: ElectrolysisTrader
       - attribute: Id
         column: identifier
-      - attribute: Attributes/ElectricityPriceForecastRequestOffsetInSeconds
+      - attribute: Attributes/ElectricityForecastRequestOffsetInSeconds
         value: 22
-      - attribute: Attributes/HydrogenPriceForecastRequestOffsetInSeconds
+      - attribute: Attributes/HydrogenForecastRequestOffsetInSeconds
         value: 25
       - attribute: Attributes/Device/PeakConsumptionInMW
         column: PeakConsumptionInMW

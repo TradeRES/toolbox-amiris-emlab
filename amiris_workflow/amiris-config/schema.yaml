@@ -39,7 +39,7 @@ AgentTypes:
             AttributeType: enum
             List: false
             Mandatory: true
-            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER', 'MIXED']
+            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER']
           Price:
             AttributeType: time_series
             List: false
@@ -48,7 +48,7 @@ AgentTypes:
             AttributeType: double
             List: false
             Mandatory: true
-    Products: [ 'FuelPriceForecast', 'FuelPrice', 'FuelsBill' ]
+    Products: [ 'FuelPriceForecast', 'FuelPrice', 'FuelBill' ]
   
   SupportPolicy:
     Attributes:
@@ -72,10 +72,6 @@ AgentTypes:
             NestedAttributes:
               TsFit:
                 AttributeType: time_series
-                Mandatory: false
-                List: false
-              SuspensionVolumeShare:
-                AttributeType: double
                 Mandatory: false
                 List: false
           MPVAR:
@@ -131,7 +127,7 @@ AgentTypes:
             AttributeType: double
             Mandatory: true
             List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward' ]
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
 
   ConventionalTrader:
     Attributes:
@@ -143,14 +139,31 @@ AgentTypes:
         AttributeType: double
         Mandatory: true
         List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward' ]
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
 
   StorageTrader:
     Attributes:
-      ForecastRequestOffsetInSeconds:
+      ElectricityForecastRequestOffsetInSeconds:
         AttributeType: integer
         Mandatory: true
         List: false
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false        
       Device:
         AttributeType: block
         Mandatory: true
@@ -198,6 +211,10 @@ AgentTypes:
             AttributeType: integer
             Mandatory: true
             List: false
+          BidToleranceInEURperMWH:
+            AttributeType: double
+            Mandatory: false
+            List: false            
           SingleAgent:
             AttributeType: block
             Mandatory: false
@@ -207,10 +224,6 @@ AgentTypes:
                 AttributeType: integer
                 Mandatory: false
                 List: false
-              PurchaseLeviesAndTaxesInEURperMWH:
-                AttributeType: double
-                Mandatory: false
-                List: false     
           FixedDispatch:
             AttributeType: block
             Mandatory: false
@@ -220,7 +233,8 @@ AgentTypes:
                 AttributeType: time_series
                 Mandatory: false
                 List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward' ]
+                help: "Change of internal storage energy relative to available charging power. Values should be -1 <= x <= 1."
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
 
   RenewableTrader:
     Attributes:
@@ -260,7 +274,7 @@ AgentTypes:
             AttributeType: time_series
             Mandatory: true
             List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward' ]
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
 
   NoSupportTrader:
     Attributes:
@@ -281,7 +295,7 @@ AgentTypes:
             AttributeType: double
             Mandatory: false
             List: false        
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward' ]
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
     
   SystemOperatorTrader:
     Attributes:
@@ -298,7 +312,7 @@ AgentTypes:
             AttributeType: double
             Mandatory: false
             List: false
-    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward' ]
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'SupportInfoRequest', 'SupportPayoutRequest', 'YieldPotential', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport' ]
  
   MeritOrderForecaster:
     Attributes:
@@ -317,8 +331,25 @@ AgentTypes:
         List: false
     Products: [ 'ForecastRequest', 'MeritOrderForecast' ]
 
+  PriceForecaster:
+    Attributes:
+      DistributionMethod:
+        AttributeType: enum
+        Mandatory: true
+        List: false
+        Values: [ 'SAME_SHARES', 'FIRST_COME_FIRST_SERVE', 'RANDOMIZE' ]
+      ForecastPeriodInHours:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+      ForecastRequestOffsetInSeconds:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+    Products: [ 'ForecastRequest', 'PriceForecast' ]
+
   ConventionalPlantOperator:
-    Products: [ 'Co2Emissions', 'Co2PriceForecastRequest', 'FuelPriceForecastRequest', 'FuelPriceRequest', 'ConsumedFuel', 'MarginalCost', 'MarginalCostForecast', 'Co2PriceRequest' ]
+    Products: [ 'Co2Emissions', 'Co2PriceForecastRequest', 'FuelPriceForecastRequest', 'FuelPriceRequest', 'FuelBid', 'MarginalCost', 'MarginalCostForecast', 'Co2PriceRequest' ]
 
   VariableRenewableOperator:
     Attributes:
@@ -404,7 +435,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN' ]
+            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER']
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true
@@ -467,7 +498,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'LIGNITE', 'OIL', 'WASTE', 'NUCLEAR', 'HARD_COAL', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER', 'MIXED' ]
+            Values: ['OIL', 'HARD_COAL', 'LIGNITE', 'NUCLEAR', 'WASTE', 'NATURAL_GAS', 'HYDROGEN', 'BIOMASS', 'OTHER']
           SpecificCo2EmissionsInTperMWH:
             AttributeType: double
             Mandatory: true
@@ -535,3 +566,117 @@ AgentTypes:
                 Mandatory: false
                 List: false
     Products: [ 'PowerPlantPortfolio' ]
+    
+  ElectrolysisTrader:
+    Attributes:
+      ElectricityForecastRequestOffsetInSeconds:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+      HydrogenForecastRequestOffsetInSeconds:
+        AttributeType: integer
+        Mandatory: true
+        List: false
+      Refinancing:
+        AttributeType: block
+        Mandatory: false
+        List: false
+        NestedAttributes:
+          InvestmentExpensensesInEURperMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          AnnuityFactor:
+            AttributeType: double
+            Mandatory: false
+            List: false
+          FixedCostsInEURperYearMW:
+            AttributeType: double
+            Mandatory: false
+            List: false
+      Device:
+        AttributeType: block
+        Mandatory: true
+        List: false
+        NestedAttributes:
+          PeakConsumptionInMW:
+            AttributeType: time_series
+            Mandatory: true
+            List: false
+          ConversionFactor:
+            AttributeType: double
+            Mandatory: true
+            List: false
+            help: "Factor < 1 to convert electric energy to hydrogen's thermal energy equivalent"
+      Strategy:
+        AttributeType: block
+        Mandatory: true
+        List: false
+        NestedAttributes:
+          StrategistType:
+            AttributeType: enum
+            Mandatory: true
+            List: false
+            Values: [ 'DISPATCH_FILE', 'SINGLE_AGENT_SIMPLE' ]
+          ForecastPeriodInHours:
+            AttributeType: integer
+            Mandatory: true
+            List: false
+          ScheduleDurationInHours:
+            AttributeType: integer
+            Mandatory: true
+            List: false
+          BidToleranceInEURperMWH:
+            AttributeType: double
+            Mandatory: false
+            List: false       
+          PriceLimitOverrideInEURperMWH:
+            AttributeType: time_series
+            Mandatory: false
+            List: false
+          FixedDispatch:
+            AttributeType: block
+            Mandatory: false
+            List: false
+            NestedAttributes:
+              HourlySchedule:
+                AttributeType: time_series
+                Mandatory: true
+                List: false
+              Mode:
+                AttributeType: enum
+                Mandatory: true
+                List: false
+                Values: [ 'ABSOLUTE', 'RELATIVE' ]
+                help: "Whether schedule is absolute or relative to installed converter power"                
+              Target:
+                AttributeType: enum
+                Mandatory: true
+                List: false
+                Values: [ 'ELECTRICITY', 'HYDROGEN' ]
+                help: "Whether the schedule represent hydrogen production or electricity consumption"
+          Simple:
+            AttributeType: block
+            Mandatory: false
+            List: false
+            NestedAttributes:
+              HydrogenProductionTargetInMWH:
+                AttributeType: time_series
+                Mandatory: true
+                List: false
+                help: "How much hydrogen to produce per production interval"
+              ProductionTargetIntervalInHours:
+                AttributeType: integer
+                Mandatory: true
+                List: false
+                help: "How many hours a production interval spans"
+              PriceSensitivityFunction:
+                AttributeType: double
+                Mandatory: true
+                List: true
+                help: "Price change per additional load in EUR per MWH per MWH"
+              PowerStepInMW:
+                AttributeType: double
+                Mandatory: true
+                List: false
+    Products: [ 'Bids', 'Payout', 'DispatchAssignment', 'BidsForecast', 'MeritOrderForecastRequest', 'PriceForecastRequest', 'GateClosureForward', 'ForecastRequestForward', 'AnnualCostReport', 'FuelBid', 'FuelPriceForecastRequest']
