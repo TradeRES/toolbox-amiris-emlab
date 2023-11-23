@@ -202,7 +202,7 @@ AgentTypes:
             AttributeType: enum
             Mandatory: true
             List: false
-            Values: [ 'SINGLE_AGENT_MIN_SYSTEM_COST', 'DISPATCH_FILE' ]          
+            Values: [ 'DISPATCH_FILE', 'SINGLE_AGENT_MIN_SYSTEM_COST', 'SINGLE_AGENT_MAX_PROFIT', 'MULTI_AGENT_MEDIAN' ]
           ForecastPeriodInHours:
             AttributeType: integer
             Mandatory: true
@@ -224,6 +224,16 @@ AgentTypes:
                 AttributeType: integer
                 Mandatory: false
                 List: false
+          MultiAgent:
+            AttributeType: block
+            Mandatory: false
+            List: false
+            NestedAttributes:
+              AssessmentFunctionPrefactors:
+                AttributeType: double
+                Mandatory: false
+                List: true
+                help: "Prefactors `a`,`b`,`c`, ... of a polynomial `a + bx + cx² + ...`, where `x` is the difference between the hourly price and the price median. Higher prefactors favour (dis-)charge at more extreme prices."
           FixedDispatch:
             AttributeType: block
             Mandatory: false
@@ -648,7 +658,7 @@ AgentTypes:
                 Mandatory: true
                 List: false
                 Values: [ 'ABSOLUTE', 'RELATIVE' ]
-                help: "Whether schedule is absolute or relative to installed converter power"                
+                help: "Whether schedule is absolute or relative to installed converter power"
               Target:
                 AttributeType: enum
                 Mandatory: true
