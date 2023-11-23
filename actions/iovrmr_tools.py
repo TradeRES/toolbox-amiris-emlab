@@ -368,7 +368,7 @@ def get_storage_strategist_type(storage_traders: List[Dict], scenario: Dict) -> 
         if previous_strategist and previous_strategist != strategist:
             raise ValueError(
                 "Working with different storage strategists is not implemented!\n"
-                "Please use uniform strategist, either 'MULTI_AGENT_SIMPLE', "
+                "Please use uniform strategist, either 'MULTI_AGENT_MEDIAN', "
                 "'SINGLE_AGENT_MAX_PROFIT' or 'SINGLE_AGENT_MIN_SYSTEM_COST'."
             )
 
@@ -387,7 +387,7 @@ def adjust_contracts_for_storages(
 ):
     """Adjust contracts in scenario.yaml based on given storage type"""
     contracts_location = None
-    if strategist_type == "MULTI_AGENT_SIMPLE":
+    if strategist_type == "MULTI_AGENT_MEDIAN":
         contracts_location = "./amiris-config/yaml/storage_contracts_multi/storage_contracts.yaml"
     elif strategist_type in ["SINGLE_AGENT_MAX_PROFIT", "SINGLE_AGENT_MIN_SYSTEM_COST"]:
         contracts_location = "./amiris-config/yaml/storage_contracts_single/storage_contracts.yaml"
@@ -397,13 +397,13 @@ def adjust_contracts_for_storages(
                 "'ElectrolysisTrader' requires a 'PriceForecaster', a 'StorageTrader' with strategy "
                 "'SINGLE_AGENT_MAX_PROFIT' or 'SINGLE_AGENT_MIN_SYSTEM_COST' in turn requires a 'MeritOrderForecaster' "
                 "instead. The two cannot be combined.\n"
-                "Thus, you either can simulate an 'ElectrolysisTrader' in combination with a 'MULTI_AGENT_SIMPLE' "
+                "Thus, you either can simulate an 'ElectrolysisTrader' in combination with a 'MULTI_AGENT_MEDIAN' "
                 "storage strategy, or you have to remove the 'ElectrolysisTrader' from your scenario if you want "
                 "to use the 'SINGLE_AGENT_MAX_PROFIT' or 'SINGLE_AGENT_MIN_SYSTEM_COST' strategy."
             )
     if not contracts_location:
         raise ValueError(
-            "Invalid strategist type. Must be either 'MULTI_AGENT_SIMPLE', 'SINGLE_AGENT_MAX_PROFIT' "
+            "Invalid strategist type. Must be either 'MULTI_AGENT_MEDIAN', 'SINGLE_AGENT_MAX_PROFIT' "
             "or 'SINGLE_AGENT_MIN_SYSTEM_COST'."
         )
 

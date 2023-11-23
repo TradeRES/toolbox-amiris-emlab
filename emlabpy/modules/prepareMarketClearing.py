@@ -374,7 +374,7 @@ class PrepareMarket(DefaultModule):
                 InitialEnergyLevelInMWH.append(pp.initialEnergyLevelInMWH)
                 EnergyToPowerRatio.append(pp.technology.energyToPowerRatio)
                 InstalledPowerInMW.append(pp.capacity)
-                Strategist.append("MULTI_AGENT_SIMPLE")
+                Strategist.append("MULTI_AGENT_MEDIAN")
                 StorageType.append("STORAGE")
 
         d = {'identifier': identifier, 'StorageType': StorageType, 'EnergyToPowerRatio': EnergyToPowerRatio,
