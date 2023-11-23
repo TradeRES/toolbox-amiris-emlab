@@ -579,6 +579,14 @@ class Repository:
                                                globalNames.power_plant_status_strategic_reserve]]
         return sum(plantsoftechnology)
 
+    def calculateEffecticeCapacityOfOperationalPowerPlants(self):
+        plantsoftechnology = [i.capacity*self.power_generating_technologies[i.technology.name].peak_segment_dependent_availability
+                              for i in self.power_plants.values() if i.status in [globalNames.power_plant_status_operational,
+                                               globalNames.power_plant_status_to_be_decommissioned,
+                                               globalNames.power_plant_status_strategic_reserve]]
+        return sum(plantsoftechnology)
+
+
     def calculate_marginal_costs(self, powerplant, year_ahead):
         simulation_year = year_ahead + self.current_year
         fuel = powerplant.technology.fuel
@@ -645,7 +653,8 @@ class Repository:
 
     def get_operational_and_to_be_decommissioned(self) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
-                if (i.status == globalNames.power_plant_status_operational
+                if i.technology.name not in globalNames.technologies_not_in_CM and
+                (i.status == globalNames.power_plant_status_operational
                     or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
@@ -703,7 +712,7 @@ class Repository:
         # unless they are about to be decommissioned
 
         return [i for i in self.power_plants.values()
-                if i.technology.intermittent == False and i.technology.name != "Nuclear" and
+                if i.technology.intermittent == False and i.technology.name not in globalNames.technologies_not_in_SR  and
                 ((
                              i.status == globalNames.power_plant_status_operational \
                              and i.age - i.technology.expected_lifetime >= -forward_years_SR)

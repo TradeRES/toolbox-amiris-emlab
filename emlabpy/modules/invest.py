@@ -391,7 +391,7 @@ class Investmentdecision(DefaultModule):
             print(" will not invest in " + technology.name + " because the capacity limits are achieved")
             candidatepowerplant.setViableInvestment(False)
             return False
-        elif capacityOfTechnologyInvestedAtyear > 0.10 * self.peak_demand:
+        elif capacityOfTechnologyInvestedAtyear > globalNames.maximum_installed_share_initialization * self.peak_demand:
             if self.reps.initialization_investment == True:
                 print(capacityOfTechnologyInvestedAtyear)
                 print(
