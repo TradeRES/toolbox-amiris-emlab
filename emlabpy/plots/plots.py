@@ -2350,6 +2350,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
         Overall_NPV_data = pd.read_excel(path_to_results, sheet_name='overallNPV', index_col=0)
         Overall_IRR_data = pd.read_excel(path_to_results, sheet_name='overallIRR', index_col=0)
+        IRRS_yearly_data = pd.read_excel(path_to_results, sheet_name='yearlyIRRs', index_col=0)
+
+
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
@@ -2376,6 +2379,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
         voluntaryENS_data = pd.concat([voluntaryENS_data, df], axis=1)
 
+
+        irrs_per_tech_per_year.at["scenario_name", :] = scenario_name
+        last_row = irrs_per_tech_per_year.iloc[-1]
+        df = irrs_per_tech_per_year.iloc[:-1]
+        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
+        IRRS_yearly_data = pd.concat([IRRS_yearly_data, df], axis=1)
 
         profits_with_loans_all.at["scenario_name", :] = scenario_name
         last_row = profits_with_loans_all.iloc[-1]
@@ -2443,6 +2452,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             AverageNPVpertechnology_data.to_excel(writer, sheet_name='AverageNPVpertechnology')
             Overall_NPV_data.to_excel(writer, sheet_name='overallNPV')
             Overall_IRR_data.to_excel(writer, sheet_name='overallIRR')
+            IRRS_yearly_data.to_excel(writer, sheet_name='yearlyIRRs')
             Installed_capacity_data.to_excel(writer, sheet_name='InstalledCapacity')
             lifeextension_data.to_excel(writer, sheet_name='lifeextension')
             H2_production_data.to_excel(writer, sheet_name='H2Production')
@@ -2693,20 +2703,34 @@ technology_names = {
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
 # "NL-EOM-nolifetimeextension", "NL-EOM_5GWNuclear","NL-EOM_3GWNuclear","NL-EOM_lessDSR","NL-EOM_DSR500"
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
-# SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
-# results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["NL-CMDebug"]
-# results_excel = "NL_SRnewData.xlsx"
+
+SCENARIOS = ["NL-EOM_S1", "NL-CM40000_S1", "NL-CM60000_S1", "NL-SR1000_S1"]
+results_excel = "NL_S1_nogas.xlsx"
+
+# SCENARIOS = ["NL-moreElectrolyzer_newprices", "NL-EOM-newData"]
+# results_excel = "NL_moreElectrolyzer.xlsx"
+
+# SCENARIOS = [  "NL-EOM-newData", "NL-EOM_S1", "NL-CM60000_S1", "NL-SR1600_S1"]
+# results_excel = "NL_S1.xlsx"
+# SCENARIOS = [  "NL-SR_M10_P800"]
 #
-# SCENARIOS = ["NL-EOM-newData",  "NL-SR_M10_P1600",   "NL-SR_M15_P1600",  "NL-SR_M20_P1600"]
-# # #
+# SCENARIOS = ["NL-EOM-newData", "NL-EOM_S1", "NL-SR1600M10_S1", "NL-CM60000_S1"]
+# results_excel = "NL_S1.xlsx"
+
+
+# SCENARIOS = ["NL-EOM-newData", "NL-SR_M10_P1600",  "NL-SR_M10_P1600",   "NL-SR_M15_P1600",  "NL-SR_M20_P1600"]
+# results_excel = "NL_SRnewData.xlsx"
+
+# SCENARIOS = ["NL-CM60000_S1"]
+# results_excel = "NL_EOM_S1_S4.xlsx"
+
 # "EOM-newData" , "CM40000", "CM40000_nofutureExpectation","CM60000","CM60000noRES", "CM60000_DSR150"
 # SIMULATION_YEARS = list(range(0,40) )
 # Set the x-axis ticks and labels
 
 write_titles = True
 existing_scenario = True
-save_excel = False
+save_excel = True
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g

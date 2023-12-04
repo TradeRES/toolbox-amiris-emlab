@@ -910,6 +910,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     elif object_class_name == 'LoadShifterCap':
         add_parameter_value_to_repository(reps, db_line, reps.loadShifterDemand, LoadShifterwCap)
     elif object_class_name == 'Technologies':
+        # if db_line[1] in globalNames.used_technologies:
         add_parameter_value_to_repository(reps, db_line, reps.power_generating_technologies,
                                           PowerGeneratingTechnology)
         # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ data from Traderes
