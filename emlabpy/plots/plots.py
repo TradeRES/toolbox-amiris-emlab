@@ -1725,6 +1725,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
     share_RES = pd.DataFrame(index=years_to_generate).fillna(0)
     #  production_per_year = pd.DataFrame(index=years_to_generate).fillna(0)
     for year in years_to_generate:
+        print(year)
         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
         totalrevenues = 0
         totalproduction = 0
@@ -1742,6 +1743,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                         capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
                         full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
                         totalproduction += pp_production_in_MWh
+                        print(power_plant.name)
                         totalrevenues += dispatch_per_year.revenues[id]
                         if pp_production_in_MWh > 0:
                             market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
@@ -2640,6 +2642,7 @@ technology_colors = {
     'Wind Onshore': "cornflowerblue",
     "WTG_offshore": "navy",
     "Wind Offshore": "navy",
+    "central gas boiler": "black",
     "Nuclear": "mediumorchid",
     "Hydropower_ROR": "aquamarine",
     'Hydropower_reservoir_medium': "darkcyan",
@@ -2695,7 +2698,7 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["NL-CMDebug"]
+SCENARIOS = ["Debug"]
 # results_excel = "NL_SRnewData.xlsx"
 #
 # SCENARIOS = ["NL-EOM-newData",  "NL-SR_M10_P1600",   "NL-SR_M15_P1600",  "NL-SR_M20_P1600"]
@@ -2705,7 +2708,7 @@ SCENARIOS = ["NL-CMDebug"]
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0

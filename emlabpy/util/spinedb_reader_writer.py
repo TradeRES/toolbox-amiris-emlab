@@ -151,8 +151,8 @@ class SpineDBReaderWriter:
                 reps.iteration_weather = str(row['parameter_value'])
             elif row['parameter_name'] == 'available_years_data':
                 reps.available_years_data = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'monthly_hydrogen_demand':
-                reps.monthly_hydrogen_demand = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'load_shifter':
+                reps.load_shifter = str(row['parameter_value'])
             elif row['parameter_name'] == 'minimal_last_years_IRR':
                 reps.minimal_last_years_IRR = row['parameter_value']
             elif row['parameter_name'] == 'last_years_IRR_or_NPV':

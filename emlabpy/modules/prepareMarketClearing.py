@@ -44,10 +44,10 @@ class PrepareMarket(DefaultModule):
         self.write_renewables()
         self.write_storage()
         self.write_conventionals()
-        self.write_load_shifter_with_price_cap()
         self.write_load_shedders()
         self.write_biogas()
         self.write_scenario_data_emlab("next_year_price")
+        self.write_load_shifter_with_price_cap()
         self.write_times()
         self.writer.close()
         print("saved to ", self.path)
@@ -206,17 +206,21 @@ class PrepareMarket(DefaultModule):
         :return:
         """
 
-        if self.reps.monthly_hydrogen_demand ==True:
-            hydrogen_demand = self.reps.loadShifterDemand['Industrial_load_shifter']
+        if self.reps.load_shifter == "Industrial_load_shifter":
+            price_limit = self.reps.calculate_marginal_costs_by_technology( "central gas boiler", 0 , )
+            monthly_target = self.reps.loadShifterDemand['Industrial_load_shifter'].averagemonthlyConsumptionMWh
+            peak_consumption = self.reps.loadShifterDemand['Industrial_load_shifter'].peakConsumptionInMW
         else:
-            hydrogen_demand = self.reps.loadShifterDemand['Industrial_load_shifter'].averagemonthlyConsumptionMWh
+            raise Exception
+
 
         d = {'identifier': 99999999999,
              'ElectrolyserType': "ELECTROLYSIS",
-             'PeakConsumptionInMW': self.reps.loadShifterDemand['Industrial_load_shifter'].peakConsumptionInMW,
+             'PeakConsumptionInMW': peak_consumption,
              'ConversionFactor': 1,
             # 'ConversionFactor': self.reps.power_generating_technologies['electrolyzer'].efficiency,
-             'HydrogenProductionTargetInMWH': hydrogen_demand
+             'HydrogenProductionTargetInMWH': monthly_target,
+             'PriceLimitOverrideInEURperMWH': price_limit
              }
         df = pd.DataFrame(data=d, index=[0])
         df.to_excel(self.writer, sheet_name="electrolysers")
@@ -230,7 +234,7 @@ class PrepareMarket(DefaultModule):
             for name, loadshedder in self.reps.loadShedders.items():
                 Type_ls.append("SHEDDING")
                 if name == "hydrogen":
-                    VOLL = self.reps.substances["OTHER"].simulatedPrice_inYear \
+                    VOLL = self.reps.substances[name].simulatedPrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                 else:
                     VOLL = loadshedder.VOLL
@@ -243,7 +247,7 @@ class PrepareMarket(DefaultModule):
             for name, loadshedder in self.reps.loadShedders.items():
                 Type_ls.append("SHEDDING")
                 if name == "hydrogen":
-                    VOLL = self.reps.substances["OTHER"].futurePrice_inYear \
+                    VOLL = self.reps.substances[name].futurePrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                 else:
                     VOLL = loadshedder.VOLL
