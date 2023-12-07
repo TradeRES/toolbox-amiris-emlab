@@ -22,8 +22,8 @@ dist
 *.png
 logs/
 
-amiris/
-*amiris-jar-with-dependencies*
+
+
 data/powerplantsGermany/
 
 emlabpy/Yearly_results.xlsx
@@ -44,7 +44,8 @@ scripts/amiris-jar-with-dependencies.jar
 .spinetoolbox/local/specification_local_data.json
 
 emlabpy/plots/plots.ipynb
-amiris_workflow/amiris/
+amiris_workflow/amiris/old versions/*
+amiris_workflow/amiris/results/
 amiris_workflow/amiris-config/scenario.yaml
 amiris_workflow/amiris-config/data/load.csv
 amiris_workflow/output/amiris_results.csv
