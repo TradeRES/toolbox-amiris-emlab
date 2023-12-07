@@ -57,7 +57,7 @@ class Repository:
         self.start_tick_fuel_trends = 0
         self.start_dismantling_tick = 0
         self.initialization_investment = True
-        self.monthly_hydrogen_demand = False
+        self.load_shifter = None
         self.minimal_last_years_IRR = "NOTSET"
         self.minimal_last_years_NPV = "NOTSET"
         self.last_investable_technology = False
@@ -599,6 +599,24 @@ class Repository:
                        powerplant.technology.get_efficiency_by_time_series(
             powerplant.age + year_ahead))
         return   variable_costs + commodities
+
+
+    def calculate_marginal_costs_by_technology(self, technology_name, year_ahead):
+        if self.runningModule == "run_future_market":
+            run_future_market = True
+        else:
+            run_future_market = False
+        technology =self.power_generating_technologies[technology_name]
+        simulation_year = year_ahead + self.current_year
+        fuel = technology.fuel
+        variable_costs = technology.get_variable_operating_by_time_series(year_ahead)
+        fuel_price = self.substances[technology.fuel.name].get_price_for_tick(self, simulation_year, run_future_market)
+        co2_TperMWh = fuel.co2_density
+        co2price = self.substances["CO2"].get_price_for_tick(self, simulation_year, run_future_market)
+        commodities = (technology.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) /
+                       technology.get_efficiency_by_time_series(year_ahead))
+        return   variable_costs + commodities
+
 
     def calculateCapacityOfPowerPlantsByTechnologyInPipeline(self, technology):
         return sum([pp.capacity for pp in self.power_plants.values() if pp.technology.name == technology.name

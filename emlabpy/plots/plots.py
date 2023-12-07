@@ -1725,6 +1725,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
     share_RES = pd.DataFrame(index=years_to_generate).fillna(0)
     #  production_per_year = pd.DataFrame(index=years_to_generate).fillna(0)
     for year in years_to_generate:
+        print(year)
         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
         totalrevenues = 0
         totalproduction = 0
@@ -1742,6 +1743,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                         capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
                         full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
                         totalproduction += pp_production_in_MWh
+                        print(power_plant.name)
                         totalrevenues += dispatch_per_year.revenues[id]
                         if pp_production_in_MWh > 0:
                             market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
@@ -2650,6 +2652,7 @@ technology_colors = {
     'Wind Onshore': "cornflowerblue",
     "WTG_offshore": "navy",
     "Wind Offshore": "navy",
+    "central gas boiler": "black",
     "Nuclear": "mediumorchid",
     "Hydropower_ROR": "aquamarine",
     'Hydropower_reservoir_medium': "darkcyan",
@@ -2703,16 +2706,10 @@ technology_names = {
 # SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
 # "NL-EOM-nolifetimeextension", "NL-EOM_5GWNuclear","NL-EOM_3GWNuclear","NL-EOM_lessDSR","NL-EOM_DSR500"
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
-
-SCENARIOS = ["NL-EOM_S1", "NL-CM40000_S1", "NL-CM60000_S1", "NL-SR1000_S1"]
-results_excel = "NL_S1_nogas.xlsx"
-
-# SCENARIOS = ["NL-moreElectrolyzer_newprices", "NL-EOM-newData"]
-# results_excel = "NL_moreElectrolyzer.xlsx"
-
-# SCENARIOS = [  "NL-EOM-newData", "NL-EOM_S1", "NL-CM60000_S1", "NL-SR1600_S1"]
-# results_excel = "NL_S1.xlsx"
-# SCENARIOS = [  "NL-SR_M10_P800"]
+# SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
+# results_excel = "NL_CMarketnewData.xlsx"
+SCENARIOS = ["Debug"]
+# results_excel = "NL_SRnewData.xlsx"
 #
 # SCENARIOS = ["NL-EOM-newData", "NL-EOM_S1", "NL-SR1600M10_S1", "NL-CM60000_S1"]
 # results_excel = "NL_S1.xlsx"
@@ -2729,8 +2726,8 @@ results_excel = "NL_S1_nogas.xlsx"
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
-save_excel = True
+existing_scenario = False
+save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
 # write None is no investment is expected,g

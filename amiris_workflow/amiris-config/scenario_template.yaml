@@ -14,7 +14,7 @@ Variables:
   - &portfolioBuildingOffset 60
 
 Agents:
-  - Type: EnergyExchangeMulti
+  - Type: EnergyExchange
     Id: 1
     Attributes:
       DistributionMethod: SAME_SHARES
@@ -26,7 +26,7 @@ Agents:
     Attributes:
       ShareOfRevenues: 0.0
 
-  - Type: PriceForecaster  #MeritOrderForecaster
+  - Type: PriceForecaster
     Id: 6
     Attributes:
       DistributionMethod: SAME_SHARES

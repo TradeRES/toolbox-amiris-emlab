@@ -11,7 +11,7 @@ import yaml
 from fameio.scripts.convert_results import run as convert_results
 from fameio.scripts.make_config import DEFAULT_CONFIG
 from fameio.scripts.make_config import run as make_config
-from fameio.source.cli import Options, ResolveOptions
+from fameio.source.cli import Options, ResolveOptions, TimeOptions
 from fameio.source.loader import load_yaml
 from ioproc.tools import action
 
@@ -202,6 +202,7 @@ def convert_pb(data_manager, config, params):
         Options.SINGLE_AGENT_EXPORT: False,
         Options.MEMORY_SAVING: False,
         Options.RESOLVE_COMPLEX_FIELD: ResolveOptions.SPLIT,
+        Options.TIME: TimeOptions.INT.name,
     }
 
     ensure_path_exists(run_config[Options.OUTPUT])

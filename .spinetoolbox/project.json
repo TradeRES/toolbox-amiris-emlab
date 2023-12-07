@@ -994,7 +994,7 @@
                 },
                 {
                     "type": "resource",
-                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchangeMulti.csv"
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\raw\\EnergyExchange.csv"
                 },
                 {
                     "type": "resource",

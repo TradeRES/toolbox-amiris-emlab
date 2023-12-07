@@ -10,7 +10,7 @@ Agents:
         value: StorageTrader
       - attribute: Id
         column: identifier
-      - attribute: Attributes/ForecastRequestOffsetInSeconds
+      - attribute: Attributes/ElectricityForecastRequestOffsetInSeconds
         value: 22
       - attribute: Attributes/Device/EnergyToPowerRatio
         column: EnergyToPowerRatio
@@ -30,8 +30,6 @@ Agents:
         value: 168
       - attribute: Attributes/Strategy/ScheduleDurationInHours
         value: 24
-      - attribute: Attributes/Strategy/SingleAgent/PurchaseLeviesAndTaxesInEURperMWH
-        value: 0
       - attribute: Attributes/Strategy/SingleAgent/ModelledChargingSteps
         value: 50
       - attribute: Attributes/Strategy/MultiAgent/AssessmentFunctionPrefactors
