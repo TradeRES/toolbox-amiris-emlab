@@ -1,59 +1,62 @@
-# AMIRIS EMLABpy softlinking using Spinetoolbox
+# EMLABpy - AMIRIS co-simulation using Spinetoolbox
 
-The soft linking of AMIRIS and EMLabpy intends to investigate the investment incentives in a future flexible power
-system. EMLabpy is based in EMLab and is rewritten in a modular way into python to easily couple with AMIRIS.
+The co-simulation of AMIRIS and EMLabpy intends to investigate the investment incentives in a future flexible power
+system. EMLabpy is based in EMLab http://emlab.tudelft.nl/ and is rewritten in a modular way into python to run it partially. 
 
-## Workflow 
-
-The integration is best illustrated with following diagram.
-![](data/workflow.jpg)
-## How to run it
-To run EMLabpy from the spinetoolbox, it needs to be packed as a python module. 
-To do so, run the following commands in the toolbox-amiris-emlab folder:
+## Workflow
+The co-simulation is best illustrated with following diagram.
+![](WorkflowEMLabpy-AMIRIS.jpg)
 
 ### Requirements
-- install Anaconda - not miniconda (with miniconda there have been some errors)
-- install Git https://git-scm.com/download/win
-- Make sure that java 8, 11 or 17 is installed 
+- Install Anaconda (not miniconda)
+- Install Git https://git-scm.com/download/win
+- Make sure that java 8, 11 or 17 is installed
+- Prepare environments: emlabEnv, EMLabpy, Spinetoolbox
+- Run the co-simulation
 
-## Prepare environments
-To run this project 3 anaconda environments (or any other virtual environment of your preference) should be created:
-spinetoolbox, iovrmr and EMLabpy. To do so following commands can be executed
+### 1. Prepare environments
+To run this project, anaconda environments (or any other virtual environment of your preference) should be created:
 
-### AMIRIS (emlabEnv)
+#### 1.1. EmlabEnv (AMIRIS)
+emlabEnv include the packages to run AMIRIS
+
 Open an anaconda prompt
 In toolbox-amiris-emlab folder
 ```
 conda env create -f environment.yml
 conda activate emlabEnv
 pip install -r requirements.txt
-
 ``` 
-close the command prompt
-### EMLABpy
-in other command prompt and in toolbox-amiris-emlab folder
+Close the command prompt
+
+#### Other steps to run AMIRIS
+
+everytime there is a new change in the code (including git pull) , the EMLabpy environment has to be updated. For that double click file install_emlabpy.bat
+
+
+#### 1.2. EMLabpy
+To run EMLabpy from the Spinetoolbox, it needs to be packed as a python module.
+To do so, open an anaconda prompt and run the following commands in the toolbox-amiris-emlab folder
 ```
 conda create -n emlabpy python=3.8
 conda activate emlabpy
 python setup.py install (Emlabpy has to be installed as a local module to be run in spinetoolbox)  
 python -m pip install . 
 pip install -r requirements.txt
-close this command prompt
 ```
-### spinetoolbox
-Having git installed
-download spinetoolbox and install all requirements as their webpage indicated in :
+close the command prompt
+
+#### 1.3. Spinetoolbox
+Download spinetoolbox and install all requirements as their webpage indicated in:
 https://github.com/spine-tools/Spine-Toolbox
-!!! Make a new environment called spinetoolbox. 
+Make a new environment called spinetoolbox. 
 
-In the toolbox-amiris-emlab folder activate  the environment spinetoolbox. 
-
+## 2. How to run it
+In the toolbox-amiris-emlab folder activate the environment spinetoolbox.
 (Type spinetoolbox to start the tool in this environment)
 
 Once the project is open, make an emlabpy kernel as follows:
-In spinetooolbox > file > settings> tools > jupyter console> kernel spec editor>
-add
-imterpreter: path to the python.exe in your conda environment emlabpy
+In spinetooolbox > file > settings> tools > jupyter console> kernel spec editor> add imterpreter: path to the python.exe in your conda environment emlabpy
 name: emlabpy
 make kernel specification > ok
 
@@ -61,89 +64,111 @@ Also change the path on the (Amiris future tool > basic console) to the emlabEnv
 
 Finally in Settings specify the path to toolbox-amiris-emlab
 
-###  kernel
-after making the enviroments emlabpy and iovrmr, the kernels can be created in the tool specification editor and double clicking any tool
+### Kernel
+After creating the enviroments emlabpy and emlabEnv, the kernels can be created in the tool specification editor and double-clicking any tool
 Then click kernel spec editor and make a new kernel called emlabpy referencing to your anaconda environment
 
+### Run it
+With the project open in spinetoolbox simply execute the project clicking the play symbol
 
-## Other steps to run AMIRIS
-add data in amiris_workflow\amiris-config\data\
-add folder in amiris_workflow\amiris with executable, setup.yaml and log
-add the empty folder amiris_workflow\amiris\result
-everytime there is a new change in the code (including git pull) , the emlabpy environment has to be updated. For that double click file install_emlabpy.bat
-in the AMIRIS make sure the output files is adjusted to ...toolbox-amiris-emlab\amiris_workflow\output\amiris_results.csv
+![](cosimulation_in_spinetoolbox.PNG)
+
+### Rerun
+If there have been any modifications to EMLabpy code, the emlabpy module has to be repacked and the databases have to be cleaned. 
+To do so, double-click on the file
+______update_emlabpy_SPINETOOLBOX.bat
+
+### Data
+
+## `data`
+
+The input data is stored in following files:
+The simulation configuration can be specified in the excel : Coupling Config.xlsx
+The specifications for the EMLabpy modules (investment, capacity mechanism and CO2) should be added in : EMLAbparameters.xlsx
+The power plants per country as saved in : Power_plants.xlsx
+The technology and fuel costs are saved in: exported_traderes.xlsx
 
 # Folder structure
 
 ## EMLABpy
 
-### `emlabpy`
+### `emlabpy/emlabpy.py`
+This is the main Emlabpy file that activates the different modules depending on the arguments given through the spinetoolbox
 
-This code is based on the model EMLab. http://emlab.tudelft.nl/
+### `emlabpy/util/`
+Folder with data preparation scripts.
 
-### `scripts`
+emlabpy/util/clock.py  - Prepares the data to simulate next year
+
+emlabpy/util/sprinedb_reader_writer.py - main functions to read and write data from DB into a repository.
+
+emlabpy/util/spinedb.py is a wrapper of Spine DB API to modify data into the SQL Spinetoolbox database
+
+emlabpy/util/repository.py functions to sort and modify data in repository.
+
+### `emlabpy/plots/domain`
+
+Each EMLab agent is defined in the modules where also getters and setters are defined.
+
+### `emlabpy/plots/modules`
+Each EMLabpy module retrieves information from the repository and executes a logic. For example, the capacity market, investment, prepare market clearing, etc.
+
+### `emlabpy/plots/`
+emlabpy/plots/plots.py - Functions to create plots from DBs
+
+### `emlabpy/scripts`
 
 This folder stores the code triggered from Spinetoolbox to do the data exchange
 
-### `data`
-
-This folder could be used for storing the original data files. Please add metadata and licensing information as well.
-
-### `logs`
-
-The logging from all the workflow can be found in this folder
-
-### `logs`
-
-The result plots from the EMLabpy - AMIRIS soft coupling
-
 ## AMIRIS
 
-### `amiris`
-
-This is the code from the AMIRIS project https://gitlab.com/dlr-ve/esy/amiris/amiris/
-Outdated -> the code is now packed in amiris_workflow
-
-### `examples`
-
-This folder contains the data to run Amiris https://gitlab.com/dlr-ve/esy/amiris/examples
-
-## AMIRIS IoVRMR
 ### `actions`
 
-These are the actions to run AMIRIS and which order is specified in the amiris_workflow
-### `output`
-
-The processed amiris_results.xls that will be used by EMLAB are saved here
+In these files are defined the functions to run AMIRIS and to rewrite the results into excels.
 
 ### `amiris_workflow`
 
 Here is the tool that imports all the needed data to run AMIRIS into yaml files. It also runs AMIRIS and exports the
 data to files to be imported back to EMLAB.
 
-#### `data`
+### `amiris_workflow/amiris`
 
-The excel timeseries (fuel prices, renewable profiles, demand, availability) to run AMIRIS should be stored in this
-folder.
+The AMIRIS executable (amiris-core_2.0.0-alpha.13-jar-with-dependencies.jar) contains the latest code of the 
+AMIRIS project https://gitlab.com/dlr-ve/esy/amiris/amiris/
 
-#### `amiris`
+The file amiris_workflow/amiris/results/traderes.pb contain the encrypted results.
 
-The log4j.properties, fame setup YAML and the amiris jar should be stored here
+### `amiris_workflow/amiris/run.py`
 
-#### `results`
+This is the code being triggered in the workflow. Executing it, prepares the yaml files stored in the amiris-config
 
-The file traderes.pb contain the encrypted results. 
+#### `amiris_workflow/amiris-config/data`
+The excel timeseries (fuel prices, renewable profiles, demand, availability) to run AMIRIS are prepared runnning the emlabpy modules
 
+### `amiris_workflow/output`
 
-### Input Data 
-The simulation configuration can be specified in the excel : Coupling Config.xls
-The specifications for the EMLab modules (investment, capacity mechanism and CO2) should be added in : EMLAbparameters.xls 
-The power plants per country as saved in : Power_plants.xls
+The processed amiris_results.xls that will be used by EMLAB are saved here
+
+## Preparation Scripts
+
+#### `preparation_scripts`
+
+Contains miscellaneous scripts to prepare data
+
+- delete_Spine_output_files.py -> delete log files of spinetoolbox
+- CleanDB.py -> deletes the data in the main dqlite databases: EmlabDB and AMIRIS DB
+- prepare power plants.py -> Groups the power plants per age.
+
 [workflow](#workflow)
+
+## `logs`
+
+The logging from all the workflow can be found in this folder
+
 ## License and Terms of Use 
 
 The Spine Toolbox project example provided here can be used without any limitations. This does not apply to any data
-files contained within or any parts of the models EMLab and AMIRIS.
+files contained within or any parts of the models EMLabpy and AMIRIS.
 
 The (Un)Licensing explicitly excludes:
 
