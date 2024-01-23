@@ -147,7 +147,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.check_profitability( powerplant,requiredProfit , horizon,  fictional_age)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-                    print("passed lifetime, decommission starting in year " + self.reps.start_dismantling_tick)
+                    print("passed lifetime, decommission starting in year " + str(self.reps.start_dismantling_tick))
 
             elif fictional_age < 0:
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
