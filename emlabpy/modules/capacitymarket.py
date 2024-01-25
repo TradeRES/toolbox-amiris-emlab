@@ -72,7 +72,6 @@ class CapacityMarketClearing(MarketModule):
 
     def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
-        self.isTheMarketCleared = False
         reps.dbrw.stage_init_capacitymechanisms_structure()
 
     def act(self):
@@ -80,59 +79,16 @@ class CapacityMarketClearing(MarketModule):
 
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         market = self.reps.get_capacity_market_in_country(self.reps.country)
-        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
-        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.future_prices,
-                                                                                           self.reps.current_year)
-        #peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year) - >
-        # changed to fix number because peak load can change per weather year.
-        # changing peak load according to higher than median year.
-        peak_load = spot_market.get_peak_load_per_year(self.reps.current_year)
-        # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
-        peakExpectedDemand = peak_load * (expectedDemandFactor)
-
-        print("peak load " + str(peakExpectedDemand))
-        # Retrieve the sloping demand curve for the expected peak load volume
-        sdc = market.get_sloping_demand_curve(peakExpectedDemand)
-
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
 
-        clearing_price = 0
-        total_supply_volume = 0
-        # Set the clearing price through the merit order
-        for ppdp in sorted_ppdp:
-            # As long as the market is not cleared
-            if not self.isTheMarketCleared:
-                if ppdp.price <= sdc.get_price_at_volume(total_supply_volume + ppdp.amount):
-                    total_supply_volume += ppdp.amount
-                    clearing_price = ppdp.price
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
-                    ppdp.accepted_amount = ppdp.amount
-                    #print(ppdp.name , " ACCEPTED ", total_supply, "", clearing_price)
+        clearing_price, total_supply_volume, isTheMarketCleared = self.capacity_market_clearing(sorted_ppdp, market, self.reps.current_year)
 
-                elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
-                    clearing_price = ppdp.price
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
-                    ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
-                    total_supply_volume = sdc.get_volume_at_price(clearing_price)
-                    #print(ppdp.name , " partially ACCEPTED ", total_supply, "", clearing_price)
-                    self.isTheMarketCleared = True
-                    break
-                else:
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
-                    ppdp.accepted_amount = 0
-                    #print(ppdp.name , " too expensive", total_supply, "", ppdp.price)
-                    break
-            else:
-                raise Exception
-        print("clearing price ", clearing_price)
-        print("total_supply", total_supply_volume)
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(market, clearing_price)
 
         # saving market clearing point
-        if self.isTheMarketCleared == True:
+        if isTheMarketCleared == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply_volume,
                                                              self.reps.current_tick)
             print("Cleared market", market.name, "at " , str(clearing_price))
@@ -141,6 +97,55 @@ class CapacityMarketClearing(MarketModule):
                                                              self.reps.current_tick)
             print("Market is not cleared", market.name, "at " , str(clearing_price))
 
+    def capacity_market_clearing( self, sorted_ppdp, market, year):
+        isTheMarketCleared = False
+        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
+        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
+                                                                                           globalNames.future_prices,
+                                                                                           year)
+        #peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year) - >
+        # changed to fix number because peak load can change per weather year.
+        # changing peak load according to higher than median year.
+        peak_load = spot_market.get_peak_load_per_year(year)
+        # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
+        peakExpectedDemand = peak_load * (expectedDemandFactor)
+
+        print("peak load " + str(peakExpectedDemand))
+        # Retrieve the sloping demand curve for the expected peak load volume
+        sdc = market.get_sloping_demand_curve(peakExpectedDemand)
+
+        clearing_price = 0
+        total_supply_volume = 0
+        # Set the clearing price through the merit order
+        for ppdp in sorted_ppdp:
+            # As long as the market is not cleared
+
+            if ppdp.price <= sdc.get_price_at_volume(total_supply_volume + ppdp.amount):
+                total_supply_volume += ppdp.amount
+                clearing_price = ppdp.price
+                ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
+                ppdp.accepted_amount = ppdp.amount
+             #   print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
+
+            elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
+                clearing_price = ppdp.price
+                ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
+                ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
+                total_supply_volume = sdc.get_volume_at_price(clearing_price)
+                print(ppdp.plant , " partially ACCEPTED ", total_supply_volume, "", clearing_price)
+                isTheMarketCleared = True
+                break
+            else:
+                ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
+                ppdp.accepted_amount = 0
+                print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
+                break
+
+        print("clearing price ", clearing_price)
+        print("total_supply", total_supply_volume)
+        print("cleared market? ", isTheMarketCleared)
+
+        return clearing_price, total_supply_volume, isTheMarketCleared
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)

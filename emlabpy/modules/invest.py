@@ -8,7 +8,7 @@ import os
 import sys
 import logging
 import math
-import csv
+from modules.capacitymarket import CapacityMarketClearing
 from datetime import datetime
 
 
@@ -134,6 +134,10 @@ class Investmentdecision(DefaultModule):
 
                 self.capacity_calculations()
 
+                if self.reps.capacity_market_cleared_in_investment == None:
+                    pass
+                else:
+                    capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", self.futureTick)
                 for candidatepowerplant in self.investable_candidate_plants:
                     print("..............." + candidatepowerplant.technology.name)
                     cp_numbers.append(candidatepowerplant.name)
@@ -154,13 +158,13 @@ class Investmentdecision(DefaultModule):
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
-                        if self.reps.capacity_remuneration_mechanism == "capacity_market":
-                            effectiveExpectedCapacityperTechnology = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
-                                self.future_installed_plants_ids, self.investable_candidate_plants)
-                            capacity_market_revenue = self.calculate_capacity_market_revenues(effectiveExpectedCapacityperTechnology, candidatepowerplant)
+                        operatingProfit = candidatepowerplant.get_Profit() # per MW
+                        if self.reps.capacity_market_cleared_in_investment == False:
+                            pass
                         else:
-                            capacity_market_revenue = 0
-                        cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, capacity_market_revenue)
+                            operatingProfit = operatingProfit + capacity_market_price * \
+                                              candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability
+                        cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
                         projectvalue = self.npv(cashflow)
 
                         # saving the list of power plants values that have been candidates per investmentIteration.
@@ -197,6 +201,7 @@ class Investmentdecision(DefaultModule):
                     if self.reps.initialization_investment == True:
                         print("Initialization investment loop")
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
+                            # finalizing initialization loop
                             # look ahead = 4 should be executed in the workflow
                             self.reps.initialization_investment = False
                             self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
@@ -205,21 +210,22 @@ class Investmentdecision(DefaultModule):
                         else:
                             self.reps.investment_initialization_years += 1
                             self.continue_iteration()
-
                             self.reps.dbrw.stage_testing_future_year(self.reps)
 
-                        # reset all candidate power plants to investable
-                        candidates_names = self.reps.get_unique_candidate_names()
-                        print("RESET candidates to investable")
-                        self.reps.dbrw.stage_candidate_status_to_investable(candidates_names)
-
+                        self.reset_status_candidates_to_investable()
                         if self.reps.targetinvestment_per_year == True:
                             self.reps.dbrw.stage_target_investments_done(False)
 
+                    elif (self.reps.capacity_remuneration_mechanism == "capacity_market" and self.reps.investmentIteration > 0
+                          and self.reps.capacity_market_cleared_in_investment == False):
+                        self.calculate_capacity_market_price()
+
                     else:
                         # continue to next year in workflow
+                        # when testing last technolgy, candidate to be installed is tested with real capacity
                         self.reps.dbrw.stage_last_testing_technology(False)
                         self.stop_iteration()
+
                     # saving iteration number back to zero for next year
                     self.reps.dbrw.stage_iteration(0)
 
@@ -241,6 +247,13 @@ class Investmentdecision(DefaultModule):
                                                                                self.future_installed_plants_ids, self.futureTick)
             else:
                 print("all technologies are unprofitable")
+
+    def reset_status_candidates_to_investable(self):
+        print("RESET candidates to investable")
+        candidates_names = self.reps.get_unique_candidate_names()
+        # reset all candidate power plants to investable todo: should this be done also in non initialization
+        self.reps.dbrw.stage_candidate_status_to_investable(candidates_names)
+
     def stage_loans_and_downpayments_of_ungrouped(self, newplant):
         print("saving loans")
         print(newplant.id)
@@ -315,14 +328,12 @@ class Investmentdecision(DefaultModule):
         self.futureTick = self.reps.current_tick + lookAhead  # self.agent.getInvestmentFutureTimeHorizon()
         self.futureInvestmentyear = self.reps.start_simulation_year + self.futureTick
 
-    def getProjectCashFlow(self, candidatepowerplant, agent, capacity_market_revenue):
+    def getProjectCashFlow(self, candidatepowerplant, agent, operatingProfit):
         technology = candidatepowerplant.technology
         totalInvestment = self.getActualInvestedCapitalperMW(
             technology) * candidatepowerplant.capacity  # candidate power plants only have 1MW installed
         depreciationTime = technology.depreciation_time
-        technical_lifetime = technology.expected_lifetime
         buildingTime = technology.expected_leadtime
-        operatingProfit = candidatepowerplant.get_Profit()  + capacity_market_revenue # per MW
         fixed_costs = self.getActualFixedCostsperMW(technology) * candidatepowerplant.capacity
         equity = (1 - agent.debtRatioOfInvestments)
         equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
@@ -465,23 +476,29 @@ class Investmentdecision(DefaultModule):
         return new_target_power_plants
 
 
-    def calculate_capacity_market_revenues(self, effectiveExpectedCapacityperTechnology, candidatepowerplant):
-        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
-        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
-        totalPeakDemandAtFuturePoint = spot_market.get_peak_load_per_year(self.futureInvestmentyear)
-        sdc = capacity_market.get_sloping_demand_curve(totalPeakDemandAtFuturePoint)
-        capacityRevenue = 0
-        if effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] <= sdc.um_volume:
-            capacityRevenue = candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability * capacity_market.PriceCap
-        elif effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] > sdc.lm_volume\
-                and effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] < sdc.um_volume:
-            clearing_price = sdc.get_price_at_volume(effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name])
-            capacityRevenue = candidatepowerplant.capacity * candidatepowerplant.technology.availability * clearing_price
-        elif effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] > sdc.lm_volume:
-            capacityRevenue = 0
-        else:
-            raise Exception
-        return  capacityRevenue
+    def calculate_capacity_market_price(self):
+        market = self.reps.get_capacity_market_in_country(self.reps.country)
+        for (pp_id, operatingProfit) in self.pp_profits.iteritems():
+            powerplant = self.reps.get_power_plant_by_id(pp_id)
+            cashflow = self.getProjectCashFlow(powerplant, self.agent, operatingProfit[0])
+            price_to_bid = 0
+            npv = self.npv(cashflow)
+            if powerplant.capacity > 0 and npv <= 0:
+                price_to_bid = -1 * npv / (powerplant.capacity * powerplant.technology.peak_segment_dependent_availability)
+            else:
+                pass # if positive revenues price_to_bid remains 0
+            capacity_to_bid = powerplant.capacity * powerplant.technology.peak_segment_dependent_availability
+            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, capacity_to_bid, \
+                                                                       price_to_bid, self.futureTick)
+
+        sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.futureTick)
+        capacity_market_price, total_supply_volume, isTheMarketCleared = CapacityMarketClearing.capacity_market_clearing( self, sorted_ppdp, market, self.futureInvestmentyear)
+        self.reset_status_candidates_to_investable()
+        self.reps.dbrw.stage_capacity_market_in_investment_as_cleared()
+        market.name = "capacity_market_future" # changing name of market to not confuse it with realized market
+        self.reps.create_or_update_market_clearing_point(market , capacity_market_price, total_supply_volume,
+                                                         self.futureTick)
+
 
     def group_power_plants(self):
         plants_to_delete = []

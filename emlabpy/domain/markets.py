@@ -141,8 +141,10 @@ class MarketClearingPoint(ImportObject):
                 self.market = reps.capacity_markets[parameter_value]
             elif parameter_value in reps.electricity_spot_markets.keys():
                 self.market = reps.electricity_spot_markets[parameter_value]
-            else:
+            elif parameter_value in reps.co2_markets.keys():
                 self.market = reps.co2_markets[parameter_value]
+            else:
+                self.market = CapacityMarket(parameter_value)
         if parameter_name == 'TotalCapacity':
             self.capacity = float(parameter_value)
         if parameter_name == 'Tick':

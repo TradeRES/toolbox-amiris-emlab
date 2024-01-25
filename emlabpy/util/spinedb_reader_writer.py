@@ -167,6 +167,8 @@ class SpineDBReaderWriter:
                 reps.scenarioWeatheryearsExcel = str(row['parameter_value'])
             elif row['parameter_name'] == 'capacity_remuneration_mechanism':
                 reps.capacity_remuneration_mechanism = (row['parameter_value'])
+            elif row['parameter_name'] == 'capacity_market_cleared_in_investment':
+                reps.capacity_market_cleared_in_investment = bool(row['parameter_value'])
 
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
@@ -384,6 +386,13 @@ class SpineDBReaderWriter:
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [('last_investable_technology', last_investable_technology)], "0")
+
+    def stage_capacity_market_in_investment_as_cleared(self):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [('capacity_market_cleared_in_investment', True)], "0")
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 
@@ -722,6 +731,13 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
                                            [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
                                            '0')
+
+    def stage_CM_price_in_investment(self, year, price):
+        self.stage_object(self.financial_reports_object_classname, power_plant)
+        self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
+                                           [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
+                                           '0')
+
 
     """
     Fuel prices

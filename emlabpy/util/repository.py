@@ -93,6 +93,7 @@ class Repository:
         self.dummy_capacity_to_test = 1
         self.run_quick_investments = False
         self.capacity_remuneration_mechanism = None
+        self.capacity_market_cleared_in_investment = False
         self.limit_investments = True
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
@@ -396,10 +397,6 @@ class Repository:
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 
-    # def filter_intermittent_candidate_power_plants(self, powerplant_list) -> List[CandidatePowerPlant]:
-    #     return [i for i in powerplant_list if i.viableInvestment is True
-    #             and i.technology.intermittent == True
-    #             ]
     def get_investable_candidate_power_plants_minimal_irr_or_npv(self) -> List[CandidatePowerPlant]:
         investable_candidates = self.get_investable_candidate_power_plants()
         if self.minimal_last_years_IRR != "NOTSET":
@@ -882,6 +879,12 @@ class Repository:
         except StopIteration:
             logging.warning('power plant technology not found' + str(result.identifier))
         return None
+
+    def get_capacity_market_in_country(self, country):
+        try:
+            return next(i for i in self.capacity_markets.values() if i.country == country)
+        except StopIteration:
+            return None
 
     def get_capacity_market_in_country(self, country):
         try:
