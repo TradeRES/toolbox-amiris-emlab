@@ -865,7 +865,7 @@ class Repository:
         bid.accepted_amount = 0
         bid.tick = time
         self.bids[bid.name] = bid
-        self.dbrw.stage_bids(bid)
+       # self.dbrw.stage_bids(bid)
         return bid
 
     def update_installed_pp_results(self, installed_pp_results):

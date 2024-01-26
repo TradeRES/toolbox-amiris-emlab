@@ -236,6 +236,8 @@ class SpineDBReaderWriter:
 
     def stage_market_clearing_point(self, mcp: MarketClearingPoint):
         object_name = mcp.name
+        self.stage_object_class(self.market_clearing_point_object_classname)
+        self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'Volume', 'Tick'])
         print(self.market_clearing_point_object_classname, object_name, mcp.market.name)
         self.stage_object(self.market_clearing_point_object_classname, object_name)
         self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
@@ -387,12 +389,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [('last_investable_technology', last_investable_technology)], "0")
 
-    def stage_capacity_market_in_investment_as_cleared(self):
+    def stage_capacity_market_in_investment_status(self, status):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [('capacity_market_cleared_in_investment', True)], "0")
+                                           [('capacity_market_cleared_in_investment', status)], "0")
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 

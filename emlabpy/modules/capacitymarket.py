@@ -98,7 +98,7 @@ class CapacityMarketClearing(MarketModule):
             print("Market is not cleared", market.name, "at " , str(clearing_price))
 
     def capacity_market_clearing( self, sorted_ppdp, market, year):
-        isTheMarketCleared = False
+        isTheMarketCleared = False # isTheMarketCleared means ther capacity us slightly oversubscribed
         spot_market = self.reps.get_spot_market_in_country(self.reps.country)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.future_prices,
@@ -132,13 +132,13 @@ class CapacityMarketClearing(MarketModule):
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                 ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
                 total_supply_volume = sdc.get_volume_at_price(clearing_price)
-                print(ppdp.plant , " partially ACCEPTED ", total_supply_volume, "", clearing_price)
+               # print(ppdp.plant , " ACCEPTED and oversubscribed ", total_supply_volume, "", clearing_price)
                 isTheMarketCleared = True
                 break
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
                 ppdp.accepted_amount = 0
-                print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
+             #   print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
                 break
 
         print("clearing price ", clearing_price)
