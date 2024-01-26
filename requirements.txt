@@ -9,7 +9,7 @@ matplotlib~=3.5.1
 ioproc
 requests~=2.27.1
 pyodbc~=4.0.32
-fameio==1.6
+fameio==1.8
 pyyaml~=5.4.1
 setuptools~=52.0.0
 seaborn
