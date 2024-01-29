@@ -132,18 +132,20 @@ class CapacityMarketClearing(MarketModule):
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                 ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
                 total_supply_volume = sdc.get_volume_at_price(clearing_price)
-               # print(ppdp.plant , " ACCEPTED and oversubscribed ", total_supply_volume, "", clearing_price)
+               # print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
                 isTheMarketCleared = True
                 break
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
                 ppdp.accepted_amount = 0
-             #   print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
+                if total_supply_volume > sdc.lm_volume:
+                    isTheMarketCleared = True
+            #   print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
                 break
 
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
-        print("cleared market? ", isTheMarketCleared)
+        print("market mninimum volume? ", isTheMarketCleared)
 
         return clearing_price, total_supply_volume, isTheMarketCleared
     def stageCapacityMechanismRevenues(self, market, clearing_price):

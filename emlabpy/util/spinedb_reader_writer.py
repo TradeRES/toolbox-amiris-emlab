@@ -238,7 +238,6 @@ class SpineDBReaderWriter:
         object_name = mcp.name
         self.stage_object_class(self.market_clearing_point_object_classname)
         self.stage_object_parameters(self.market_clearing_point_object_classname, ['Market', 'Price', 'Volume', 'Tick'])
-        print(self.market_clearing_point_object_classname, object_name, mcp.market.name)
         self.stage_object(self.market_clearing_point_object_classname, object_name)
         self.stage_object_parameter_values(self.market_clearing_point_object_classname, object_name,
                                            [('Market', mcp.market.name),

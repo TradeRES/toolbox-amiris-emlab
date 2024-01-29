@@ -164,8 +164,6 @@ class Investmentdecision(DefaultModule):
                         else:
                             operatingProfit = operatingProfit + capacity_market_price * \
                                               candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability
-                            print("capacity market revenues ")
-                            print(capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability)
 
                         cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
                         projectvalue = self.npv(cashflow)
@@ -201,59 +199,60 @@ class Investmentdecision(DefaultModule):
                     self.continue_iteration()
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
-                    if self.reps.initialization_investment == True:
-                        print("Initialization investment loop")
-                        if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
-                            # finalizing initialization loop
-                            # look ahead = 4 should be executed in the workflow
-                            self.reps.initialization_investment = False
-                            self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
-                            self.reps.dbrw.stage_last_testing_technology(False)
-                            self.stop_iteration() # continue to main workflow
-                        else:
-                            self.reps.investment_initialization_years += 1
-                            self.continue_iteration()
-                            self.reps.dbrw.stage_testing_future_year(self.reps)
-
-                        self.reset_status_candidates_to_investable()
-                        self.reps.dbrw.stage_iteration(0)
-
-                        if self.reps.targetinvestment_per_year == True:
-                            self.reps.dbrw.stage_target_investments_done(False)
-
-                    elif (self.reps.capacity_remuneration_mechanism == "capacity_market"
-                          and self.reps.capacity_market_cleared_in_investment == False):
-                        print("*********************************************** capacity markets")
+                    if (self.reps.capacity_remuneration_mechanism == "capacity_market"
+                            and self.reps.capacity_market_cleared_in_investment == False):
+                        print("************************************************************************************ capacity markets")
                         self.reps.investment_initialization_years += 1
                         self.reset_status_candidates_to_investable()
                         self.continue_iteration()
                         self.reps.dbrw.stage_capacity_market_in_investment_status(True)
                     else:
-                        # continue to next year in workflow
-                        # when testing last technolgy, candidate to be installed is tested with real capacity
-                        self.reps.dbrw.stage_last_testing_technology(False)
-                        if (self.reps.capacity_remuneration_mechanism == "capacity_market"
-                                and self.reps.capacity_market_cleared_in_investment == True):
-                            self.reps.dbrw.stage_capacity_market_in_investment_status(False)
-                        # saving iteration number back to zero for next year
-                        self.reps.dbrw.stage_iteration(0)
-                        self.stop_iteration()
-                    if self.reps.groups_plants_per_installed_year == True:
-                        self.group_power_plants()
-                    else:
-                        pass # not grouping power plants
+                        if self.reps.initialization_investment == True:
+                            print("Initialization investment loop")
+                            if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
+                                # finalizing initialization loop
+                                # look ahead = 4 should be executed in the workflow
+                                self.reps.initialization_investment = False
+                                self.reps.dbrw.stage_initialization_investment(self.reps.initialization_investment)
+                                self.reps.dbrw.stage_last_testing_technology(False)
+                                self.stop_iteration() # continue to main workflow
+                            else:
+                                self.reps.investment_initialization_years += 1
+                                self.continue_iteration()
+                                self.reps.dbrw.stage_testing_future_year(self.reps)
 
-                    # Ids of grouped power plants were removed
-                    for pp_id in self.ids_of_future_installed_and_dispatched_pp:
-                        if str(pp_id)[:4] == str(self.futureInvestmentyear):
-                            newplant = self.reps.get_power_plant_by_id(pp_id)
-                            newplant = self.calculate_investments_of_ungrouped(newplant)
-                            self.stage_loans_and_downpayments_of_ungrouped(newplant)
+                            self.reset_status_candidates_to_investable()
+                            self.reps.dbrw.stage_iteration(0)
 
-                    # saving profits of installed power plants.
-                    print("saving future total profits")
-                    self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps,self.pp_dispatched_names, self.pp_profits,
-                                                                               self.future_installed_plants_ids, self.futureTick)
+                            if self.reps.targetinvestment_per_year == True:
+                                self.reps.dbrw.stage_target_investments_done(False)
+                        else:
+                            # continue to next year in workflow
+                            # when testing last technolgy, candidate to be installed is tested with real capacity
+                            self.reps.dbrw.stage_last_testing_technology(False)
+                            if (self.reps.capacity_remuneration_mechanism == "capacity_market"
+                                    and self.reps.capacity_market_cleared_in_investment == True):
+                                self.reps.dbrw.stage_capacity_market_in_investment_status(False)
+                            # saving iteration number back to zero for next year
+                            self.reps.dbrw.stage_iteration(0)
+                            self.stop_iteration()
+
+                        if self.reps.groups_plants_per_installed_year == True:
+                            self.group_power_plants()
+                        else:
+                            pass # not grouping power plants
+
+                        # Ids of grouped power plants were removed, so here are the plants being
+                        for pp_id in self.ids_of_future_installed_and_dispatched_pp:
+                            if str(pp_id)[:4] == str(self.futureInvestmentyear):
+                                newplant = self.reps.get_power_plant_by_id(pp_id)
+                                newplant = self.calculate_investments_of_ungrouped(newplant)
+                                self.stage_loans_and_downpayments_of_ungrouped(newplant)
+
+                        # saving profits of installed power plants.
+                        print("saving future total profits")
+                        self.reps.dbrw.stage_future_total_profits_installed_plants(self.reps,self.pp_dispatched_names, self.pp_profits,
+                                                                                   self.future_installed_plants_ids, self.futureTick)
             else:
                 print("all technologies are unprofitable")
                 raise Exception
@@ -265,8 +264,6 @@ class Investmentdecision(DefaultModule):
         self.reps.dbrw.stage_candidate_status_to_investable(candidates_names)
 
     def stage_loans_and_downpayments_of_ungrouped(self, newplant):
-        print("saving loans")
-        print(newplant.id)
         self.reps.dbrw.stage_loans(newplant)
         self.reps.dbrw.stage_downpayments(newplant)
 
