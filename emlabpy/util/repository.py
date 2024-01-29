@@ -853,9 +853,7 @@ class Repository:
                     bid.tick == time), None)
         if bid is None:
             # PowerPlantDispatchPlan not found, so create a new one
-            name = str(datetime.now())
-            bid = Bid(name)
-
+            bid = Bid(plant.name)
         bid.plant = plant.name
         bid.bidder = bidder.name
         bid.market = market.name
@@ -864,7 +862,7 @@ class Repository:
         bid.status = globalNames.power_plant_dispatch_plan_status_awaiting
         bid.accepted_amount = 0
         bid.tick = time
-        self.bids[bid.name] = bid
+        self.bids[plant.name] = bid
        # self.dbrw.stage_bids(bid)
         return bid
 
@@ -915,6 +913,11 @@ class Repository:
                 return mcp.price
         else:
             return 0
+    def get_cleared_volume_for_market_and_time(self, market: Market, time: int) -> float:
+        try:
+            return next(i.volume for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time)
+        except StopIteration:
+            return None
 
     def create_or_update_market_clearing_point(self,
                                                market: Market,
