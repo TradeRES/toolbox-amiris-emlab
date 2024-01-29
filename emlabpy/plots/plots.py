@@ -292,7 +292,8 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
 
 
 def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                     CM_clearing_price, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp,
+                     CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume,
+                    total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp,
                      path_to_plots, colors_unique_techs):
     # df.plot(x='Team', kind='bar', stacked=True,
     axs26 = accepted_pp_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
@@ -331,11 +332,23 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
                       dpi=300)
 
     if ran_CRM == "capacity_market":
+        axs27 = CM_clearing_volume.plot()
+        capacity_market_future_volume.plot(ax=axs27)
+        axs27.set_axisbelow(True)
+        plt.xlabel('Simulation year', fontsize='medium')
+        plt.ylabel('CM clearing volume [€/MW]', fontsize='medium')
+        plt.legend(["realized", "estimated"],fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid()
+        axs27.set_title('Capacity Mechanism clearing volume')
+        fig27 = axs27.get_figure()
+        fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
+
         axs28 = CM_clearing_price.plot()
+        capacity_market_future_price.plot(ax=axs28)
         axs28.set_axisbelow(True)
         plt.xlabel('Simulation year', fontsize='medium')
         plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
-        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
         axs28.set_title('Capacity Mechanism clearing price')
         fig28 = axs28.get_figure()
@@ -1640,6 +1653,9 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     number_accepted_pp_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
     capacity_mechanisms_volume_per_tech = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies)
     CM_clearing_price = pd.DataFrame(index=ticks_to_generate).fillna(0)
+    capacity_market_future_price = pd.DataFrame(index=ticks_to_generate).fillna(0)
+    CM_clearing_volume = pd.DataFrame(index=ticks_to_generate).fillna(0)
+    capacity_market_future_volume = pd.DataFrame(index=ticks_to_generate).fillna(0)
     SR_operator_revenues = pd.DataFrame(index=ticks_to_generate).fillna(0)
     ticks_to_generate.pop()  # the last year doesnt have the results of the following year
     # attention: FOR STRATEGIC RESERVES
@@ -1664,12 +1680,10 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
         ran_CRM = "capacity_market"
         market = reps.get_capacity_market_in_country(reps.country)
         for tick in ticks_to_generate:
-            # accepted_per_tick = reps.get_accepted_CM_bids(tick)  # accepted amount from bids todo change to erase bids
-            # for technology_name in unique_technologies:
-            #     for accepted_plant in accepted_per_tick:
-            #         if reps.power_plants[accepted_plant.plant].technology.name == technology_name:
-            #             capacity_mechanisms_volume_per_tech.loc[tick, technology_name] += accepted_plant.amount
             CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick)
+            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)
+            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick)
+            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)
 
     cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
@@ -1695,7 +1709,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     capacity_mechanisms_volume_per_tech.replace(0, np.nan, inplace=True)
     capacity_mechanisms_volume_per_tech.dropna(axis=1, how='all', inplace=True)
     return (CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech,
-            CM_clearing_price, total_costs_CM, \
+            CM_clearing_price, capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,total_costs_CM, \
             ran_CRM, SR_operator_revenues, cm_revenues_per_pp)
 
 
@@ -1725,7 +1739,6 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
     share_RES = pd.DataFrame(index=years_to_generate).fillna(0)
     #  production_per_year = pd.DataFrame(index=years_to_generate).fillna(0)
     for year in years_to_generate:
-        print(year)
         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
         totalrevenues = 0
         totalproduction = 0
@@ -1743,7 +1756,6 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                         capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
                         full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
                         totalproduction += pp_production_in_MWh
-                        print(power_plant.name)
                         totalrevenues += dispatch_per_year.revenues[id]
                         if pp_production_in_MWh > 0:
                             market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
@@ -2277,11 +2289,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
         CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
-            total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp = prepare_accepted_CapacityMechanism(
+            capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp = \
+            prepare_accepted_CapacityMechanism(
             reps, ticks_to_generate)
         plot_CM_revenues(CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
-                         CM_clearing_price, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp,
-                         path_to_plots,
+                         CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,
+                         total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp, path_to_plots,
                          colors_unique_techs)
         if ran_CRM == "strategic_reserve":
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
@@ -2708,7 +2721,7 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["Debug"]
+SCENARIOS = ["Debug-CM-invest"]
 # results_excel = "NL_SRnewData.xlsx"
 #
 # SCENARIOS = ["NL-EOM-newData", "NL-EOM_S1", "NL-SR1600M10_S1", "NL-CM60000_S1"]
