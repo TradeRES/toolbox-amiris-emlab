@@ -31,7 +31,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.intermittent = False # in MW
         self.fuel = ''
         self.type = ''
-
+        self.interestRate = 0.07
         # here are missing info
         self.energyToPowerRatio = 0
         self.chargingEfficiency = 0
@@ -57,6 +57,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.expected_permittime = int(parameter_value)
         elif parameter_name == 'expectedLeadtime':
             self.expected_leadtime = int(parameter_value)
+        elif parameter_name == 'InterestRate':
+            self.interestRate = parameter_value
         elif parameter_name == 'MaximumLifeExtension':
             self.maximumLifeExtension = int(parameter_value)
         elif parameter_name == 'efficiency_full_load':

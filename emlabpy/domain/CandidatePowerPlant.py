@@ -34,12 +34,9 @@ class CandidatePowerPlant(PowerPlant):
         elif parameter_name == 'Technology':
             self.technology = reps.power_generating_technologies[parameter_value]
             self.actualEfficiency = self.technology.efficiency
-        # elif parameter_name == 'Owner':
-        #     self.owner = parameter_value
         elif parameter_name == 'ViableInvestment':
             self.viableInvestment = bool(parameter_value)
         # capacityTobeInstalled is the one being really installed, after the test of dummy capacity has been tested
-
         elif parameter_name == "Realistic_capacity":
             self.capacityRealistic = int(parameter_value)
             if reps.last_investable_technology == True:

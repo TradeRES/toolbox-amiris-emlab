@@ -141,7 +141,7 @@ class CreatingFinancialReports(DefaultModule):
             for i in range(buildingTime, depreciationTime + buildingTime):
                 investmentCashFlow[i] = operational_profit_withFixedCosts - restPayment
 
-        npv = npf.npv(self.agent.equityInterestRate, investmentCashFlow)
+        npv = npf.npv(pp.technology.interestRate, investmentCashFlow)
 
         # investmentCashFlow_with_loans = [0 for i in range(depreciationTime + buildingTime)]
         # for i in range(0, buildingTime):

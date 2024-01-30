@@ -199,7 +199,7 @@ class PowerPlant(EMLabAgent):
     def set_loans_installed_pp(self, reps):
         amountPerPayment = reps.determineLoanAnnuities(
             self.getActualInvestedCapital() * self.owner.getDebtRatioOfInvestments(),
-            self.getTechnology().getDepreciationTime(), self.owner.getLoanInterestRate())
+            self.getTechnology().getDepreciationTime(), self.technology.interestRate )
         done_payments = self.age  # the loan  is paid since it was constructed.
         startpayments = - self.age
         reps.createLoan(self.owner.name, reps.bigBank.name, amountPerPayment,

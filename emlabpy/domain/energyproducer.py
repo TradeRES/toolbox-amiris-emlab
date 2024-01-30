@@ -71,8 +71,6 @@ class EnergyProducer(EMLabAgent):
             pd_series = pd.Series(values, index = index)
             setattr(self, parameter_name, pd_series)
 
-    def getLoanInterestRate(self):
-        return self.loanInterestRate
 
     def getDismantlingRequiredOperatingProfit(self):
         return self.dismantlingRequiredOperatingProfit
