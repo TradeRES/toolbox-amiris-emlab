@@ -19,6 +19,7 @@ Jim Hommes - 7-4-2021
 """
 import sys
 from util.spinedb import SpineDB
+from spinedb_api import Map
 from util import globalNames
 import glob
 import os
@@ -75,7 +76,7 @@ def update_years_file(current_year, initial, final_year, lookAhead):
     f.close()
 
 
-def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_profiles_to_representative_year,
+def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_profiles_to_representative_year, Country,
                         modality):
     print("preparing data for years " + str(year) + " and investment " + str(representative_year_investment) + " for NL")
     """
@@ -91,6 +92,9 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                                              "Sun PV profiles",
                                              "Load"])
 
+        if modality == "initialize":
+            peak_load =  max(excel['Load'][representative_year_investment])* (load_shedders.loc["base", "percentage_load"])
+            print(peak_load)
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
             print("--------load and profiles should be related")
             raise Exception
@@ -227,6 +231,8 @@ try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
     object_parameter_value_name = 'SimulationTick'
+    global peak_load
+    peak_load = 0 
     # print(os.getcwd())
     if len(sys.argv) >= 2:
         lookAhead = next(int(i['parameter_value']) for i
@@ -240,6 +246,10 @@ try:
         StartYear = next(int(i['parameter_value']) for i in
                          db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                          if i['parameter_name'] == 'Start Year')
+        #
+        #
+        # peak_load = next(i['parameter_value'] for i in  db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+        # "peakLoad", StartYear) if i['parameter_name'] == "ElectricitySpotMarketNL")
 
         Country = next(i['parameter_value'] for i in
                        db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
@@ -327,20 +337,29 @@ try:
             db_emlab.import_alternatives([str(0)])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
-            db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
 
             update_years_file(StartYear, StartYear, final_year, lookAhead)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
             if available_years_data == True:
-                prepare_AMIRIS_data(StartYear, 0, fix_demand_to_representative_year, fix_profiles_to_representative_year,
+                prepare_AMIRIS_data(StartYear, 0, fix_demand_to_representative_year,
+                                    fix_profiles_to_representative_year, Country,
                                     "initialize")
             else:  # no dynamic data for other cases
                 prepare_AMIRIS_data_for_one_year()
 
+            object_nameem = StartYear
+            parameterem = "ElectricitySpotMarketNL"
+            classnameem = "peakLoad"
 
-        if sys.argv[2] == 'increment_clock':  # increment clock
+            db_emlab.import_object_classes([classnameem])
+            db_emlab.import_objects([(classnameem, object_nameem)])
+            db_emlab.import_data({'object_parameters': [[classnameem, parameterem]]})
+            db_emlab.import_alternatives([str(0)])
+            db_emlab.import_object_parameter_values([(classnameem, object_nameem, parameterem, peak_load, '0')])
+
+        elif sys.argv[2] == 'increment_clock':  # increment clock
 
             if targetinvestment_per_year == True:
                 reset_target_investments_done()
@@ -383,12 +402,14 @@ try:
 
             if available_years_data == True:
                 prepare_AMIRIS_data(updated_year, new_tick, fix_demand_to_representative_year,
-                                    fix_profiles_to_representative_year,
+                                    fix_profiles_to_representative_year, Country,
                                     "increment")
                 print("prepared AMIRIS data ")
             else:  # no dynamic data for other cases
                 print("no dynamic data for this country")
 
+        else:
+            raise Exception
 except Exception:
     raise
 finally:
