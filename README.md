@@ -9,7 +9,7 @@ The co-simulation workflow is best illustrated with following diagram.
 ### Requirements
 - Install Anaconda (not miniconda)
 - Install Git https://git-scm.com/download/win
-- Make sure that java 8, 11 or 17 is installed
+- Make sure that java 11 is installed
 
 ### 1. Prepare environments
 To run this project, 3 anaconda environments (or any other virtual environment of your preference) should be created: emlabEnv, EMLabpy, Spinetoolbox
