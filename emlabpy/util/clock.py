@@ -31,7 +31,7 @@ from spinedb_api import DatabaseMapping, from_database, Map, to_database
 db_url = sys.argv[1]
 db_emlab = SpineDB(db_url)
 
-db_map = DatabaseMapping(db_url, create=False)
+
 grandparentpath = dirname(dirname(realpath(os.getcwd())))
 parentpath = os.path.dirname(os.getcwd())
 
@@ -229,22 +229,6 @@ def prepare_AMIRIS_data_for_one_year():
     pv = pd.read_csv(pv_path_DE, delimiter=";", header=None)
     pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=False)
 
-def saving_peak_load(Country):
-    class_name = "ElectricitySpotMarkets"
-    object_name = "ElectricitySpotMarket" + Country
-    parameter_name = "peakLoadFixed"
-    alternative_name = str(0)
-    peak_load_Map = Map([2020.0, StartYear], [20000, peak_load])
-    db_map = DatabaseMapping(db_url)  # Remove create=True if the database exists
-    im.import_object_classes(db_map, [class_name])
-    im.import_objects(db_map, [(class_name, object_name)])
-    im.import_object_parameters(db_map, [(class_name, parameter_name)])
-    im.import_alternatives(db_map, [alternative_name])
-    im.import_object_parameter_values(
-        db_map,
-        [(class_name, object_name, parameter_name, peak_load_Map, alternative_name)],
-    )
-    db_map.commit_session("Add initial data.")
 
 try:
     class_name = "Configuration"
@@ -262,10 +246,11 @@ try:
                           in db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                     object_name) \
                           if i['parameter_name'] == "End Year")
+        global StartYear
         StartYear = next(int(i['parameter_value']) for i in
                          db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                          if i['parameter_name'] == 'Start Year')
-
+        global Country
         Country = next(i['parameter_value'] for i in
                        db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
                        if i['parameter_name'] == 'Country')
@@ -358,12 +343,13 @@ try:
             print('Done initializing clock (tick 0)')
 
             if available_years_data == True:
+                pass
                 prepare_AMIRIS_data(StartYear, 0, fix_demand_to_representative_year,
                                     fix_profiles_to_representative_year,
                                     "initialize")
             else:  # no dynamic data for other cases
                 prepare_AMIRIS_data_for_one_year()
-            saving_peak_load(Country)
+
         elif sys.argv[2] == 'increment_clock':  # increment clock
 
             if targetinvestment_per_year == True:
@@ -420,20 +406,40 @@ except Exception:
 finally:
     db_emlab.close_connection()
 
-# print('removing awaiting bids...')
-# db_map = DatabaseMapping(db_url)
-#
-# if sys.argv[2] == 'increment_clock':
-#     try:
-#         subquery = db_map.object_parameter_value_sq
-#         statuses = {row.object_id: from_database(row.value, row.type) for row in
-#                     db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
-#         removable_object_ids = {object_id for object_id, status in statuses.items()}
-#         db_map.cascade_remove_items(object=removable_object_ids)
-#         print("removed awaiting bids")
-#         db_map.commit_session("Removed unacceptable objects.")
-#     finally:
-#         db_map.connection.close()
+
+db_map = DatabaseMapping(db_url)
+
+if sys.argv[2] == 'increment_clock':
+    try:
+        subquery = db_map.object_parameter_value_sq
+        statuses = {row.object_id: from_database(row.value, row.type) for row in
+                    db_map.query(subquery).filter(subquery.c.parameter_name == "status")}
+        removable_object_ids = {object_id for object_id, status in statuses.items()}
+        db_map.cascade_remove_items(object=removable_object_ids)
+        print("removed awaiting bids")
+        db_map.commit_session("Removed unacceptable objects.")
+    finally:
+        db_map.connection.close()
+
+if sys.argv[2] == 'initialize_clock':
+    print('updating peak load')
+    try:
+        class_name = "ElectricitySpotMarkets"
+        object_name = "ElectricitySpotMarket" + Country
+        parameter_name = "peakLoadFixed"
+        alternative_name = str(0)
+        peak_load_Map = Map([2020.0, StartYear], [20000, peak_load])
+        im.import_object_classes(db_map, [class_name])
+        im.import_objects(db_map, [(class_name, object_name)])
+        im.import_object_parameters(db_map, [(class_name, parameter_name)])
+        im.import_alternatives(db_map, [alternative_name])
+        im.import_object_parameter_values(
+            db_map,
+            [(class_name, object_name, parameter_name, peak_load_Map, alternative_name)],
+        )
+        db_map.commit_session("Add initial data.")
+    finally:
+        db_map.connection.close()
 
 # print('removing awaiting bids...')
 # db_map = DatabaseMapping(db_url)
