@@ -783,8 +783,7 @@ class Repository:
             logging.warning('No PPDP Price found for plant' + str(power_plant_id))
         return 0
 
-    def get_expeceted_profits_by_tick(self, power_plant_name: int, tick: int) -> float:
-        print(power_plant_name)
+    def get_expected_profits_by_tick(self, power_plant_name: int, tick: int) -> float:
         if tick in self.power_plants[power_plant_name].expectedTotalProfits.index:
             return self.power_plants[power_plant_name].expectedTotalProfits.loc[tick]
         else:
@@ -907,7 +906,13 @@ class Repository:
 
     def get_market_clearing_point_for_market_and_time(self, market: Market, time: int) -> Optional[MarketClearingPoint]:
         try:
-            return next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time)
+            datetime_list = [i.name.split(" ",1)[1] for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time]
+            if datetime_list:
+                latest = max(datetime_list)
+                return  next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
+                                            and i.name == 'MarketClearingPoint ' +  latest)
+            else:
+                return None
         except StopIteration:
             return None
 
@@ -921,9 +926,13 @@ class Repository:
         else:
             return 0
     def get_cleared_volume_for_market_and_time(self, market: Market, time: int) -> float:
-        try:
-            return next(i.volume for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time)
-        except StopIteration:
+        if time >= 0:
+            mcp = self.get_market_clearing_point_for_market_and_time(market, time)
+            if mcp is None:
+                return None
+            else:
+                return mcp.volume
+        else:
             return None
 
     def create_or_update_market_clearing_point(self,
