@@ -169,7 +169,8 @@ class SpineDBReaderWriter:
                 reps.capacity_remuneration_mechanism = (row['parameter_value'])
             elif row['parameter_name'] == 'capacity_market_cleared_in_investment':
                 reps.capacity_market_cleared_in_investment = bool(row['parameter_value'])
-
+            elif row['parameter_name'] == 'round_for_capacity_market':
+                reps.round_for_capacity_market = bool(row['parameter_value'])
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 
@@ -388,12 +389,20 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [('last_investable_technology', last_investable_technology)], "0")
 
-    def stage_capacity_market_in_investment_status(self, status):
+    def stage_calculate_future_capacity_market(self, status):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [('capacity_market_cleared_in_investment', status)], "0")
+
+    def stage_iteration_for_CM(self, status):
+        self.stage_object_class(self.configuration_object_classname)
+        self.stage_object_parameter(self.configuration_object_classname, "round_for_capacity_market")
+        self.stage_object(self.configuration_object_classname, "SimulationYears")
+        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
+                                           [('round_for_capacity_market', status)], "0")
+
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])
 
@@ -533,15 +542,41 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.powerplantprofits_classname, objectname,
                                            [("PowerPlantsC", pp_numbers)], "0")
 
-    def stage_future_total_profits_installed_plants(self, reps, pp_dispatched_names,
-                                                    pp_total_profits, available_plants_ids, tick):
-      #  tick = reps.current_tick + reps.lookAhead
+    def stage_future_total_profits_installed_plants(self, reps,  pp_dispatched_names,pp_total_profits, available_plants_ids, tick):
+        """
+        there are calculdated for capacity markets
+        """
+        parametername =  "expectedTotalProfits"
+        self.stage_object_class(self.powerplant_installed_classname)
+        self.stage_object_parameter(self.powerplant_installed_classname, parametername)
+        for i, pp_name in enumerate(pp_dispatched_names):
+            pp = reps.power_plants[pp_name]
+            pp_profit = pp_total_profits.loc[0,pp.id]
+            self.stage_object(self.powerplant_installed_classname, str(pp_name))
+            self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
+                                               [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
+
+        if len(available_plants_ids) > len(pp_dispatched_names):
+            # if there are less dispatched plants then assign their revenues as 0
+            for pp_id in available_plants_ids:
+                if pp_id not in pp_total_profits.columns.tolist():
+                    pp = reps.get_power_plant_by_id(pp_id)
+                    print(pp.name + "was tested but not used - > no operational profits")
+                    pp_profit = 0
+                    self.stage_object(self.powerplant_installed_classname, str(pp.name))
+                    self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
+                                                       [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
+
+    def stage_future_profits_withloans_installed_plants(self, reps, pp_dispatched_names, pp_total_profits, available_plants_ids, tick, look_ahead_ticks):
+        """
+        there are calculdated to estimate if power plants will be decommissioned for future market
+        """
         parametername = "expectedTotalProfitswFixedCosts"
         self.stage_object_class(self.powerplant_installed_classname)
         self.stage_object_parameter(self.powerplant_installed_classname, parametername)
         for i, pp_name in enumerate(pp_dispatched_names):
             pp = reps.power_plants[pp_name]
-            self.update_fixed_costs(pp, reps.lookAhead)
+            self.update_fixed_costs(pp, look_ahead_ticks)
             pp_profit = pp_total_profits.loc[0,pp.id] - pp.actualFixedOperatingCost
             self.stage_object(self.powerplant_installed_classname, str(pp_name))
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
@@ -552,12 +587,15 @@ class SpineDBReaderWriter:
             for pp_id in available_plants_ids:
                 if pp_id not in pp_total_profits.columns.tolist():
                     pp = reps.get_power_plant_by_id(pp_id)
-                    self.update_fixed_costs(pp , reps.lookAhead)
+                    self.update_fixed_costs(pp , look_ahead_ticks)
                     print(pp.name + "was tested but not used - > no operational profits")
                     pp_profit = - pp.actualFixedOperatingCost
                     self.stage_object(self.powerplant_installed_classname, str(pp.name))
                     self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
                                                        [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
+
+
+
 
     def update_fixed_costs(self, power_plant, lookAhead):
         if power_plant.age >= power_plant.technology.expected_lifetime:

@@ -869,7 +869,7 @@
         "EmlabDB2": {
             "type": "Data Store",
             "description": "",
-            "x": -541.94383704338,
+            "x": -544.5501349630587,
             "y": -220.18386627434478,
             "url": {
                 "dialect": "sqlite",
@@ -929,7 +929,7 @@
                 "database": {
                     "type": "path",
                     "relative": true,
-                    "path": ".spinetoolbox/items/amiris_db/AMIRIS db.sqlite"
+                    "path": ".spinetoolbox/items/amiris_db/AMIRIS DB.sqlite"
                 }
             }
         },

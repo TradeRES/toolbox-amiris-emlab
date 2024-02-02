@@ -94,6 +94,7 @@ class Repository:
         self.run_quick_investments = False
         self.capacity_remuneration_mechanism = None
         self.capacity_market_cleared_in_investment = False
+        self.round_for_capacity_market = False
         self.limit_investments = True
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
@@ -551,21 +552,20 @@ class Repository:
             expectedOperationalcapacity[candidate.technology.name] = capacity
         return expectedOperationalcapacity
 
-    def calculateEffectiveCapacityExpectedofListofPlants(self, future_installed_plants_ids,
-                                                         investable_candidate_plants):
-        expected_effective_operationalcapacity = dict()
+    def calculateEffectiveCapacityExpectedofListofPlants(self, future_installed_plants_ids):
+
         installedcapacity = 0
         for plant in self.power_plants.values():
             if plant.id in future_installed_plants_ids:  # this list was kept in the future expected power plants
                 installedcapacity += plant.capacity * plant.technology.peak_segment_dependent_availability
-
-        for candidate in investable_candidate_plants:
-            # capacity from installed power plant
-            capacity = 0
-            capacity = installedcapacity + (
-                        candidate.capacityTobeInstalled * candidate.technology.peak_segment_dependent_availability)
-            expected_effective_operationalcapacity[candidate.technology.name] = capacity
-        return expected_effective_operationalcapacity
+        # expected_effective_operationalcapacity = dict()
+        # for candidate in investable_candidate_plants:
+        #     # capacity from installed power plant
+        #     capacity = 0
+        #     capacity = installedcapacity + (
+        #                 candidate.capacityTobeInstalled * candidate.technology.peak_segment_dependent_availability)
+        #     expected_effective_operationalcapacity[candidate.technology.name] = capacity
+        return installedcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
         """ in the market preparation file, the plants that are decommissioned are filtered out,
@@ -666,11 +666,15 @@ class Repository:
                         i.status == globalNames.power_plant_status_operational
                         or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
-    def get_operational_and_to_be_decommissioned(self) -> List[PowerPlant]:
+    def get_operational_almost_operational_and_to_be_decommissioned(self, forward_years_CM) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
                 if i.technology.name not in globalNames.technologies_not_in_CM and
+                ((
+                         i.status == globalNames.power_plant_status_inPipeline \
+                         and i.age  >= -forward_years_CM)
+                 or
                 (i.status == globalNames.power_plant_status_operational
-                    or i.status == globalNames.power_plant_status_to_be_decommissioned)]
+                    or i.status == globalNames.power_plant_status_to_be_decommissioned))]
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -777,9 +781,10 @@ class Repository:
             logging.warning('No PPDP Price found for plant' + str(power_plant_id))
         return 0
 
-    def get_power_plant_electricity_dispatch_by_tick(self, power_plant_name: int, tick: int) -> float:
-        if tick in self.power_plants[power_plant_name].expectedTotalProfitswFixedCosts.index:
-            return self.power_plants[power_plant_name].expectedTotalProfitswFixedCosts.loc[tick]
+    def get_expeceted_profits_by_tick(self, power_plant_name: int, tick: int) -> float:
+        print(power_plant_name)
+        if tick in self.power_plants[power_plant_name].expectedTotalProfits.index:
+            return self.power_plants[power_plant_name].expectedTotalProfits.loc[tick]
         else:
             return None
 

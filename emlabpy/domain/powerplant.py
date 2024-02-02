@@ -21,7 +21,7 @@ class PowerPlant(EMLabAgent):
         self.location = ""
         self.owner = None  # change if there are more energyproducers
         self.capacity = 0
-        self.expectedTotalProfitswFixedCosts = 0 # expected total profits = revenues - variable costs - fixed costs . But no loans
+        self.expectedTotalProfitswFixedCosts = 0 # expected total profits = revenues - variable costs - fixed costs . But no loans. From invest
         self.banked_allowances = [0 for i in range(100)]
         self.status = globalNames.power_plant_status_not_set  # 'Operational' , 'InPipeline', 'Decommissioned', 'TobeDecommissioned'
         self.years_in_SR = 0
@@ -123,12 +123,16 @@ class PowerPlant(EMLabAgent):
                 self.initialEnergyLevelInMWH = all_storages[reps.current_year - 1]
             else:
                 self.initialEnergyLevelInMWH = 0
-        elif parameter_name == 'expectedTotalProfitswFixedCosts' and (reps.runningModule == "run_future_market" or
-            reps.capacity_remuneration_mechanism in ["capacity_market", "forward_capacity_market"]):
+        elif parameter_name == 'expectedTotalProfitswFixedCosts' and (reps.runningModule == "run_future_market"):
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.expectedTotalProfitswFixedCosts = pd.Series(values, index=index)
+        elif parameter_name == 'expectedTotalProfits' and (reps.runningModule == "run_CRM" ):
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.expectedTotalProfits = pd.Series(values, index=index)
     def add_values_from_df(self, results):
         self.AwardedPowerinMWh = results.PRODUCTION_IN_MWH
         self.CostsinEUR = results.VARIABLE_COSTS_IN_EURO

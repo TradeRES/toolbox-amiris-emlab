@@ -872,7 +872,7 @@
             ]
         },
         "selected_tables": [
-            "groupedDecarbonizedNL"
+            "superGroupedNL"
         ],
         "table_options": {
             "germany2019": {

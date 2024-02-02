@@ -27,6 +27,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
+
         if reps.current_tick == 0 and reps.initialization_investment == True:
             if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))
@@ -37,6 +38,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 print("first run")
                 self.power_plants_list = []
                 self.look_ahead_years = reps.lookAhead
+
+        elif reps.round_for_capacity_market ==True:
+            print("CAPACITY MARKET")
+            reps.dbrw.stage_calculate_future_capacity_market(False)
+            market = self.reps.get_capacity_market_in_country(reps.country)
+            self.look_ahead_years = market.forward_years_CM
+
         else:
             if reps.targetinvestment_per_year == True and reps.target_investments_done == False:
                 # investing in target technologies
@@ -49,10 +57,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     self.power_plants_list = reps.get_investable_candidate_power_plants()
                 self.look_ahead_years = reps.lookAhead
 
-        # Test first intermittent technologies
-        # if reps.test_first_intermittent_technologies == True and reps.testing_intermittent_technologies == True:
-        #     self.power_plants_list = reps.filter_intermittent_candidate_power_plants(self.power_plants_list)
-        #     print([i.technology.name for i in self.power_plants_list ])
+
         # changing efficency and variable costs of candidate power plants
         for pp in self.power_plants_list: # candidate technologues get variable costs from the technology
             pp.actualVariableCost = pp.technology.variable_operating_costs

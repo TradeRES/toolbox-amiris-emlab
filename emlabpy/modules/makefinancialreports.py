@@ -4,7 +4,9 @@ from domain.powerplantDispatchPlan import PowerPlantDispatchPlan
 from modules.defaultmodule import DefaultModule
 from domain.financialReports import FinancialPowerPlantReport
 from modules.strategicreserve_ger import StrategicReserveAssignment_ger
+from modules.invest import Investmentdecision
 from util import globalNames
+
 import numpy as np
 
 
@@ -119,14 +121,15 @@ class CreatingFinancialReports(DefaultModule):
         buildingTime = pp.technology.expected_leadtime
         # get average profits per technology
         equity = (1 - agent.debtRatioOfInvestments)
-        equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
+        if equity == 0:
+            equalTotalDownPaymentInstallment = 0
+            if buildingTime !=0:
+                raise Exception
+        else:
+            equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
         # the rest payment was considered in the loans
         debt = totalInvestment * (agent.debtRatioOfInvestments)
         restPayment = debt / depreciationTime
-
-        # operational_profit considers already fixed costs
-        # wacc = ( 1 - self.agent.debtRatioOfInvestments) * self.agent.equityInterestRate + self.agent.debtRatioOfInvestments * self.agent.loanInterestRate
-        wacc = 0
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
 
         # print("total investment cost in MIll", totalInvestment / 1000000)
@@ -143,15 +146,6 @@ class CreatingFinancialReports(DefaultModule):
 
         npv = npf.npv(pp.technology.interestRate, investmentCashFlow)
 
-        # investmentCashFlow_with_loans = [0 for i in range(depreciationTime + buildingTime)]
-        # for i in range(0, buildingTime):
-        #     investmentCashFlow_with_loans[i] = - equalTotalDownPaymentInstallment
-        # for i in range(buildingTime, depreciationTime + buildingTime):
-        #     investmentCashFlow_with_loans[i] = operational_profit_withFixedCosts - loans
-
-        # if pp.technology.name == "WTG_offshore" and pp.capacity ==4000:
-        #     print(npv)
-            #print(np.divide(equalTotalDownPaymentInstallment, pp.capacity))
         IRR = npf.irr(investmentCashFlow)
         if pd.isna(IRR):
             return IRR, npv

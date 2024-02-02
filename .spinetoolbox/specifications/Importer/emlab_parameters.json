@@ -1635,10 +1635,6 @@
                 "0": "string",
                 "1": "float"
             },
-            "peakLoad": {
-                "0": "string",
-                "1": "float"
-            },
             "weatherYearsOLD": {
                 "0": "string",
                 "1": "string",
@@ -1681,6 +1677,10 @@
                 "38": "string",
                 "39": "string",
                 "40": "string"
+            },
+            "peakLoad": {
+                "0": "float",
+                "1": "float"
             }
         },
         "table_default_column_type": {},
