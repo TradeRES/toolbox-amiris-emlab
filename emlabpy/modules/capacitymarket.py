@@ -113,43 +113,42 @@ class CapacityMarketClearing(MarketModule):
 
         clearing_price = 0
         total_supply_volume = 0
-        peaksupply = 0
+        #peaksupply = 0   # capacity market was 
+        # for pp in sorted_ppdp:
+        #     peaksupply += pp.amount
+        #     print(str(pp.plant) + ";"+str(pp.price) )
+        # print("peaksupply" + str(peaksupply))
+        # if peaksupply > peakExpectedDemand:
+        #     clearing_price = 0
+        #     isMarketUndersuscribed = True
+        #     total_supply_volume = 0
+        # else:
+        for ppdp in sorted_ppdp:
+            # As long as the market is not cleared
+            if ppdp.price <= sdc.get_price_at_volume(total_supply_volume + ppdp.amount):
+                total_supply_volume += ppdp.amount
+                clearing_price = ppdp.price
+                ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
+                ppdp.accepted_amount = ppdp.amount
+             #   print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
 
-        for pp in sorted_ppdp:
-            peaksupply += pp.amount
-            print(str(pp.plant) + ";"+str(pp.price) )
-        print("peaksupply" + str(peaksupply))
-        if peaksupply > peakExpectedDemand:
-            clearing_price = 0
-            isMarketUndersuscribed = True
-            total_supply_volume = 0
-        else:
-            for ppdp in sorted_ppdp:
-                # As long as the market is not cleared
-                if ppdp.price <= sdc.get_price_at_volume(total_supply_volume + ppdp.amount):
-                    total_supply_volume += ppdp.amount
-                    clearing_price = ppdp.price
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
-                    ppdp.accepted_amount = ppdp.amount
-                 #   print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
-
-                elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
-                    clearing_price = ppdp.price
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
-                    ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
-                    total_supply_volume = sdc.get_volume_at_price(clearing_price)
-                   # print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
-                    isMarketUndersuscribed = False
-                    break
+            elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
+                clearing_price = ppdp.price
+                ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
+                ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
+                total_supply_volume = sdc.get_volume_at_price(clearing_price)
+               # print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
+                isMarketUndersuscribed = False
+                break
+            else:
+                ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
+                ppdp.accepted_amount = 0
+                if total_supply_volume > sdc.lm_volume:
+                    isMarketUndersuscribed = True
                 else:
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
-                    ppdp.accepted_amount = 0
-                    if total_supply_volume > sdc.lm_volume:
-                        isMarketUndersuscribed = True
-                    else:
-                        clearing_price = sdc.price_cap
-                #   print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
-                    break
+                    clearing_price = sdc.price_cap
+            #   print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
+                break
 
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
