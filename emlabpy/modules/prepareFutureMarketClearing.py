@@ -27,7 +27,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
-
         if reps.current_tick == 0 and reps.initialization_investment == True:
             if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))
@@ -148,6 +147,12 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     #  In the first iteration test the future market with all power plants,
                     #  except the ones that should be decommissioned by then
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+                elif  self.reps.round_for_capacity_market ==True:
+                    if fictional_age < powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
+                        self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+                    else:
+                        powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                        decommissioned_list.append(powerplant.name)
                 elif self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations
                     self.check_profitability( powerplant,requiredProfit , horizon,  fictional_age)
                 else:

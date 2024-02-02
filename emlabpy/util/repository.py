@@ -674,7 +674,9 @@ class Repository:
                          and i.age  >= -forward_years_CM)
                  or
                 (i.status == globalNames.power_plant_status_operational
-                    or i.status == globalNames.power_plant_status_to_be_decommissioned))]
+                    or ( i.status == globalNames.power_plant_status_to_be_decommissioned \
+                         and i.age  < i.technology.expected_lifetime + i.technology.maximumLifeExtension )
+                 ))]
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
