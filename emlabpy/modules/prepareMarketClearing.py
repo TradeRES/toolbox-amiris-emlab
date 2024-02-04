@@ -102,7 +102,8 @@ class PrepareMarket(DefaultModule):
                 else:  # for now, only have dynamic data for NL case
                     peakdemand = 0
                     load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
-                    if self.reps.investmentIteration <= 0:
+
+                    if self.reps.investmentIteration <= 0 or self.reps.round_for_capacity_market == True:
                         for load_shedder_name , load_shedder in self.reps.loadShedders.items():
                             if load_shedder_name == "hydrogen":
                                 pass
@@ -127,8 +128,6 @@ class PrepareMarket(DefaultModule):
                                     originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
 
                         total_peak_demand = max(peakdemand)
-
-                        print(total_peak_demand)
                         total_peak_demand += self.reps.loadShifterDemand["Industrial_load_shifter"].peakConsumptionInMW
                         market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
                         demand_name = calculatedprices[:-5] + "demand_peak" # futuredemand_peak or next_year_demand_peak
