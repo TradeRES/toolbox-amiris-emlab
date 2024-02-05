@@ -259,8 +259,8 @@ class Investmentdecision(DefaultModule):
                         else:
                             pass # not grouping power plants
 
-                        # Ids of grouped power plants were removed, so here are the plants being
-                        for pp_id in self.ids_of_future_installed_and_dispatched_pp:
+                        # Ids of grouped power plants were removed, so here are the left ungrouped plants
+                        for pp_id in self.future_installed_plants_ids:
                             if self.power_plant_installed_in_this_year(pp_id):
                                 newplant = self.reps.get_power_plant_by_id(pp_id)
                                 newplant = self.calculate_investments_of_ungrouped(newplant)
@@ -578,10 +578,12 @@ class Investmentdecision(DefaultModule):
                     grouped_plant.capacityTobeInstalled += newplant.capacity
                     grouped_plant.operationalProfit += newplant.operationalProfit
                     plants_to_delete.append(str(newplant.id))
-                    self.ids_of_future_installed_and_dispatched_pp.remove(newplant.id)
                     print("removing " + str(newplant.id))
-                    self.pp_dispatched_names.remove(str(newplant.id))
-                    self.pp_profits.drop(columns =newplant.id)
+                    self.future_installed_plants_ids.remove(newplant.id)
+                    #self.ids_of_future_installed_and_dispatched_pp.remove(newplant.id) the list of ids was for distpatched plants,
+                    # some installed were not included
+                    # self.pp_dispatched_names.remove(str(newplant.id))
+                    # self.pp_profits.drop(columns =newplant.id)
                 print(grouped_plant.name)
                 print(grouped_plant.operationalProfit )
                 # self.reps.dbrw.stage_id_plant_to_delete(newplant)
