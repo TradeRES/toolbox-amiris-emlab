@@ -49,6 +49,12 @@ class ElectricitySpotMarket(Market):
             self.peak_load_fixed = pd.Series(values, index=index)
 
     def get_peak_load_per_year(self, year):
+        """
+        NOT CONSIDERING LOAD SHIFTER
+
+        :param year:
+        :return:
+        """
         if year in self.peak_load_fixed.index.values:  # value is present
             return self.peak_load_fixed[year]
         elif self.peak_load_fixed.index.min() > year: # if the year is lower than data, take first year

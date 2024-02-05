@@ -126,6 +126,11 @@ try:  # Try statement to always close DB properly
         # saving ids in the DB
         spinedb_reader_writer.stage_power_plant_id_and_loans(reps, reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
+
+        if reps.capacity_remuneration_mechanism == "capacity_market":
+            market = reps.get_capacity_market_in_country(reps.country)
+            calculate_cone(reps, market)
+            print("staging price cap")
         print('Staged IDs')
     else:
         # if the id initialization was done, it is not needed to store it again.

@@ -314,6 +314,9 @@ class Repository:
             return None
 
     def get_peak_future_demand_by_year(self, year):
+        """
+        saved in future market preparation
+        """
         try:
             # the load was already updated in the clock step
             return next(i.future_demand_peak.loc[year] for i in self.electricity_spot_markets.values() if

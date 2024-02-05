@@ -61,7 +61,8 @@ class StrategicReserveAssignment(MarketModule):
 
         # Retrieve peak load volume of market
         spot_market = self.reps.get_spot_market_in_country(self.reps.country)
-        peak_load = spot_market.get_peak_load_per_year(self.reps.current_year)
+        peak_load = self.reps.get_peak_future_demand_by_year(self.reps.current_year)
+      #  peak_load = spot_market.get_peak_load_per_year(self.reps.current_year)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.simulated_prices,
                                                                                            self.reps.current_year)
