@@ -155,14 +155,11 @@ class Investmentdecision(DefaultModule):
                     peakExpectedDemand = estimated_peak_load*expectedDemandFactor
                     print("peaksupply " + str(peaksupply))
                     if peaksupply > peakExpectedDemand:
-                        print("-------------- finish capacity market > iteration_for_capacity_market")
-                        self.reps.dbrw.stage_calculate_future_capacity_market(False)
-                        self.reps.dbrw.stage_iteration_for_CM(True)
-                        self.continue_iteration()
-                        self.reps.dbrw.stage_iteration(0)
+                        print("-------------- peak supply is more than expected demand  > iteration_for_capacity_market")
                         capacity_market_price = 0
                     else:
                         capacity_market_price = self.calculate_capacity_market_price_simple()
+
                     print("capacity_market_price " +str(capacity_market_price))
                 for candidatepowerplant in self.investable_candidate_plants:
                     #print("..............." + candidatepowerplant.technology.name)
@@ -228,10 +225,18 @@ class Investmentdecision(DefaultModule):
                             and self.reps.capacity_market_cleared_in_investment == False
                             and self.reps.initialization_investment == False):
                         self.reset_status_candidates_to_investable()
-                        print("****************************************capacity markets")
+                        print("************************************* accounting for capacity markets")
                         self.reps.investment_initialization_years += 1
                         self.continue_iteration()
                         self.reps.dbrw.stage_calculate_future_capacity_market(True)
+                    elif (self.reps.capacity_remuneration_mechanism == "capacity_market"
+                          and self.reps.capacity_market_cleared_in_investment == True
+                          and self.reps.initialization_investment == False):
+                        print("************************************* no more capaciy markets investments")
+                        self.reps.dbrw.stage_calculate_future_capacity_market(False)
+                        self.reps.dbrw.stage_iteration_for_CM(True)
+                        self.continue_iteration()
+                        self.reps.dbrw.stage_iteration(0)
                     else:
                         if self.reps.initialization_investment == True:
                             print("Initialization investment loop")
@@ -256,12 +261,7 @@ class Investmentdecision(DefaultModule):
                             # when testing last technolgy, candidate to be installed is tested with real capacity
                             self.reps.dbrw.stage_last_testing_technology(False)
                             self.reps.dbrw.stage_iteration(0)
-                            if (self.reps.capacity_remuneration_mechanism == "capacity_market"
-                                    and self.reps.capacity_market_cleared_in_investment == True):
-                                self.reps.dbrw.stage_iteration_for_CM(True)
-                                self.continue_iteration()
-                            else:
-                                self.stop_iteration()
+                            self.stop_iteration()
                         if self.reps.groups_plants_per_installed_year == True:
                             self.group_power_plants()
                         else:
