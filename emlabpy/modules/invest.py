@@ -521,16 +521,18 @@ class Investmentdecision(DefaultModule):
             capacity_to_bid = powerplant.capacity * powerplant.technology.peak_segment_dependent_availability
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market, capacity_to_bid, \
                                                                        price_to_bid, self.futureTick)
+            print(powerplant.technology.name +
+                  powerplant.name + ";" + str(price_to_bid) + ";" + str(operatingProfit[(0)] ) + ";" + str(
+                fixed_on_m_cost) + ";" + str(
+                pending_loan))
+
+
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isTheMarketCleared = CapacityMarketClearing.capacity_market_clearing( self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
         peaksupply  = self.reps.calculateEffectiveCapacityExpectedofListofPlants( self.future_installed_plants_ids)
         expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                            globalNames.future_prices,
                                                                                            self.futureInvestmentyear)
-        print(powerplant.technology.name +
-              powerplant.name + ";" + str(price_to_bid) + ";" + str(operatingProfit[(0)] ) + ";" + str(
-            fixed_on_m_cost) + ";" + str(
-            pending_loan))
         peakExpectedDemand = self.peak_demand *expectedDemandFactor
         if peaksupply > peakExpectedDemand:
             print("peaksupply " + str(peaksupply) + "peakExpectedDemand " + str(peakExpectedDemand)  )

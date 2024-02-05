@@ -123,8 +123,6 @@ class CreatingFinancialReports(DefaultModule):
         equity = (1 - agent.debtRatioOfInvestments)
         if equity == 0:
             equalTotalDownPaymentInstallment = 0
-            if buildingTime !=0:
-                raise Exception
         else:
             equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
         # the rest payment was considered in the loans
