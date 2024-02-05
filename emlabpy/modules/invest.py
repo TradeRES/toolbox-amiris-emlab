@@ -147,18 +147,7 @@ class Investmentdecision(DefaultModule):
                 if self.reps.capacity_market_cleared_in_investment == False:
                     capacity_market_price = 0
                 else:
-                    peaksupply  = self.reps.calculateEffectiveCapacityExpectedofListofPlants( self.future_installed_plants_ids)
-                    expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                                       globalNames.future_prices,
-                                                                                                       self.futureInvestmentyear)
-                    estimated_peak_load = self.spotMarket.get_peak_load_per_year(self.futureInvestmentyear) # not considering industrial demand
-                    peakExpectedDemand = estimated_peak_load*expectedDemandFactor
-                    print("peaksupply " + str(peaksupply))
-                    if peaksupply > peakExpectedDemand:
-                        print("-------------- peak supply is more than expected demand  > iteration_for_capacity_market")
-                        capacity_market_price = 0
-                    else:
-                        capacity_market_price = self.calculate_capacity_market_price_simple()
+                    capacity_market_price = self.calculate_capacity_market_price_simple()
 
                     print("capacity_market_price " +str(capacity_market_price))
                 for candidatepowerplant in self.investable_candidate_plants:
@@ -371,8 +360,6 @@ class Investmentdecision(DefaultModule):
         equity = (1 - agent.debtRatioOfInvestments)
         if equity == 0:
             equalTotalDownPaymentInstallment = 0
-            if buildingTime !=0:
-                raise Exception
         else:
             equalTotalDownPaymentInstallment = (totalInvestment * equity) / buildingTime
         debt = totalInvestment * agent.debtRatioOfInvestments
@@ -516,6 +503,8 @@ class Investmentdecision(DefaultModule):
 
     def calculate_capacity_market_price_simple(self):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
+        print(
+            "technology" + "name" + ";" + "price_to_bid" + ";" + " profits" + ";" + "fixed_on_m_cost" + ";" + "pending_loan")
         for (pp_id, operatingProfit) in self.pp_profits.iteritems():
             price_to_bid = 0
             powerplant = self.reps.get_power_plant_by_id(pp_id)
@@ -534,6 +523,18 @@ class Investmentdecision(DefaultModule):
                                                                        price_to_bid, self.futureTick)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isTheMarketCleared = CapacityMarketClearing.capacity_market_clearing( self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
+        peaksupply  = self.reps.calculateEffectiveCapacityExpectedofListofPlants( self.future_installed_plants_ids)
+        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
+                                                                                           globalNames.future_prices,
+                                                                                           self.futureInvestmentyear)
+        print(powerplant.technology.name +
+              powerplant.name + ";" + str(price_to_bid) + ";" + str(operatingProfit[(0)] ) + ";" + str(
+            fixed_on_m_cost) + ";" + str(
+            pending_loan))
+        peakExpectedDemand = self.peak_demand *expectedDemandFactor
+        if peaksupply > peakExpectedDemand:
+            print("peaksupply " + str(peaksupply) + "peakExpectedDemand " + str(peakExpectedDemand)  )
+            capacity_market_price = 0
         capacity_market.name = "capacity_market_future" # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market , capacity_market_price, total_supply_volume,
                                                          self.futureTick)
