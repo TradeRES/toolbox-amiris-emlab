@@ -142,7 +142,7 @@ class Investmentdecision(DefaultModule):
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants, False)
 
-                self.capacity_calculations()
+                self.capacity_calculations() # considering industrial demand
 
                 if self.reps.capacity_market_cleared_in_investment == False:
                     capacity_market_price = 0
@@ -151,7 +151,7 @@ class Investmentdecision(DefaultModule):
                     expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
                                                                                                        globalNames.future_prices,
                                                                                                        self.futureInvestmentyear)
-                    estimated_peak_load = self.spotMarket.get_peak_load_per_year(self.futureInvestmentyear)
+                    estimated_peak_load = self.spotMarket.get_peak_load_per_year(self.futureInvestmentyear) # not considering industrial demand
                     peakExpectedDemand = estimated_peak_load*expectedDemandFactor
                     print("peaksupply " + str(peaksupply))
                     if peaksupply > peakExpectedDemand:
@@ -159,10 +159,11 @@ class Investmentdecision(DefaultModule):
                         self.reps.dbrw.stage_calculate_future_capacity_market(False)
                         self.reps.dbrw.stage_iteration_for_CM(True)
                         self.continue_iteration()
+                        self.reps.dbrw.stage_iteration(0)
                         capacity_market_price = 0
                     else:
                         capacity_market_price = self.calculate_capacity_market_price_simple()
-
+                    print("capacity_market_price " +str(capacity_market_price))
                 for candidatepowerplant in self.investable_candidate_plants:
                     #print("..............." + candidatepowerplant.technology.name)
                     cp_numbers.append(candidatepowerplant.name)
