@@ -266,6 +266,7 @@ class Investmentdecision(DefaultModule):
                                 newplant = self.calculate_investments_of_ungrouped(newplant)
                                 self.stage_loans_and_downpayments_of_ungrouped(newplant)
 
+
                         # saving profits of installed power plants for capacity market
                         print("saving future total profits")
                         self.reps.dbrw.stage_future_profits_withloans_installed_plants(self.reps, self.pp_dispatched_names, self.pp_profits,
@@ -580,12 +581,11 @@ class Investmentdecision(DefaultModule):
                     plants_to_delete.append(str(newplant.id))
                     print("removing " + str(newplant.id))
                     self.future_installed_plants_ids.remove(newplant.id)
-                    #self.ids_of_future_installed_and_dispatched_pp.remove(newplant.id) the list of ids was for distpatched plants,
-                    # some installed were not included
-                    # self.pp_dispatched_names.remove(str(newplant.id))
-                    # self.pp_profits.drop(columns =newplant.id)
-                print(grouped_plant.name)
-                print(grouped_plant.operationalProfit )
+                    if newplant.id in self.ids_of_future_installed_and_dispatched_pp:
+                        self.ids_of_future_installed_and_dispatched_pp.remove(newplant.id)
+                        self.pp_dispatched_names.remove(str(newplant.id))
+                        self.pp_profits.drop(columns =newplant.id)
+
                 # self.reps.dbrw.stage_id_plant_to_delete(newplant)
                 grouped_plant.setActualEfficiency(newplant.actualEfficiency)
                 grouped_plant.setOwner(self.agent)
