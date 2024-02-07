@@ -41,12 +41,7 @@ modules_need_bids = [ "run_financial_results", "run_create_results", "plotting",
 vRES = ["WTG_onshore", "WTG_offshore", "PV_utility_systems" ,"PV", "PV_residential"]
 fuels_in_AMIRIS = ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "OTHER", "HYDROGEN", "BIOMASS", "WASTE"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
-used_technologies = ["Coal PSC", "CCGT", "OCGT", "Hydropower_reservoir_medium", "Nuclear", "WTG_onshore",
-                     "WTG_offshore",  "Lignite PSC", "Fuel oil PGT", "Pumped_hydro",
-                     "Hydropower_ROR", "Lithium_ion_battery", "Biomass_CHP_wood_pellets_DH",
-                     "CCGT_CHP_backpressure_DH", "Biomass_CHP_wood_pellets_PH",
-                     "fuel_cell", "electrolyzer", "hydrogen_turbine", "hydrogen_CHP", "PV", "PV_residential", "PV_utility_systems",
-                     "hydrogen_combined_cycle"]
+used_technologies = [ "hydrogen turbine", "Nuclear", "WTG_onshore","Lithium ion battery", "Wind Offshore","Wind Onshore", "Solar PV large"]
 
 technologies_not_in_SR =[ "Nuclear","Lithium ion battery" , "OCGT"]
 technologies_not_in_CM =["OCGT"]

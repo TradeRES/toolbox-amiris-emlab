@@ -29,6 +29,7 @@ class SpineDBReaderWriter:
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first url is always emlab
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
+        self.technologies_classname = 'Technologies'
         self.powerplantprofits_classname = 'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
         self.powerplant_dispatch_plan_classname = 'PowerPlantDispatchPlans'
@@ -336,6 +337,11 @@ class SpineDBReaderWriter:
                                            # ('Cash', powerplant.cash),
                                             ('Technology', powerplant.technology.name)], "0")
 
+    def stage_new_irr(self, technology):
+        object_name = str(technology.name)
+        self.stage_object(self.technologies_classname, object_name)
+        self.stage_object_parameter_values(self.technologies_classname, object_name,
+                                           [("interest_rate", technology.interestRate)], "0")
     def stage_id_plant_to_delete(self, powerplant):
         object_name = str(powerplant.name)
         self.stage_object_parameter_values(self.powerplant_installed_classname, object_name,
@@ -599,9 +605,6 @@ class SpineDBReaderWriter:
                     self.stage_object(self.powerplant_installed_classname, str(pp.name))
                     self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
                                                        [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
-
-
-
 
     def update_fixed_costs(self, power_plant, lookAhead):
         if power_plant.age >= power_plant.technology.expected_lifetime:

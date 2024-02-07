@@ -35,12 +35,11 @@ class CreatingFinancialReports(DefaultModule):
         financialPowerPlantReports = []
         # for non decommissioned power plants
         for powerplant in self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
-                                                                globalNames.power_plant_status_to_be_decommissioned,
-                                                                globalNames.power_plant_status_strategic_reserve,
-                                                                ]):
+                                                                    globalNames.power_plant_status_to_be_decommissioned,
+                                                                    globalNames.power_plant_status_strategic_reserve,
+                                                                    ]):
 
             financialPowerPlantReport = self.reps.get_financial_report_for_plant(powerplant.name)
-
             if financialPowerPlantReport is None:
                 # PowerPlantDispatchPlan not found, so create a new one
                 financialPowerPlantReport = FinancialPowerPlantReport(powerplant.name)
@@ -106,6 +105,10 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.irr = irr
             financialPowerPlantReport.npv = npv
             financialPowerPlantReports.append(financialPowerPlantReport)
+
+
+        # modifying the IRR by technology
+        self.modifyIRR()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -115,6 +118,44 @@ class CreatingFinancialReports(DefaultModule):
             self.reps.update_StrategicReserveOperator( self.reps.get_strategic_reserve_operator(self.reps.country))
 
 
+    def modifyIRR(self):
+        if  self.reps.current_tick < 5:
+            pass
+        else:
+            start = self.reps.current_tick -4
+            ticks_to_generate = list(range(start, self.reps.current_tick ))
+            irrs_per_tech_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
+            for technology_name in globalNames.used_technologies:
+                powerplants_per_tech = self.reps.get_power_plants_by_technology(technology_name)
+                irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
+                for plant in powerplants_per_tech:
+                    irr_per_plant = self.reps.get_irrs_for_plant(plant.name)
+                    if irr_per_plant is None:
+                        pass
+                    else:
+                        irrs_per_year[plant.name] = irr_per_plant
+
+                if irrs_per_year.size != 0:
+                    irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
+
+            irrs_in_last_years = irrs_per_tech_per_year.mean()
+            for technology_name, averageirr in irrs_in_last_years.items():
+                if  pd.isna(averageirr):
+                    pass
+                else:
+                    decrease = (averageirr-0.1) * 0.1
+                    old_value = self.reps.power_generating_technologies[technology_name].interestRate
+                    if averageirr < 0.01:
+                        pass # and IRR of 10% is normal
+                    elif old_value - decrease < 0:
+                        pass
+                    elif old_value - decrease > 0.2:
+                        pass
+                    else:
+                        new_value = old_value - decrease
+                        print("decrease IRR of " + technology_name + " by " + str(decrease))
+                        self.reps.power_generating_technologies[technology_name].interestRate = new_value
+                        self.reps.dbrw.stage_new_irr(self.reps.power_generating_technologies[technology_name])
     def getProjectIRR(self, pp, operational_profit_withFixedCosts, loans, agent):
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
