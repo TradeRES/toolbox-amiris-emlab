@@ -232,7 +232,7 @@ class Investmentdecision(DefaultModule):
                     #     self.continue_iteration()
                     #     self.reps.dbrw.stage_calculate_future_capacity_market(True)
                     # else:
-                    if (self.reps.capacity_remuneration_mechanism == "capacity_market"  and self.reps.initialization_investment == False):
+                    if (self.reps.capacity_remuneration_mechanism == "capacity_market" or "startegic_reserve_ger"  and self.reps.initialization_investment == False):
             #              and self.reps.capacity_market_cleared_in_investment == True
                         print("************************************* calculate market for next CM next year")
                         self.reset_status_candidates_to_investable()

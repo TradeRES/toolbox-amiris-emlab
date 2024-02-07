@@ -60,8 +60,8 @@ class StrategicReserveAssignment_ger(MarketModule):
 
         # Retrieve peak load volume of market
         # peak_load =self.reps.get_realized_peak_demand_by_year(self.reps.current_year) this was making volatile reserve
-        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
-        peak_load = self.reps.get_peak_future_demand_by_year(self.reps.current_year)
+        SR_year = self.reps.current_year + self.operator.forward_years_SR
+        peak_load = self.reps.get_peak_future_demand_by_year(SR_year)
        # peak_load = spot_market.get_peak_load_per_year(self.reps.current_year)
 
         # get peak load from weather

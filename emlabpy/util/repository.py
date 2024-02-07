@@ -315,7 +315,7 @@ class Repository:
 
     def get_peak_future_demand_by_year(self, year):
         """
-        saved in future market preparation
+        saved in future market preparation, include industrial load
         """
         try:
             # the load was already updated in the clock step
@@ -592,7 +592,8 @@ class Repository:
         fuel = powerplant.technology.fuel
         variable_costs = powerplant.technology.get_variable_operating_by_time_series(
             powerplant.age + year_ahead)
-        fuel_price =  fuel.futurePrice[simulation_year]
+
+        fuel_price =  fuel.get_price_for_tick(self, simulation_year, True)
         co2_TperMWh = fuel.co2_density
         co2price = self.substances["CO2"].get_price_for_tick(self, simulation_year, True)
         commodities = (powerplant.technology.variable_operating_costs + (fuel_price + co2price * co2_TperMWh) /
@@ -911,9 +912,9 @@ class Repository:
         try:
             datetime_list = [i.name.split(" ",1)[1] for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time]
             if datetime_list:
-                latest = max(datetime_list)
+                first = min(datetime_list)
                 return  next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
-                                            and i.name == 'MarketClearingPoint ' +  latest)
+                                            and i.name == 'MarketClearingPoint ' +  first)
             else:
                 return None
         except StopIteration:
