@@ -96,7 +96,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
 
         if modality == "initialize":
             global peak_load
-            peak_load =  max(excel['Load'][representative_year_investment]) # * (load_shedders.loc["base", "percentage_load"])
+            peak_load =  max(excel['Load'][representative_year_investment])
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
             print("--------load and profiles should be related")
             raise Exception
@@ -156,7 +156,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
     return 0
 
 def update_load_shedders_current_year(excel, current_year):
-    for lshedder_name in ["base", "low", "mid", "high"]:
+    for lshedder_name in load_shedders_no_hydrogen:
         load_shedder = excel['Load'][current_year] *load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config","data", ( "LS_" + lshedder_name + ".csv"))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
@@ -165,14 +165,14 @@ def update_load_current_year_by_sequence_year(excel, sequence_year):
     """
     Demand is not increasing but the load is changing in every weather year due to heat demand
     """
-    for lshedder_name in ["base", "low", "mid", "high"]:
+    for lshedder_name in load_shedders_no_hydrogen:
         load_shedder = excel['Load'][sequence_year] * load_shedders.loc[lshedder_name,"percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(load_shedders.loc[lshedder_name,"TimeSeriesFile"]))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
 def prepare_initialization_load_for_future_year(excel, representative_year_investment ):
     # writing FUTURE load shedders
-    for lshedder_name in ["low", "mid", "high", "base"]:
+    for lshedder_name in load_shedders_no_hydrogen:
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config" ,"data" , "originalFuture" + lshedder_name + ".csv" )
         load_shedder = excel['Load'][representative_year_investment] * load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
@@ -279,13 +279,23 @@ try:
         global load_shedders
         load_shedders_parameters = ["TimeSeriesFile", "percentage_load", "TimeSeriesFileFuture", "ShedderCapacityMW" ]
         load_shedders = pd.DataFrame(columns=load_shedders_parameters )
+        load_shedders_names = []
 
-        for load_shedder in ["low", "mid", "high", "base", "hydrogen"]:
+        test =  db_emlab.query_object_name_by_class_name_and_alternative("LoadShedders", "0")
+        for i in test:
+            if i["object_name"] in load_shedders_names:
+                pass
+            else:
+                load_shedders_names.append(i["object_name"] )
+        global load_shedders_no_hydrogen
+        load_shedders_no_hydrogen =  load_shedders_names.copy()
+        load_shedders_no_hydrogen.remove("hydrogen")
+        for load_shedder in load_shedders_names:
             for parameter in load_shedders_parameters:
                 load_shedders.at[load_shedder, parameter]  = next(i['parameter_value'] for i in
-                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(
-                             "LoadShedders", load_shedder) \
-                         if i['parameter_name'] == parameter)
+                                                                  db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                                                      "LoadShedders", load_shedder) \
+                                                                  if i['parameter_name'] == parameter)
 
         fix_demand_to_representative_year = False
         fix_demand_to_representative_year = next(i['parameter_value'] for i in

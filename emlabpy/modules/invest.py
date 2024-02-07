@@ -89,12 +89,17 @@ class Investmentdecision(DefaultModule):
         cp_numbers = []
         cp_profits = []
         # saving: operationalprofits from power plants in classname Profits
+        profits = []
+        names = []
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:
             pp = self.reps.get_power_plant_by_id(pp_id)
             self.pp_dispatched_names.append(pp.name)
             #pp_dispatched_ids.append(pp_id)
             # pp_profits.append(pp.operationalProfit)
-            self.pp_profits.at[0, pp_id] = pp.operationalProfit
+            profits.append(pp.operationalProfit)
+            names.append(pp_id)
+
+        self.pp_profits =  pd.DataFrame([profits], columns =names)
        # self.calculate_capacity_market_price()
         if self.first_run == True:
             """
@@ -261,23 +266,23 @@ class Investmentdecision(DefaultModule):
                             self.reps.dbrw.stage_iteration(0)
                             self.stop_iteration()
 
-                        if self.reps.groups_plants_per_installed_year == True:
-                            self.group_power_plants()
-                        else:
-                            pass # not grouping power plants
+                    if self.reps.groups_plants_per_installed_year == True:
+                        self.group_power_plants()
+                    else:
+                        pass # not grouping power plants
 
-                        # Ids of grouped power plants were removed, so here are the left ungrouped plants
-                        for pp_id in self.future_installed_plants_ids:
-                            if self.power_plant_installed_in_this_year(pp_id):
-                                newplant = self.reps.get_power_plant_by_id(pp_id)
-                                newplant = self.calculate_investments_of_ungrouped(newplant)
-                                self.stage_loans_and_downpayments_of_ungrouped(newplant)
+                    # Ids of grouped power plants were removed, so here are the left ungrouped plants
+                    for pp_id in self.future_installed_plants_ids:
+                        if self.power_plant_installed_in_this_year(pp_id):
+                            newplant = self.reps.get_power_plant_by_id(pp_id)
+                            newplant = self.calculate_investments_of_ungrouped(newplant)
+                            self.stage_loans_and_downpayments_of_ungrouped(newplant)
 
 
-                        # saving profits of installed power plants for capacity market
-                        print("saving future total profits")
-                        self.reps.dbrw.stage_future_profits_withloans_installed_plants(self.reps, self.pp_dispatched_names, self.pp_profits,
-                                                                                       self.future_installed_plants_ids, self.futureTick, self.look_ahead_years)
+                    # saving profits of installed power plants for capacity market
+                    print("saving future total profits")
+                    self.reps.dbrw.stage_future_profits_withloans_installed_plants(self.reps, self.pp_dispatched_names, self.pp_profits,
+                                                                                   self.future_installed_plants_ids, self.futureTick, self.look_ahead_years)
             else:
                 print("all technologies are unprofitable")
                 raise Exception
