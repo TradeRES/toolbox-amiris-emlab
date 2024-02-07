@@ -555,20 +555,20 @@ class Repository:
             expectedOperationalcapacity[candidate.technology.name] = capacity
         return expectedOperationalcapacity
 
-    def calculateEffectiveCapacityExpectedofListofPlants(self, future_installed_plants_ids):
+    def calculateEffectiveCapacityExpectedofListofPlants(self, future_installed_plants_ids, investable_candidate_plants):
 
-        installedcapacity = 0
+        peaksupply = 0
         for plant in self.power_plants.values():
             if plant.id in future_installed_plants_ids:  # this list was kept in the future expected power plants
-                installedcapacity += plant.capacity * plant.technology.peak_segment_dependent_availability
-        # expected_effective_operationalcapacity = dict()
-        # for candidate in investable_candidate_plants:
-        #     # capacity from installed power plant
-        #     capacity = 0
-        #     capacity = installedcapacity + (
-        #                 candidate.capacityTobeInstalled * candidate.technology.peak_segment_dependent_availability)
-        #     expected_effective_operationalcapacity[candidate.technology.name] = capacity
-        return installedcapacity
+                peaksupply += plant.capacity * plant.technology.peak_segment_dependent_availability
+        expected_effective_operationalcapacity = dict()
+        for candidate in investable_candidate_plants:
+            # capacity from installed power plant
+            capacity = 0
+            capacity = peaksupply + (
+                        candidate.capacityTobeInstalled * candidate.technology.peak_segment_dependent_availability)
+            expected_effective_operationalcapacity[candidate.technology.name] = capacity
+        return peaksupply, expected_effective_operationalcapacity
 
     def calculateCapacityOfOperationalPowerPlantsByTechnology(self, technology):
         """ in the market preparation file, the plants that are decommissioned are filtered out,
