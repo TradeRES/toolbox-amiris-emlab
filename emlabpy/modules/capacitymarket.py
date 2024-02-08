@@ -160,21 +160,22 @@ class CapacityMarketClearing(MarketModule):
             #   print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
 
             elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
-                clearing_price = ppdp.price
+                """
+                should be partly accepted but currently accepting all
+                """
+                clearing_price = sdc.get_price_at_volume(total_supply_volume + ppdp.amount)
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                 ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
-                total_supply_volume = sdc.get_volume_at_price(clearing_price)
+                total_supply_volume = total_supply_volume + ppdp["amount"] # total supply
                 # print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
                 isMarketUndersuscribed = False
                 break
             else:
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
-                ppdp.accepted_amount = 0
                 if total_supply_volume > sdc.lm_volume:
-                    isMarketUndersuscribed = True
+                    isMarketUndersuscribed = False
                 else:
-                    clearing_price = sdc.price_cap
-                #   print(ppdp.plant , " too expensive", total_supply_volume, "", ppdp.price)
+                    isMarketUndersuscribed = True
                 break
 
         print("clearing price ", clearing_price)
