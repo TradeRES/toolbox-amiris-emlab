@@ -108,7 +108,8 @@ class CreatingFinancialReports(DefaultModule):
 
 
         # modifying the IRR by technology
-        self.modifyIRR()
+        if self.reps.change_IRR == True:
+            self.modifyIRR()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
