@@ -402,7 +402,7 @@ class SpineDBReaderWriter:
         self.stage_object_parameter(self.capacity_market_classname, "PriceCap")
         self.stage_object(self.capacity_market_classname, capacity_market_name)
         self.stage_object_parameter_values(self.capacity_market_classname, capacity_market_name,
-                                           [('PriceCap', CONE)], "0")
+                                           [('PriceCap', 1.5* CONE)], "0")
     def stage_calculate_future_capacity_market(self, status):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")
