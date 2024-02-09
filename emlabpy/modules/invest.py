@@ -227,15 +227,14 @@ class Investmentdecision(DefaultModule):
                 else:
                     print("no more power plant to invest, saving loans, next iteration")
                     if (self.reps.capacity_remuneration_mechanism == "capacity_market"
-                            and self.reps.capacity_market_cleared_in_investment == False
-                            and self.reps.initialization_investment == False):
+                            and self.reps.capacity_market_cleared_in_investment == False):
                         print("************************************* accounting for capacity markets")
                         self.reset_status_candidates_to_investable()
                         self.reps.investment_initialization_years += 1
                         self.continue_iteration()
                         self.reps.dbrw.stage_calculate_future_capacity_market(True)
                     else:
-                        if ((self.reps.capacity_remuneration_mechanism in ["capacity_market" "strategic_reserve_ger"])
+                        if ((self.reps.capacity_remuneration_mechanism in ["capacity_market", "strategic_reserve_ger"])
                                 and self.reps.initialization_investment == False
                                 and self.reps.capacity_market_cleared_in_investment == True):
                             print("************************************* calculate market for next CM next year")
@@ -246,16 +245,19 @@ class Investmentdecision(DefaultModule):
                             self.reps.dbrw.stage_iteration(0)
                         else:
                             if self.reps.initialization_investment == True:
-                                print("finishing year in Initialization investment loop")
+                                if (self.reps.capacity_remuneration_mechanism == "capacity_market"
+                                        and self.reps.capacity_market_cleared_in_investment == True):
+                                    self.reps.dbrw.stage_calculate_future_capacity_market(False)
+                                    print("************************************* accounting for capacity markets investment loop")
                                 if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
-                                    # finalizing initialization loop
+                                    print("finishing investment loop")
                                     # look ahead = 4 should be executed in the workflow
-                                    self.reset_status_candidates_to_investable()
                                     self.reps.initialization_investment = False
                                     self.reps.dbrw.stage_initialization_investment(False)
                                     self.reps.dbrw.stage_last_testing_technology(False)
                                     self.stop_iteration()  # continue to main workflow
                                 else:
+                                    print("next initialization year, no capacity market")
                                     self.reps.investment_initialization_years += 1
                                     self.continue_iteration()
                                     self.reps.dbrw.stage_testing_future_year(self.reps)

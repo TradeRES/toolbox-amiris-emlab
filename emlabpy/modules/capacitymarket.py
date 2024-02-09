@@ -161,12 +161,12 @@ class CapacityMarketClearing(MarketModule):
 
             elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
                 """
-                should be partly accepted but currently accepting all
+                should be partly accepted but currently accepting only complete plants, if partly is out, then it is not accepted
                 """
-                clearing_price = sdc.get_price_at_volume(total_supply_volume + ppdp.amount)
+                clearing_price = sdc.get_price_at_volume(total_supply_volume)
+                total_supply_volume = total_supply_volume# total supply sdc.get_volume_at_price(clearing_price)
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
-                ppdp.accepted_amount = sdc.get_volume_at_price(clearing_price) - total_supply_volume
-                total_supply_volume = total_supply_volume + ppdp["amount"] # total supply
+                ppdp.accepted_amount = 0
                 # print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
                 isMarketUndersuscribed = False
                 break

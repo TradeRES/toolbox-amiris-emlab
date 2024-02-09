@@ -96,6 +96,7 @@ class Repository:
         self.capacity_market_cleared_in_investment = False
         self.round_for_capacity_market = False
         self.limit_investments = True
+        self.change_IRR = False
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
