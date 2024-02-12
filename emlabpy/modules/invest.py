@@ -559,15 +559,6 @@ class Investmentdecision(DefaultModule):
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isTheMarketCleared = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
-        peaksupply, expected_effective_operationalcapacity = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
-            self.future_installed_plants_ids, self.investable_candidate_plants)
-        expectedDemandFactor = self.reps.dbrw.get_calculated_simulated_fuel_prices_by_year("electricity",
-                                                                                           globalNames.future_prices,
-                                                                                           self.futureInvestmentyear)
-        peakExpectedDemand = self.peak_demand * expectedDemandFactor
-        if peaksupply > peakExpectedDemand:
-            print("peaksupply " + str(peaksupply) + "peakExpectedDemand " + str(peakExpectedDemand))
-            capacity_market_price = 0
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_supply_volume,
                                                          self.futureTick)
