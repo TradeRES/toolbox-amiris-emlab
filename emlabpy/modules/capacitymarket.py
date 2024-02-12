@@ -13,32 +13,8 @@ from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.markets import SlopingDemandCurve
 
-def calculate_cone(reps, market):
-    cones = {}
-    for candidatepowerplant in reps.candidatePowerPlants.values():
-        technology = candidatepowerplant.technology
-        totalInvestment = technology.get_investment_costs_perMW_by_year(
-            reps.current_year + market.forward_years_CM)
-        depreciationTime = technology.depreciation_time
-        buildingTime = technology.expected_leadtime
-        fixed_costs = technology.get_fixed_costs_by_commissioning_year(
-            reps.current_year + market.forward_years_CM)
-        equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
-        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
-        for i in range(0, buildingTime + depreciationTime):
-            if i < buildingTime:
-                investmentCashFlow[i] =  equalTotalDownPaymentInstallment
-            else:
-                investmentCashFlow[i] =  fixed_costs
-        wacc = technology.interestRate
-        discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
-        factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
-        CONE = discountedprojectvalue * factor
-        cones[technology.name ] = CONE
-    minCONE = min(cones.values())
-    reps.dbrw.stage_CONE( market.name, int(minCONE))
-
 class CapacityMarketSubmitBids(MarketModule):
+
     """
     The class that submits all bids to the Capacity Market
     """
@@ -157,17 +133,18 @@ class CapacityMarketClearing(MarketModule):
                 clearing_price = ppdp.price
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                 ppdp.accepted_amount = ppdp.amount
-            #   print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
+                print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
 
             elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
                 """
-                should be partly accepted but currently accepting only complete plants, if partly is out, then it is not accepted
+                should be partly accepted but currently accepting only complete plants, 
+                accepting power plant, but giving lower price
                 """
-                clearing_price = sdc.get_price_at_volume(total_supply_volume)
-                total_supply_volume = total_supply_volume# total supply sdc.get_volume_at_price(clearing_price)
+                clearing_price = sdc.get_price_at_volume(total_supply_volume + ppdp.amount)
+                total_supply_volume = total_supply_volume + ppdp.amount
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                 ppdp.accepted_amount = 0
-                # print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
+                print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
                 isMarketUndersuscribed = False
                 break
             else:
@@ -180,7 +157,7 @@ class CapacityMarketClearing(MarketModule):
 
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
-        print("market mninimum volume? ", isMarketUndersuscribed)
+        print("isMarketUndersuscribed ", isMarketUndersuscribed)
 
         return clearing_price, total_supply_volume, isMarketUndersuscribed
 
@@ -193,3 +170,35 @@ class CapacityMarketClearing(MarketModule):
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick + market.forward_years_CM)
             # saving capacity market accepted bids amount and status
             self.reps.dbrw.stage_bids_status(accepted)
+
+def calculate_cone(reps, capacity_market, candidatepowerplants):
+    print("calculating CONE")
+    cones = {}
+    for candidatepowerplant in candidatepowerplants:
+        technology = candidatepowerplant.technology
+        totalInvestment = technology.get_investment_costs_perMW_by_year(
+            reps.current_year + capacity_market.forward_years_CM)
+        depreciationTime = technology.depreciation_time
+        buildingTime = technology.expected_leadtime
+        fixed_costs = technology.get_fixed_costs_by_commissioning_year(
+            reps.current_year + capacity_market.forward_years_CM)
+        equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
+        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
+        print(candidatepowerplant.get_Profit())
+        for i in range(0, buildingTime + depreciationTime):
+            if i < buildingTime:
+                investmentCashFlow[i] =  equalTotalDownPaymentInstallment
+            else:
+                investmentCashFlow[i] =  fixed_costs -  candidatepowerplant.get_Profit()
+        wacc = technology.interestRate
+        discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
+        factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
+        CONE = discountedprojectvalue * factor
+        cones[technology.name ] = CONE
+
+    minCONE = min(cones.values())
+    price_cap = int(minCONE) * capacity_market.PriceCapTimesCONE
+    print("price_cap")
+    print(price_cap)
+    capacity_market.PriceCap = price_cap
+    reps.dbrw.stage_price_cap( capacity_market.name,price_cap )

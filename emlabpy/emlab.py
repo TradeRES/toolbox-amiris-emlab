@@ -12,12 +12,15 @@ Jim Hommes - 25-3-2021
 
 import logging
 import time
+
+
 from modules.payLoans import PayForLoansRole
 from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from util.spinedb_reader_writer import *
+from modules.capacitySubscription import CapacitySubscriptionClearing
 from modules.capacitymarket import *
 from modules.forwardcapacitymarket import *
 from modules.strategicreserve_new import *
@@ -127,10 +130,7 @@ try:  # Try statement to always close DB properly
         spinedb_reader_writer.stage_power_plant_id_and_loans(reps, reps.power_plants)
         spinedb_reader_writer.stage_candidate_power_plant_id(reps.candidatePowerPlants)
 
-        if reps.capacity_remuneration_mechanism == "capacity_market":
-            market = reps.get_capacity_market_in_country(reps.country)
-            calculate_cone(reps, market)
-            print("staging price cap")
+
         print('Staged IDs')
     else:
         # if the id initialization was done, it is not needed to store it again.
@@ -177,6 +177,14 @@ try:  # Try statement to always close DB properly
             strategic_reserve_submit_bids.act_and_commit()
             strategic_reserve.act_and_commit()
             print('End strategic reserve german')
+
+        if reps.capacity_remuneration_mechanism == "capacity_subscription":
+            print('Start capacity subscription')
+            capacity_subscription_clear = CapacitySubscriptionClearing(reps)
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps)
+            capacity_market_submit_bids.act_and_commit()
+            capacity_subscription_clear.act_and_commit()
+            print('Start capacity subscription')
 
         elif reps.capacity_remuneration_mechanism == "capacity_market":
             print('Start Run Capacity Market')

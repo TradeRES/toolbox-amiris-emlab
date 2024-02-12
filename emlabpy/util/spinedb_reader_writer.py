@@ -397,12 +397,12 @@ class SpineDBReaderWriter:
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
                                            [('last_investable_technology', last_investable_technology)], "0")
-    def stage_CONE(self, capacity_market_name, CONE):
+    def stage_price_cap(self, capacity_market_name, price_cap):
         self.stage_object_class(self.capacity_market_classname)
         self.stage_object_parameter(self.capacity_market_classname, "PriceCap")
         self.stage_object(self.capacity_market_classname, capacity_market_name)
         self.stage_object_parameter_values(self.capacity_market_classname, capacity_market_name,
-                                           [('PriceCap', 1.5* CONE)], "0")
+                                           [('PriceCap', price_cap)], "0")
     def stage_calculate_future_capacity_market(self, status):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")
@@ -566,6 +566,7 @@ class SpineDBReaderWriter:
         for i, pp_name in enumerate(pp_dispatched_names):
             pp = reps.power_plants[pp_name]
             pp_profit = pp_total_profits.loc[0,pp.id]
+
             self.stage_object(self.powerplant_installed_classname, str(pp_name))
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
                                                [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
@@ -577,6 +578,7 @@ class SpineDBReaderWriter:
                     pp = reps.get_power_plant_by_id(pp_id)
                     print(pp.name + "was tested but not used - > no operational profits")
                     pp_profit = 0
+
                     self.stage_object(self.powerplant_installed_classname, str(pp.name))
                     self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
                                                        [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")

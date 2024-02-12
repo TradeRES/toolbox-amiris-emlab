@@ -798,11 +798,12 @@ class Repository:
                                                                       market: Market) -> float:
         return sum([i.accepted_amount for i in self.power_plant_dispatch_plans_in_year.values() if i.tick == time and
                     i.plant == power_plant and i.bidding_market == market])
-
     def get_sorted_bids_by_market_and_time(self, market: Market, time: int) -> \
             List[PowerPlantDispatchPlan]:
         return sorted([i for i in self.bids.values()
                        if i.market == market.name and i.tick == time], key=lambda i: i.price)
+    def get_load_shedders_by_time(self, time: int):
+        return [(i) for i in self.loadShedders.values() if i.name != "hydrogen"]
 
     def get_power_plant_dispatch_plans_by_plant(self, plant: PowerPlant) -> List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans_in_year.values() if i.plant == plant]
