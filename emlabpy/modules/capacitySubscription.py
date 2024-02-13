@@ -32,8 +32,12 @@ class CapacitySubscriptionClearing(MarketModule):
 
     def act(self):
         print("capacity subscription clearing")
-        capacity_market, clearing_price, total_supply_volume, = self.capacity_subscription_clearing()
+        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
+        capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
+        sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
+        clearing_price, total_supply_volume, = self.capacity_subscription_clearing(sorted_ppdp, capacity_market, capacity_market_year)
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
+
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick + capacity_market.forward_years_CM)
@@ -43,14 +47,9 @@ class CapacitySubscriptionClearing(MarketModule):
                                                          self.reps.current_tick)
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
-    def capacity_subscription_clearing(self):
-        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
-        sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-        capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
+    def capacity_subscription_clearing(self, sorted_supply, capacity_market, capacity_market_year):
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year, True)
         peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
-
-        # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         peakExpectedDemand = peak_load * (expectedDemandFactor)
         load_shedders = self.reps.get_load_shedders_by_time( self.reps.current_tick)
         for ls in load_shedders:
@@ -60,6 +59,7 @@ class CapacitySubscriptionClearing(MarketModule):
         total = 0
         for i , demand in enumerate(sorted_demand):
             total += demand.percentageLoad * peakExpectedDemand
+       #     print(str(demand.price)+ ";"+ str(  demand.percentageLoad * peakExpectedDemand))
             demand.cummulative_quantity = total
 
         print("peak load " + str(peakExpectedDemand))
@@ -68,7 +68,7 @@ class CapacitySubscriptionClearing(MarketModule):
 
         demandCurve = DemandCurve(capacity_market.PriceCap, sorted_demand)
         cummulative_supply = 0
-        for ppdp in sorted_ppdp:
+        for ppdp in sorted_supply:
                 # As long as the market is not cleared
                 cummulative_supply = ppdp.amount + cummulative_supply
                 price_at_volume = demandCurve.get_price_at_volume(cummulative_supply)
@@ -81,6 +81,6 @@ class CapacitySubscriptionClearing(MarketModule):
                     print("total_supply", total_supply_volume)
                     break
 
-        return capacity_market, clearing_price, total_supply_volume
+        return  clearing_price, total_supply_volume
 
 

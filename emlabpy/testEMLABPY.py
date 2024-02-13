@@ -8,6 +8,83 @@ from functools import reduce
 import pandas as pd
 import math
 
+class CapacityMarket:
+    """
+    The SlopingDemandCurve as required in the CapacityMarket.
+    """
+    def __init__(self):
+        self.irm = 0
+        self.lm = 0.05
+        self.d_peak = 40 # GW
+        self.um = 0.05
+        self.price_cap =50000 # eur/MWh
+        self.lm_volume = self.d_peak * (1 +  self.irm  -self.lm )
+        self.um_volume = self.d_peak * (1 +  self.irm  + self.um )
+
+        self.m = self.price_cap / (self.um_volume - self.lm_volume)
+
+    def get_price_at_volume(self, volume):
+        m = self.price_cap / (self.um_volume - self.lm_volume)
+        if volume < self.lm_volume:
+            return self.price_cap
+        elif self.lm_volume <= volume <= self.um_volume:
+            return self.price_cap - m * (volume - self.lm_volume)
+        elif self.um_volume < volume:
+            return 0
+    def get_volume_at_price(self, price):
+        m = self.price_cap / (self.um_volume - self.lm_volume)
+        if price >= self.price_cap:
+            raise Exception
+        elif price == 0:
+            print("BID PRICE IS ZERO")
+            raise Exception
+            # return None
+        else:
+            return ((self.price_cap - price) / m) + self.lm_volume
+    def clear_market(self, sorted_ppdp):
+        clearing_price = 0
+        total_supply_volume = 0
+        isMarketUndersuscribed = False
+        for ppdp in sorted_ppdp:
+            # As long as the market is not cleared
+            if ppdp["price"] <= self.get_price_at_volume(total_supply_volume + ppdp["amount"]):
+                total_supply_volume +=  ppdp["amount"]
+                clearing_price =ppdp["price"]
+            elif ppdp["price"]  < self.get_price_at_volume(total_supply_volume):
+                clearing_price = ppdp["price"] # oversupply accepted at this price
+                total_supply_volume = total_supply_volume + ppdp["amount"] # total supply
+                # print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
+                isMarketUndersuscribed = False
+                break
+            else:
+                if total_supply_volume > self.lm_volume:
+                    isMarketUndersuscribed = False
+                else:
+                    isMarketUndersuscribed = True
+                break
+        return clearing_price, total_supply_volume, isMarketUndersuscribed
+
+file = "C:\\toolbox-amiris-emlab\\data\\Analysis\\NPV.xlsx"
+df = pd.read_excel(file, sheet_name="Sheet2", usecols="B:C")
+market = CapacityMarket()
+volume = list(range(len(df)))
+bids = list(df.T.to_dict().values())
+
+
+clearing_price, total_supply_volume, isMarketUndersuscribed = market.clear_market(bids)
+print("clearing_price")
+print(clearing_price)
+print("total_supply_volume")
+print(total_supply_volume)
+print(isMarketUndersuscribed)
+
+
+
+
+
+
+
+
 
 df = pd.read_csv("C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv")
 column = df["unit_25000000"]
