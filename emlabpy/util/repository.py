@@ -308,6 +308,9 @@ class Repository:
             return None
 
     def get_realized_peak_demand_by_year(self, year):
+        """
+        saved in future market preparation, include industrial load
+        """
         try:
             return next(i.realized_demand_peak.loc[year] for i in self.electricity_spot_markets.values() if
                         i.country == self.country)

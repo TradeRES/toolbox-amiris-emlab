@@ -86,6 +86,7 @@ class LoadShedder(ImportObject):
         self.percentageLoad = 0
         self.reliability_standard = 0
         self.price = 0
+        self.realized_rs = None
 
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -104,6 +105,12 @@ class LoadShedder(ImportObject):
             self.percentageLoad = parameter_value
         elif parameter_name == 'reliability_standard':
             self.reliability_standard = parameter_value
+        elif parameter_name == 'realized_rs':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            pd_series = pd.Series(values, index = index)
+            self.realized_rs = pd_series
 
 class CapacityMarket(Market):
     """"""

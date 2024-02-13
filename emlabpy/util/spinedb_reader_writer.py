@@ -29,6 +29,7 @@ class SpineDBReaderWriter:
         self.db_urls = db_urls
         self.db = SpineDB(db_urls[0])  # the first url is always emlab
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
+        self.load_shedders_classname = 'LoadShedders'
         self.technologies_classname = 'Technologies'
         self.powerplantprofits_classname = 'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
@@ -722,6 +723,16 @@ class SpineDBReaderWriter:
                                            [('cash', plant.cash)
                                             ],
                                            '0')
+    def stage_init_load_shedded(self):
+        self.stage_object_class(self.load_shedders_classname)
+        self.stage_object_parameters(self.load_shedders_classname, ['realized_rs'])
+
+    def stage_load_shedders(self, realized_curtailments, tick):
+        # iterate over elements in the series realized_curtailments
+        for ls_name, ls in realized_curtailments.iteritems():
+            self.stage_object(self.load_shedders_classname, ls_name)
+            self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
+            [("realized_rs", Map([str(tick)], [ls]))], "0")
 
     def stage_init_cash_agent(self):
         self.stage_object_class(self.energyProducer_classname)
@@ -779,12 +790,6 @@ class SpineDBReaderWriter:
                                      ['capacityMechanismRevenues'])
 
     def stage_CM_revenues(self, power_plant, amount, current_tick: int):
-        self.stage_object(self.financial_reports_object_classname, power_plant)
-        self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
-                                           [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
-                                           '0')
-
-    def stage_CM_price_in_investment(self, year, price):
         self.stage_object(self.financial_reports_object_classname, power_plant)
         self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
                                            [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],

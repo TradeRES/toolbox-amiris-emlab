@@ -1,3 +1,5 @@
+import os
+
 import numpy_financial as npf
 import pandas as pd
 from domain.powerplantDispatchPlan import PowerPlantDispatchPlan
@@ -26,8 +28,10 @@ class CreatingFinancialReports(DefaultModule):
         if reps.current_tick == 0:
             reps.dbrw.stage_init_financial_results_structure()
             reps.dbrw.stage_init_cash_agent()
+            reps.dbrw.stage_init_load_shedded()
 
     def act(self):
+        self.prepare_percentage_load_shedded()
         self.createFinancialReportsForPowerPlantsAndTick()
         print("finished financial report")
 
@@ -192,21 +196,78 @@ class CreatingFinancialReports(DefaultModule):
         else:
             return round(IRR, 4), npv
 
-    # def addingMarketClearingIncome(self):
-    #     print("adding again dispatch revenues????")
-    #     all_dispatch = self.reps.power_plant_dispatch_plans_in_year
-    #     SRO = self.reps.get_strategic_reserve_operator(self.reps.country)
-    #     all_revenues = 0
-    #     for k, dispatch in all_dispatch.items():
-    #         if k not in SRO.list_of_plants:
-    #             all_revenues += dispatch.revenues
-    #             self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
+    def prepare_percentage_load_shedded(self):
+        year_excel = os.path.join(globalNames.amiris_ouput_path,(str(self.reps.current_year) + ".xlsx"))
+        df = pd.read_excel(year_excel, sheet_name=[ "hourly_generation"])
+        hourly_load_shedders = pd.DataFrame()
+        for unit in df['hourly_generation'].columns.values:
+            if unit[0:4] == "unit":
+                hourly_load_shedders[unit[5:]] = df['hourly_generation'][unit]
 
-        # adding market revenues to energy producer
-        # wholesale_market = self.reps.get_electricity_spot_market_for_country(self.reps.country)
-        # self.reps.createCashFlow(wholesale_market, self.agent, all_revenues,
-        #                          globalNames.CF_ELECTRICITY_SPOT, self.reps.current_tick, "all")
+        production_not_shedded_MWh = pd.DataFrame()
+        load_shedded_per_group_MWh = pd.DataFrame()
+        total_yearly_electrolysis_consumption = pd.DataFrame()
+        total_yearly_hydrogen_input_demand = self.reps.loadShedders["hydrogen"].ShedderCapacityMW * 8760
+        hydrogen_ids = self.reps.substances["OTHER"].initialPrice.max() * 100000
+        hydrogen_input_demand = [self.reps.loadShedders["hydrogen"].ShedderCapacityMW] * 8760
+        total_load_shedded = pd.DataFrame()
+        year = self.reps.current_year
+        for name, values in self.reps.loadShedders.items():
+            test_list = [int(i) for i in hourly_load_shedders.columns.values]
+            hourly_load_shedders.columns = test_list
+            if name == "hydrogen":  # hydrogen is the lowest load shedder
+                id_shedder = hourly_load_shedders.columns[hourly_load_shedders.columns <= hydrogen_ids]
+                total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
+                yearly_hydrogen_shedded = total_load_shedded[name].sum()
+                production_not_shedded_MWh.at[year, "hydrogen_produced"] = (total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded)
+                production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
+                total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
+            else:
+                id_shedder = values.VOLL * 100000
+                total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
+                load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
+        realized_curtailments = total_load_shedded.where(total_load_shedded > 0).sum()
+        self.reps.dbrw.stage_load_shedders(realized_curtailments, self.reps.current_tick)
 
-        # TODO add CO2 costs
-        # financialPowerPlantReport.setVariableCosts(financialPowerPlantReport.getCommodityCosts() + financialPowerPlantReport.getCo2Costs())
-        # financialPowerPlantReport.setOverallRevenue(financialPowerPlantReport.getCapacityMarketRevenue() + financialPowerPlantReport.getCo2HedgingRevenue() + financialPowerPlantReport.getSpotMarketRevenue() + financialPowerPlantReport.getStrategicReserveRevenue())
+
+
+
+
+        # def modifyVOLL(self):
+        #     if  self.reps.current_tick < 5:
+        #         pass
+        #     else:
+        #         start = self.reps.current_tick -4
+        #         ticks_to_generate = list(range(start, self.reps.current_tick ))
+        #         irrs_per_tech_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        #         for technology_name in self.reps.loadShedders:
+        #
+        #             irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        #             for plant in powerplants_per_tech:
+        #                 irr_per_plant = self.reps.get_irrs_for_plant(plant.name)
+        #                 if irr_per_plant is None:
+        #                     pass
+        #                 else:
+        #                     irrs_per_year[plant.name] = irr_per_plant
+        #
+        #             if irrs_per_year.size != 0:
+        #                 irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
+        #
+        #         irrs_in_last_years = irrs_per_tech_per_year.mean()
+        #         for technology_name, averageirr in irrs_in_last_years.items():
+        #             if  pd.isna(averageirr):
+        #                 pass
+        #             else:
+        #                 decrease = (averageirr-0.1) * 0.1
+        #                 old_value = self.reps.power_generating_technologies[technology_name].interestRate
+        #                 if averageirr < 0.01:
+        #                     pass # and IRR of 10% is normal
+        #                 elif old_value - decrease < 0:
+        #                     pass
+        #                 elif old_value - decrease > 0.2:
+        #                     pass
+        #                 else:
+        #                     new_value = old_value - decrease
+        #                     print("decrease IRR of " + technology_name + " by " + str(decrease))
+        #                     self.reps.power_generating_technologies[technology_name].interestRate = new_value
+        #                     self.reps.dbrw.stage_new_irr(self.reps.power_generating_technologies[technology_name])

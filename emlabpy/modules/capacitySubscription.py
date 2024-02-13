@@ -2,6 +2,7 @@ from modules.capacitymarket import CapacityMarketClearing
 from modules.marketmodule import MarketModule
 from util.repository import Repository
 from util import globalNames
+import pandas as pd
 class DemandCurve:
     """
     The SlopingDemandCurve as required in the CapacityMarket.
@@ -80,7 +81,5 @@ class CapacitySubscriptionClearing(MarketModule):
                     print("clearing price ", clearing_price)
                     print("total_supply", total_supply_volume)
                     break
-
         return  clearing_price, total_supply_volume
-
 
