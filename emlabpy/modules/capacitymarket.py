@@ -63,10 +63,10 @@ class CapacityMarketSubmitBids(MarketModule):
                                (capacity * powerplant.technology.peak_segment_dependent_availability)
             else:
                 pass  # if positive revenues price_to_bid remains 0
-            print(powerplant.technology.name +
-                  powerplant.name + ";" + str(price_to_bid) + ";" + str(profits) + ";" + str(
-                fixed_on_m_cost) + ";" + str(
-                pending_loan))
+            # print(powerplant.technology.name +
+            #       powerplant.name + ";" + str(price_to_bid) + ";" + str(profits) + ";" + str(
+            #     fixed_on_m_cost) + ";" + str(
+            #     pending_loan))
             # all power plants place a bid pair of price and capacity on the market
             capacity_to_bid = capacity * powerplant.technology.peak_segment_dependent_availability
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, capacity_to_bid, \
@@ -140,8 +140,8 @@ class CapacityMarketClearing(MarketModule):
                 should be partly accepted but currently accepting only complete plants, 
                 accepting power plant, but giving lower price
                 """
-                clearing_price = sdc.get_price_at_volume(total_supply_volume + ppdp.amount)
-                total_supply_volume = total_supply_volume + ppdp.amount
+                clearing_price = sdc.get_price_at_volume(total_supply_volume)
+                total_supply_volume = total_supply_volume
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
                 ppdp.accepted_amount = 0
                 print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
@@ -184,20 +184,21 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             reps.current_year + capacity_market.forward_years_CM)
         equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
-        print(candidatepowerplant.get_Profit())
+
         for i in range(0, buildingTime + depreciationTime):
             if i < buildingTime:
                 investmentCashFlow[i] =  equalTotalDownPaymentInstallment
             else:
-                investmentCashFlow[i] =  fixed_costs -  candidatepowerplant.get_Profit()
+                investmentCashFlow[i] =  fixed_costs - candidatepowerplant.get_Profit()
         wacc = technology.interestRate
         discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
         factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
         CONE = discountedprojectvalue * factor
         cones[technology.name ] = CONE
-
-    minCONE = min(cones.values())
-    price_cap = int(minCONE) * capacity_market.PriceCapTimesCONE
+        print(candidatepowerplant.technology.name)
+        print(CONE)
+  #  minCONE = min(cones.values())
+    price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
     print("price_cap")
     print(price_cap)
     capacity_market.PriceCap = price_cap
