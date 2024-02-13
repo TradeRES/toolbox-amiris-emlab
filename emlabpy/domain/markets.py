@@ -84,6 +84,9 @@ class LoadShedder(ImportObject):
         self.TimeSeriesFileFuture = 0
         self.ShedderCapacityMW = 0
         self.percentageLoad = 0
+        self.reliability_standard = 0
+        self.price = 0
+
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'TimeSeriesFile':
@@ -99,6 +102,8 @@ class LoadShedder(ImportObject):
             self.ShedderCapacityMW = parameter_value
         elif parameter_name == 'percentage_load':
             self.percentageLoad = parameter_value
+        elif parameter_name == 'reliability_standard':
+            self.reliability_standard = parameter_value
 
 class CapacityMarket(Market):
     """"""
@@ -112,6 +117,7 @@ class CapacityMarket(Market):
         self.UpperMargin = 0.0
         self.PriceCap = 0
         self.forward_years_CM = 0
+        self.PriceCapTimesCONE = 0
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):

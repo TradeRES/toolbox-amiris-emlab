@@ -108,8 +108,8 @@ class CapacityMarketClearing(MarketModule):
             print("Market is not cleared", market.name, "at ", str(clearing_price))
 
     def capacity_market_clearing(self, sorted_ppdp, market, capacity_market_year):
-        isMarketUndersuscribed = False  # isTheMarketCleared means ther capacity us slightly oversubscribed
-        spot_market = self.reps.get_spot_market_in_country(self.reps.country)
+
+        # spot_market = self.reps.get_spot_market_in_country(self.reps.country)
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
                                                                                       True)
         # peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year) - >
@@ -126,6 +126,7 @@ class CapacityMarketClearing(MarketModule):
         clearing_price = 0
         total_supply_volume = 0
         # peaksupply = 0   # capacity market should be able to have more capacity than peak
+        isMarketUndersuscribed = False  # isTheMarketCleared means ther capacity us slightly oversubscribed
         for ppdp in sorted_ppdp:
             # As long as the market is not cleared
             if ppdp.price <= sdc.get_price_at_volume(total_supply_volume + ppdp.amount):

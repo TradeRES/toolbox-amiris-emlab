@@ -7,14 +7,11 @@ class Market:
         self.price_cap = price_cap
         self.sorted_demand = sorted_demand
 
-    def cleared_market(self, volume):
+    def get_price_at_volume(self, volume):
         price = self.price_cap
         for demand in self.sorted_demand:
-            print("lastdemand " + str(demand.cummulative_quantity))
-            if volume  >= demand.cummulative_quantity:
-                price = demand.price
-                print("demand price " + str(price))
-            else:
+            price = demand.price
+            if demand.cummulative_quantity > volume:
                 break
         return price
 
@@ -27,35 +24,36 @@ class Bid:
 def clear_market(sorted_supply, sorted_demand):
     equilibrium_price = None
     equilibrium_quantity = 0
-    market = Market(1000, sorted_demand)
+    market = Market(60000, sorted_demand)
     total_supply_volume = 0
 
     for ppdp in sorted_supply:
         # As long as the market is not cleared
         print("supply quantity -----------" + str(ppdp.cummulative_quantity))
-        if ppdp.price <= market.cleared_market(ppdp.cummulative_quantity):
+        price_at_volume = market.get_price_at_volume(ppdp.cummulative_quantity)
+        if ppdp.price <= price_at_volume:
             total_supply_volume += ppdp.quantity
-            equilibrium_price = ppdp.price
-            print("equilibrium_price: ", ppdp.price)
+            equilibrium_price = price_at_volume
+            print("equilibrium_price: ", equilibrium_price)
         else:
             break
     return equilibrium_price, equilibrium_quantity
 
 # Example usage
 supply = [
-    Bid(price=1, quantity=4),
-    Bid(price=2, quantity=4),
-    Bid(price=3, quantity=4),
-    Bid(price=7, quantity=4),
-    Bid(price=15.4, quantity=4),
-    Bid(price=6.5, quantity=4)
+    Bid(price=0, quantity=0),
+    Bid(price=5000, quantity=15000),
+    Bid(price=6000, quantity=10000),
+    Bid(price=30000, quantity=10000),
+    Bid(price=42000, quantity=7000),
+    Bid(price=46000, quantity=20000)
 ]
 
 demand = [
-    Bid(price=10, quantity=5),
-    Bid(price=8, quantity=7),
-    Bid(price=6, quantity=3),
-    Bid(price=5, quantity=8)
+    Bid(price=50000, quantity=1305),
+    Bid(price=39000, quantity=39000),
+    Bid(price=30000, quantity=1000),
+    Bid(price=20000, quantity=2000)
 ]
 
 sorted_supply = sorted(supply, key=lambda x: x.price, reverse=False)
