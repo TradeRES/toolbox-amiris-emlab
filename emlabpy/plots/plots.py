@@ -1039,7 +1039,7 @@ def plot_grouped_monthly_production_per_type(average_yearly_generation):
 
 
 def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded):
+                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year):
     fig37, axs37 = plt.subplots(2, 1)
     fig37.tight_layout()
     production_not_shedded_TWh = production_not_shedded_MWh[["hydrogen_produced", "industrial_heat_demand"]] / 1000000
@@ -1057,8 +1057,8 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     plt.close('all')
 
     # reorganize columns as specified
-    percentage_load_shedded = percentage_load_shedded[['low', 'mid', 'high', 'base']]
-    load_shedded_per_group_MWh = load_shedded_per_group_MWh[['low', 'mid', 'high', 'base']]
+    # percentage_load_shedded = percentage_load_shedded[['low', 'mid', 'high', 'base']]
+    # load_shedded_per_group_MWh = load_shedded_per_group_MWh[['low', 'mid', 'high', 'base']]
     # dropping hydrogen because it is too
     #load_shedded_per_group_MWh.drop('hydrogen', axis=1, inplace=True)
     fig38, axs38 = plt.subplots(2, 1)
@@ -1074,25 +1074,23 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     fig38.savefig(path_to_plots + '/' + 'Load_shedded.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
-    # axs38 = load_shedded_per_group_MWh.plot()
-    # axs38.set_axisbelow(True)
-    # plt.xlabel('Years', fontsize='medium')
-    # plt.ylabel('Mwh', fontsize='medium')
-    # plt.grid()
-    # axs38.set_title('yearly load shedded')
-    # fig38 = axs38.get_figure()
-    # fig38.savefig(path_to_plots + '/' + '\Load_shedded.png', bbox_inches='tight', dpi=300)
-    # plt.close('all')
-    #
 
-    # axs25 = percentage_load_shedded.plot()
-    # axs25.set_axisbelow(True)
-    # plt.ylabel('%', fontsize='medium')
-    # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    # axs25.set_title('Shedded load by ')
-    # fig25 = axs25.get_figure()
-    # fig25.savefig(path_to_plots + '/' + 'Load_shedded_percentage.png', bbox_inches='tight',
-    #               dpi=300)
+    LOLE_per_group.drop(inplace=True, index='hydrogen')
+    max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
+    fig39, axs39 = plt.subplots(2, 1)
+    fig39.tight_layout()
+    LOLE_per_group.T.plot(ax=axs39[0], legend=False)
+    axs39[0].set_title('Load shedded', fontsize='medium')
+    max_ENS_in_a_row.T.plot(ax=axs39[1], legend=True)
+    axs39[1].set_title('Max hours load shedded in a row', fontsize='medium')
+    axs39[0].set_ylabel('h', fontsize='medium')
+    axs39[1].set_xlabel('year', fontsize='medium')
+    axs39[1].set_ylabel('h', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    fig39.savefig(path_to_plots + '/' + 'Load_shedded_hours.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
+
+
 
 
 # section -----------------------------------------------------------------------------------------------data preparation
@@ -1931,6 +1929,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     total_load_shedded = pd.DataFrame()
     total_load_shedded_per_year = pd.DataFrame()
     max_ENS_in_a_row = pd.DataFrame()
+    LOLE_per_group = pd.DataFrame()
     for year in years_to_generate:
         for name, values in reps.loadShedders.items():
             selected_df = hourly_load_shedders_per_year[year]
@@ -1945,7 +1944,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 total_load_shedded[name] = selected_df[(id_shedder)]
 
         total_load_shedded_per_year[year] = total_load_shedded.sum()
-
+        LOLE_per_group[year] = total_load_shedded[total_load_shedded > 0].count()
         max_continuous_hours = 0  # Counter for maximum continuous hours
 
         for column_name, column_data in total_load_shedded.iteritems():
@@ -1961,7 +1960,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 if continuous_hours > max_continuous_hours:
                     max_continuous_hours = continuous_hours
             max_ENS_in_a_row.at[column_name, year] = max_continuous_hours
-    return  max_continuous_hours
+    return  max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year
 
     #
     # maximumLS = pd.DataFrame()
@@ -2013,7 +2012,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     #     return load_shedded_per_group_MWh
 
 
-def prepare_percentage_load_shedded(yearly_load, electricity_prices, years_to_generate):
+def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
     load_shedded_per_group_MWh = pd.DataFrame()
     total_yearly_electrolysis_consumption = pd.DataFrame()
@@ -2181,15 +2180,16 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         monthly_electricity_price_grouped = prepare_monthly_electricity_prices(electricity_prices)
 
     if calculate_hourly_shedders_new == True:
-        max_continuous_hours = prepare_percentage_load_shedded_new(reps, years_to_generate)
+        max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year = prepare_percentage_load_shedded_new(reps, years_to_generate)
     else:
         pass
 
     percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation =\
-        prepare_percentage_load_shedded(yearly_load, electricity_prices, years_to_generate)
+        prepare_percentage_load_shedded(yearly_load, years_to_generate)
+
 
     plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded)
+                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year)
 
     if calculate_monthly_generation == True and calculate_hourly_shedders_new == True:
         plot_grouped_monthly_production_per_type(average_yearly_generation)
@@ -2721,11 +2721,11 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["Debug-CM-invest"]
-# results_excel = "NL_SRnewData.xlsx"
+SCENARIOS = ["NL-capacitysubcription"]
+results_excel = "NL_CM_newexpectationFuture.xlsx"
 #
-# SCENARIOS = ["NL-EOM-newData", "NL-EOM_S1", "NL-SR1600M10_S1", "NL-CM60000_S1"]
-# results_excel = "NL_S1.xlsx"
+SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
+results_excel = "NL_S1.xlsx"
 
 
 # SCENARIOS = ["NL-EOM-newData", "NL-SR_M10_P1600",  "NL-SR_M10_P1600",   "NL-SR_M15_P1600",  "NL-SR_M20_P1600"]
@@ -2739,7 +2739,7 @@ SCENARIOS = ["Debug-CM-invest"]
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = False
+existing_scenario = True
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
