@@ -727,12 +727,20 @@ class SpineDBReaderWriter:
         self.stage_object_class(self.load_shedders_classname)
         self.stage_object_parameters(self.load_shedders_classname, ['realized_rs'])
 
-    def stage_load_shedders(self, realized_curtailments, tick):
+    def stage_load_shedders_realized_lole(self, realized_curtailments, tick):
         # iterate over elements in the series realized_curtailments
         for ls_name, ls in realized_curtailments.iteritems():
             self.stage_object(self.load_shedders_classname, ls_name)
             self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
             [("realized_rs", Map([str(tick)], [ls]))], "0")
+
+
+    def stage_load_shedders_voll(self, load_shedders):
+        for ls_name, ls in load_shedders.items():
+            self.stage_object(self.load_shedders_classname, ls_name)
+            self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
+                                               [("VOLL", ls.VOLL)], "0")
+
 
     def stage_init_cash_agent(self):
         self.stage_object_class(self.energyProducer_classname)

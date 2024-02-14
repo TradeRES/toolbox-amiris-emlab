@@ -114,6 +114,9 @@ class CreatingFinancialReports(DefaultModule):
         # modifying the IRR by technology
         if self.reps.change_IRR == True:
             self.modifyIRR()
+            # modifying the IRR by technology
+        if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
+            self.modifyVOLL_capacity_subscription()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -197,12 +200,11 @@ class CreatingFinancialReports(DefaultModule):
             return round(IRR, 4), npv
 
     def prepare_percentage_load_shedded(self):
-        year_excel = os.path.join(globalNames.amiris_ouput_path,(str(self.reps.current_year) + ".xlsx"))
-        df = pd.read_excel(year_excel, sheet_name=[ "hourly_generation"])
+        df =  pd.read_csv(globalNames.hourly_generation_per_group_path)
         hourly_load_shedders = pd.DataFrame()
-        for unit in df['hourly_generation'].columns.values:
+        for unit in df.columns.values:
             if unit[0:4] == "unit":
-                hourly_load_shedders[unit[5:]] = df['hourly_generation'][unit]
+                hourly_load_shedders[unit[5:]] = df[unit]
 
         production_not_shedded_MWh = pd.DataFrame()
         load_shedded_per_group_MWh = pd.DataFrame()
@@ -227,47 +229,29 @@ class CreatingFinancialReports(DefaultModule):
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
         realized_curtailments = total_load_shedded.where(total_load_shedded > 0).sum()
-        self.reps.dbrw.stage_load_shedders(realized_curtailments, self.reps.current_tick)
+        self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
 
 
-
-
-
-        # def modifyVOLL(self):
-        #     if  self.reps.current_tick < 5:
-        #         pass
-        #     else:
-        #         start = self.reps.current_tick -4
-        #         ticks_to_generate = list(range(start, self.reps.current_tick ))
-        #         irrs_per_tech_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
-        #         for technology_name in self.reps.loadShedders:
-        #
-        #             irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
-        #             for plant in powerplants_per_tech:
-        #                 irr_per_plant = self.reps.get_irrs_for_plant(plant.name)
-        #                 if irr_per_plant is None:
-        #                     pass
-        #                 else:
-        #                     irrs_per_year[plant.name] = irr_per_plant
-        #
-        #             if irrs_per_year.size != 0:
-        #                 irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
-        #
-        #         irrs_in_last_years = irrs_per_tech_per_year.mean()
-        #         for technology_name, averageirr in irrs_in_last_years.items():
-        #             if  pd.isna(averageirr):
-        #                 pass
-        #             else:
-        #                 decrease = (averageirr-0.1) * 0.1
-        #                 old_value = self.reps.power_generating_technologies[technology_name].interestRate
-        #                 if averageirr < 0.01:
-        #                     pass # and IRR of 10% is normal
-        #                 elif old_value - decrease < 0:
-        #                     pass
-        #                 elif old_value - decrease > 0.2:
-        #                     pass
-        #                 else:
-        #                     new_value = old_value - decrease
-        #                     print("decrease IRR of " + technology_name + " by " + str(decrease))
-        #                     self.reps.power_generating_technologies[technology_name].interestRate = new_value
-        #                     self.reps.dbrw.stage_new_irr(self.reps.power_generating_technologies[technology_name])
+    def modifyVOLL_capacity_subscription(self):
+        if  self.reps.current_tick < 5:
+            pass
+        else:
+            start = self.reps.current_tick -4
+            ticks_to_generate = list(range(start, self.reps.current_tick ))
+            for load_shedder_name, load_shedder in self.reps.loadShedders.items():
+                if load_shedder_name == "hydrogen":
+                    pass
+                else:
+                    averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
+                    initial_LOLE =  load_shedder.reliability_standard
+                    if  pd.isna(averageLOLE):
+                        pass
+                    else:
+                        increaseLOLE = (averageLOLE - initial_LOLE) * 10 # Eur/Mwh     0 - 4    --- > -120
+                        if initial_LOLE < 4 and increaseLOLE <0:
+                            pass # LOLE is normal
+                        else:
+                            new_value = load_shedder.VOLL + increaseLOLE
+                            print("decrease VOLL of " + load_shedder.name + " by " + str(increaseLOLE))
+                            load_shedder.VOLL = new_value
+            self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders)

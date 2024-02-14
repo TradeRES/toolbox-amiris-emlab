@@ -78,6 +78,7 @@ input_load_de = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data\\
 amiris_results_path =  os.path.join(parentpath,'amiris_workflow\\output\\amiris_results.csv')
 amiris_ouput_path =  os.path.join(parentpath,'amiris_workflow\\output\\')
 amiris_RAWresults_path = os.path.join(parentpath,'amiris_workflow\\output\\raw\\EnergyExchange.csv')
+hourly_generation_per_group_path = os.path.join(parentpath,'amiris_workflow\\output\\hourly_generation_per_group.csv')
 power_plants_path = os.path.join(parentpath,'data\\Power_plants.xlsx')
 scenarios_path = os.path.join(parentpath,'emlabpy\\plots\\Scenarios\\')
 amiris_config_data = os.path.join(parentpath, 'amiris_workflow\\amiris-config\\data' )
