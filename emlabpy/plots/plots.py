@@ -1082,10 +1082,9 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     LOLE_per_group.T.plot(ax=axs39[0], legend=False)
     axs39[0].set_title('Load shedded', fontsize='medium')
     max_ENS_in_a_row.T.plot(ax=axs39[1], legend=True)
-    axs39[1].set_title('Max hours load shedded in a row', fontsize='medium')
-    axs39[0].set_ylabel('h', fontsize='medium')
+    axs39[0].set_ylabel('hours', fontsize='medium')
     axs39[1].set_xlabel('year', fontsize='medium')
-    axs39[1].set_ylabel('h', fontsize='medium')
+    axs39[1].set_ylabel('Max continours \n hours in a row', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig39.savefig(path_to_plots + '/' + 'Load_shedded_hours.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -2721,11 +2720,11 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["NL-capacitysubcription"]
+SCENARIOS = ["NL-CONE1_5nolimit"]
 results_excel = "NL_CM_newexpectationFuture.xlsx"
 #
-SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
-results_excel = "NL_S1.xlsx"
+# SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
+# results_excel = "NL_S1.xlsx"
 
 
 # SCENARIOS = ["NL-EOM-newData", "NL-SR_M10_P1600",  "NL-SR_M10_P1600",   "NL-SR_M15_P1600",  "NL-SR_M20_P1600"]

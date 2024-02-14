@@ -243,15 +243,19 @@ class CreatingFinancialReports(DefaultModule):
                     pass
                 else:
                     averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
-                    initial_LOLE =  load_shedder.reliability_standard
+                    reliability_standard =  load_shedder.reliability_standard
                     if  pd.isna(averageLOLE):
                         pass
                     else:
-                        increaseLOLE = (averageLOLE - initial_LOLE) * 10 # Eur/Mwh     0 - 4    --- > -120
-                        if initial_LOLE < 4 and increaseLOLE <0:
+                        increaseVOLL = (averageLOLE - reliability_standard) * 0.1 # Eur/Mwh     0 - 4    --- > -120
+                        if reliability_standard < 4 and increaseVOLL <0:
                             pass # LOLE is normal
+                        elif reliability_standard + increaseVOLL < 0:
+                            pass
+                        elif reliability_standard + increaseVOLL > 4000:
+                            pass
                         else:
-                            new_value = load_shedder.VOLL + increaseLOLE
-                            print("decrease VOLL of " + load_shedder.name + " by " + str(increaseLOLE))
+                            new_value = load_shedder.VOLL + increaseVOLL
+                            print("decrease VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                             load_shedder.VOLL = new_value
             self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders)

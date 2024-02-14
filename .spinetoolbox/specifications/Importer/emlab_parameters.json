@@ -1378,7 +1378,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "LoadShedders2": {}
+            "LoadShedders2": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1728,7 +1731,8 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float"
+                "5": "float",
+                "6": "string"
             }
         },
         "table_default_column_type": {},
