@@ -115,8 +115,7 @@ class CreatingFinancialReports(DefaultModule):
         if self.reps.change_IRR == True:
             self.modifyIRR()
             # modifying the IRR by technology
-        if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-            self.modifyVOLL_capacity_subscription()
+        self.modifyVOLL()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -225,17 +224,20 @@ class CreatingFinancialReports(DefaultModule):
                 production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
                 total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
             else:
-                id_shedder = values.VOLL * 100000
+                id_shedder = int(values.VOLL * 100000)
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
         realized_curtailments = total_load_shedded.where(total_load_shedded > 0).sum()
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
 
 
-    def modifyVOLL_capacity_subscription(self):
-        if  self.reps.current_tick < 5:
-            pass
+    def modifyVOLL(self):
+        if  self.reps.current_tick < 5 or self.reps.capacity_remuneration_mechanism != "capacity_subscription":
+            self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders, self.reps.current_year + 1)
         else:
+            """
+            modify VOLL for Capacity Subscription
+            """
             start = self.reps.current_tick -4
             ticks_to_generate = list(range(start, self.reps.current_tick ))
             for load_shedder_name, load_shedder in self.reps.loadShedders.items():
@@ -258,4 +260,4 @@ class CreatingFinancialReports(DefaultModule):
                             new_value = load_shedder.VOLL + increaseVOLL
                             print("decrease VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                             load_shedder.VOLL = new_value
-            self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders)
+            self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders, self.reps.current_year + 1)

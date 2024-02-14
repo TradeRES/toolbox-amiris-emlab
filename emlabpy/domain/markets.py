@@ -98,7 +98,14 @@ class LoadShedder(ImportObject):
             if self.name == "hydrogen":
                 self.VOLL = reps.substances[self.name].initialPrice.loc[2050] # this is mainly for plotting, in prepare market real price is being read.
             else:
-                self.VOLL = int(parameter_value)
+                array = parameter_value.to_dict()
+                values = [float(i[1]) for i in array["data"]]
+                index = [int(i[0]) for i in array["data"]]
+                pd_series = pd.Series(values, index = index)
+                if reps.runningModule == "plotting":
+                    self.VOLL = pd_series
+                else:
+                    self.VOLL = int(pd_series[reps.current_year])
         elif parameter_name == 'ShedderCapacityMW':
             self.ShedderCapacityMW = parameter_value
         elif parameter_name == 'percentage_load':

@@ -1252,6 +1252,59 @@
                         ]
                     }
                 }
+            ],
+            "VOLL": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "LoadShedders"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "VOLL"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map",
+                                "compress": true
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1276,7 +1329,8 @@
             "LoadShifterCap",
             "weatherYearsOLD",
             "peakLoad",
-            "LoadShedders2"
+            "LoadShedders2",
+            "VOLL"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1381,7 +1435,8 @@
             "LoadShedders2": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "VOLL": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1731,8 +1786,17 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float",
-                "6": "string"
+                "5": "float"
+            },
+            "VOLL": {
+                "0": "string",
+                "1": "float",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string"
             }
         },
         "table_default_column_type": {},

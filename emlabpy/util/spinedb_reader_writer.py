@@ -735,11 +735,13 @@ class SpineDBReaderWriter:
             [("realized_rs", Map([str(tick)], [ls]))], "0")
 
 
-    def stage_load_shedders_voll(self, load_shedders):
+    def stage_load_shedders_voll(self, load_shedders, tick):
         for ls_name, ls in load_shedders.items():
+            print(ls.VOLL)
             self.stage_object(self.load_shedders_classname, ls_name)
             self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-                                               [("VOLL", ls.VOLL)], "0")
+                                               [("VOLL", Map([str(tick)], [int(ls.VOLL)]))], "0")
+
 
 
     def stage_init_cash_agent(self):

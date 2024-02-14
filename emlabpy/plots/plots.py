@@ -1939,7 +1939,8 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 id_shedder = selected_df.columns[selected_df.columns <= hydrogen_ids]
                 total_load_shedded[name] = selected_df[(id_shedder)]
             else:
-                id_shedder = values.VOLL * 100000
+                id_shedder = int(values.VOLL[year] * 100000)
+                print(id_shedder)
                 total_load_shedded[name] = selected_df[(id_shedder)]
 
         total_load_shedded_per_year[year] = total_load_shedded.sum()
@@ -2035,7 +2036,7 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
                 production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
                 total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
             else:
-                id_shedder = values.VOLL * 100000
+                id_shedder = int(values.VOLL[year] * 100000)
                 total_load_shedded[name] = selected_df[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = selected_df[(id_shedder)].sum()
 
@@ -2062,19 +2063,12 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
 
 
 def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electricity_prices,
-                                       yearly_load):
+                                       yearly_load, LOLE_per_group):
     simple_electricity_prices_average = yearly_electricity_prices.sum(axis=0) / 8760
     # average electricity prices calculated in prepare capacpity and generation are the same
-
-    # weighted_electricity_prices_average = average( yearly_electricity_prices,  weights =TotalAwardedPowerInMW,axis=0 )
     shortage_hours = pd.DataFrame(index=years_to_generate)
-    VOLL = reps.loadShedders["base"].VOLL
-
     inflexible_shedding = hourly_load_shedded - reps.loadShedders["hydrogen"].ShedderCapacityMW
-    shortage_hours["from prices > VOLL"] = yearly_electricity_prices.eq(VOLL).sum()
-    # todo energy not supplied = load - total generation. so far total generation seem to be wrong
-    # energy_not_supplied_per_year = inflexible_shedding[yearly_electricity_prices.eq(VOLL)]
-    # ENS_in_simulated_years = energy_not_supplied_per_year.sum(axis=0)
+    shortage_hours["all groups"] = LOLE_per_group.sum(axis = 0)
     """
     supply ratio: hour when load is the highest 
     """
@@ -2308,7 +2302,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         plot_price_duration_curve(electricity_prices, path_to_plots)
         plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots)
         shortages, supply_ratio, simple_electricity_prices_average \
-            = get_shortage_hours_and_power_ratio(reps, years_to_generate, electricity_prices, yearly_load)
+            = get_shortage_hours_and_power_ratio(reps, years_to_generate, electricity_prices, yearly_load, LOLE_per_group)
         plot_average_and_weighted(average_electricity_price, simple_electricity_prices_average, path_to_plots)
         # plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots)
         plot_shortages_and_ENS(shortages, load_shedded_per_group_MWh, path_to_plots)
@@ -2720,7 +2714,7 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["NL-CONE1_5nolimit"]
+SCENARIOS = ["NL-CS"]
 results_excel = "NL_CM_newexpectationFuture.xlsx"
 #
 # SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
@@ -2738,7 +2732,7 @@ results_excel = "NL_CM_newexpectationFuture.xlsx"
 # Set the x-axis ticks and labels
 
 write_titles = True
-existing_scenario = True
+existing_scenario = False
 save_excel = False
 #  None if no specific technology should be tested
 test_tick = 0
