@@ -735,12 +735,14 @@ class SpineDBReaderWriter:
             [("realized_rs", Map([str(tick)], [ls]))], "0")
 
 
-    def stage_load_shedders_voll(self, load_shedders, tick):
+    def stage_load_shedders_voll_not_hydrogen(self, load_shedders, tick):
         for ls_name, ls in load_shedders.items():
-            print(ls.VOLL)
-            self.stage_object(self.load_shedders_classname, ls_name)
-            self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-                                               [("VOLL", Map([str(tick)], [int(ls.VOLL)]))], "0")
+            if ls_name == "hydrogen":
+                pass
+            else:
+                self.stage_object(self.load_shedders_classname, ls_name)
+                self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
+                                                   [("VOLL", Map([str(tick)], [int(ls.VOLL)]))], "0")
 
 
 

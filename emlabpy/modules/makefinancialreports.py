@@ -233,7 +233,7 @@ class CreatingFinancialReports(DefaultModule):
 
     def modifyVOLL(self):
         if  self.reps.current_tick < 5 or self.reps.capacity_remuneration_mechanism != "capacity_subscription":
-            self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders, self.reps.current_year + 1)
+            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
             """
             modify VOLL for Capacity Subscription
@@ -260,4 +260,4 @@ class CreatingFinancialReports(DefaultModule):
                             new_value = load_shedder.VOLL + increaseVOLL
                             print("decrease VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                             load_shedder.VOLL = new_value
-            self.reps.dbrw.stage_load_shedders_voll(self.reps.loadShedders, self.reps.current_year + 1)
+            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
