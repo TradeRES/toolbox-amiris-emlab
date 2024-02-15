@@ -393,6 +393,7 @@ try:
                 update_years_file(updated_year, StartYear, final_year,
                                   lookAhead)
             else:
+                start_plot = False
                 update_years_file(updated_year, StartYear, final_year, lookAhead)
                 db_emlab.import_object_parameter_values(
                     [(class_name, object_name, object_parameter_value_name, new_tick, '0')])
