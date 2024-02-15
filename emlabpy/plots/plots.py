@@ -333,7 +333,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
 
     if ran_CRM == "capacity_market":
         axs27 = CM_clearing_volume.plot()
-        capacity_market_future_volume.plot(ax=axs27)
+        capacity_market_future_volume.plot(ax=axs27,  marker='o', linestyle='--')
         axs27.set_axisbelow(True)
         plt.xlabel('Simulation year', fontsize='medium')
         plt.ylabel('CM clearing volume [€/MW]', fontsize='medium')
@@ -344,7 +344,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
 
         axs28 = CM_clearing_price.plot()
-        capacity_market_future_price.plot(ax=axs28)
+        capacity_market_future_price.plot(ax=axs28 ,marker='o', linestyle='--')
         axs28.set_axisbelow(True)
         plt.xlabel('Simulation year', fontsize='medium')
         plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
@@ -1039,7 +1039,7 @@ def plot_grouped_monthly_production_per_type(average_yearly_generation):
 
 
 def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year):
+                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year, total_load_shedded_per_year):
     fig37, axs37 = plt.subplots(2, 1)
     fig37.tight_layout()
     production_not_shedded_TWh = production_not_shedded_MWh[["hydrogen_produced", "industrial_heat_demand"]] / 1000000
@@ -1077,14 +1077,16 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
 
     LOLE_per_group.drop(inplace=True, index='hydrogen')
     max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
-    fig39, axs39 = plt.subplots(2, 1)
+    fig39, axs39 = plt.subplots(3, 1)
     fig39.tight_layout()
-    LOLE_per_group.T.plot(ax=axs39[0], legend=False)
-    axs39[0].set_title('Load shedded', fontsize='medium')
-    max_ENS_in_a_row.T.plot(ax=axs39[1], legend=True)
-    axs39[0].set_ylabel('hours', fontsize='medium')
-    axs39[1].set_xlabel('year', fontsize='medium')
-    axs39[1].set_ylabel('Max continours \n hours in a row', fontsize='medium')
+
+    VOLL_per_year.T.plot(ax=axs39[0], legend=False)
+    LOLE_per_group.T.plot(ax=axs39[1], legend=False)
+    max_ENS_in_a_row.T.plot(ax=axs39[2], legend=True)
+    axs39[0].set_ylabel('VOLL', fontsize='medium')
+    axs39[1].set_ylabel('hours', fontsize='medium')
+    axs39[2].set_ylabel('Max continous \n hours in a row', fontsize='medium')
+    axs39[2].set_xlabel('year', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig39.savefig(path_to_plots + '/' + 'Load_shedded_hours.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -1929,6 +1931,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     total_load_shedded_per_year = pd.DataFrame()
     max_ENS_in_a_row = pd.DataFrame()
     LOLE_per_group = pd.DataFrame()
+    VOLL_per_year = pd.DataFrame()
     for year in years_to_generate:
         for name, values in reps.loadShedders.items():
             selected_df = hourly_load_shedders_per_year[year]
@@ -1942,10 +1945,9 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 id_shedder = int(values.VOLL[year] * 100000)
                 print(id_shedder)
                 total_load_shedded[name] = selected_df[(id_shedder)]
-
+                VOLL_per_year.at[name, year] = values.VOLL[year]
         total_load_shedded_per_year[year] = total_load_shedded.sum()
         LOLE_per_group[year] = total_load_shedded[total_load_shedded > 0].count()
-        max_continuous_hours = 0  # Counter for maximum continuous hours
 
         for column_name, column_data in total_load_shedded.iteritems():
             continuous_hours = 0  # Counter for continuous hours
@@ -1960,7 +1962,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 if continuous_hours > max_continuous_hours:
                     max_continuous_hours = continuous_hours
             max_ENS_in_a_row.at[column_name, year] = max_continuous_hours
-    return  max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year
+    return  max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year, VOLL_per_year
 
     #
     # maximumLS = pd.DataFrame()
@@ -2173,7 +2175,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         monthly_electricity_price_grouped = prepare_monthly_electricity_prices(electricity_prices)
 
     if calculate_hourly_shedders_new == True:
-        max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year = prepare_percentage_load_shedded_new(reps, years_to_generate)
+        max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year, VOLL_per_year = prepare_percentage_load_shedded_new(reps, years_to_generate)
     else:
         pass
 
@@ -2182,7 +2184,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
 
     plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year)
+                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year,  total_load_shedded_per_year)
 
     if calculate_monthly_generation == True and calculate_hourly_shedders_new == True:
         plot_grouped_monthly_production_per_type(average_yearly_generation)
@@ -2714,7 +2716,7 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["NL-CS"]
+SCENARIOS = ["NL-CS-test"]
 results_excel = "NL_CM_newexpectationFuture.xlsx"
 #
 # SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
