@@ -28,6 +28,7 @@ data/powerplantsGermany/
 data/competesdata/
 emlabpy/Yearly_results.xlsx
 emlabpy/plots/Scenarios/
+emlabpy/util/plots/
 emlabpy/logs
 data/competes/*
 data/sources/other/

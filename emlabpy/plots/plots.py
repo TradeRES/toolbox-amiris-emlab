@@ -1826,7 +1826,7 @@ def calculating_RES_support(reps, years_to_generate):
     return yearly_vres_support
 
 
-def reading_electricity_prices(reps, folder_name, scenario_name):
+def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenario):
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))
     yearly_electricity_prices = pd.DataFrame()
     TotalAwardedPowerInMW = pd.DataFrame()
@@ -1890,9 +1890,9 @@ def reading_electricity_prices(reps, folder_name, scenario_name):
     return yearly_electricity_prices, residual_load, TotalAwardedPowerInMW
 
 
-def reading_original_load(years_to_generate, list_ticks):
+def reading_original_load(years_to_generate, list_ticks ):
     if reps.country == "NL" and reps.fix_demand_to_representative_year == False:
-        input_data = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
+        input_data = os.path.join(os.path.dirname(os.getcwd()) , 'data', reps.scenarioWeatheryearsExcel)
         input_yearly_profiles_demand = input_data
         sequence = reps.weatherYears["weatherYears"].sequence[list_ticks]
         allyears_load = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
@@ -1905,7 +1905,7 @@ def reading_original_load(years_to_generate, list_ticks):
                 yearly_load[y[0]] = allyears_load.iloc[:, y[1]]
 
     elif reps.country == "NL" and reps.fix_demand_to_representative_year == True:
-        input_yearly_profiles_demand = os.path.join(globalNames.parentpath, 'data', reps.scenarioWeatheryearsExcel)
+        input_yearly_profiles_demand = os.path.join(os.path.dirname(os.getcwd()) , 'data', reps.scenarioWeatheryearsExcel)
         all_years = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
         load_representative_year = pd.DataFrame(all_years[reps.representative_year])
         # repeat load for all generation years
@@ -2585,7 +2585,7 @@ def writeInfo(reps, path_to_plots, scenario_name):
 
 print('===== Start Generating Plots =====')
 
-VOLL = 4000
+
 fuel_colors = {
     'CO2': "black",
     'biomethane': "green",
@@ -2698,6 +2698,138 @@ technology_names = {
     "hydrogen_turbine": "Hydrogen turbine",
 }
 
+
+def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
+    global save_excel
+    global scenario_name
+    global calculate_hourly_shedders_new
+    global calculate_monthly_generation
+    global test_tick
+    global test_tech
+    global industrial_demand_as_flex_demand_with_cap
+    global read_electricity_prices
+    global calculate_investments
+    global calculate_investments_per_iteration
+    global calculate_profits_candidates_per_iteration
+    global calculate_capacity_mechanisms
+    global calculate_vres_support
+    global electrolyzer_read
+    global reps
+    global path_to_plots
+    global path_to_excel
+    global write_titles
+    global template_excel
+
+
+    write_titles = True
+    save_excel = False
+    test_tick = 0
+    # write None is no investment is expected,g
+    test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
+
+    industrial_demand_as_flex_demand_with_cap = True
+    read_electricity_prices = True  # write False if not wished to graph electricity prices"
+    calculate_hourly_shedders_new = True
+    calculate_monthly_generation = True  # !!!!!!!!!!!!!!For the new plots
+    calculate_investments = True
+    calculate_investments_per_iteration = False  # ProfitsC
+    calculate_profits_candidates_per_iteration = False
+    calculate_capacity_mechanisms = True
+    calculate_vres_support = False
+    electrolyzer_read = True
+
+    if save_excel == True:
+        path_to_excel = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
+        template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosComparisonTemplate.xlsx")
+        if not os.path.exists(path_to_excel):
+            shutil.copy(template_excel, path_to_excel)
+
+    for scenario_name in SCENARIOS:
+        try:
+            if scenario_name == "":
+                raise Exception("Name needed")
+
+            if read_electricity_prices == False:
+                electricity_prices = None  # dont read if not necessary
+                residual_load = None
+                TotalAwardedPowerInMW = None
+
+            if existing_scenario == False:
+                print("Plots for NEW scenario  " + scenario_name)
+                # use "Amiris" if this should be read
+                spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
+                reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
+
+                pre_name = reps.country + str(reps.end_simulation_year) \
+                           + "_SD" + str(reps.start_dismantling_tick) \
+                           + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
+                           + "_" + reps.typeofProfitforPastHorizon + "_"
+                if reps.realistic_candidate_capacities_to_test == True:
+                    pre_name = pre_name + "testRealC"
+                if reps.realistic_candidate_capacities_tobe_installed == True:
+                    pre_name = pre_name + "instalRealC"
+                complete_name = pre_name + scenario_name
+
+                if read_electricity_prices == True:
+                    electricity_prices, residual_load, TotalAwardedPowerInMW = reading_electricity_prices(reps,
+                                                                                                          os.path.join(os.path.dirname(os.getcwd()),'amiris_workflow\\output\\'),
+                                                                                                          "none", existing_scenario)
+
+            elif existing_scenario == True:
+                print("Plots for EXISTING scenario " + scenario_name)
+                first = "sqlite:///" + globalNames.scenarios_path
+                emlab_sql = "\\EmlabDB.sqlite"
+                amiris_sql = "\\AMIRIS db.sqlite"
+                energy_exchange_url_sql = "\\energy exchange.sqlite"
+                emlab_url = first + scenario_name + emlab_sql
+                amiris_url = first + scenario_name + amiris_sql
+
+                spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
+                reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
+                folder_name = first + scenario_name
+
+                if read_electricity_prices == True:
+                    electricity_prices, residual_load, TotalAwardedPowerInMW = reading_electricity_prices(reps,
+                                                                                                          "none",
+                                                                                                          scenario_name, existing_scenario)
+                complete_name = scenario_name
+                splitname = complete_name.split("-")
+                scenario_name = splitname[1]
+
+            for p, power_plant in reps.power_plants.items():
+                power_plant.specifyPowerPlantsInstalled(reps, False)
+
+            print(reps.country + str(reps.end_simulation_year) + "_SD" + str(
+                reps.start_dismantling_tick) + "_PH" + str(
+                reps.pastTimeHorizon) + "_MI" + str(
+                reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
+            path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", complete_name)
+
+            if not os.path.exists(path_to_plots):
+                os.makedirs(path_to_plots)
+            # plot_initial_power_plants(path_to_plots, "futureDecarbonizedNL") # other options are "extendedDE" extendedNL, groupedNL, groupedNLprePP
+
+            writeInfo(reps, path_to_plots, scenario_name)
+
+            generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
+                           calculate_vres_support)
+
+        except Exception as e:
+            logging.error('Exception occurred: ' + str(e))
+            raise
+        finally:
+            spinedb_reader_writer.db.close_connection()
+            spinedb_reader_writer.amirisdb.close_connection()
+            print("finished emlab")
+
+if __name__ == '__main__':
+
+    SCENARIOS = ["NL-CS-test"]
+    results_excel = "NL_CM_newexpectationFuture.xlsx"
+    existing_scenario = False
+    plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
+    print('===== End Generating Plots =====')
+
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
 
@@ -2716,8 +2848,7 @@ technology_names = {
 # SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
 # SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
 # results_excel = "NL_CMarketnewData.xlsx"
-SCENARIOS = ["NL-CS-test"]
-results_excel = "NL_CM_newexpectationFuture.xlsx"
+
 #
 # SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
 # results_excel = "NL_S1.xlsx"
@@ -2733,117 +2864,6 @@ results_excel = "NL_CM_newexpectationFuture.xlsx"
 # SIMULATION_YEARS = list(range(0,40) )
 # Set the x-axis ticks and labels
 
-write_titles = True
-existing_scenario = False
-save_excel = False
-#  None if no specific technology should be tested
-test_tick = 0
-# write None is no investment is expected,g
-test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
-
-industrial_demand_as_flex_demand_with_cap = True
-read_electricity_prices = True  # write False if not wished to graph electricity prices"
-calculate_hourly_shedders_new = True
-calculate_monthly_generation = True  # !!!!!!!!!!!!!!For the new plots
-calculate_investments = True
-calculate_investments_per_iteration = False  # ProfitsC
-calculate_profits_candidates_per_iteration = False
-
-global calculate_capacity_mechanisms
-calculate_capacity_mechanisms = True
-calculate_vres_support = False
-electrolyzer_read = True
-
-if save_excel == True:
-    path_to_excel = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
-    template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosComparisonTemplate.xlsx")
-    if not os.path.exists(path_to_excel):
-        shutil.copy(template_excel, path_to_excel)
-
-global scenario_name
-
-for scenario_name in SCENARIOS:
-    try:
-        if scenario_name == "":
-            raise Exception("Name needed")
-
-        if read_electricity_prices == False:
-            electricity_prices = None  # dont read if not necessary
-            residual_load = None
-            TotalAwardedPowerInMW = None
-
-        if existing_scenario == False:
-            print("Plots for NEW scenario  " + scenario_name)
-            # if there is no scenario available
-            emlab_url = sys.argv[1]
-            amiris_url = sys.argv[2]
-            # use "Amiris" if this should be read
-            spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
-            reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
-
-            pre_name = reps.country + str(reps.end_simulation_year) \
-                       + "_SD" + str(reps.start_dismantling_tick) \
-                       + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
-                       + "_" + reps.typeofProfitforPastHorizon + "_"
-            if reps.realistic_candidate_capacities_to_test == True:
-                pre_name = pre_name + "testRealC"
-            if reps.realistic_candidate_capacities_tobe_installed == True:
-                pre_name = pre_name + "instalRealC"
-            complete_name = pre_name + scenario_name
-
-            if read_electricity_prices == True:
-                electricity_prices, residual_load, TotalAwardedPowerInMW = reading_electricity_prices(reps,
-                                                                                                      globalNames.amiris_ouput_path,
-                                                                                                      "none")
-
-        elif existing_scenario == True:
-            print("Plots for EXISTING scenario " + scenario_name)
-            first = "sqlite:///" + globalNames.scenarios_path
-            emlab_sql = "\\EmlabDB.sqlite"
-            amiris_sql = "\\AMIRIS db.sqlite"
-            energy_exchange_url_sql = "\\energy exchange.sqlite"
-            emlab_url = first + scenario_name + emlab_sql
-            amiris_url = first + scenario_name + amiris_sql
-
-            spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
-            reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
-            folder_name = first + scenario_name
-
-            if read_electricity_prices == True:
-                electricity_prices, residual_load, TotalAwardedPowerInMW = reading_electricity_prices(reps,
-                                                                                                      "none",
-                                                                                                      scenario_name)
-            complete_name = scenario_name
-            splitname = complete_name.split("-")
-            scenario_name = splitname[1]
-
-        for p, power_plant in reps.power_plants.items():
-            power_plant.specifyPowerPlantsInstalled(reps, False)
-
-        print(reps.country + str(reps.end_simulation_year) + "_SD" + str(
-            reps.start_dismantling_tick) + "_PH" + str(
-            reps.pastTimeHorizon) + "_MI" + str(
-            reps.maximum_investment_capacity_per_year) + "_" + reps.typeofProfitforPastHorizon + "_")
-        path_to_plots = os.path.join(os.getcwd(), "plots", "Scenarios", complete_name)
-
-        if not os.path.exists(path_to_plots):
-            os.makedirs(path_to_plots)
-        # plot_initial_power_plants(path_to_plots, "futureDecarbonizedNL") # other options are "extendedDE" extendedNL, groupedNL, groupedNLprePP
-
-        writeInfo(reps, path_to_plots, scenario_name)
-
-        generate_plots(reps, path_to_plots, electricity_prices, residual_load, TotalAwardedPowerInMW,
-                       calculate_vres_support)
-
-    except Exception as e:
-        logging.error('Exception occurred: ' + str(e))
-        raise
-    finally:
-        spinedb_reader_writer.db.close_connection()
-        spinedb_reader_writer.amirisdb.close_connection()
-        print("finished emlab")
-
-print('===== End Generating Plots =====')
 
 # amirisdb = SpineDB(sys.argv[2])
 # db_amirisdata = amirisdb.export_data()

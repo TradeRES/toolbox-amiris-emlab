@@ -19,7 +19,7 @@ Jim Hommes - 7-4-2021
 """
 import sys
 from util.spinedb import SpineDB
-#from spinedb_api import Map
+from plots.plots import plotting
 from util import globalNames
 import glob
 import os
@@ -237,7 +237,7 @@ try:
 
     peak_load = 0
     # print(os.getcwd())
-    if len(sys.argv) >= 2:
+    if len(sys.argv) >= 3:
         lookAhead = next(int(i['parameter_value']) for i
                          in
                          db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name, object_name) \
@@ -315,7 +315,7 @@ try:
         reset_candidate_investable_status()
         print("reset power plants status ")
 
-        if sys.argv[2] == 'initialize_clock':
+        if sys.argv[3] == 'initialize_clock':
             print('delete excels in output')
 
             try:  # removing excels from previous rounds
@@ -360,7 +360,7 @@ try:
             else:  # no dynamic data for other cases
                 prepare_AMIRIS_data_for_one_year()
 
-        elif sys.argv[2] == 'increment_clock':  # increment clock
+        elif sys.argv[3] == 'increment_clock':  # increment clock
 
             if targetinvestment_per_year == True:
                 reset_target_investments_done()
@@ -388,11 +388,10 @@ try:
 
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
+                start_plot = True
                 # updating file to stop simulation.
                 update_years_file(updated_year, StartYear, final_year,
                                   lookAhead)
-                # todo need to update the file to make the loop stop. spinetoolbox dont advance for last tick
-
             else:
                 update_years_file(updated_year, StartYear, final_year, lookAhead)
                 db_emlab.import_object_parameter_values(
@@ -411,15 +410,25 @@ try:
 
         else:
             raise Exception
+    else:
+        print("missing one argument")
+        raise Exception
 except Exception:
     raise
 finally:
     db_emlab.close_connection()
 
+if start_plot == True:
+    results_excel = "test.xlsx"
+    SCENARIOS = ["NL-testclock"]
+    existing_scenario = False
+    from_workflow = True
+    os.chdir('../..')
+    os.chdir('emlabpy')
+    plotting(SCENARIOS, results_excel,  sys.argv[1] , sys.argv[2] , existing_scenario)
 
-db_map = DatabaseMapping(db_url)
-
-if sys.argv[2] == 'increment_clock':
+if sys.argv[3] == 'increment_clock':
+    db_map = DatabaseMapping(db_url)
     try:
         subquery = db_map.object_parameter_value_sq
         statuses = {row.object_id: from_database(row.value, row.type) for row in
@@ -431,7 +440,8 @@ if sys.argv[2] == 'increment_clock':
     finally:
         db_map.connection.close()
 
-if sys.argv[2] == 'initialize_clock':
+elif sys.argv[3] == 'initialize_clock':
+    db_map = DatabaseMapping(db_url)
     print('updating peak load')
     try:
         class_name = "ElectricitySpotMarkets"
@@ -450,6 +460,10 @@ if sys.argv[2] == 'initialize_clock':
         db_map.commit_session("Add initial data.")
     finally:
         db_map.connection.close()
+
+
+
+
 
 # print('removing awaiting bids...')
 # db_map = DatabaseMapping(db_url)
