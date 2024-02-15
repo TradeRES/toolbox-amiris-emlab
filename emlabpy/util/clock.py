@@ -315,9 +315,9 @@ try:
         reset_candidate_investable_status()
         print("reset power plants status ")
 
-        if sys.argv[3] == 'initialize_clock':
+        if sys.argv[2] == 'initialize_clock':
             print('delete excels in output')
-
+            start_plot = False
             try:  # removing excels from previous rounds
                 for f in glob.iglob(amiris_ouput_path + '/*.xlsx', recursive=True):
                     os.remove(f)
@@ -360,7 +360,7 @@ try:
             else:  # no dynamic data for other cases
                 prepare_AMIRIS_data_for_one_year()
 
-        elif sys.argv[3] == 'increment_clock':  # increment clock
+        elif sys.argv[2] == 'increment_clock':  # increment clock
 
             if targetinvestment_per_year == True:
                 reset_target_investments_done()
@@ -425,9 +425,9 @@ if start_plot == True:
     from_workflow = True
     os.chdir('../..')
     os.chdir('emlabpy')
-    plotting(SCENARIOS, results_excel,  sys.argv[1] , sys.argv[2] , existing_scenario)
+    plotting(SCENARIOS, results_excel,  sys.argv[1] , sys.argv[3] , existing_scenario)
 
-if sys.argv[3] == 'increment_clock':
+if sys.argv[2] == 'increment_clock':
     db_map = DatabaseMapping(db_url)
     try:
         subquery = db_map.object_parameter_value_sq
@@ -440,7 +440,7 @@ if sys.argv[3] == 'increment_clock':
     finally:
         db_map.connection.close()
 
-elif sys.argv[3] == 'initialize_clock':
+elif sys.argv[2] == 'initialize_clock':
     db_map = DatabaseMapping(db_url)
     print('updating peak load')
     try:

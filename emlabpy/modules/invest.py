@@ -177,7 +177,7 @@ class Investmentdecision(DefaultModule):
                         # saving if the candidate power plant remains or not as investable
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
-                        operatingProfit = candidatepowerplant.get_Profit()  # per MW
+                        operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
                         if self.reps.capacity_market_cleared_in_investment == False:
                             pass
                         else:

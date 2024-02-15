@@ -596,6 +596,17 @@
                     "Next year",
                     "bottom"
                 ]
+            },
+            {
+                "name": "from AMIRIS DB to Next year",
+                "from": [
+                    "AMIRIS DB",
+                    "bottom"
+                ],
+                "to": [
+                    "Next year",
+                    "left"
+                ]
             }
         ],
         "jumps": [
@@ -762,6 +773,10 @@
                 {
                     "type": "literal",
                     "arg": "initialize_clock"
+                },
+                {
+                    "type": "literal",
+                    "arg": "none"
                 }
             ],
             "kill_completed_processes": false,
@@ -912,6 +927,10 @@
                 {
                     "type": "literal",
                     "arg": "\"increment_clock\""
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@AMIRIS DB"
                 }
             ],
             "kill_completed_processes": false,
