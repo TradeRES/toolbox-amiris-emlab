@@ -148,8 +148,7 @@ class Investmentdecision(DefaultModule):
                 #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants, False)
-
-                self.capacity_calculations()  # considering industrial demand
+                self.capacity_calculations()
 
                 if self.reps.capacity_market_cleared_in_investment == False or self.reps.capacity_remuneration_mechanism == None:
                     capacity_market_price = 0
@@ -235,6 +234,7 @@ class Investmentdecision(DefaultModule):
                         self.continue_iteration()
                         self.reps.dbrw.stage_calculate_future_capacity_market(True)
                         self.reps.dbrw.stage_iteration(0)
+                        self.reps.dbrw.stage_last_testing_technology(False)
                     else:
                         if ((self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription",
                                                                            "strategic_reserve_ger"])
@@ -545,7 +545,7 @@ class Investmentdecision(DefaultModule):
         for powerplant in self.reps.power_plants.values():
             if powerplant.id in self.future_installed_plants_ids:
                 price_to_bid = 0
-                operatingProfit = powerplant.get_Profit()  # per MW
+                operatingProfit = powerplant.get_Profit()  # for installed capacity
                 fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
                 totalInvestment = self.getActualInvestedCapitalperMW(
                     powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed
@@ -590,7 +590,7 @@ class Investmentdecision(DefaultModule):
         for powerplant in self.reps.power_plants.values():
             if powerplant.id in self.future_installed_plants_ids:
                 price_to_bid = 0
-                operatingProfit = powerplant.get_Profit()  # per MW
+                operatingProfit = powerplant.get_Profit()  # for installed capacity
                 fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
                 totalInvestment = self.getActualInvestedCapitalperMW(
                     powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed

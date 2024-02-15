@@ -43,7 +43,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             reps.dbrw.stage_calculate_future_capacity_market(False)
             market = self.reps.get_capacity_market_in_country(reps.country)
             self.look_ahead_years = market.forward_years_CM
-
+            self.power_plants_list = []
         else:
             if reps.targetinvestment_per_year == True and reps.target_investments_done == False:
                 # investing in target technologies

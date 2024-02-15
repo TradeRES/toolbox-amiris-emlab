@@ -190,17 +190,21 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             if i < buildingTime:
                 investmentCashFlow[i] =  equalTotalDownPaymentInstallment
             else:
-                investmentCashFlow[i] =  fixed_costs - candidatepowerplant.get_Profit()
+                investmentCashFlow[i] =  fixed_costs - candidatepowerplant.get_Profit()/candidatepowerplant.capacity # per MW
         wacc = technology.interestRate
         discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
         factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
         CONE = discountedprojectvalue * factor
         cones[technology.name ] = CONE
         print(candidatepowerplant.technology.name)
+        print(candidatepowerplant.id)
         print(CONE)
   #  minCONE = min(cones.values())
     price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
     print("price_cap")
     print(price_cap)
+    if price_cap < 0:
+        raise ValueError("Price cap is negative")
+
     capacity_market.PriceCap = price_cap
     reps.dbrw.stage_price_cap( capacity_market.name,price_cap )
