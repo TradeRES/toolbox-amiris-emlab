@@ -539,7 +539,7 @@ class Investmentdecision(DefaultModule):
         print(
             "technology" + "name" + ";" + "price_to_bid;capacity" + ";" + " profits" + ";" + "fixed_on_m_cost" + ";" + "pending_loan")
 
-        if self.reps.investmentIteration == 0:
+        if self.reps.investmentIteration == 0 and self.reps.current_tick == 0:
             calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
 
         for powerplant in self.reps.power_plants.values():
