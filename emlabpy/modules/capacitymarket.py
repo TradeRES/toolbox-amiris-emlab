@@ -30,10 +30,15 @@ class CapacityMarketSubmitBids(MarketModule):
         # Retrieve every power plant in the active energy producer for the defined country
 
         market = self.reps.get_capacity_market_in_country(self.reps.country)
+        # self.future_installed_plants_ids = self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick )
         print(
             "technology" + "name" + ";" + "price_to_bid" + ";" + " profits" + ";" + "fixed_on_m_cost" + ";" + "pending_loan")
         for powerplant in self.reps.get_operational_almost_operational_and_to_be_decommissioned(
                 market.forward_years_CM):
+            # if powerplant.id not in self.future_installed_plants_ids:
+            #     print("not installed!!!!!!!!!!!!!!!!!!!!")
+            #     print(powerplant.id)
+            #     continue
             # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
             # market = self.reps.get_capacity_market_for_plant(powerplant) for now only one market
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
@@ -63,10 +68,10 @@ class CapacityMarketSubmitBids(MarketModule):
                                (capacity * powerplant.technology.peak_segment_dependent_availability)
             else:
                 pass  # if positive revenues price_to_bid remains 0
-            # print(powerplant.technology.name +
-            #       powerplant.name + ";" + str(price_to_bid) + ";" + str(profits) + ";" + str(
-            #     fixed_on_m_cost) + ";" + str(
-            #     pending_loan))
+            print(powerplant.technology.name +
+                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity * powerplant.technology.peak_segment_dependent_availability) + ";"  + str(profits) + ";" + str(
+                fixed_on_m_cost) + ";" + str(
+                pending_loan))
             # all power plants place a bid pair of price and capacity on the market
             capacity_to_bid = capacity * powerplant.technology.peak_segment_dependent_availability
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, capacity_to_bid, \
@@ -134,7 +139,6 @@ class CapacityMarketClearing(MarketModule):
                 clearing_price = ppdp.price
                 ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
                 ppdp.accepted_amount = ppdp.amount
-                print(ppdp.plant , " ACCEPTED ", total_supply_volume, "", clearing_price)
 
             elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
                 """
@@ -197,7 +201,6 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         CONE = discountedprojectvalue * factor
         cones[technology.name ] = CONE
         print(candidatepowerplant.technology.name)
-        print(candidatepowerplant.id)
         print(CONE)
   #  minCONE = min(cones.values())
     price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
