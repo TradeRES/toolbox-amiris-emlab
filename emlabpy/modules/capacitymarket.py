@@ -105,11 +105,11 @@ class CapacityMarketClearing(MarketModule):
         # saving market clearing point
         if is_the_market_undersubscribed == True:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply_volume,
-                                                             self.reps.current_tick)
+                                                             self.reps.current_tick +  market.forward_years_CM)
             print("Cleared market", market.name, "at ", str(clearing_price))
         else:
             self.reps.create_or_update_market_clearing_point(market, clearing_price, total_supply_volume,
-                                                             self.reps.current_tick)
+                                                             self.reps.current_tick + market.forward_years_CM)
             print("Market is not cleared", market.name, "at ", str(clearing_price))
 
     def capacity_market_clearing(self, sorted_ppdp, market, capacity_market_year):
@@ -168,7 +168,7 @@ class CapacityMarketClearing(MarketModule):
 
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
-        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
+        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick+ market.forward_years_CM)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             # saving yearly CM revenues to the power plants # todo: the bids could be erased later on if all the values can be read from clearing point
@@ -179,6 +179,7 @@ class CapacityMarketClearing(MarketModule):
 def calculate_cone(reps, capacity_market, candidatepowerplants):
     print("calculating CONE")
     cones = {}
+    netcones = {}
     for candidatepowerplant in candidatepowerplants:
         technology = candidatepowerplant.technology
         totalInvestment = technology.get_investment_costs_perMW_by_year(
@@ -189,25 +190,32 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             reps.current_year + capacity_market.forward_years_CM)
         equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
         investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
-
+        investmentCashFlowNETCONE = [0 for i in range(depreciationTime + buildingTime)]
         for i in range(0, buildingTime + depreciationTime):
             if i < buildingTime:
                 investmentCashFlow[i] =  equalTotalDownPaymentInstallment
+                investmentCashFlowNETCONE[i] =  equalTotalDownPaymentInstallment
             else:
-                investmentCashFlow[i] =  fixed_costs - candidatepowerplant.get_Profit()/candidatepowerplant.capacity # per MW
+                investmentCashFlow[i] =  fixed_costs
+                investmentCashFlowNETCONE[i] = fixed_costs - candidatepowerplant.get_Profit()/candidatepowerplant.capacity # per MW
         wacc = technology.interestRate
         discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
+        discountedprojectvalueNETCONE = npf.npv(wacc, investmentCashFlowNETCONE)
+
         factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
         CONE = discountedprojectvalue * factor
+        NETCONE = discountedprojectvalueNETCONE * factor
         cones[technology.name ] = CONE
-        print(candidatepowerplant.technology.name)
-        print(CONE)
+        netcones[technology.name ] = NETCONE
   #  minCONE = min(cones.values())
-    price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
-    print("price_cap")
-    print(price_cap)
-    if price_cap < 0:
-        raise ValueError("Price cap is negative")
+  #   price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
 
-    capacity_market.PriceCap = price_cap
-    reps.dbrw.stage_price_cap( capacity_market.name,price_cap )
+
+    #
+    # print("price_cap")
+    # print(price_cap)
+    # if price_cap < 0:
+    #     raise ValueError("Price cap is negative")
+    #
+    # capacity_market.PriceCap = price_cap
+    # reps.dbrw.stage_price_cap( capacity_market.name, price_cap )
