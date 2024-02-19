@@ -7,15 +7,18 @@ class Market:
         self.price_cap = price_cap
         self.sorted_demand = sorted_demand
 
-    def get_demand_price_at_volume(self, ppdp):
+    def get_demand_price_at_volume(self, supply):
         price = self.price_cap
         for demand in self.sorted_demand:
-            print("cummulative_quantity")
-            print(demand.cummulative_quantity)
-            print("demand price")
-            print(demand.price)
             price = demand.price
-            if demand.cummulative_quantity >= ppdp.cummulative_quantity or demand.price <= ppdp.price:
+            print(price)
+            if demand.cummulative_quantity >= supply.cummulative_quantity:
+                print("cummulative_quantity")
+                print(demand.cummulative_quantity)
+                break
+            if demand.price <= supply.price:
+                print("demand price")
+                print(demand.price)
                 break
         return price
 
@@ -31,17 +34,17 @@ def clear_market(sorted_supply, sorted_demand):
     market = Market(60000, sorted_demand)
     total_supply_volume = 0
 
-    for ppdp in sorted_supply:
+    for supply in sorted_supply:
         # As long as the market is not cleared
-        print("supply quantity -----------" + str(ppdp.cummulative_quantity))
-        price_at_volume = market.get_demand_price_at_volume(ppdp)
-        if ppdp.price <= price_at_volume:
-            total_supply_volume += ppdp.quantity
+        print("supply quantity -----------" + str(supply.cummulative_quantity))
+        price_at_volume = market.get_demand_price_at_volume(supply)
+        print( "price at volume -----------" +str(price_at_volume))
+        if supply.price <= price_at_volume:
+            total_supply_volume += supply.quantity
             equilibrium_price = price_at_volume
-            print("equilibrium_price: ", equilibrium_price)
         else:
+            equilibrium_price = supply.price
             print("last price: ", str(price_at_volume))
-
             break
     return equilibrium_price, equilibrium_quantity
 
@@ -51,16 +54,17 @@ supply = [
     Bid(price=5000, quantity=18000),
     Bid(price=6000, quantity=17000),
     Bid(price=25000, quantity=18000),
-    Bid(price=32000, quantity=10000),
-    Bid(price=46000, quantity=20000)
+ #   Bid(price=32000, quantity=10000),
+ #   Bid(price=46000, quantity=20000)
+
 ]
 
 demand = [
     Bid(price=50000, quantity=1305),
-    Bid(price=39000, quantity=25000),
+    Bid(price=39000, quantity=26000),
     Bid(price=35000, quantity=10000),
     Bid(price=30000, quantity=4000),
-    Bid(price=25000, quantity=6000),
+    Bid(price=27000, quantity=6000),
     Bid(price=20000, quantity=4000)
 ]
 

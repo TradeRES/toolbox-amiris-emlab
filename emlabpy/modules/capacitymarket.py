@@ -93,9 +93,9 @@ class CapacityMarketClearing(MarketModule):
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
-        sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
+        sorted_supply = self.reps.get_sorted_bids_by_market_and_time(market, self.reps.current_tick)
         capacity_market_year = self.reps.current_year + market.forward_years_CM
-        clearing_price, total_supply_volume, is_the_market_undersubscribed = self.capacity_market_clearing(sorted_ppdp,
+        clearing_price, total_supply_volume, is_the_market_undersubscribed = self.capacity_market_clearing(sorted_supply,
                                                                                                            market,
                                                                                                            capacity_market_year)
 
@@ -112,12 +112,11 @@ class CapacityMarketClearing(MarketModule):
                                                              self.reps.current_tick + market.forward_years_CM)
             print("Market is not cleared", market.name, "at ", str(clearing_price))
 
-    def capacity_market_clearing(self, sorted_ppdp, market, capacity_market_year):
+    def capacity_market_clearing(self, sorted_supply, market, capacity_market_year):
 
         # spot_market = self.reps.get_spot_market_in_country(self.reps.country)
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
                                                                                       True)
-        # peak_load = self.reps.get_realized_peak_demand_by_year(self.reps.current_year) - >
         # changed to fix number because peak load can change per weather year.
         # changing peak load according to higher than median year.
         peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
@@ -130,30 +129,29 @@ class CapacityMarketClearing(MarketModule):
 
         clearing_price = 0
         total_supply_volume = 0
-        # peaksupply = 0   # capacity market should be able to have more capacity than peak
         isMarketUndersuscribed = False  # isTheMarketCleared means ther capacity us slightly oversubscribed
-        for ppdp in sorted_ppdp:
+        for supply in sorted_supply:
             # As long as the market is not cleared
-            if ppdp.price <= sdc.get_price_at_volume(total_supply_volume + ppdp.amount):
-                total_supply_volume += ppdp.amount
-                clearing_price = ppdp.price
-                ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
-                ppdp.accepted_amount = ppdp.amount
+            if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
+                total_supply_volume += supply.amount
+                clearing_price = supply.price
+                supply.status = globalNames.power_plant_dispatch_plan_status_accepted
+                supply.accepted_amount = supply.amount
 
-            elif ppdp.price < sdc.get_price_at_volume(total_supply_volume):
+            elif supply.price < sdc.get_price_at_volume(total_supply_volume):
                 """
                 should be partly accepted but currently accepting only complete plants, 
                 accepting power plant, but giving lower price, otherwise the price dont decrease!!!
                 """
-                clearing_price = sdc.get_price_at_volume(total_supply_volume + ppdp.amount)
-                total_supply_volume = total_supply_volume +  ppdp.amount
-                ppdp.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
-                ppdp.accepted_amount = ppdp.amount
-                print(ppdp.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
+                clearing_price = sdc.get_price_at_volume(total_supply_volume + supply.amount)
+                total_supply_volume = total_supply_volume +  supply.amount
+                supply.status = globalNames.power_plant_dispatch_plan_status_partly_accepted
+                supply.accepted_amount = supply.amount
+                print(supply.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
                 isMarketUndersuscribed = False
                 break
             else:
-                ppdp.status = globalNames.power_plant_dispatch_plan_status_failed
+                supply.status = globalNames.power_plant_dispatch_plan_status_failed
                 if total_supply_volume > sdc.lm_volume:
                     isMarketUndersuscribed = False
                 else:
