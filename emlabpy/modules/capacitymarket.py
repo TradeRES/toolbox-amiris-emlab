@@ -168,7 +168,7 @@ class CapacityMarketClearing(MarketModule):
 
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
-        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick+ market.forward_years_CM)
+        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             # saving yearly CM revenues to the power plants # todo: the bids could be erased later on if all the values can be read from clearing point

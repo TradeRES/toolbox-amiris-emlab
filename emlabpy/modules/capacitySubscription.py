@@ -32,7 +32,7 @@ class CapacitySubscriptionClearing(MarketModule):
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
-        print("capacity subscription clearing")
+        print("capacity subscription ")
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
@@ -46,6 +46,7 @@ class CapacitySubscriptionClearing(MarketModule):
 
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.reps.current_tick)
+
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
     def capacity_subscription_clearing(self, sorted_supply, capacity_market, capacity_market_year):
@@ -60,7 +61,7 @@ class CapacitySubscriptionClearing(MarketModule):
         total = 0
         for i , demand in enumerate(sorted_demand):
             total += demand.percentageLoad * peakExpectedDemand
-       #     print(str(demand.price)+ ";"+ str(  demand.percentageLoad * peakExpectedDemand))
+            print(str(demand.price)+ ";"+ str(  demand.percentageLoad * peakExpectedDemand))
             demand.cummulative_quantity = total
 
         print("peak load " + str(peakExpectedDemand))
