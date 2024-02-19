@@ -249,7 +249,7 @@ class CreatingFinancialReports(DefaultModule):
                     if  pd.isna(averageLOLE):
                         pass
                     else:
-                        increaseVOLL = (averageLOLE - reliability_standard) * 0.1 # Eur/Mwh     0 - 4    --- > -120
+                        increaseVOLL = (averageLOLE - reliability_standard) * 0.20 # Eur/Mwh     0 - 4    --- > -120
                         if reliability_standard < 4 and increaseVOLL <0:
                             pass # LOLE is normal
                         elif reliability_standard + increaseVOLL < 0:
@@ -260,4 +260,16 @@ class CreatingFinancialReports(DefaultModule):
                             new_value = load_shedder.VOLL + increaseVOLL
                             print("decrease VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                             load_shedder.VOLL = new_value
+            """
+            check if the VOLLs are unique and add one unit if there is a repeated value 
+            """
+            lst = []
+            for load_shedder_name, load_shedder in self.reps.loadShedders.items():
+                lst.append(load_shedder.VOLL)
+                if load_shedder in lst:
+                    load_shedder.VOLL = load_shedder.VOLL + 1
+                    print("making VOLL unequal")
+                else:
+                    pass
+
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
