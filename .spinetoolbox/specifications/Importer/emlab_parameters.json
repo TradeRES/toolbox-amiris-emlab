@@ -1436,7 +1436,10 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "VOLL": {}
+            "VOLL": {
+                "read_until_col": false,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "CapacityMarkets": {

@@ -11,11 +11,11 @@ class DemandCurve:
         self.price_cap = price_cap
         self.sorted_demand = sorted_demand
 
-    def get_price_at_volume(self, cummulative_supply):
+    def get_demand_price_at_volume(self, cummulative_supply, supply_price):
         price = self.price_cap
         for demand in self.sorted_demand:
             price = demand.price
-            if demand.cummulative_quantity > cummulative_supply:
+            if demand.cummulative_quantity >= cummulative_supply  or demand.price <= supply_price:
                 break
         return price
 
@@ -70,14 +70,15 @@ class CapacitySubscriptionClearing(MarketModule):
 
         demandCurve = DemandCurve(capacity_market.PriceCap, sorted_demand)
         cummulative_supply = 0
-        for ppdp in sorted_supply:
+        for supply_bid in sorted_supply:
                 # As long as the market is not cleared
-                cummulative_supply = ppdp.amount + cummulative_supply
-                price_at_volume = demandCurve.get_price_at_volume(cummulative_supply)
-                if ppdp.price <= price_at_volume:
-                    total_supply_volume += ppdp.amount
+                cummulative_supply = supply_bid.amount + cummulative_supply
+
+                price_at_volume = demandCurve.get_demand_price_at_volume(cummulative_supply, supply_bid.price)
+                if supply_bid.price <= price_at_volume:
+                    total_supply_volume += supply_bid.amount
                     clearing_price = price_at_volume
-                    ppdp.status = globalNames.power_plant_dispatch_plan_status_accepted
+                    supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
                 else:
                     print("clearing price ", clearing_price)
                     print("total_supply", total_supply_volume)

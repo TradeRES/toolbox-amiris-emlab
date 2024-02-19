@@ -801,10 +801,10 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['capacityMechanismRevenues'])
 
-    def stage_CM_revenues(self, power_plant, amount, current_tick: int):
+    def stage_CM_revenues(self, power_plant, amount, tick: int):
         self.stage_object(self.financial_reports_object_classname, power_plant)
         self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
-                                           [('capacityMechanismRevenues', Map([str(current_tick)], [amount]))],
+                                           [('capacityMechanismRevenues', Map([str(tick)], [amount]))],
                                            '0')
 
 
