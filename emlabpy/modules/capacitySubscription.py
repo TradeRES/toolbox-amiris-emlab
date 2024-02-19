@@ -23,7 +23,7 @@ class DemandCurve:
 
 class CapacitySubscriptionClearing(MarketModule):
     """
-    The class that clears the Capacity Market based on the Sloping Demand curve
+    After a capacity market has been cleared, the accepted bids are cleared and the revenues are staged.
     """
 
     def __init__(self, reps: Repository):
@@ -45,7 +45,7 @@ class CapacitySubscriptionClearing(MarketModule):
             self.reps.dbrw.stage_bids_status(accepted)
 
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
-                                                         self.reps.current_tick)
+                                                         self.reps.current_tick + capacity_market.forward_years_CM)
 
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
