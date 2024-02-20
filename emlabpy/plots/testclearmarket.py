@@ -9,24 +9,28 @@ class Market:
 
     def get_demand_price_at_volume(self, supply):
         price = self.price_cap
-        for demand in self.sorted_demand:
+        for numero, demand in enumerate(self.sorted_demand):
             price = demand.price
-            print(price)
+            print("demandprice " + str(price) + "_" +  str(demand.cummulative_quantity))
             if demand.cummulative_quantity >= supply.cummulative_quantity:
                 print("cummulative_quantity")
                 print(demand.cummulative_quantity)
+                price =  self.sorted_demand[numero + 1].price
                 break
             if demand.price <= supply.price:
-                print("demand price")
+                print("demand_price")
                 print(demand.price)
+                price = self.sorted_demand[numero+1 ].price
                 break
         return price
-
+# def grouped(iterable, n):
+#     return zip(*[iter(iterable)]*n)
 class Bid:
     def __init__(self, price, quantity):
         self.price = price
         self.quantity = quantity
         self.cummulative_quantity = quantity
+
 
 def clear_market(sorted_supply, sorted_demand):
     equilibrium_price = None
@@ -37,35 +41,36 @@ def clear_market(sorted_supply, sorted_demand):
     for supply in sorted_supply:
         # As long as the market is not cleared
         print("supply quantity -----------" + str(supply.cummulative_quantity))
-        price_at_volume = market.get_demand_price_at_volume(supply)
-        print( "price at volume -----------" +str(price_at_volume))
-        if supply.price <= price_at_volume:
+        demand_price = market.get_demand_price_at_volume(supply)
+        print( "demand price ************" +str(demand_price))
+        if supply.price <= demand_price:
             total_supply_volume += supply.quantity
-            equilibrium_price = price_at_volume
+            equilibrium_price = demand_price
         else:
-            equilibrium_price = supply.price
-            print("last price: ", str(price_at_volume))
+            equilibrium_price = demand_price
+            total_supply_volume += supply.quantity
+            print("last price: ", str(demand_price))
             break
     return equilibrium_price, equilibrium_quantity
 
 # Example usage
 supply = [
     Bid(price=0, quantity=0),
-    Bid(price=5000, quantity=18000),
-    Bid(price=6000, quantity=17000),
-    Bid(price=25000, quantity=18000),
- #   Bid(price=32000, quantity=10000),
- #   Bid(price=46000, quantity=20000)
-
+    Bid(price=5000, quantity=6000),
+    Bid(price=6000, quantity=8000),
+    Bid(price=25000, quantity=10000),
+    Bid(price=100000, quantity=10000),
+ #   Bid(price=80000, quantity=10000)
 ]
 
 demand = [
-    Bid(price=50000, quantity=1305),
-    Bid(price=39000, quantity=26000),
+    Bid(price=39000, quantity=16000),
     Bid(price=35000, quantity=10000),
     Bid(price=30000, quantity=4000),
-    Bid(price=27000, quantity=6000),
-    Bid(price=20000, quantity=4000)
+    Bid(price=20000, quantity=4000),
+    Bid(price=10000, quantity=6000),
+    Bid(price=10000, quantity=13050),
+
 ]
 
 sorted_supply = sorted(supply, key=lambda x: x.price, reverse=False)
