@@ -134,7 +134,7 @@ class CapacityMarketClearing(MarketModule):
             # As long as the market is not cleared
             if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
                 total_supply_volume += supply.amount
-                clearing_price = supply.price
+                clearing_price = sdc.get_price_at_volume(total_supply_volume + supply.amount)
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted
                 supply.accepted_amount = supply.amount
 
@@ -143,12 +143,14 @@ class CapacityMarketClearing(MarketModule):
                 should be partly accepted but currently accepting only complete plants, 
                 accepting power plant, but giving lower price, otherwise the price dont decrease!!!
                 """
-                clearing_price =  supply.price #sdc.get_price_at_volume(total_supply_volume + supply.amount)
                 total_supply_volume = total_supply_volume +  supply.amount
+                if total_supply_volume > sdc.lm_volume:
+                    clearing_price =  supply.price
+                else:
+                    clearing_price =   sdc.get_price_at_volume(total_supply_volume + supply.amount)
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted
                 supply.accepted_amount = supply.amount
                 print(supply.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
-                isMarketUndersuscribed = False
                 break
             else:
                 supply.status = globalNames.power_plant_dispatch_plan_status_failed
