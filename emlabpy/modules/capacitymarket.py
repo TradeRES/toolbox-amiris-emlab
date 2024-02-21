@@ -180,7 +180,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     print("calculating CONE")
     cones = {}
     netcones = {}
-    for candidatepowerplant in candidatepowerplants:
+    for name, candidatepowerplant in candidatepowerplants.items():
         technology = candidatepowerplant.technology
         totalInvestment = technology.get_investment_costs_perMW_by_year(
             reps.current_year + capacity_market.forward_years_CM)
@@ -207,15 +207,18 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         NETCONE = discountedprojectvalueNETCONE * factor
         cones[technology.name ] = CONE
         netcones[technology.name ] = NETCONE
-  #  minCONE = min(cones.values())
-  #   price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
+    reps.dbrw.stage_yearly_CONE( capacity_market.name, netcones, reps.current_tick )
+    minCONE = min(cones.values())
 
 
-    #
-    # print("price_cap")
-    # print(price_cap)
-    # if price_cap < 0:
-    #     raise ValueError("Price cap is negative")
-    #
-    # capacity_market.PriceCap = price_cap
-    # reps.dbrw.stage_price_cap( capacity_market.name, price_cap )
+    if reps.investmentIteration == 0 and reps.current_tick == 1: # during initialization current tick is 0
+        price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
+        print("price_cap")
+        print(price_cap)
+        if price_cap < 0:
+            raise ValueError("Price cap is negative")
+
+        capacity_market.PriceCap = price_cap
+        reps.dbrw.stage_price_cap( capacity_market.name, price_cap )
+
+

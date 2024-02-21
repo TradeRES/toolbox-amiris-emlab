@@ -404,6 +404,16 @@ class SpineDBReaderWriter:
         self.stage_object(self.capacity_market_classname, capacity_market_name)
         self.stage_object_parameter_values(self.capacity_market_classname, capacity_market_name,
                                            [('PriceCap', price_cap)], "0")
+
+    def stage_yearly_CONE(self,capacity_market_name, cones, current_tick):
+        self.stage_object_class(self.capacity_market_classname)
+        for technology_name, cone in cones.items():
+            self.stage_object_parameter(self.capacity_market_classname, technology_name)
+            self.stage_object(self.capacity_market_classname,capacity_market_name )
+            self.stage_object_parameter_values(self.capacity_market_classname, capacity_market_name,
+            [(technology_name, Map([str(current_tick)], [float(cone)]))], "0")
+
+
     def stage_calculate_future_capacity_market(self, status):
         self.stage_object_class(self.configuration_object_classname)
         self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")

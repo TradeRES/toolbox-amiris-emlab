@@ -79,11 +79,13 @@ class CapacitySubscriptionClearing(MarketModule):
                 if supply_bid.price <= demand_price:
                     total_supply_volume += supply_bid.amount
                     clearing_price = demand_price
+                    supply_bid.accepted_amount = supply_bid.amount
                     supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
                 else:
                     total_supply_volume += supply_bid.amount
-                    clearing_price = demand_price
+                    clearing_price = demand_price #price set by demand
                     supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
+                    supply_bid.accepted_amount = supply_bid.amount
                     print("clearing_price", clearing_price)
                     print("total_supply_volume", total_supply_volume)
                     break
