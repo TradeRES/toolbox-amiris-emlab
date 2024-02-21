@@ -180,7 +180,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     print("calculating CONE")
     cones = {}
     netcones = {}
-    for name, candidatepowerplant in candidatepowerplants.items():
+    for candidatepowerplant in candidatepowerplants:
         technology = candidatepowerplant.technology
         totalInvestment = technology.get_investment_costs_perMW_by_year(
             reps.current_year + capacity_market.forward_years_CM)
