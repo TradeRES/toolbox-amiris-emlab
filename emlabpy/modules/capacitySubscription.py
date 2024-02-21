@@ -21,6 +21,7 @@ class DemandCurve:
                 price = demand.price
                 break
             else:
+                # demand quantity is still less than supply quantity but the price is
                 if demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
                  #   print("price" + str(demand.price) )
                     price = demand.price

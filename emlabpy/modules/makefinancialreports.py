@@ -258,7 +258,7 @@ class CreatingFinancialReports(DefaultModule):
                             pass
                         else:
                             new_value = load_shedder.VOLL + increaseVOLL
-                            print("decrease VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
+                            print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                             load_shedder.VOLL = new_value
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 
@@ -270,6 +270,7 @@ class CreatingFinancialReports(DefaultModule):
                     load_shedder.VOLL = load_shedder.VOLL + 1
                     print("making VOLL unequal")
                 else:
+                    print(load_shedder.VOLL)
                     pass
 
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
