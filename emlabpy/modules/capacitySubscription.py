@@ -2,6 +2,7 @@ from modules.capacitymarket import CapacityMarketClearing
 from modules.marketmodule import MarketModule
 from util.repository import Repository
 from util import globalNames
+from plots.testclearmarket import plot_CS_market
 import pandas as pd
 class DemandCurve:
     """
@@ -15,7 +16,7 @@ class DemandCurve:
         price = self.price_cap
        # print("-----------------------------------" + str(cummulative_supply))
         for demand in self.sorted_demand:
-            print(str(demand.cummulative_quantity)  +  ";" + str(demand.price))
+           # print(str(demand.cummulative_quantity)  +  ";" + str(demand.price))
             last_capacity = cummulative_supply - supply.amount
             if demand.cummulative_quantity >= cummulative_supply:
                 price = demand.price
@@ -26,9 +27,6 @@ class DemandCurve:
                  #   print("price" + str(demand.price) )
                     price = demand.price
                     break
-
-
-
                 # if there is no demand, take the last price
                 price = demand.price
         return price
@@ -51,9 +49,10 @@ class CapacitySubscriptionClearing(MarketModule):
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
         clearing_price, total_supply_volume, = self.capacity_subscription_clearing(sorted_ppdp, capacity_market, capacity_market_year)
-        accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
-
-        for accepted in accepted_ppdp:
+        accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
+        print("--------------------accepted_supply_bid-------------------")
+        for accepted in accepted_supply_bid:
+            print(accepted.name)
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, self.reps.current_tick + capacity_market.forward_years_CM)
             self.reps.dbrw.stage_bids_status(accepted)
@@ -64,6 +63,7 @@ class CapacitySubscriptionClearing(MarketModule):
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
     def capacity_subscription_clearing(self, sorted_supply, capacity_market, capacity_market_year):
+
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year, True)
         peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
         peakExpectedDemand = peak_load * (expectedDemandFactor)
@@ -71,12 +71,11 @@ class CapacitySubscriptionClearing(MarketModule):
         for ls in load_shedders:
             ls.price = ls.VOLL*ls.reliability_standard
         sorted_demand = sorted(load_shedders, key=lambda x: x.price, reverse=True)
-
         total = 0
         for i , demand in enumerate(sorted_demand):
             total += demand.percentageLoad * peakExpectedDemand
-            print(str(demand.price)+ ";"+ str(  demand.percentageLoad * peakExpectedDemand))
             demand.cummulative_quantity = total
+            print( str(  total) + ";"+  str(demand.price))
 
         print("peak load " + str(peakExpectedDemand))
         clearing_price = 0
@@ -88,17 +87,22 @@ class CapacitySubscriptionClearing(MarketModule):
                 # As long as the market is not cleared
                 cummulative_supply = supply_bid.amount + cummulative_supply
                 demand_price = demandCurve.get_demand_price_at_volume(cummulative_supply, supply_bid)
+
                 if supply_bid.price < demand_price:
                     total_supply_volume += supply_bid.amount
                     supply_bid.accepted_amount = supply_bid.amount
                     supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
                 else:
-                    total_supply_volume += supply_bid.amount
+                  #  total_supply_volume += supply_bid.amount
                     clearing_price = demand_price #price set by demand
-                    supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
-                    supply_bid.accepted_amount = supply_bid.amount
+                    supply_bid.status = globalNames.power_plant_dispatch_plan_status_failed
+                    supply_bid.accepted_amount = 0
                     print("clearing_price", clearing_price)
                     print("total_supply_volume", total_supply_volume)
                     break
+
+        #plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
+
+
         return  clearing_price, total_supply_volume
 
