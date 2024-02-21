@@ -10,21 +10,21 @@ class Market:
     def get_demand_price_at_volume(self, supply):
         price = self.price_cap
         for numero, demand in enumerate(self.sorted_demand):
-            price = demand.price
-            print("demandprice " + str(price) + "_" +  str(demand.cummulative_quantity))
+            last_capacity = supply.cummulative_quantity - supply.quantity
+            print("deamand " + str(demand.cummulative_quantity) + "_" +  str(demand.price))
             if demand.cummulative_quantity >= supply.cummulative_quantity:
-                print("cummulative_quantity")
-                print(demand.cummulative_quantity)
-                price =  self.sorted_demand[numero + 1].price
+                print("demand_q" + str(demand.cummulative_quantity))
+                price = demand.price
                 break
-            if demand.price <= supply.price:
-                print("demand_price")
-                print(demand.price)
-                price = self.sorted_demand[numero+1 ].price
-                break
+            else:
+                if demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
+                    print("price" + str(demand.price) )
+                    price = demand.price
+                    break
+                #if there is no demand, take the last price
+                price = demand.price
         return price
-# def grouped(iterable, n):
-#     return zip(*[iter(iterable)]*n)
+
 class Bid:
     def __init__(self, price, quantity):
         self.price = price
@@ -40,12 +40,11 @@ def clear_market(sorted_supply, sorted_demand):
 
     for supply in sorted_supply:
         # As long as the market is not cleared
-        print("supply quantity -----------" + str(supply.cummulative_quantity))
+        print("supply -----------" + str(supply.cummulative_quantity) + "_" + str(supply.price))
         demand_price = market.get_demand_price_at_volume(supply)
         print( "demand price ************" +str(demand_price))
-        if supply.price <= demand_price:
+        if supply.price < demand_price:
             total_supply_volume += supply.quantity
-            equilibrium_price = demand_price
         else:
             equilibrium_price = demand_price
             total_supply_volume += supply.quantity
@@ -55,21 +54,24 @@ def clear_market(sorted_supply, sorted_demand):
 
 # Example usage
 supply = [
-    Bid(price=0, quantity=0),
+    Bid(price=5000, quantity=5000),
     Bid(price=5000, quantity=6000),
-    Bid(price=6000, quantity=8000),
-    Bid(price=25000, quantity=10000),
-    Bid(price=100000, quantity=10000),
- #   Bid(price=80000, quantity=10000)
+    Bid(price=6000, quantity=3000),
+    Bid(price=10000, quantity=5000),
+    Bid(price=30000, quantity=10000),
+    Bid(price=60000, quantity=10000)
+
 ]
 
 demand = [
-    Bid(price=39000, quantity=16000),
-    Bid(price=35000, quantity=10000),
+    Bid(price=49000, quantity=5000),
+    Bid(price=45000, quantity=5000),
+    Bid(price=35000, quantity=4000),
     Bid(price=30000, quantity=4000),
-    Bid(price=20000, quantity=4000),
-    Bid(price=10000, quantity=6000),
-    Bid(price=10000, quantity=13050),
+    Bid(price=25000, quantity=6000),
+    Bid(price=20000, quantity=5050),
+
+
 
 ]
 
