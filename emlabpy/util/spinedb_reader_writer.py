@@ -408,17 +408,16 @@ class SpineDBReaderWriter:
     def stage_yearly_CONE(self, netcones, cones, current_tick):
         self.stage_object_class(self.capacity_market_classname)
         for technology_name, cone in cones.items():
-            print(cone)
             self.stage_object_parameter(self.capacity_market_classname, technology_name)
             self.stage_object(self.capacity_market_classname,"cone" )
             self.stage_object_parameter_values(self.capacity_market_classname, "cone",
             [(technology_name, Map([str(current_tick)], [float(cone)]))], "0")
 
-        for technology_name, cone in netcones.items():
+        for technology_name, netcone in netcones.items():
             self.stage_object_parameter(self.capacity_market_classname, technology_name)
             self.stage_object(self.capacity_market_classname,"netcone"  )
             self.stage_object_parameter_values(self.capacity_market_classname, "netcone" ,
-                                               [(technology_name, Map([str(current_tick)], [float(netcones)]))], "0")
+                                               [(technology_name, Map([str(current_tick)], [float(netcone)]))], "0")
 
     def stage_calculate_future_capacity_market(self, status):
         self.stage_object_class(self.configuration_object_classname)
