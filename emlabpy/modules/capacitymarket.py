@@ -181,6 +181,8 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     cones = {}
     netcones = {}
     for candidatepowerplant in candidatepowerplants:
+        if technology.name not in ["hydrogen turbine", "Nuclear", "Lithium ion battery"] :
+            continue
         technology = candidatepowerplant.technology
         totalInvestment = technology.get_investment_costs_perMW_by_year(
             reps.current_year + capacity_market.forward_years_CM)
@@ -207,12 +209,14 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         NETCONE = discountedprojectvalueNETCONE * factor
         cones[technology.name ] = CONE
         netcones[technology.name ] = NETCONE
-    reps.dbrw.stage_yearly_CONE( capacity_market.name, netcones, reps.current_tick )
+    reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
+    minnetCONE = min(netcones.values())
     minCONE = min(cones.values())
 
 
     if reps.investmentIteration == 0 and reps.current_tick == 1: # during initialization current tick is 0
-        price_cap = int(cones["hydrogen turbine"]) * capacity_market.PriceCapTimesCONE
+        chosenCONE = max(minCONE, minnetCONE * capacity_market.PriceCapTimesCONE)
+        price_cap = int(chosenCONE)
         print("price_cap")
         print(price_cap)
         if price_cap < 0:
