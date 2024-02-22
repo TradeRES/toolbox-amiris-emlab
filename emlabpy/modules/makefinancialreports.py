@@ -227,7 +227,8 @@ class CreatingFinancialReports(DefaultModule):
                 id_shedder = int(values.VOLL * 100000)
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
-        realized_curtailments = total_load_shedded.where(total_load_shedded > 0).sum()
+
+        realized_curtailments = total_load_shedded.where(total_load_shedded > 0).count()
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
 
 
@@ -254,8 +255,8 @@ class CreatingFinancialReports(DefaultModule):
                             pass # LOLE is normal
                         elif reliability_standard + increaseVOLL < 0:
                             pass
-                        elif reliability_standard + increaseVOLL > 4000:
-                            pass
+                        # elif reliability_standard + increaseVOLL > 4000:
+                        #     pass
                         else:
                             new_value = load_shedder.VOLL + increaseVOLL
                             print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
