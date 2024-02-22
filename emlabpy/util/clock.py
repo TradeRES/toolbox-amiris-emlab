@@ -26,6 +26,9 @@ import os
 import pandas as pd
 from os.path import dirname, realpath
 import spinedb_api.import_functions as im
+import socket
+import shutil
+
 
 from spinedb_api import DatabaseMapping, from_database, Map, to_database
 db_url = sys.argv[1]
@@ -51,6 +54,33 @@ future_windon_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\
 future_windoff_file_for_amiris = os.path.join(grandparentpath,
                                               'amiris_workflow\\amiris-config\\data\\future_windoff.csv')
 future_pv_file_for_amiris = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\future_pv.csv')
+
+
+
+def copy_files(source_folder, destination_folder):
+    # Ensure the source folder exists
+    if not os.path.exists(source_folder):
+        print(f"Source folder '{source_folder}' does not exist.")
+        return
+
+    # Ensure the destination folder exists, create it if it doesn't
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+
+    # Get a list of all files in the source folder
+    files = os.listdir(source_folder)
+
+    # Iterate over each file and copy it to the destination folder
+    for file_name in files:
+        source_path = os.path.join(source_folder, file_name)
+        destination_path = os.path.join(destination_folder, file_name)
+
+        # Check if it's a file and not a directory
+        if os.path.isfile(source_path):
+            shutil.copy2(source_path, destination_path)
+            print(f"Copied '{file_name}' to '{destination_folder}'.")
+        else:
+            print(f"Ignored '{file_name}' as it is a directory.")
 
 
 def reset_candidate_investable_status():
@@ -427,6 +457,12 @@ if start_plot == True:
     os.chdir('../..')
     os.chdir('emlabpy')
     plotting(SCENARIOS, results_excel,  sys.argv[1] , sys.argv[3] , existing_scenario)
+    destination_subfolder =  socket.gethostname()
+    destination_folder = ( 'H:\\' + destination_subfolder )
+    copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\amiris_db' ), destination_folder)
+    copy_files(os.path.join(os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\output' )), destination_folder)
+    copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\emlabdb' ), destination_folder)
+
 
 if sys.argv[2] == 'increment_clock':
     db_map = DatabaseMapping(db_url)
