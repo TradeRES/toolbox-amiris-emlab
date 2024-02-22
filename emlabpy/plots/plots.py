@@ -1082,7 +1082,7 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
 
     VOLL_per_year.T.plot(ax=axs39[0], legend=False)
     LOLE_per_group.T.plot(ax=axs39[1], legend=False)
-    max_ENS_in_a_row.T.plot(ax=axs39[2], legend=True)
+    max_ENS_in_a_row.T.plot(ax=axs39[2], legend=False)
     axs39[0].set_ylabel('VOLL', fontsize='medium')
     axs39[1].set_ylabel('hours', fontsize='medium')
     axs39[2].set_ylabel('Max continous \n hours in a row', fontsize='medium')
@@ -2760,10 +2760,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
                 spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
                 reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 
-                pre_name = reps.country + str(reps.end_simulation_year) \
-                           + "_SD" + str(reps.start_dismantling_tick) \
-                           + "_PH" + str(reps.pastTimeHorizon) + "_MI" + str(reps.maximum_investment_capacity_per_year) \
-                           + "_" + reps.typeofProfitforPastHorizon + "_"
+                pre_name = reps.country + str(reps.end_simulation_year) + str(len(reps.power_plants))  + reps.capacity_remuneration_mechanism
                 if reps.realistic_candidate_capacities_to_test == True:
                     pre_name = pre_name + "testRealC"
                 if reps.realistic_candidate_capacities_tobe_installed == True:
@@ -2823,10 +2820,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-
-    SCENARIOS = ["NL-CS-test"]
+    SCENARIOS = ["NL-CS"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
     print('===== End Generating Plots =====')
 
