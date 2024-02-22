@@ -214,7 +214,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     minCONE = min(cones.values())
 
 
-    if reps.investmentIteration == 0 and reps.current_tick == 1: # during initialization current tick is 0
+    if reps.investmentIteration == 0 and reps.current_tick > 0: # during initialization price cap would be too low
         chosenCONE = max(minCONE, minnetCONE * capacity_market.PriceCapTimesCONE)
         price_cap = int(chosenCONE)
         print("price_cap")
