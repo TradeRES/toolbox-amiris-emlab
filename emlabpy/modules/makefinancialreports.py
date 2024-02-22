@@ -260,7 +260,7 @@ class CreatingFinancialReports(DefaultModule):
                         else:
                             new_value = load_shedder.VOLL + increaseVOLL
                             print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
-                            load_shedder.VOLL = new_value
+                            load_shedder.VOLL = int(new_value)
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 
             """
