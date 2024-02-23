@@ -456,12 +456,15 @@ if start_plot == True:
     from_workflow = True
     os.chdir('../..')
     os.chdir('emlabpy')
-    plotting(SCENARIOS, results_excel,  sys.argv[1] , sys.argv[3] , existing_scenario)
     destination_subfolder =  socket.gethostname()
     destination_folder = ( 'H:\\' + destination_subfolder )
+    for f in destination_folder:
+        os.remove(f)
     copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\amiris_db' ), destination_folder)
     copy_files(os.path.join(os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\output' )), destination_folder)
     copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\emlabdb' ), destination_folder)
+    plotting(SCENARIOS, results_excel,  sys.argv[1] , sys.argv[3] , existing_scenario)
+
 
 
 if sys.argv[2] == 'increment_clock':
