@@ -46,6 +46,7 @@ class SpineDBReaderWriter:
         self.fuel_classname = "node"
         self.configuration_object_classname = "Configuration"
         self.capacity_market_classname = "CapacityMarkets"
+        self.cone_classname = "Cone"
         self.energyProducer_classname = "EnergyProducers"
         self.Conventionals_classname = "Conventionals"
         self.VariableRenewable_classname = "Renewables"
@@ -70,8 +71,6 @@ class SpineDBReaderWriter:
         for row in self.db.query_object_parameter_values_by_object_class('Configuration'):
             if row['parameter_name'] == 'SimulationTick':
                 reps.current_tick = int(row['parameter_value'])
-            elif row['parameter_name'] == 'Time Step':
-                reps.time_step = int(row['parameter_value'])
             elif row['parameter_name'] == 'Start Year':
                 reps.start_simulation_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'End Year':
@@ -93,8 +92,7 @@ class SpineDBReaderWriter:
                 else:
                     reps.avoid_alternative = "NL"
                 reps.agent = "Producer" + reps.country
-            elif row['parameter_name'] == 'short_term_investment_minimal_irr':
-                reps.short_term_investment_minimal_irr = row['parameter_value']
+
             elif row['parameter_name'] in ['start_tick_fuel_trends', 'start_year_fuel_trends']:
                 reps.start_tick_fuel_trends = int(row['parameter_value'])
             elif row['parameter_name'] == 'start_dismantling_tick':
@@ -144,8 +142,7 @@ class SpineDBReaderWriter:
                 reps.investment_initialization_years = int(row['parameter_value'])
             elif row['parameter_name'] == 'decommission_from_input':
                 reps.decommission_from_input = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'Quick investment decisions':
-                reps.run_quick_investments = bool(row['parameter_value'])
+
             elif row['parameter_name'] == 'Limit investment to potentials':
                 reps.limit_investments = bool(row['parameter_value'])
             elif row['parameter_name'] == 'initialization_investment':
@@ -406,18 +403,19 @@ class SpineDBReaderWriter:
                                            [('PriceCap', price_cap)], "0")
 
     def stage_yearly_CONE(self, netcones, cones, current_tick):
-        self.stage_object_class(self.capacity_market_classname)
+        print("here")
+        self.stage_object_class(self.cone_classname)
         for technology_name, cone in cones.items():
-            self.stage_object_parameter(self.capacity_market_classname, technology_name)
-            self.stage_object(self.capacity_market_classname,"cone" )
-            self.stage_object_parameter_values(self.capacity_market_classname, "cone",
-            [(technology_name, Map([str(current_tick)], [float(cone)]))], "0")
+            self.stage_object_parameter(self.cone_classname, "cone" )
+            self.stage_object(self.cone_classname,technology_name)
+            self.stage_object_parameter_values(self.cone_classname, technology_name,
+            [("cone", Map([str(current_tick)], [float(cone)]))], "0")
 
         for technology_name, netcone in netcones.items():
-            self.stage_object_parameter(self.capacity_market_classname, technology_name)
-            self.stage_object(self.capacity_market_classname,"netcone"  )
-            self.stage_object_parameter_values(self.capacity_market_classname, "netcone" ,
-                                               [(technology_name, Map([str(current_tick)], [float(netcone)]))], "0")
+            self.stage_object_parameter(self.cone_classname, "netcone" )
+            self.stage_object(self.cone_classname,technology_name  )
+            self.stage_object_parameter_values(self.cone_classname, technology_name ,
+                                               [("netcone" , Map([str(current_tick)], [float(netcone)]))], "0")
 
     def stage_calculate_future_capacity_market(self, status):
         self.stage_object_class(self.configuration_object_classname)
@@ -1001,6 +999,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.newTechnology, NewTechnology)
     elif object_class_name == 'CapacityMarkets':
         add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, CapacityMarket)
+    elif object_class_name == 'Cone' and reps.runningModule == "plotting":
+        add_parameter_value_to_repository(reps, db_line, reps.capacity_markets, Cone)
     elif object_class_name == 'EnergyProducers':
         add_parameter_value_to_repository(reps, db_line, reps.energy_producers, EnergyProducer)
     elif object_class_name == 'Targets':

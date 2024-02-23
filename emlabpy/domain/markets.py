@@ -9,12 +9,15 @@ import numpy as np
 import pandas as pd
 from util import globalNames
 
+
 class Market(EMLabAgent):
     """
     The parent class of all markets.
     """
+
     def __init__(self, name):
         super().__init__(name)
+
 
 class ElectricitySpotMarket(Market):
     def __init__(self, name):
@@ -22,7 +25,7 @@ class ElectricitySpotMarket(Market):
         self.valueOfLostLoad = 0
         self.realized_demand_peak = None
         self.future_demand_peak = None
-        self.peak_load_fixed = None # fixed from input
+        self.peak_load_fixed = None  # fixed from input
         self.country = ""
         self.hourlyDemand = None
         self.future_hourly_demand = None
@@ -57,10 +60,10 @@ class ElectricitySpotMarket(Market):
         """
         if year in self.peak_load_fixed.index.values:  # value is present
             return self.peak_load_fixed[year]
-        elif self.peak_load_fixed.index.min() > year: # if the year is lower than data, take first year
+        elif self.peak_load_fixed.index.min() > year:  # if the year is lower than data, take first year
             self.peak_load_fixed.sort_index(ascending=True, inplace=True)
             return self.peak_load_fixed.iloc[0]
-        else: # interpolate years. If the year is larger, the maximum value is taken
+        else:  # interpolate years. If the year is larger, the maximum value is taken
             self.peak_load_fixed.at[year] = np.nan
             self.peak_load_fixed.sort_index(ascending=True, inplace=True)
             self.peak_load_fixed.interpolate(method='linear', inplace=True)
@@ -76,6 +79,7 @@ class ElectricitySpotMarket(Market):
         #         self.hourlyDemand = pd.read_csv(load_path,  delimiter= ";", header=None) # inflexible load
         #         self.future_hourly_demand = pd.read_csv(future_load_path, delimiter=";", header=None) # inflexible load
 
+
 class LoadShedder(ImportObject):
     def __init__(self, name):
         super().__init__(name)
@@ -88,20 +92,20 @@ class LoadShedder(ImportObject):
         self.price = 0
         self.realized_rs = None
 
-
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'TimeSeriesFile':
             self.TimeSeriesFile = str(parameter_value)
         elif parameter_name == 'TimeSeriesFileFuture':
-            self.TimeSeriesFileFuture =  str(parameter_value)
+            self.TimeSeriesFileFuture = str(parameter_value)
         elif parameter_name == 'VOLL':
             if self.name == "hydrogen":
-                self.VOLL = reps.substances[self.name].initialPrice.loc[2050] # this is mainly for plotting, in prepare market real price is being read.
+                self.VOLL = reps.substances[self.name].initialPrice.loc[
+                    2050]  # this is mainly for plotting, in prepare market real price is being read.
             else:
                 array = parameter_value.to_dict()
                 values = [float(i[1]) for i in array["data"]]
                 index = [int(i[0]) for i in array["data"]]
-                pd_series = pd.Series(values, index = index)
+                pd_series = pd.Series(values, index=index)
                 if reps.runningModule == "plotting":
                     self.VOLL = pd_series
                 else:
@@ -116,11 +120,13 @@ class LoadShedder(ImportObject):
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
-            pd_series = pd.Series(values, index = index)
+            pd_series = pd.Series(values, index=index)
             self.realized_rs = pd_series
+
 
 class CapacityMarket(Market):
     """"""
+
     def __init__(self, name: str):
         """"""
         super().__init__(name)
@@ -133,7 +139,6 @@ class CapacityMarket(Market):
         self.forward_years_CM = 0
         self.PriceCapTimesCONE = 0
 
-
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         if parameter_name == 'forward_years_CM':
             self.forward_years_CM = int(parameter_value)
@@ -144,6 +149,22 @@ class CapacityMarket(Market):
         return SlopingDemandCurve(self.InstalledReserveMargin,
                                   self.LowerMargin,
                                   self.UpperMargin, d_peak, self.PriceCap)
+
+
+class Cone(ImportObject):
+    """
+    The Cone as part of the CapacityMarket.
+    """
+
+    def __init__(self, name: str):
+        """"""
+        super().__init__(name)
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        array = parameter_value.to_dict()
+        values = [float(i[1]) for i in array["data"]]
+        index = [int(i[0]) for i in array["data"]]
+        pd_series = pd.Series(values, index=index)
+        setattr(self, parameter_name, pd_series)
 
 class CO2Market(Market):
     pass
@@ -178,10 +199,12 @@ class MarketClearingPoint(ImportObject):
         if parameter_name == 'Volume':
             self.volume = int(parameter_value)
 
+
 class SlopingDemandCurve:
     """
     The SlopingDemandCurve as required in the CapacityMarket.
     """
+
     def __init__(self, irm, lm, um, d_peak, price_cap):
         self.irm = irm
         self.lm = lm
@@ -212,10 +235,12 @@ class SlopingDemandCurve:
         else:
             return ((self.price_cap - price) / m) + self.lm_volume
 
+
 class MarketStabilityReserve(ImportObject):
     """
     The MarketStabilityReserve as part of the CO2 Market.
     """
+
     def __init__(self, name: str):
         super().__init__(name)
         self.reserve = [0 for i in range(100)]
@@ -234,4 +259,3 @@ class MarketStabilityReserve(ImportObject):
             self.release_trend = reps.trends[parameter_value]
         elif parameter_name == 'Zone':
             self.zone = reps.zones[parameter_value]
-

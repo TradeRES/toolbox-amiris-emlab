@@ -43,22 +43,23 @@ class Market:
         self.price_cap = price_cap
         self.sorted_demand = sorted_demand
 
-    def get_demand_price_at_volume(self, supply):
+    def get_demand_price_at_volume_test(self, supply):
         price = self.price_cap
         for numero, demand in enumerate(self.sorted_demand):
             last_capacity = supply.cummulative_quantity - supply.amount
             print("deamand " + str(demand.cummulative_quantity) + "_" +  str(demand.price))
-            if demand.cummulative_quantity >= supply.cummulative_quantity:
+            if demand.cummulative_quantity >= supply.cummulative_quantity or \
+                    demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
                 print("demand_q" + str(demand.cummulative_quantity))
                 price = demand.price
                 break
-            else:
-                if demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
-                    print("price" + str(demand.price) )
-                    price = demand.price
-                    break
+            # else:
+            #     if demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
+            #         print("price" + str(demand.price) )
+            #         price = demand.price
+            #         break
                 #if there is no demand, take the last price
-                price = demand.price
+             #   price = demand.price
         return price
 
 class Bid:
@@ -77,7 +78,7 @@ def clear_market(sorted_supply, sorted_demand):
     for supply in sorted_supply:
         # As long as the market is not cleared
         print("supply -----------" + str(supply.cummulative_quantity) + "_" + str(supply.price))
-        demand_price = market.get_demand_price_at_volume(supply)
+        demand_price = market.get_demand_price_at_volume_test(supply)
         print( "demand price ************" +str(demand_price))
         if supply.price < demand_price:
             total_supply_volume += supply.amount
@@ -124,3 +125,5 @@ def example():
 
     equilibrium_price, equilibrium_quantity = clear_market(sorted_supply, sorted_demand)
     plot_CS_market(sorted_supply, sorted_demand, equilibrium_price, equilibrium_quantity)
+
+#example()

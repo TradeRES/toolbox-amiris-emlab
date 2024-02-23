@@ -46,10 +46,10 @@ class Repository:
         self.dbrw = None
         self.agent = ""  # TODO if there would be more agents, the future capacity should be analyzed per agent
         self.current_tick = 0
-        self.time_step = 0
+        self.time_step = 1
         self.start_simulation_year = 0
         self.end_simulation_year = 0
-        self.short_term_investment_minimal_irr = 0
+        self.short_term_investment_minimal_irr = 0.2
         self.lookAhead = 0
         self.pastTimeHorizon = 0
         self.current_year = 0
@@ -917,9 +917,11 @@ class Repository:
         try:
             datetime_list = [i.name.split(" ",1)[1] for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time]
             if datetime_list:
-                first = min(datetime_list)
-                return  next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
-                                            and i.name == 'MarketClearingPoint ' +  first)
+                first = next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
+                             and i.name == 'MarketClearingPoint ' +  min(datetime_list))
+                last = next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
+                            and i.name == 'MarketClearingPoint ' +  max(datetime_list))
+                return (first, last)
             else:
                 return None
         except StopIteration:
@@ -933,7 +935,7 @@ class Repository:
             else:
                 return mcp.price
         else:
-            return 0
+            return None
     def get_cleared_volume_for_market_and_time(self, market: Market, time: int) -> float:
         if time >= 0:
             mcp = self.get_market_clearing_point_for_market_and_time(market, time)
