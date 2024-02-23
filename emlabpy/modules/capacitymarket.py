@@ -209,12 +209,14 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         NETCONE = discountedprojectvalueNETCONE * factor
         cones[technology.name ] = CONE
         netcones[technology.name ] = NETCONE
-    reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
-    minnetCONE = min(netcones.values())
-    minCONE = min(cones.values())
 
-
-    if reps.investmentIteration == 0 and reps.current_tick > 0: # during initialization price cap would be too low
+    if not cones:
+        print("cones is empty")
+        raise ValueError("cones is empty")
+    else:
+        reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
+        minnetCONE = min(netcones.values())
+        minCONE = min(cones.values())
         chosenCONE = max(minCONE, minnetCONE * capacity_market.PriceCapTimesCONE)
         price_cap = int(chosenCONE)
         print("price_cap")

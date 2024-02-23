@@ -539,8 +539,11 @@ class Investmentdecision(DefaultModule):
         print(
             "technology" + "name" + ";" + "price_to_bid;capacity" + ";" + " profits" + ";" + "fixed_on_m_cost" + ";" + "pending_loan")
 
-
-        calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
+        if self.reps.investmentIteration == 0 and self.reps.current_tick > 0:
+            """
+            during initialization price cap would be too low, so take a 
+            """
+            calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
 
         for powerplant in self.reps.power_plants.values():
             if powerplant.id in self.future_installed_plants_ids:
