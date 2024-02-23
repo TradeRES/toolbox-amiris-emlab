@@ -144,7 +144,7 @@ class CapacityMarketClearing(MarketModule):
                 accepting power plant, but giving lower price, otherwise the price dont decrease!!!
                 """
                 total_supply_volume = total_supply_volume +  supply.amount
-                if total_supply_volume > sdc.lm_volume:
+                if total_supply_volume > sdc.lm_volume and total_supply_volume < sdc.um_volume:
                     clearing_price =  supply.price
                 else:
                     clearing_price =   sdc.get_price_at_volume(total_supply_volume + supply.amount)

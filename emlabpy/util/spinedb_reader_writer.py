@@ -403,7 +403,6 @@ class SpineDBReaderWriter:
                                            [('PriceCap', price_cap)], "0")
 
     def stage_yearly_CONE(self, netcones, cones, current_tick):
-        print("here")
         self.stage_object_class(self.cone_classname)
         for technology_name, cone in cones.items():
             self.stage_object_parameter(self.cone_classname, "cone" )
