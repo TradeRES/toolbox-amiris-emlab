@@ -217,14 +217,14 @@ class CreatingFinancialReports(DefaultModule):
             test_list = [int(i) for i in hourly_load_shedders.columns.values]
             hourly_load_shedders.columns = test_list
             if name == "hydrogen":  # hydrogen is the lowest load shedder
-                id_shedder = hourly_load_shedders.columns[hourly_load_shedders.columns <= hydrogen_ids]
+                id_shedder = 8888888
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
                 yearly_hydrogen_shedded = total_load_shedded[name].sum()
                 production_not_shedded_MWh.at[year, "hydrogen_produced"] = (total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded)
                 production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
                 total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
             else:
-                id_shedder = int(values.VOLL * 100000)
+                id_shedder = int(name) * 100000
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
 
@@ -250,15 +250,13 @@ class CreatingFinancialReports(DefaultModule):
                     if  pd.isna(averageLOLE):
                         pass
                     else:
-                        increaseVOLL = (averageLOLE - reliability_standard) * 0.20 # Eur/Mwh     0 - 4    --- > -120
-                        if reliability_standard < 4 and increaseVOLL <0:
-                            pass # LOLE is normal
-                        elif reliability_standard + increaseVOLL < 0:
+                        increaseVOLL = (averageLOLE - reliability_standard) # Eur/Mwh     0 - 4    --- > -120
+                        new_value = load_shedder.VOLL + increaseVOLL
+                        if new_value < 0:
                             pass
-                        # elif reliability_standard + increaseVOLL > 4000:
+                        # elif new_value > 4000:
                         #     pass
                         else:
-                            new_value = load_shedder.VOLL + increaseVOLL
                             print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                             load_shedder.VOLL = int(new_value)
             """

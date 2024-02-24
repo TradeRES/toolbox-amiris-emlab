@@ -235,7 +235,7 @@ class PrepareMarket(DefaultModule):
                 if name == "hydrogen":
                     VOLL = self.reps.substances[name].simulatedPrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
-                    Identifiers.append(int(VOLL)* 100000)
+                    Identifiers.append(8888888)
                 else:
                     VOLL = loadshedder.VOLL
                     Identifiers.append(int(name) *100000)
@@ -248,7 +248,7 @@ class PrepareMarket(DefaultModule):
                 if name == "hydrogen":
                     VOLL = self.reps.substances[name].futurePrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
-                    Identifiers.append(int(VOLL)* 100000)
+                    Identifiers.append(88888880)
                 else:
                     VOLL = loadshedder.VOLL
                     Identifiers.append(int(name)* 100000)

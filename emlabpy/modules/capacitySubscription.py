@@ -2,7 +2,7 @@ from modules.capacitymarket import CapacityMarketClearing
 from modules.marketmodule import MarketModule
 from util.repository import Repository
 from util import globalNames
-from plots.testclearmarket import plot_CS_market
+
 import pandas as pd
 
 
@@ -97,6 +97,7 @@ class CapacitySubscriptionClearing(MarketModule):
                 total_supply_volume += supply_bid.amount
                 supply_bid.accepted_amount = supply_bid.amount
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
+                clearing_price = demand_price
             else:
                 #  total_supply_volume += supply_bid.amount
                 clearing_price = demand_price  # price set by demand
@@ -105,7 +106,7 @@ class CapacitySubscriptionClearing(MarketModule):
                 print("clearing_price", clearing_price)
                 print("total_supply_volume", total_supply_volume)
                 break
-
+        # from plots.testclearmarket import plot_CS_market
         # plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
 
         return clearing_price, total_supply_volume

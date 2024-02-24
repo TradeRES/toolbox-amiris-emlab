@@ -82,6 +82,7 @@ def clear_market(sorted_supply, sorted_demand):
         print( "demand price ************" +str(demand_price))
         if supply.price < demand_price:
             total_supply_volume += supply.amount
+            equilibrium_price = demand_price
         else:
             equilibrium_price = demand_price
             total_supply_volume += supply.amount
@@ -96,8 +97,8 @@ def example():
         Bid(price=5000, amount=6000),
         Bid(price=6000, amount=3000),
         Bid(price=10000, amount=5000),
-        Bid(price=30000, amount=10000),
-        Bid(price=60000, amount=10000)
+  #      Bid(price=30000, amount=10000),
+  #      Bid(price=60000, amount=10000)
 
     ]
 
@@ -126,4 +127,4 @@ def example():
     equilibrium_price, equilibrium_quantity = clear_market(sorted_supply, sorted_demand)
     plot_CS_market(sorted_supply, sorted_demand, equilibrium_price, equilibrium_quantity)
 
-#example()
+example()
