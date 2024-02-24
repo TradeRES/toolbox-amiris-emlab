@@ -235,11 +235,11 @@ class PrepareMarket(DefaultModule):
                 if name == "hydrogen":
                     VOLL = self.reps.substances[name].simulatedPrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
+                    Identifiers.append(int(VOLL)* 100000)
                 else:
                     VOLL = loadshedder.VOLL
-
+                    Identifiers.append(int(name) *100000)
                 VOLLs.append(VOLL)
-                Identifiers.append(int(VOLL* 100000))
                 TimeSeries.append(loadshedder.TimeSeriesFile)
 
         elif self.reps.runningModule == "run_future_market":
@@ -248,11 +248,11 @@ class PrepareMarket(DefaultModule):
                 if name == "hydrogen":
                     VOLL = self.reps.substances[name].futurePrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
+                    Identifiers.append(int(VOLL)* 100000)
                 else:
                     VOLL = loadshedder.VOLL
-
+                    Identifiers.append(int(name)* 100000)
                 VOLLs.append(VOLL)
-                Identifiers.append(int(VOLL* 100000))
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
 
         d = {'identifier':   Identifiers,

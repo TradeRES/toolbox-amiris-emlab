@@ -129,3 +129,4 @@ amiris_workflow/amiris-config/data/future_LS_one.csv
 amiris_workflow/amiris-config/data/future_LS_six.csv
 amiris_workflow/amiris-config/data/future_LS_three.csv
 amiris_workflow/amiris-config/data/future_LS_two.csv
+*.csv

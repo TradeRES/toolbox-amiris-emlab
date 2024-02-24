@@ -20,7 +20,7 @@ from modules.makefinancialreports import CreatingFinancialReports
 from modules.marketstabilityreserve import DetermineMarketStabilityReserveFlow
 from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from util.spinedb_reader_writer import *
-from modules.capacitySubscription import CapacitySubscriptionClearing
+
 from modules.capacitymarket import *
 from modules.forwardcapacitymarket import *
 from modules.strategicreserve_new import *
