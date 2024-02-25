@@ -924,7 +924,7 @@ class Repository:
                              and i.name == 'MarketClearingPoint ' +  min(datetime_list))
                 last = next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
                             and i.name == 'MarketClearingPoint ' +  max(datetime_list))
-                return (first, last)
+                return first
             else:
                 return None
         except StopIteration:

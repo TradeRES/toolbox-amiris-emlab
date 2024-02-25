@@ -640,7 +640,7 @@ def plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots):
 def plot_shortages_and_ENS(shortages, load_shedded_per_group_MWh, path_to_plots):
     fig3, axs3 = plt.subplots(2, 1)
     fig3.tight_layout()
-    ENS_in_simulated_years_gwh = load_shedded_per_group_MWh["base"] / 1000
+    ENS_in_simulated_years_gwh = load_shedded_per_group_MWh.sum(axis =1) / 1000
     shortages.plot(ax=axs3[0], grid=True, legend=False)
     ENS_in_simulated_years_gwh.plot(ax=axs3[1], grid=True, legend=False)
     axs3[0].set_ylabel('Shortage hours', fontsize='large')
@@ -1038,8 +1038,8 @@ def plot_grouped_monthly_production_per_type(average_yearly_generation):
     fig1.savefig(path_to_plots + '/' + 'monthly_production.png', bbox_inches='tight', dpi=300)
 
 
-def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year, total_load_shedded_per_year):
+def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
+                           percentage_load_shedded):
     fig37, axs37 = plt.subplots(2, 1)
     fig37.tight_layout()
     production_not_shedded_TWh = production_not_shedded_MWh[["hydrogen_produced", "industrial_heat_demand"]] / 1000000
@@ -1075,11 +1075,12 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     plt.close('all')
 
 
+
+def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year, total_load_shedded_per_year):
     LOLE_per_group.drop(inplace=True, index='hydrogen')
     max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
     fig39, axs39 = plt.subplots(3, 1)
     fig39.tight_layout()
-
     VOLL_per_year.T.plot(ax=axs39[0], legend=False)
     LOLE_per_group.T.plot(ax=axs39[1], legend=False)
     max_ENS_in_a_row.T.plot(ax=axs39[2], legend=False)
@@ -1090,9 +1091,6 @@ def plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedd
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig39.savefig(path_to_plots + '/' + 'Load_shedded_hours.png', bbox_inches='tight', dpi=300)
     plt.close('all')
-
-
-
 
 # section -----------------------------------------------------------------------------------------------data preparation
 def prepare_pp_decommissioned(reps):
@@ -1680,6 +1678,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
         market = reps.get_capacity_market_in_country(reps.country)
         for tick in ticks_to_generate:
             CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick)
+            #CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick)[1]
             capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)
             CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick)
             capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)
@@ -1935,17 +1934,19 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     for year in years_to_generate:
         for name, values in reps.loadShedders.items():
             selected_df = hourly_load_shedders_per_year[year]
-            hydrogen_ids = reps.substances["OTHER"].initialPrice.max() * 100000
             test_list = [int(i) for i in selected_df.columns.values]
             selected_df.columns = test_list
             if name == "hydrogen":  # hydrogen is the lowest load shedder
-                id_shedder = selected_df.columns[selected_df.columns <= hydrogen_ids]
-                total_load_shedded[name] = selected_df[(id_shedder)]
+                total_load_shedded[name] = selected_df[(8888888)]
             else:
-                id_shedder = int(values.VOLL[year] * 100000)
-                print(id_shedder)
-                total_load_shedded[name] = selected_df[(id_shedder)]
-                VOLL_per_year.at[name, year] = values.VOLL[year]
+                id_shedder = int(name) * 100000
+                if id_shedder in selected_df.columns:
+                    total_load_shedded[name] = selected_df[(id_shedder)]
+                    VOLL_per_year.at[name, year] = values.VOLL[year]
+                else:
+                    print("---------" + str(year) )
+                    print(id_shedder)
+
         total_load_shedded_per_year[year] = total_load_shedded.sum()
         LOLE_per_group[year] = total_load_shedded[total_load_shedded > 0].count()
 
@@ -2013,13 +2014,31 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     #         load_shedded_per_group_MWh[year ] = sum_load_shedded
     #     return load_shedded_per_group_MWh
 
+def prepareCONE():
+    cones = pd.DataFrame()
+    netcones = pd.DataFrame()
+    for name, i in  reps.capacity_markets.items():
+        if i.name in unique_technologies:
+            cones[i.name] = i.cone
+            netcones[i.name] = i.netcone
+    cones.sort_index(inplace=True)
+    netcones.sort_index(inplace=True)
+    axs21 = cones.plot() # color=colors_unique_techs
+    netcones.plot(ax= axs21)
+    axs21.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel(' (€/MWh)', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    plt.grid()
+    fig21 = axs21.get_figure()
+    fig21.savefig(path_to_plots + '/' + 'CONEs.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
     load_shedded_per_group_MWh = pd.DataFrame()
     total_yearly_electrolysis_consumption = pd.DataFrame()
     total_yearly_hydrogen_input_demand = reps.loadShedders["hydrogen"].ShedderCapacityMW * 8760
-    hydrogen_ids = reps.substances["OTHER"].initialPrice.max() * 100000
     hydrogen_input_demand = [reps.loadShedders["hydrogen"].ShedderCapacityMW] * 8760
     input_shifter_demand = reps.loadShifterDemand[
                                'Industrial_load_shifter'].averagemonthlyConsumptionMWh * 12
@@ -2031,14 +2050,13 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
             test_list = [int(i) for i in selected_df.columns.values]
             selected_df.columns = test_list
             if name == "hydrogen":  # hydrogen is the lowest load shedder
-                id_shedder = selected_df.columns[selected_df.columns <= hydrogen_ids]
-                total_load_shedded[name] = selected_df[(id_shedder)]
+                total_load_shedded[name] = selected_df[(8888888)]
                 yearly_hydrogen_shedded = total_load_shedded[name].sum()
                 production_not_shedded_MWh.at[year, "hydrogen_produced"] = (total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded)
                 production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
                 total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
             else:
-                id_shedder = int(values.VOLL[year] * 100000)
+                id_shedder = int(name)* 100000
                 total_load_shedded[name] = selected_df[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = selected_df[(id_shedder)].sum()
 
@@ -2071,6 +2089,7 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     shortage_hours = pd.DataFrame(index=years_to_generate)
     inflexible_shedding = hourly_load_shedded - reps.loadShedders["hydrogen"].ShedderCapacityMW
     shortage_hours["all groups"] = LOLE_per_group.sum(axis = 0)
+
     """
     supply ratio: hour when load is the highest 
     """
@@ -2181,10 +2200,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation =\
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
+    prepareCONE()
 
+    plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
+                           percentage_load_shedded)
 
-    plot_hydrogen_produced(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year,  total_load_shedded_per_year)
+    plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year,  total_load_shedded_per_year)
 
     if calculate_monthly_generation == True and calculate_hourly_shedders_new == True:
         plot_grouped_monthly_production_per_type(average_yearly_generation)
@@ -2820,7 +2841,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-CS"]
+    SCENARIOS = ["NL-CM2"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
