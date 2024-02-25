@@ -223,8 +223,8 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         print(price_cap)
         if price_cap < 0:
             raise ValueError("Price cap is negative")
-
-        capacity_market.PriceCap = price_cap
-        reps.dbrw.stage_price_cap( capacity_market.name, price_cap )
+        if reps.current_tick == 1:
+            capacity_market.PriceCap = price_cap
+            reps.dbrw.stage_price_cap( capacity_market.name, price_cap )
 
 
