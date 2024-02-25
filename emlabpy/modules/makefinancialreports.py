@@ -199,6 +199,10 @@ class CreatingFinancialReports(DefaultModule):
             return round(IRR, 4), npv
 
     def prepare_percentage_load_shedded(self):
+        """
+        prepare the percentage of load shedded for each load shedder
+        :return:
+        """
         df =  pd.read_csv(globalNames.hourly_generation_per_group_path)
         hourly_load_shedders = pd.DataFrame()
         for unit in df.columns.values:
@@ -209,7 +213,6 @@ class CreatingFinancialReports(DefaultModule):
         load_shedded_per_group_MWh = pd.DataFrame()
         total_yearly_electrolysis_consumption = pd.DataFrame()
         total_yearly_hydrogen_input_demand = self.reps.loadShedders["hydrogen"].ShedderCapacityMW * 8760
-        hydrogen_ids = self.reps.substances["OTHER"].initialPrice.max() * 100000
         hydrogen_input_demand = [self.reps.loadShedders["hydrogen"].ShedderCapacityMW] * 8760
         total_load_shedded = pd.DataFrame()
         year = self.reps.current_year
@@ -241,24 +244,27 @@ class CreatingFinancialReports(DefaultModule):
             """
             start = self.reps.current_tick -4
             ticks_to_generate = list(range(start, self.reps.current_tick ))
-            for load_shedder_name, load_shedder in self.reps.loadShedders.items():
-                if load_shedder_name == "hydrogen":
+
+            sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_byCONE()
+            lastVOLL = 10000 # Eur/Mwh maximum  VOLL
+            for  load_shedder in sorted_load_shedders_byCONE_no_hydrogen:
+                averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
+                reliability_standard =  load_shedder.reliability_standard
+                if  pd.isna(averageLOLE):
                     pass
                 else:
-                    averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
-                    reliability_standard =  load_shedder.reliability_standard
-                    if  pd.isna(averageLOLE):
+                    increaseVOLL = (averageLOLE - reliability_standard) # Eur/Mwh     0 - 4    --- > -120
+                    new_value = load_shedder.VOLL + increaseVOLL
+                    if new_value < 0:
                         pass
+                    elif new_value > lastVOLL: # the new value should be smaller than the last value
+                        print("VOLL is too high")
+                        load_shedder.VOLL = int(lastVOLL -1)
+                        lastVOLL = load_shedder.VOLL
                     else:
-                        increaseVOLL = (averageLOLE - reliability_standard) # Eur/Mwh     0 - 4    --- > -120
-                        new_value = load_shedder.VOLL + increaseVOLL
-                        if new_value < 0:
-                            pass
-                        # elif new_value > 4000:
-                        #     pass
-                        else:
-                            print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
-                            load_shedder.VOLL = int(new_value)
+                        print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
+                        load_shedder.VOLL = int(new_value)
+                        lastVOLL = load_shedder.VOLL
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 
             """

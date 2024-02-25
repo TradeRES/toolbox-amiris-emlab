@@ -106,7 +106,5 @@ class CapacitySubscriptionClearing(MarketModule):
                 print("clearing_price", clearing_price)
                 print("total_supply_volume", total_supply_volume)
                 break
-        # from plots.testclearmarket import plot_CS_market
-        # plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
 
         return clearing_price, total_supply_volume
