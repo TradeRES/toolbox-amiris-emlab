@@ -237,7 +237,7 @@ class PrepareMarket(DefaultModule):
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
-                    VOLL = loadshedder.VOLL
+                    VOLL = 500
                     Identifiers.append(int(name) *100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFile)
@@ -250,7 +250,7 @@ class PrepareMarket(DefaultModule):
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
-                    VOLL = loadshedder.VOLL
+                    VOLL = 500
                     Identifiers.append(int(name)* 100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
