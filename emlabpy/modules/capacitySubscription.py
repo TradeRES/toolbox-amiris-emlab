@@ -55,7 +55,6 @@ class CapacitySubscriptionClearing(MarketModule):
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
         for accepted in accepted_supply_bid:
-            print(accepted.name)
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount,
                                              self.reps.current_tick + capacity_market.forward_years_CM)
@@ -106,5 +105,8 @@ class CapacitySubscriptionClearing(MarketModule):
                 print("clearing_price", clearing_price)
                 print("total_supply_volume", total_supply_volume)
                 break
+        # from plots.testclearmarket import plot_CS_market
+        # plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
+
 
         return clearing_price, total_supply_volume

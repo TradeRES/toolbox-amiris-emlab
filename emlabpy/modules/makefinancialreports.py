@@ -246,25 +246,19 @@ class CreatingFinancialReports(DefaultModule):
             ticks_to_generate = list(range(start, self.reps.current_tick ))
 
             sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_byCONE()
-            lastVOLL = 10000 # Eur/Mwh maximum  VOLL
             for  load_shedder in sorted_load_shedders_byCONE_no_hydrogen:
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
                 reliability_standard =  load_shedder.reliability_standard
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    increaseVOLL = (averageLOLE - reliability_standard) # Eur/Mwh     0 - 4    --- > -120
+                    increaseVOLL = (averageLOLE - reliability_standard)/reliability_standard   # Eur/Mwh     0 - 4    --- > -120
                     new_value = load_shedder.VOLL + increaseVOLL
                     if new_value < 0:
                         pass
-                    elif new_value > lastVOLL: # the new value should be smaller than the last value
-                        print("VOLL is too high")
-                        load_shedder.VOLL = int(lastVOLL -1)
-                        lastVOLL = load_shedder.VOLL
                     else:
                         print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
                         load_shedder.VOLL = int(new_value)
-                        lastVOLL = load_shedder.VOLL
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 
             """
@@ -272,10 +266,9 @@ class CreatingFinancialReports(DefaultModule):
             for load_shedder_name, load_shedder in self.reps.loadShedders.items():
                 lst.append(load_shedder.VOLL)
                 if load_shedder in lst:
-                    load_shedder.VOLL = load_shedder.VOLL + 1
                     print("making VOLL unequal")
+                    load_shedder.VOLL = load_shedder.VOLL + 1
                 else:
-                    print(load_shedder.VOLL)
                     pass
 
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
