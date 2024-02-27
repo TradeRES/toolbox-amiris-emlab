@@ -153,6 +153,7 @@ class Repository:
         self.bids_sr = dict()
         # Create Strategic Reserve Operator
         self.sr_operator = dict()
+        self.cs_operator = dict()
 
     """
     Repository functions:
@@ -834,12 +835,12 @@ class Repository:
         except StopIteration:
             return None
 
-        # def get_strategic_reserve_operator_per_tick(self, tick:int ) -> Optional[StrategicReserveOperator]:
-        #     try:
-        #         return next(i for i in self.sr_operator.list_of_plants_all.values() if
-        #                     i.zone == self.country  )
-        #     except StopIteration:
-        #         return None
+    def get_capacity_subscription_operator(self, country) -> Optional[StrategicReserveOperator]:
+        try:
+            return next(i for i in self.cs_operator.values() if
+                        i.country == country)
+        except StopIteration:
+            return None
 
     def get_capacity_market_for_plant(self, plant: PowerPlant) -> Optional[CapacityMarket]:
         try:
@@ -924,7 +925,7 @@ class Repository:
                              and i.name == 'MarketClearingPoint ' +  min(datetime_list))
                 last = next(i for i in self.market_clearing_points.values() if i.market.name == market and i.tick == time
                             and i.name == 'MarketClearingPoint ' +  max(datetime_list))
-                return first
+                return last
             else:
                 return None
         except StopIteration:

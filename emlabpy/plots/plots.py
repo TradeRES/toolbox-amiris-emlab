@@ -2200,7 +2200,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation =\
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
-    prepareCONE()
+
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
                            percentage_load_shedded)
@@ -2305,7 +2305,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
         CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
-            capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp = \
+            capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, ran_CRM, \
+            SR_operator_revenues, cm_revenues_per_pp = \
             prepare_accepted_CapacityMechanism(
             reps, ticks_to_generate)
         plot_CM_revenues(CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
@@ -2316,7 +2317,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
         elif ran_CRM == "capacity_market":
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
-
+    if reps.capacity_remuneration_mechanism == "capacity_market":
+        prepareCONE()
     if calculate_vres_support == True:
         yearly_vres_support = calculating_RES_support(reps, years_to_generate)
         plot_yearly_VRES_support(yearly_vres_support, path_to_plots)
@@ -2841,9 +2843,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-CM2"]
+    SCENARIOS = ["NL-CSWip"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
     print('===== End Generating Plots =====')
 

@@ -7,6 +7,8 @@ Jim Hommes - 25-3-2021
 import logging
 from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
+
+from domain.CapacitySubscriptionOperator import CapacitySubscriptionOperator
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import CandidatesNPV, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
 from domain.load_shifter_with_cap_demand import LoadShifterwCap
@@ -960,8 +962,6 @@ def add_relationship_to_repository_array(db_data: dict, to_arr: list, relationsh
 
 
 
-
-
 def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
     """
     Function used to translate an object_parameter_value from SpineDB to a Repository dict entry.
@@ -1027,6 +1027,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.loadShedders, LoadShedder)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
+    elif object_class_name == 'CapacitySubscriptionOperators':
+        add_parameter_value_to_repository(reps, db_line, reps.cs_operator, CapacitySubscriptionOperator)
     elif object_class_name == 'StrategicReserveResults':
         new_db_line = list(db_line)
         new_db_line[1] = "SRO_" + reps.country  # object name

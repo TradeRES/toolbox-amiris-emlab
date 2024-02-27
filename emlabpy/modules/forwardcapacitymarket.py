@@ -66,7 +66,7 @@ class ForwardCapacityMarketClearing(MarketModule):
     The class that clears the Capacity Market based on the Sloping Demand curve
     """
 
-    def __init__(self, reps: Repository, operator: StrategicReserveOperator):
+    def __init__(self, reps: Repository):
         super().__init__('EM-Lab Capacity Market: Clear Market', reps)
         reps.dbrw.stage_init_sr_results_structure()
         reps.dbrw.stage_init_capacitymechanisms_structure()
