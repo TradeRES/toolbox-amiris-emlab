@@ -1,9 +1,7 @@
-from modules.capacitymarket import CapacityMarketClearing
+
 from modules.marketmodule import MarketModule
 from util.repository import Repository
 from util import globalNames
-
-import pandas as pd
 
 
 class DemandCurve:
@@ -105,8 +103,7 @@ class CapacitySubscriptionClearing(MarketModule):
                 print("clearing_price", clearing_price)
                 print("total_supply_volume", total_supply_volume)
                 break
+
         # from plots.testclearmarket import plot_CS_market
         # plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
-
-
         return clearing_price, total_supply_volume

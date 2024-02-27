@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
+
 """
 testing capacity subsciption market
 """
 
+
 def plot_CS_market(sorted_supply, sorted_demand, equilibrium_price, equilibrium_quantity):
     total = 0
-    for i , supply in enumerate(sorted_supply):
+    for i, supply in enumerate(sorted_supply):
         total += supply.amount
         supply.cummulative_quantity = total
     total = 0
@@ -16,7 +18,7 @@ def plot_CS_market(sorted_supply, sorted_demand, equilibrium_price, equilibrium_
     demand_prices = []
     demand_quantities = []
 
-    cummulative_quantity=0
+    cummulative_quantity = 0
 
     for bid in sorted_supply:
         supply_prices.append(bid.price)
@@ -28,18 +30,19 @@ def plot_CS_market(sorted_supply, sorted_demand, equilibrium_price, equilibrium_
         demand_quantities.append(bid.cummulative_quantity)
 
     plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
-    plt.step(demand_quantities, demand_prices, 'o-', label='demand',color='r')
+    plt.step(demand_quantities, demand_prices, 'o-', label='demand', color='r')
     plt.grid(visible=None, which='major', axis='both', linestyle='--')
     plt.axhline(y=equilibrium_price, color='g', linestyle='--', label='Equilibrium Price')
+    plt.axvline(x=equilibrium_quantity, color='g', linestyle='--', label='Equilibrium Quantity')
     plt.xlabel('Quantity')
     plt.ylabel('Price')
+  #  plt.ylim(40000, 50000)
     plt.legend()
     plt.show()
 
 
-
 class Market:
-    def __init__(self, price_cap, sorted_demand ):
+    def __init__(self, price_cap, sorted_demand):
         self.price_cap = price_cap
         self.sorted_demand = sorted_demand
 
@@ -47,7 +50,7 @@ class Market:
         price = self.price_cap
         for numero, demand in enumerate(self.sorted_demand):
             last_capacity = supply.cummulative_quantity - supply.amount
-            print("deamand " + str(demand.cummulative_quantity) + "_" +  str(demand.price))
+            print("deamand " + str(demand.cummulative_quantity) + "_" + str(demand.price))
             if demand.cummulative_quantity >= supply.cummulative_quantity or \
                     demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
                 print("demand_q" + str(demand.cummulative_quantity))
@@ -58,9 +61,10 @@ class Market:
             #         print("price" + str(demand.price) )
             #         price = demand.price
             #         break
-                #if there is no demand, take the last price
-             #   price = demand.price
+            # if there is no demand, take the last price
+            #   price = demand.price
         return price
+
 
 class Bid:
     def __init__(self, price, amount):
@@ -71,7 +75,7 @@ class Bid:
 
 def clear_market(sorted_supply, sorted_demand):
     equilibrium_price = None
-    equilibrium_quantity = 0
+
     market = Market(60000, sorted_demand)
     total_supply_volume = 0
 
@@ -79,34 +83,37 @@ def clear_market(sorted_supply, sorted_demand):
         # As long as the market is not cleared
         print("supply -----------" + str(supply.cummulative_quantity) + "_" + str(supply.price))
         demand_price = market.get_demand_price_at_volume_test(supply)
-        print( "demand price ************" +str(demand_price))
+        print("demand price ************" + str(demand_price))
         if supply.price < demand_price:
             total_supply_volume += supply.amount
             equilibrium_price = demand_price
         else:
             equilibrium_price = demand_price
-            total_supply_volume += supply.amount
+           # total_supply_volume += supply.amount
             print("last price: ", str(demand_price))
+            print("total_supply_volume", str(total_supply_volume))
             break
-    return equilibrium_price, equilibrium_quantity
+    return equilibrium_price, total_supply_volume
+
 
 def example():
-# Example usage
+    # Example usage
     supply = [
         Bid(price=5000, amount=5000),
         Bid(price=5000, amount=6000),
         Bid(price=6000, amount=3000),
-        Bid(price=10000, amount=5000),
-  #      Bid(price=30000, amount=10000),
-  #      Bid(price=60000, amount=10000)
-
+        Bid(price=30000, amount=5000),
+        Bid(price=30000, amount=1000),
+        Bid(price=31000, amount=1000),
+        Bid(price=32000, amount=1000),
+        Bid(price=33000, amount=1000)
     ]
 
     demand = [
         Bid(price=49000, amount=5000),
         Bid(price=45000, amount=5000),
         Bid(price=35000, amount=4000),
-        Bid(price=30000, amount=4000),
+        Bid(price=29000, amount=4000),
         Bid(price=25000, amount=6000),
         Bid(price=20000, amount=5050),
 
@@ -116,15 +123,16 @@ def example():
     sorted_demand = sorted(demand, key=lambda x: x.price, reverse=True)
 
     total = 0
-    for i , supply in enumerate(sorted_supply):
+    for i, supply in enumerate(sorted_supply):
         total += supply.amount
         supply.cummulative_quantity = total
     total = 0
-    for i , demand in enumerate(sorted_demand):
+    for i, demand in enumerate(sorted_demand):
         total += demand.amount
         demand.cummulative_quantity = total
 
     equilibrium_price, equilibrium_quantity = clear_market(sorted_supply, sorted_demand)
     plot_CS_market(sorted_supply, sorted_demand, equilibrium_price, equilibrium_quantity)
 
-example()
+
+#example()

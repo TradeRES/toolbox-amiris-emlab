@@ -199,8 +199,7 @@ try:  # Try statement to always close DB properly
         elif reps.capacity_remuneration_mechanism == "forward_capacity_market":
             print('Start Run Capacity Market')
             capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-            capacity_market_operator = StrategicReserveOperator('CapacityMarketOperator')
-            capacity_market_clear = ForwardCapacityMarketClearing(reps, capacity_market_operator)  # This function adds rep to class capacity markets
+            capacity_market_clear = ForwardCapacityMarketClearing(reps)  # This function adds rep to class capacity markets
             capacity_market_submit_bids.act_and_commit()
             capacity_market_clear.act_and_commit()
             print('End Run Capacity Market')
