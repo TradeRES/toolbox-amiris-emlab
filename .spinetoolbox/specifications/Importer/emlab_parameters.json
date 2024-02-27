@@ -1273,7 +1273,7 @@
                             {
                                 "map_type": "ParameterDefinition",
                                 "position": "hidden",
-                                "value": "VOLL"
+                                "value": "percentage_load"
                             },
                             {
                                 "map_type": "Alternative",
@@ -1305,6 +1305,63 @@
                         ]
                     }
                 }
+            ],
+            "CapacitySubscriptionOperators": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "table_name"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "LoadShedders_copy": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1326,11 +1383,12 @@
             "weatherYears40",
             "TechnologyTargets",
             "TechnologyTrends",
+            "LoadShedders",
             "LoadShifterCap",
             "weatherYearsOLD",
             "peakLoad",
-            "LoadShedders2",
-            "VOLL"
+            "VOLL",
+            "CapacitySubscriptionOperators"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1437,9 +1495,11 @@
                 "read_until_row": true
             },
             "VOLL": {
-                "read_until_col": false,
+                "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "CapacitySubscriptionOperators": {},
+            "LoadShedders_copy": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1554,7 +1614,10 @@
                 "3": "string",
                 "4": "string",
                 "5": "string",
-                "6": "string"
+                "6": "string",
+                "7": "string",
+                "8": "string",
+                "9": "string"
             },
             "Dismantled": {
                 "0": "string",
@@ -1794,12 +1857,15 @@
             "VOLL": {
                 "0": "string",
                 "1": "float",
-                "2": "string",
-                "3": "string",
-                "4": "string",
-                "5": "string",
-                "6": "string",
-                "7": "string"
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float"
+            },
+            "CapacitySubscriptionOperators": {
+                "0": "string",
+                "1": "float",
+                "2": "float"
             }
         },
         "table_default_column_type": {},

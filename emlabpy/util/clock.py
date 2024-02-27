@@ -189,7 +189,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
 
 def update_load_shedders_current_year(excel, current_year):
     for lshedder_name in load_shedders_no_hydrogen:
-        load_shedder = excel['Load'][current_year] * load_shedders.loc[lshedder_name, "percentage_load"]
+        load_shedder = excel['Load'][current_year] *  load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config", "data",
                                                     ("LS_" + lshedder_name + ".csv"))
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
@@ -260,7 +260,38 @@ def update_profiles_current_year(excel, current_year):
     pv = excel['Sun PV profiles'][current_year]
     pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
 
+def read_load_shedders(updated_year):
+    global load_shedders
+    load_shedders_parameters = ["TimeSeriesFile", "TimeSeriesFileFuture", "ShedderCapacityMW"]
+    load_shedders = pd.DataFrame(columns=load_shedders_parameters)
+    load_shedders_names = []
 
+    test = db_emlab.query_object_name_by_class_name_and_alternative("LoadShedders", "0")
+    for i in test:
+        if i["object_name"] in load_shedders_names:
+            pass
+        else:
+            load_shedders_names.append(i["object_name"])
+    global load_shedders_no_hydrogen
+    load_shedders_no_hydrogen = load_shedders_names.copy()
+    load_shedders_no_hydrogen.remove("hydrogen")
+    for load_shedder in load_shedders_names:
+        for parameter in load_shedders_parameters:
+            load_shedders.at[load_shedder, parameter] = next(i['parameter_value'] for i in
+                                                             db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                                                 "LoadShedders", load_shedder) if
+                                                             i['parameter_name'] == parameter)
+
+    for load_shedder in load_shedders_no_hydrogen:
+        load_shedder_map = next(i['parameter_value'] for i in
+                                db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                    "LoadShedders", load_shedder) if
+                                i['parameter_name'] == "percentage_load")
+        array = load_shedder_map.to_dict()
+        values = [float(i[1]) for i in array["data"]]
+        index = [int(i[0]) for i in array["data"]]
+        pd_series = pd.Series(values, index=index)
+        load_shedders.at[load_shedder, "percentage_load"] = pd_series
 def prepare_AMIRIS_data_for_one_year():
     print("preparing data when there are no more years data available")
     load_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
@@ -311,6 +342,7 @@ try:
                                    db_emlab.query_object_parameter_values_by_object_class_and_object_name(
                                        class_name, object_name) \
                                    if i['parameter_name'] == 'Representative year')
+
         if representative_year != "NOTSET":
             global representative_year_investment
             representative_year_investment = int(representative_year)
@@ -324,27 +356,7 @@ try:
         global input_weather_years_excel
         input_weather_years_excel = os.path.join(grandparentpath, 'data', input_weather_years_excel_name)
 
-        global load_shedders
-        load_shedders_parameters = ["TimeSeriesFile", "percentage_load", "TimeSeriesFileFuture", "ShedderCapacityMW"]
-        load_shedders = pd.DataFrame(columns=load_shedders_parameters)
-        load_shedders_names = []
 
-        test = db_emlab.query_object_name_by_class_name_and_alternative("LoadShedders", "0")
-        for i in test:
-            if i["object_name"] in load_shedders_names:
-                pass
-            else:
-                load_shedders_names.append(i["object_name"])
-        global load_shedders_no_hydrogen
-        load_shedders_no_hydrogen = load_shedders_names.copy()
-        load_shedders_no_hydrogen.remove("hydrogen")
-        for load_shedder in load_shedders_names:
-            for parameter in load_shedders_parameters:
-
-                load_shedders.at[load_shedder, parameter] = next(i['parameter_value'] for i in
-                                                                 db_emlab.query_object_parameter_values_by_object_class_and_object_name(
-                                                                     "LoadShedders", load_shedder) if
-                                                                 i['parameter_name'] == parameter)
 
         fix_demand_to_representative_year = False
         fix_demand_to_representative_year = next(i['parameter_value'] for i in
@@ -395,7 +407,7 @@ try:
             db_emlab.import_alternatives([str(0)])
             db_emlab.import_object_parameter_values([(class_name, object_name, object_parameter_value_name, 0, '0')])
             db_emlab.import_object_parameter_values([(class_name, object_name, "CurrentYear", StartYear, '0')])
-
+            read_load_shedders(StartYear)
             update_years_file(StartYear, StartYear, final_year, lookAhead)
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
@@ -428,8 +440,9 @@ try:
                                 db_emlab.query_object_parameter_values_by_object_class_and_object_name(class_name,
                                                                                                        object_name) \
                                 if i['parameter_name'] == 'CurrentYear')
-            updated_year = step + Current_year
 
+            updated_year = step + Current_year
+            read_load_shedders(updated_year)
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
                 start_plot = True

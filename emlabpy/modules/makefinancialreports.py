@@ -244,7 +244,7 @@ class CreatingFinancialReports(DefaultModule):
             """
             start = self.reps.current_tick -4
             ticks_to_generate = list(range(start, self.reps.current_tick ))
-
+            change_from_last_group = 0
             sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_byCONE()
             for  load_shedder in sorted_load_shedders_byCONE_no_hydrogen:
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
@@ -252,13 +252,16 @@ class CreatingFinancialReports(DefaultModule):
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    increaseVOLL = (averageLOLE - reliability_standard)/reliability_standard   # Eur/Mwh     0 - 4    --- > -120
-                    new_value = load_shedder.VOLL + increaseVOLL
+                    changeVOLL = round((averageLOLE - reliability_standard)/reliability_standard)/100  # Eur/Mwh     0 - 4    --- > -120
+                    new_value = load_shedder.percentageLoad - changeVOLL + change_from_last_group
+                    change_from_last_group = changeVOLL
                     if new_value < 0:
                         pass
+                    if changeVOLL <= 0:   # if there are more shortages than expected then do nothing
+                        pass
                     else:
-                        print("increase VOLL of " + load_shedder.name + " by " + str(increaseVOLL))
-                        load_shedder.VOLL = int(new_value)
+                        print("increase % load to next group" + load_shedder.name + " by " + str(changeVOLL))
+                        load_shedder.percentageLoad = new_value
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 
             """

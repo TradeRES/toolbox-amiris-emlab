@@ -756,7 +756,7 @@ class SpineDBReaderWriter:
             else:
                 self.stage_object(self.load_shedders_classname, ls_name)
                 self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-                                                   [("VOLL", Map([str(tick)], [ls.VOLL]))], "0")
+                                                   [("percentageLoad", Map([str(tick)], [ls.VOLL]))], "0")
 
 
 

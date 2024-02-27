@@ -825,7 +825,7 @@ class Repository:
     def get_sorted_load_shedders_byCONE(self) -> \
             List[LoadShedder]:
         return sorted([i for i in self.loadShedders.values() if
-                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=True)
+                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=False)
 
 
     def get_strategic_reserve_operator(self, zone) -> Optional[StrategicReserveOperator]:
