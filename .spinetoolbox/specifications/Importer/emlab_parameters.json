@@ -648,58 +648,6 @@
                     }
                 }
             ],
-            "YearlyTargets": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Targets"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": "hidden",
-                                "value": "yearlyIncrease"
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueType",
-                                "position": "hidden",
-                                "value": "map"
-                            },
-                            {
-                                "map_type": "IndexName",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ParameterValueIndex",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ExpandedValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "CO2DE": [
                 {
                     "Mapping 1": {
@@ -732,58 +680,6 @@
                             },
                             {
                                 "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "yearlyCO2": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "node"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "hidden",
-                                "value": "CO2"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueType",
-                                "position": "hidden",
-                                "value": "map"
-                            },
-                            {
-                                "map_type": "IndexName",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ParameterValueIndex",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ExpandedValue",
                                 "position": "hidden"
                             }
                         ]
@@ -830,44 +726,6 @@
                     }
                 }
             ],
-            "technologyPotentials": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Technologies",
-                                "read_start_row": 1
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 2
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": 3
-                            }
-                        ]
-                    }
-                }
-            ],
             "yearlytechnologyPotentials2": [
                 {
                     "Mapping 1": {
@@ -882,58 +740,6 @@
                             },
                             {
                                 "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
-            "weatherYears": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "table_name",
-                                "value": "weatherYears"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": "table_name",
-                                "value": "weatherYears"
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": "table_name",
-                                "value": "weatherYears"
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueType",
-                                "position": "hidden",
-                                "value": "array"
-                            },
-                            {
-                                "map_type": "IndexName",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ParameterValueIndex",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ExpandedValue",
                                 "position": "hidden"
                             }
                         ]
@@ -1253,59 +1059,6 @@
                     }
                 }
             ],
-            "VOLL": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "LoadShedders"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": "hidden",
-                                "value": "percentage_load"
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValueType",
-                                "position": "hidden",
-                                "value": "map",
-                                "compress": true
-                            },
-                            {
-                                "map_type": "IndexName",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ParameterValueIndex",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ExpandedValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "CapacitySubscriptionOperators": [
                 {
                     "Mapping 1": {
@@ -1362,6 +1115,58 @@
                         ]
                     }
                 }
+            ],
+            "LSyearly": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "LoadShedders"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "percentage_load"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1377,18 +1182,14 @@
             "CandidatePowerPlants",
             "StrategicReserveOperator",
             "Dismantled",
-            "YearlyTargets",
-            "yearlyCO2",
-            "technologyPotentials",
             "weatherYears40",
             "TechnologyTargets",
             "TechnologyTrends",
             "LoadShedders",
             "LoadShifterCap",
-            "weatherYearsOLD",
             "peakLoad",
-            "VOLL",
-            "CapacitySubscriptionOperators"
+            "CapacitySubscriptionOperators",
+            "LSyearly"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1443,28 +1244,13 @@
                 "read_until_col": true
             },
             "backup": {},
-            "YearlyTargets": {
-                "read_until_col": true
-            },
             "CO2DE": {
                 "read_until_row": true,
                 "read_until_col": true
             },
-            "yearlyCO2": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
             "sources": {},
             "graphs": {},
-            "technologyPotentials": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
             "yearlytechnologyPotentials2": {},
-            "weatherYears": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
             "weatherYears40": {
                 "read_until_col": true,
                 "read_until_row": true
@@ -1494,12 +1280,12 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "VOLL": {
+            "CapacitySubscriptionOperators": {},
+            "LoadShedders_copy": {},
+            "LSyearly": {
                 "read_until_col": true,
                 "read_until_row": true
-            },
-            "CapacitySubscriptionOperators": {},
-            "LoadShedders_copy": {}
+            }
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1640,20 +1426,9 @@
                 "13": "string",
                 "14": "string"
             },
-            "YearlyTargets": {
-                "0": "float",
-                "1": "float",
-                "2": "float",
-                "3": "float"
-            },
             "CO2DE": {
                 "0": "string",
                 "1": "string"
-            },
-            "yearlyCO2": {
-                "0": "string",
-                "1": "float",
-                "2": "float"
             },
             "sources": {
                 "0": "string",
@@ -1676,45 +1451,6 @@
                 "1": "string",
                 "2": "string",
                 "3": "string"
-            },
-            "technologyPotentials": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "float"
-            },
-            "weatherYears": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float",
-                "8": "float",
-                "9": "float",
-                "10": "float",
-                "11": "float",
-                "12": "float",
-                "13": "float",
-                "14": "float",
-                "15": "float",
-                "16": "float",
-                "17": "float",
-                "18": "float",
-                "19": "float",
-                "20": "float",
-                "21": "float",
-                "22": "float",
-                "23": "float",
-                "24": "float",
-                "25": "float",
-                "26": "float",
-                "27": "float",
-                "28": "float",
-                "29": "float",
-                "30": "float"
             },
             "weatherYears40": {
                 "0": "string",
@@ -1792,8 +1528,7 @@
                 "2": "string",
                 "3": "string",
                 "4": "float",
-                "5": "float",
-                "6": "float"
+                "5": "float"
             },
             "LoadShifterCap": {
                 "0": "string",
@@ -1854,18 +1589,19 @@
                 "4": "float",
                 "5": "float"
             },
-            "VOLL": {
+            "CapacitySubscriptionOperators": {
+                "0": "string",
+                "1": "float",
+                "2": "float"
+            },
+            "LSyearly": {
                 "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "float"
-            },
-            "CapacitySubscriptionOperators": {
-                "0": "string",
-                "1": "float",
-                "2": "float"
+                "5": "float",
+                "6": "float"
             }
         },
         "table_default_column_type": {},
@@ -1881,6 +1617,9 @@
                 "0": "string"
             },
             "LoadShedders2": {
+                "0": "string"
+            },
+            "LSyearly": {
                 "0": "string"
             }
         },
