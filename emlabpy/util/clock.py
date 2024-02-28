@@ -413,7 +413,6 @@ try:
             print('Done initializing clock (tick 0)')
 
             if available_years_data == True:
-                pass
                 prepare_AMIRIS_data(StartYear, 0, fix_demand_to_representative_year,
                                     fix_profiles_to_representative_year,
                                     "initialize")
