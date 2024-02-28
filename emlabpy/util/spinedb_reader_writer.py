@@ -754,9 +754,10 @@ class SpineDBReaderWriter:
             if ls_name == "hydrogen":
                 pass
             else:
+
                 self.stage_object(self.load_shedders_classname, ls_name)
                 self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-                                                   [("percentageLoad", Map([str(tick)], [ls.VOLL]))], "0")
+                                                   [("percentage_load", Map([str(tick)], [ls.percentageLoad]))], "0")
 
 
 

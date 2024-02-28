@@ -291,7 +291,7 @@ def read_load_shedders(updated_year):
         values = [float(i[1]) for i in array["data"]]
         index = [int(i[0]) for i in array["data"]]
         pd_series = pd.Series(values, index=index)
-        load_shedders.at[load_shedder, "percentage_load"] = pd_series
+        load_shedders.at[load_shedder, "percentage_load"] = pd_series[updated_year]
 def prepare_AMIRIS_data_for_one_year():
     print("preparing data when there are no more years data available")
     load_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
@@ -482,14 +482,14 @@ if start_plot == True:
     existing_scenario = False
     from_workflow = True
     os.chdir('../..')
-    os.chdir('emlabpy')
-    destination_subfolder = socket.gethostname()
-    destination_folder = ('H:\\' + destination_subfolder)
+    os.getcwd()
+    destination_folder = (os.getcwd() + "temporal_results")
     for f in destination_folder:
         os.remove(f)
     copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\amiris_db'), destination_folder)
     copy_files(os.path.join(os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\output')), destination_folder)
     copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\emlabdb'), destination_folder)
+    os.chdir('emlabpy')
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[3], existing_scenario)
 
 if sys.argv[2] == 'increment_clock':

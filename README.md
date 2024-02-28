@@ -75,6 +75,8 @@ With the project open in spinetoolbox simply execute the project clicking the pl
 If there have been any modifications to EMLabpy code, the emlabpy module has to be repacked and the databases have to be cleaned. 
 To do so, double-click on the file
 ______update_emlabpy_SPINETOOLBOX.bat
+#### Deleting logs
+______delete_log_files.bat deletes the log files of the spinetoolbox
 
 ### Data
 The input data is stored in the data folder in following files:
@@ -84,7 +86,8 @@ The specifications for the EMLabpy modules (investment, capacity mechanism and C
 
 The power plants per country as saved in : Power_plants.xlsx
 
-The technology and fuel costs are saved in: exported_traderes.xlsx
+The technology and fuel costs are saved in: Traderes_Data.xlsx
+
 
 ## Folder structure
 
