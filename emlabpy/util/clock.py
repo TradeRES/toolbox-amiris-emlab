@@ -312,7 +312,6 @@ try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
     object_parameter_value_name = 'SimulationTick'
-
     peak_load = 0
     # print(os.getcwd())
     if len(sys.argv) >= 3:
@@ -480,14 +479,17 @@ if start_plot == True:
     SCENARIOS = ["NL-testclock"]
     existing_scenario = False
     from_workflow = True
-    os.chdir('../..')
-    os.getcwd()
-    destination_folder = (os.getcwd() + "temporal_results")
-    for f in destination_folder:
-        os.remove(f)
+
+    destination_folder = os.path.join(grandparentpath, 'temporal_results')
+    for file_name in os.listdir(destination_folder):
+        file_path = os.path.join(destination_folder, file_name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
     copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\amiris_db'), destination_folder)
     copy_files(os.path.join(os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\output')), destination_folder)
     copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\emlabdb'), destination_folder)
+    os.chdir('../..')
     os.chdir('emlabpy')
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[3], existing_scenario)
 
