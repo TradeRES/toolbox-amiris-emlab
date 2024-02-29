@@ -1942,7 +1942,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 id_shedder = int(name) * 100000
                 if id_shedder in selected_df.columns:
                     total_load_shedded[name] = selected_df[(id_shedder)]
-                    VOLL_per_year.at[name, year] = values.VOLL[year]
+                    VOLL_per_year.at[name, year] = values.percentageLoad[year]
                 else:
                     print("---------" + str(year) )
                     print(id_shedder)
@@ -2074,7 +2074,7 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     for year in years_to_generate:
         for lshedder in reps.loadShedders.values():
             if lshedder.name != "hydrogen":
-                sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad
+                sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[year]
                 load_shedded = load_shedded_per_group_MWh.loc[year, lshedder.name]
                 percentage_load_shedded.at[year, lshedder.name] = load_shedded / sheddable_load
 
@@ -2843,7 +2843,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-CSWip"]
+    SCENARIOS = ["NL208944capacity_marketNL-temporal"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
     existing_scenario = False
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)

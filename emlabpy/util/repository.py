@@ -345,12 +345,6 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_electricity_voll(self) -> Optional[ElectricitySpotMarket]:
-        try:
-            return next(i.valueOfLostLoad for i in self.electricity_spot_markets.values() if
-                        i.country == self.country)
-        except StopIteration:
-            return None
 
     # ----------------------------------------------------------------------------section technologies
     # PowerGeneratingTechnologies

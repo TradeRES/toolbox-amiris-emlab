@@ -73,12 +73,14 @@ With the project open in spinetoolbox simply execute the project clicking the pl
 
 ### Rerun
 If there have been any modifications to EMLabpy code, the emlabpy module has to be repacked and the databases have to be cleaned. 
-To do so, double-click on the file
+To quickly run the workflow, double-click on the file
 ______update_emlabpy_SPINETOOLBOX.bat
-#### Deleting logs
-______delete_log_files.bat deletes the log files of the spinetoolbox
 
-### Data
+#### Deleting logs
+Once in a while it is recommened to delete the logs of the spinetoolbox. To do so, double-click on the file
+______delete_log_files.bat 
+
+### Input Data
 The input data is stored in the data folder in following files:
 The simulation configuration can be specified in the excel: Coupling Config.xlsx
 
@@ -88,6 +90,12 @@ The power plants per country as saved in : Power_plants.xlsx
 
 The technology and fuel costs are saved in: Traderes_Data.xlsx
 
+Also see the summary of the data in the excel file AMIRIS-EMLABpy Data inventoryREADME.xlsx
+
+### Output Data
+
+Once the workflow is executed, the results are stored in the toolbox-amiris-emlab\temporal_results folder. 
+The graphs are stored in the toolbox-amiris-emlab\emlabpy\plots\Scenarios\...-temporal folder.
 
 ## Folder structure
 

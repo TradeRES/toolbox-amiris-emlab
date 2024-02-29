@@ -252,16 +252,19 @@ class CreatingFinancialReports(DefaultModule):
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    changeVOLL = round((averageLOLE - reliability_standard)/reliability_standard)/100  # Eur/Mwh     0 - 4    --- > -120
+                    changeVOLL = round((averageLOLE - reliability_standard)/reliability_standard)/10  # Eur/Mwh
+                    if changeVOLL <= 0:   # if there are more shortages than expected then do nothing
+                        changeVOLL = 0
+
                     new_value = load_shedder.percentageLoad - changeVOLL + change_from_last_group
-                    change_from_last_group = changeVOLL
                     if new_value < 0:
                         pass
-                    if changeVOLL <= 0:   # if there are more shortages than expected then do nothing
-                        pass
                     else:
+                        change_from_last_group = changeVOLL
                         print("increase % load to next group" + load_shedder.name + " by " + str(changeVOLL))
                         load_shedder.percentageLoad = new_value
+                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
+
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 
             """

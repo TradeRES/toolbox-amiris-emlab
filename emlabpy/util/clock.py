@@ -476,7 +476,7 @@ finally:
 
 if start_plot == True:
     results_excel = "test.xlsx"
-    SCENARIOS = ["NL-testclock"]
+    SCENARIOS = ["NL-temporal"]
     existing_scenario = False
     from_workflow = True
 
@@ -486,9 +486,9 @@ if start_plot == True:
         if os.path.isfile(file_path):
             os.remove(file_path)
 
-    copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\amiris_db'), destination_folder)
-    copy_files(os.path.join(os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\output')), destination_folder)
-    copy_files(os.path.join(os.path.dirname(os.getcwd()), '.spinetoolbox\\items\\emlabdb'), destination_folder)
+    copy_files(os.path.join(grandparentpath, '.spinetoolbox\\items\\amiris_db'), destination_folder)
+    copy_files(os.path.join(grandparentpath, 'amiris_workflow\\output'), destination_folder)
+    copy_files(os.path.join(grandparentpath, '.spinetoolbox\\items\\emlabdb'), destination_folder)
     os.chdir('../..')
     os.chdir('emlabpy')
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[3], existing_scenario)

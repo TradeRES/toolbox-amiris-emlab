@@ -22,7 +22,6 @@ class Market(EMLabAgent):
 class ElectricitySpotMarket(Market):
     def __init__(self, name):
         super().__init__(name)
-        self.valueOfLostLoad = 0
         self.realized_demand_peak = None
         self.future_demand_peak = None
         self.peak_load_fixed = None  # fixed from input
@@ -31,9 +30,7 @@ class ElectricitySpotMarket(Market):
         self.future_hourly_demand = None
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
-        if parameter_name == 'valueOfLostLoad':
-            self.valueOfLostLoad = int(parameter_value)
-        elif parameter_name == 'country':
+        if parameter_name == 'country':
             self.country = str(parameter_value)
         elif parameter_name == 'futuredemand_peak':
             array = parameter_value.to_dict()

@@ -23,7 +23,7 @@ dist
 logs/
 
 
-
+temporal_results/
 data/powerplantsGermany/
 data/competesdata/
 emlabpy/Yearly_results.xlsx
