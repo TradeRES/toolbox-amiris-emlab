@@ -544,6 +544,9 @@ class Investmentdecision(DefaultModule):
             during initialization price cap would be too low, so take a 
             """
             calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
+        else:
+
+            print("price cap is not calculated" + str(capacity_market.PriceCap) )
 
         for powerplant in self.reps.power_plants.values():
             if powerplant.id in self.future_installed_plants_ids:
