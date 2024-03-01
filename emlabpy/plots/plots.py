@@ -307,7 +307,8 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     fig26.savefig(path_to_plots + '/' + 'Capacity Mechanisms awarded plants.png', bbox_inches='tight', dpi=300)
 
     # the CM revenues per technology are retrieved from the financial results
-    axs15 = CM_revenues_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
+    CM_revenues_per_technology.dropna(how='all', axis=1, inplace=True)
+    axs15 = CM_revenues_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs, legend=None)
     axs15.set_axisbelow(True)
     plt.xlabel('tick', fontsize='medium')
     plt.ylabel('Revenues CM [€]', fontsize='medium')
@@ -1084,7 +1085,7 @@ def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_pe
     VOLL_per_year.T.plot(ax=axs39[0], legend=False)
     LOLE_per_group.T.plot(ax=axs39[1], legend=False)
     max_ENS_in_a_row.T.plot(ax=axs39[2], legend=False)
-    axs39[0].set_ylabel('VOLL', fontsize='medium')
+    axs39[0].set_ylabel('Load percentage', fontsize='medium')
     axs39[1].set_ylabel('hours', fontsize='medium')
     axs39[2].set_ylabel('Max continous \n hours in a row', fontsize='medium')
     axs39[2].set_xlabel('year', fontsize='medium')
@@ -1646,7 +1647,7 @@ def prepare_screening_curves_candidates(reps, year):
 
 
 def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
-    CM_costs_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
+    CM_costs_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies)
     number_accepted_pp_per_technology = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies).fillna(0)
     capacity_mechanisms_volume_per_tech = pd.DataFrame(index=ticks_to_generate, columns=unique_technologies)
     CM_clearing_price = pd.DataFrame(index=ticks_to_generate).fillna(0)
@@ -2843,9 +2844,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL208944capacity_marketNL-temporal"]
+    SCENARIOS = ["NL-CS_changepercentageload"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
     print('===== End Generating Plots =====')
 

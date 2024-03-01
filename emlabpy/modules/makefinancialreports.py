@@ -256,14 +256,14 @@ class CreatingFinancialReports(DefaultModule):
                     changeVOLL = round((averageLOLE - reliability_standard)/reliability_standard)/10  # Eur/Mwh
                     if changeVOLL <= 0:   # if there are more shortages than expected then do nothing
                         changeVOLL = 0
-
                     new_value = load_shedder.percentageLoad - changeVOLL + change_from_last_group
                     if new_value < 0:
-                        pass
-                    else:
-                        change_from_last_group = changeVOLL
-                        print("increase % load to next group" + load_shedder.name + " by " + str(changeVOLL))
-                        load_shedder.percentageLoad = new_value
+                        print("would be negative, so set to 0")
+                        changeVOLL = 0
+                    new_value = load_shedder.percentageLoad - changeVOLL + change_from_last_group
+                    change_from_last_group = changeVOLL
+                    print(load_shedder.name  +"increase % load to next group" + " by " + str(changeVOLL))
+                    load_shedder.percentageLoad = new_value
                 print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
 
             """

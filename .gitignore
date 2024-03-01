@@ -24,9 +24,10 @@ logs/
 
 
 temporal_results/*
-!temporal_results/.gitkeep
+!temporal_results/.gitkeep.txt
 data/powerplantsGermany/
 data/competesdata/
+data/traderes/
 emlabpy/Yearly_results.xlsx
 emlabpy/plots/Scenarios/
 emlabpy/util/plots/
