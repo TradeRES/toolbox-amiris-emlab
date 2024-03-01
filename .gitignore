@@ -23,7 +23,8 @@ dist
 logs/
 
 
-temporal_results/
+temporal_results/*
+!temporal_results/.gitkeep
 data/powerplantsGermany/
 data/competesdata/
 emlabpy/Yearly_results.xlsx

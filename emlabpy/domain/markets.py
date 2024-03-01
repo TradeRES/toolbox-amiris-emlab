@@ -115,7 +115,7 @@ class LoadShedder(ImportObject):
                 elif reps.capacity_remuneration_mechanism == "capacity_subscription":
                     self.percentageLoad = pd_series[reps.current_year]
                 else:
-                    self.percentageLoad = pd_series[reps.start_year]
+                    self.percentageLoad = pd_series[reps.start_simulation_year]
         elif parameter_name == 'reliability_standard':
             self.reliability_standard = parameter_value
         elif parameter_name == 'realized_rs':
