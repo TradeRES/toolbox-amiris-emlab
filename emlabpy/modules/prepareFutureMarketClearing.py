@@ -40,9 +40,13 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
         elif reps.round_for_capacity_market ==True:
             print("CAPACITY MARKET")
-            reps.dbrw.stage_calculate_future_capacity_market(False)
-            market = self.reps.get_capacity_market_in_country(reps.country)
-            self.look_ahead_years = market.forward_years_CM
+            if self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription"]:
+                market = reps.get_capacity_market_in_country(reps.country)
+                self.look_ahead_years = market.forward_years_CM
+            elif self.reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
+                SR_operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+                self.look_ahead_years = SR_operator.forward_years_SR
+            self.setTimeHorizon()
             self.power_plants_list = []
         else:
             if reps.targetinvestment_per_year == True and reps.target_investments_done == False:

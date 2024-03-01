@@ -311,7 +311,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     axs15.set_axisbelow(True)
     plt.xlabel('tick', fontsize='medium')
     plt.ylabel('Revenues CM [€]', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+    #plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
     axs15.set_title('Capacity Mechanisms \n costs per technology')
     fig15 = axs15.get_figure()

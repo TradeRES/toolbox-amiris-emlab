@@ -52,9 +52,14 @@ class Investmentdecision(DefaultModule):
                 self.setTimeHorizon(reps.investment_initialization_years)
                 self.look_ahead_years = reps.investment_initialization_years
         elif self.reps.round_for_capacity_market == True:
-            market = reps.get_capacity_market_in_country(reps.country)
-            self.setTimeHorizon(market.forward_years_CM)
-            self.look_ahead_years = market.forward_years_CM
+            if self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription"]:
+                market = reps.get_capacity_market_in_country(reps.country)
+                self.setTimeHorizon(market.forward_years_CM)
+                self.look_ahead_years = market.forward_years_CM
+            elif self.reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
+                SR_operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+                self.setTimeHorizon(SR_operator.forward_years_SR)
+                self.look_ahead_years = SR_operator.forward_years_SR
         else:
             self.setTimeHorizon(reps.lookAhead)
             self.look_ahead_years = reps.lookAhead
@@ -239,8 +244,9 @@ class Investmentdecision(DefaultModule):
                         if ((self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription",
                                                                            "strategic_reserve_ger"])
                                 and self.reps.initialization_investment == False
-                                and self.reps.capacity_market_cleared_in_investment == True):
-                            print("************************************* calculate market for next CM next year")
+                                and self.reps.capacity_market_cleared_in_investment == True) \
+                                or (self.reps.capacity_remuneration_mechanism == "strategic_reserve_ger" and self.reps.initialization_investment == False) :
+                            print("************************************* calculate market for next CM  year")
                             self.reset_status_candidates_to_investable()
                             self.reps.dbrw.stage_calculate_future_capacity_market(False)
                             self.reps.dbrw.stage_iteration_for_CM(True)

@@ -355,8 +355,6 @@ try:
         global input_weather_years_excel
         input_weather_years_excel = os.path.join(grandparentpath, 'data', input_weather_years_excel_name)
 
-
-
         fix_demand_to_representative_year = False
         fix_demand_to_representative_year = next(i['parameter_value'] for i in
                                                  db_emlab.query_object_parameter_values_by_object_class_and_object_name(
@@ -372,6 +370,12 @@ try:
                                     db_emlab.query_object_parameter_values_by_object_class_and_object_name(
                                         class_name, object_name) \
                                     if i['parameter_name'] == 'available_years_data')
+
+        capacity_remuneration_mechanism = next(i['parameter_value'] for i in
+                                                 db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                                     class_name, object_name) \
+                                                 if i['parameter_name'] == 'capacity_remuneration_mechanism')
+
         reset_candidate_investable_status()
         print("reset power plants status ")
 
@@ -440,7 +444,13 @@ try:
                                 if i['parameter_name'] == 'CurrentYear')
 
             updated_year = step + Current_year
-            read_load_shedders(updated_year)
+
+            if capacity_remuneration_mechanism =="capacity_subcription":
+                year_load_shedder = updated_year
+            else:
+                year_load_shedder = StartYear
+            read_load_shedders(year_load_shedder)
+
             if updated_year >= final_year:
                 print("final year achieved " + str(final_year))
                 start_plot = True
