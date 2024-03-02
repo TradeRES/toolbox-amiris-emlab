@@ -228,36 +228,42 @@ class PrepareMarket(DefaultModule):
         TimeSeries = []
         Type_ls = []
         Identifiers = []
-
+        increase_by_one = 0
+        sorted_load_shedders_byCONE = self.reps.get_sorted_load_shedders_by_increasingCONE()
         if self.reps.runningModule == "run_prepare_next_year_market_clearing":
-            for name, loadshedder in self.reps.loadShedders.items():
+            for  loadshedder in sorted_load_shedders_byCONE:
                 Type_ls.append("SHEDDING")
-                if name == "hydrogen":
-                    VOLL = self.reps.substances[name].simulatedPrice_inYear \
+                if loadshedder.name == "hydrogen":
+                    VOLL = self.reps.substances[loadshedder.name].simulatedPrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
                     if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
                         VOLL =  self.reps.get_capacity_subscription_operator(self.reps.country).VOLL_CS
+                        VOLL = VOLL + increase_by_one
+                        increase_by_one += 1
                     else:
                         VOLL = loadshedder.VOLL
-                    Identifiers.append(int(name) *100000)
+                    Identifiers.append(int(loadshedder.name) *100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFile)
 
         elif self.reps.runningModule == "run_future_market":
-            for name, loadshedder in self.reps.loadShedders.items():
+            for  loadshedder in sorted_load_shedders_byCONE:
+                print(loadshedder.name)
                 Type_ls.append("SHEDDING")
-                if name == "hydrogen":
-                    VOLL = self.reps.substances[name].futurePrice_inYear \
+                if loadshedder.name == "hydrogen":
+                    VOLL = self.reps.substances[loadshedder.name].futurePrice_inYear \
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
                     if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
                         VOLL =  self.reps.get_capacity_subscription_operator(self.reps.country).VOLL_CS
+                        VOLL = VOLL + increase_by_one
+                        increase_by_one += 1
                     else:
                         VOLL = loadshedder.VOLL
-                    Identifiers.append(int(name)* 100000)
+                    Identifiers.append(int(loadshedder.name)* 100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
 

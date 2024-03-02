@@ -493,7 +493,7 @@ if start_plot == True:
     destination_folder = os.path.join(grandparentpath, 'temporal_results')
     for file_name in os.listdir(destination_folder):
         file_path = os.path.join(destination_folder, file_name)
-        if os.path.isfile(file_path):
+        if os.path.isfile(file_path) and not file_name.endswith('.txt'):
             os.remove(file_path)
 
     copy_files(os.path.join(grandparentpath, '.spinetoolbox\\items\\amiris_db'), destination_folder)

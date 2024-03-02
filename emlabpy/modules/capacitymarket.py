@@ -181,7 +181,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     cones = {}
     netcones = {}
     for candidatepowerplant in candidatepowerplants:
-        if candidatepowerplant.technology.name not in ["hydrogen turbine", "Nuclear", "Lithium ion battery"] :
+        if candidatepowerplant.technology.name not in ["hydrogen turbine"] :
             continue
         technology = candidatepowerplant.technology
         totalInvestment = technology.get_investment_costs_perMW_by_year(

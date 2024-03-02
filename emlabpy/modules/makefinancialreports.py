@@ -116,7 +116,7 @@ class CreatingFinancialReports(DefaultModule):
             self.modifyIRR()
             # modifying the IRR by technology
         if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-            self.modifyVOLL()
+            self.modify_CS_parameter()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -236,7 +236,7 @@ class CreatingFinancialReports(DefaultModule):
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
 
 
-    def modifyVOLL(self):
+    def modify_CS_parameter(self):
         if  self.reps.current_tick < 5 or self.reps.capacity_remuneration_mechanism != "capacity_subscription":
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
@@ -246,23 +246,26 @@ class CreatingFinancialReports(DefaultModule):
             start = self.reps.current_tick -4
             ticks_to_generate = list(range(start, self.reps.current_tick ))
             change_from_last_group = 0
-            sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_byCONE()
-            for  load_shedder in sorted_load_shedders_byCONE_no_hydrogen:
+            sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE()
+            last = len(sorted_load_shedders_byCONE_no_hydrogen) - 1
+            for count, load_shedder in enumerate(sorted_load_shedders_byCONE_no_hydrogen):
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
                 reliability_standard =  load_shedder.reliability_standard
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    changeVOLL = round((averageLOLE - reliability_standard)/reliability_standard)/10  # Eur/Mwh
-                    if changeVOLL <= 0:   # if there are more shortages than expected then do nothing
-                        changeVOLL = 0
-                    new_value = load_shedder.percentageLoad - changeVOLL + change_from_last_group
+                    changeVOLLnextgroup = round((averageLOLE - reliability_standard)/reliability_standard)/10  # Eur/Mwh
+                    if changeVOLLnextgroup <= 0 or count == last:   # if there are more shortages than expected then do nothing
+                        changeVOLLnextgroup = 0
+
+                    new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
                     if new_value < 0:
                         print("would be negative, so set to 0")
-                        changeVOLL = 0
-                    new_value = load_shedder.percentageLoad - changeVOLL + change_from_last_group
-                    change_from_last_group = changeVOLL
-                    print(load_shedder.name  +"increase % load to next group" + " by " + str(changeVOLL))
+                        changeVOLLnextgroup = 0
+
+                    new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
+                    change_from_last_group = changeVOLLnextgroup
+                    print(load_shedder.name  +"increase % load to next group" + " by " + str(changeVOLLnextgroup))
                     load_shedder.percentageLoad = new_value
                 print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
 
