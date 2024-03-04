@@ -816,11 +816,18 @@ class Repository:
 
         # ----------------------------------------------------------------------------section Capacity Mechanisms
 
-    def get_sorted_load_shedders_by_increasingCONE(self) -> \
+    def get_sorted_load_shedders_by_increasingCONE_no_hydrogen(self) -> \
             List[LoadShedder]:
         return sorted([i for i in self.loadShedders.values() if
                        i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=False)
 
+
+    def get_sorted_load_shedders_by_increasingCONE(self) -> \
+            List[LoadShedder]:
+        sorted_load_shedders = sorted([i for i in self.loadShedders.values() if
+                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=False)
+        sorted_load_shedders.append(self.loadShedders["hydrogen"])
+        return sorted_load_shedders
 
     def get_strategic_reserve_operator(self, zone) -> Optional[StrategicReserveOperator]:
         try:

@@ -201,7 +201,7 @@ class CreatingFinancialReports(DefaultModule):
 
     def prepare_percentage_load_shedded(self):
         """
-        prepare the percentage of load shedded for each load shedder
+        prepare the percentage of load shedded for each load shedder. reading results for current year.
         :return:
         """
         df =  pd.read_csv(globalNames.hourly_generation_per_group_path)
@@ -246,7 +246,7 @@ class CreatingFinancialReports(DefaultModule):
             start = self.reps.current_tick -4
             ticks_to_generate = list(range(start, self.reps.current_tick ))
             change_from_last_group = 0
-            sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE()
+            sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE_no_hydrogen()
             last = len(sorted_load_shedders_byCONE_no_hydrogen) - 1
             for count, load_shedder in enumerate(sorted_load_shedders_byCONE_no_hydrogen):
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
