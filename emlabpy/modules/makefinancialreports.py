@@ -248,13 +248,14 @@ class CreatingFinancialReports(DefaultModule):
             change_from_last_group = 0
             sorted_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE_no_hydrogen()
             last = len(sorted_load_shedders_byCONE_no_hydrogen) - 1
+
             for count, load_shedder in enumerate(sorted_load_shedders_byCONE_no_hydrogen):
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
                 reliability_standard =  load_shedder.reliability_standard
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    changeVOLLnextgroup = round((averageLOLE - reliability_standard)/reliability_standard)/10  # Eur/Mwh
+                    changeVOLLnextgroup = (averageLOLE - reliability_standard)/reliability_standard/10  # Eur/Mwh
                     if changeVOLLnextgroup <= 0 or count == last:   # if there are more shortages than expected then do nothing
                         changeVOLLnextgroup = 0
 

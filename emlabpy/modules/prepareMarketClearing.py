@@ -250,7 +250,6 @@ class PrepareMarket(DefaultModule):
 
         elif self.reps.runningModule == "run_future_market":
             for  loadshedder in sorted_load_shedders_byCONE:
-                print(loadshedder.name)
                 Type_ls.append("SHEDDING")
                 if loadshedder.name == "hydrogen":
                     VOLL = self.reps.substances[loadshedder.name].futurePrice_inYear \
