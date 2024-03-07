@@ -22,7 +22,8 @@
                             },
                             {
                                 "map_type": "ParameterDefinition",
-                                "position": -1
+                                "position": "hidden",
+                                "value": "investment_costs"
                             },
                             {
                                 "map_type": "Alternative",
@@ -40,11 +41,11 @@
                             },
                             {
                                 "map_type": "IndexName",
-                                "position": 1
+                                "position": -1
                             },
                             {
                                 "map_type": "ParameterValueIndex",
-                                "position": 1
+                                "position": -1
                             },
                             {
                                 "map_type": "ExpandedValue",
@@ -149,7 +150,7 @@
                             },
                             {
                                 "map_type": "ParameterValueIndex",
-                                "position": 1
+                                "position": -1
                             },
                             {
                                 "map_type": "ExpandedValue",
@@ -249,44 +250,6 @@
                     }
                 }
             ],
-            "technologyPotentials": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "Technologies",
-                                "read_start_row": 1
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": 2
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": 1
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": 3
-                            }
-                        ]
-                    }
-                }
-            ],
             "YearlyTargets": [
                 {
                     "Mapping 1": {
@@ -338,6 +301,154 @@
                         ]
                     }
                 }
+            ],
+            "lifetime_technical": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Technologies"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "lifetime_technical"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "DE": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "totalPotential"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "table_name"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "NL": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Technologies",
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "totalPotential"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "table_name",
+                                "value": "NL"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": 1
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -346,8 +457,7 @@
             "fuelprices",
             "techspecs",
             "yearlyCO2",
-            "technologyPotentials",
-            "YearlyTargets"
+            "NL"
         ],
         "table_options": {
             "investmentCosts": {
@@ -370,11 +480,17 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "technologyPotentials": {
+            "YearlyTargets": {
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "YearlyTargets": {
+            "lifetime_technical": {
+                "read_until_row": true,
+                "read_until_col": true
+            },
+            "sources": {},
+            "DE": {},
+            "NL": {
                 "read_until_col": true,
                 "read_until_row": true
             }
@@ -382,17 +498,20 @@
         "table_types": {
             "investmentCosts": {
                 "0": "string",
-                "1": "string",
-                "2": "float"
+                "1": "float",
+                "2": "float",
+                "3": "float"
             },
             "fixedCosts": {
                 "0": "string",
-                "1": "float"
+                "1": "float",
+                "2": "float"
             },
             "fuelprices": {
                 "0": "string",
-                "1": "string",
-                "2": "float"
+                "1": "float",
+                "2": "float",
+                "3": "float"
             },
             "techspecs": {
                 "0": "string",
@@ -401,30 +520,58 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float"
+                "6": "float",
+                "7": "string"
             },
             "yearlyCO2": {
                 "0": "string",
-                "1": "string",
-                "2": "string"
-            },
-            "technologyPotentials": {
-                "0": "string",
-                "1": "string",
-                "2": "string",
-                "3": "float"
+                "1": "float",
+                "2": "float"
             },
             "YearlyTargets": {
                 "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float"
+            },
+            "lifetime_technical": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float"
+            },
+            "sources": {
+                "0": "string"
+            },
+            "DE": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string"
+            },
+            "NL": {
+                "0": "string",
+                "1": "float"
             }
         },
         "table_default_column_type": {},
         "table_row_types": {
             "fixedCosts": {
-                "0": "string"
+                "0": "float"
+            },
+            "investmentCosts": {
+                "0": "float"
+            },
+            "fuelprices": {
+                "0": "float"
+            },
+            "lifetime_technical": {
+                "0": "float"
             }
         },
         "source_type": "ExcelConnector"

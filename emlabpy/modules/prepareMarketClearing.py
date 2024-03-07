@@ -88,6 +88,7 @@ class PrepareMarket(DefaultModule):
     def write_scenario_data_emlab(self, calculatedprices):
         dict_fuels = {}
         for k, substance in self.reps.substances.items():
+
             if calculatedprices == "next_year_price":  # choose the prices depending if nexy year or future year is calculated
                 fuel_price = substance.simulatedPrice_inYear
             else:
@@ -172,8 +173,9 @@ class PrepareMarket(DefaultModule):
                     if self.reps.dictionaryFuelNames[k] in globalNames.fuels_in_AMIRIS:
                         dict_fuels[self.reps.dictionaryFuelNames[k]] = fuel_price
                     else:
+                        print("Fuel not considered in AMIRIS" + k)
                         pass
-                        # "Fuel not considered in AMIRIS"
+                        #
                 except KeyError:
                     print(k + "not amiris name")
 

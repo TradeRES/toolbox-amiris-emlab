@@ -17,23 +17,15 @@ class ShortInvestmentdecision(Investmentdecision):
         self.setTimeHorizon(1)
         self.look_ahead_years = self.reps.lookAhead # todo check this
         self.quickInvestabletechnologies = ["PV_utility_systems",
-                                            "Lithium_ion_battery"]  # later add  "PV_residential", "PV_commercial_systems",
+                                            "Lithium_ion_battery",
+                                            "hydrogen turbine"]  # later add  "PV_residential", "PV_commercial_systems",
         reps.dbrw.stage_init_power_plant_structure()
         reps.dbrw.stage_candidate_pp_investment_status_structure()
 
     def act(self):
-
-        #PrepareFutureMarketClearing.filter_power_plants_to_be_operational()
-        # for quick_technology in self.quickInvestabletechnologies:
-        #     self.calculateandCheckFutureCapacityExpectation(self.reps.power_generating_technologies[quick_technology])
-
-         # the list is updated in the step before!!!!!!!!!!!
-        if self.reps.limit_investments == True:
-            # todo check future capacity
-            pass
-        else:
-            pass
-
+        for investable_candidate_plant in self.quickInvestabletechnologies:
+            investable = self.calculateandCheckFutureCapacityExpectation(investable_candidate_plant
+                                                                         )
         technologies_highreturns =[]
         for quick_technology in self.quickInvestabletechnologies:
             operationalInvestablePlants = self.reps.get_operational_power_plants_by_owner_and_technologies(self.agent.name,

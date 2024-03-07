@@ -74,8 +74,7 @@ class PowerGeneratingTechnology(ImportObject):
         # From here are the inputs from emlab electricity = traderes
         elif parameter_name == 'lifetime_technical':
             self.expected_lifetime = int(parameter_value)
-        elif parameter_name == 'lifetime_economic':
-            self.depreciation_time = int(parameter_value) # depreciation time is used to calculate the loans
+            self.depreciation_time = int(parameter_value)
         elif parameter_name == 'interest_rate':
             self.interest_rate = float(parameter_value)
         elif parameter_name == 'fom_cost':
@@ -91,7 +90,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.variable_operating_cost_time_series = reps.trends[self.name + "VariableCostTimeSeries"] # geometric Trends
             self.variable_operating_cost_time_series.start = self.variable_operating_costs
 
-        elif parameter_name == 'investment_cost':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
+        elif parameter_name == 'investment_costs':  # these are already transmofred eur/kw Traderes *1000 -> eur /MW emlab
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
@@ -99,8 +98,6 @@ class PowerGeneratingTechnology(ImportObject):
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
             self.investment_cost_time_series = reps.trends[self.name + "InvestmentCostTimeSeries"] # geometric Trends
             self.investment_cost_time_series.start = self.investment_cost_eur_MW.iloc[0]
-        elif parameter_name == 'EnergyToPowerRatio':
-            self.energyToPowerRatio = float(parameter_value)
         elif parameter_name == 'co2CaptureEfficiency':
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':

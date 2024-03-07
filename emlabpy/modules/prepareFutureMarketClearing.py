@@ -232,6 +232,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             self.reps.dbrw.stage_future_fuel_prices(self.simulation_year, substance,
                                                     future_price)
 
+
     def calculateExpectedOperatingProfitfrompastIterations(self, plant, horizon):
         # "totalProfits" or "irr"
         indices = list(range(self.reps.current_tick + self.look_ahead_years - horizon,

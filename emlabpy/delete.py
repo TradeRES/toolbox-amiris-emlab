@@ -19,7 +19,6 @@ def erase_bids_class():
 def erase_new_ungrouped_plants():
     url = r"sqlite:///C:\toolbox-amiris-emlab\.spinetoolbox\items\emlabdb\EmlabDB.sqlite"
     db_map = DatabaseMapping(url)
-    print("here")
     try:
         subquery = db_map.object_parameter_value_sq
         id_plants = {row.object_id: from_database(row.value, row.type) for row in db_map.query(subquery).filter(subquery.c.parameter_name == "Id")}

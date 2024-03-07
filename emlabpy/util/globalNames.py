@@ -38,13 +38,11 @@ simulated_prices = "simulatedPrice"
 
 modules_need_AMIRIS = ["run_short_investment_module" , "run_financial_results", "plotting"]
 modules_need_bids = [ "run_financial_results", "run_create_results", "plotting", "run_CRM"]
-vRES = ["WTG_onshore", "WTG_offshore", "PV_utility_systems" ,"PV", "PV_residential"]
+
 fuels_in_AMIRIS = ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "OTHER", "HYDROGEN", "BIOMASS", "WASTE"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
-used_technologies = [ "hydrogen turbine", "Nuclear", "WTG_onshore","Lithium ion battery", "Wind Offshore","Wind Onshore", "Solar PV large"]
-
 technologies_not_in_SR =[ "Nuclear","Lithium ion battery" , "OCGT"]
-technologies_not_in_CM =["OCGT"]
+technologies_not_in_CM =[]
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)
 
 years_file = "years.txt"
