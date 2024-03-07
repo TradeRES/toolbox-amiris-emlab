@@ -816,10 +816,10 @@ class Repository:
 
         # ----------------------------------------------------------------------------section Capacity Mechanisms
 
-    def get_sorted_load_shedders_by_increasingCONE_no_hydrogen(self) -> \
+    def get_sorted_load_shedders_by_increasingCONE_no_hydrogen(self, reverse) -> \
             List[LoadShedder]:
         return sorted([i for i in self.loadShedders.values() if
-                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=False)
+                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=reverse)
 
 
     def get_sorted_load_shedders_by_increasingCONE(self) -> \
