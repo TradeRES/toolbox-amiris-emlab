@@ -244,8 +244,8 @@ class CreatingFinancialReports(DefaultModule):
             """
             modify load percentage for Capacity Subscription
             """
-            start = self.reps.current_tick -4
-            ticks_to_generate = list(range(start, self.reps.current_tick ))
+            start = self.reps.current_tick -1
+            ticks_to_generate = list(range(start, self.reps.current_tick+1 ))
             change_from_last_group = 0
             ascending_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE_no_hydrogen(reverse=False)
             last = len(ascending_load_shedders_byCONE_no_hydrogen) - 1
@@ -258,13 +258,13 @@ class CreatingFinancialReports(DefaultModule):
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    changeVOLLnextgroup = (averageLOLE - reliability_standard)/reliability_standard/10  # Eur/Mwh
+                    changeVOLLnextgroup = round((averageLOLE - reliability_standard)/reliability_standard/10 ,2) # Eur/Mwh
                     if changeVOLLnextgroup <= 0 or count == last:   # if there are less shortages than expected then do nothing
                         changeVOLLnextgroup = 0
 
                     new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
                     if new_value < 0:
-                        changeVOLLnextgroup = 0
+                        changeVOLLnextgroup = load_shedder.percentageLoad + change_from_last_group
 
                     new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
                     change_from_last_group = changeVOLLnextgroup
@@ -283,7 +283,7 @@ class CreatingFinancialReports(DefaultModule):
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    changeVOLLnextgroup =  - (averageLOLE - reliability_standard)/reliability_standard/10  # Eur/Mwh
+                    changeVOLLnextgroup =  -  round((averageLOLE - reliability_standard)/reliability_standard/10,2)  # Eur/Mwh
                     if changeVOLLnextgroup > 0 or count == last:   # if there are more shortages than expected then do nothing
                         changeVOLLnextgroup = 0
 
