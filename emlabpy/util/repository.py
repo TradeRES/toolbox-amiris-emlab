@@ -670,16 +670,17 @@ class Repository:
                         or i.status == globalNames.power_plant_status_to_be_decommissioned)]
 
     def get_operational_almost_operational_and_to_be_decommissioned(self, forward_years_CM) -> List[PowerPlant]:
+        """
+        power plants that havent passed lifetime extension and that could be operational ( passed the pipeline)
+        """
         return [i for i in self.power_plants.values()
                 if i.technology.name not in globalNames.technologies_not_in_CM and
                 ((
                          i.status == globalNames.power_plant_status_inPipeline \
                          and i.age  >= -forward_years_CM)
-                 or
-                (i.status == globalNames.power_plant_status_operational
-                    or ( i.status == globalNames.power_plant_status_to_be_decommissioned \
-                         and i.age  < i.technology.expected_lifetime + i.technology.maximumLifeExtension )
-                 ))]
+                 or ( i.status in [ globalNames.power_plant_status_operational, globalNames.power_plant_status_to_be_decommissioned] and
+                 ( i.age + forward_years_CM)  < (i.technology.expected_lifetime + i.technology.maximumLifeExtension))
+                 )]
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()

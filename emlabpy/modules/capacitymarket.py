@@ -35,14 +35,9 @@ class CapacityMarketSubmitBids(MarketModule):
             "technology" + "name" + ";" + "price_to_bid" + ";" + " profits" + ";" + "fixed_on_m_cost" + ";" + "pending_loan")
         for powerplant in self.reps.get_operational_almost_operational_and_to_be_decommissioned(
                 market.forward_years_CM):
-            # if powerplant.id not in self.future_installed_plants_ids:
-            #     print("not installed!!!!!!!!!!!!!!!!!!!!")
-            #     print(powerplant.id)
-            #     continue
-            # Retrieve variables: the active capacity market, fixed operating costs, power plant capacity and dispatch
-            # market = self.reps.get_capacity_market_for_plant(powerplant) for now only one market
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
-            capacity = powerplant.get_actual_nominal_capacity()  # TODO check if this has to be changed
+            capacity = powerplant.get_actual_nominal_capacity()
+
             profits = self.reps.get_expected_profits_by_tick(powerplant.name,
                                                              self.reps.current_tick + market.forward_years_CM)
             self.reps.dbrw.update_fixed_costs(powerplant, market.forward_years_CM)
