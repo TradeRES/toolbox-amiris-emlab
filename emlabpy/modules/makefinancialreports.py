@@ -233,7 +233,7 @@ class CreatingFinancialReports(DefaultModule):
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
         #        load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
 
-        realized_curtailments = total_load_shedded.where(total_load_shedded > 0).count()
+        realized_curtailments = total_load_shedded.where(total_load_shedded > 0).sum()
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
         if self.reps.current_tick >=   self.start_tick_CS :
             for name, values in self.reps.loadShedders.items():
@@ -249,54 +249,80 @@ class CreatingFinancialReports(DefaultModule):
             """
             start = self.reps.current_tick -1
             ticks_to_generate = list(range(start, self.reps.current_tick+1 ))
-            change_from_last_group = 0
-            ascending_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE_no_hydrogen(reverse=False)
-            last = len(ascending_load_shedders_byCONE_no_hydrogen) - 1
+            market = self.reps.get_capacity_market_in_country(self.reps.country)
+            capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time( market.name, self.reps.current_tick)
+            peak_demand = self.reps.get_peak_future_demand_by_year(self.reps.current_year)
             """
             increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
             """
-            for count, load_shedder in enumerate(ascending_load_shedders_byCONE_no_hydrogen):
-                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
-                averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
-                reliability_standard =  load_shedder.reliability_standard
-                if  pd.isna(averageLOLE):
-                    pass
+            ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(reverse=False)
+            last = len(ascending_load_shedders_no_hydrogen) - 1
+            subscribed = 0
+            for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
+                if count != last:
+                    print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
+                    averageENS= load_shedder.realized_rs[ticks_to_generate].mean()
+                    Capacity_market_costs = capacity_market_price * peak_demand  * load_shedder.percentageLoad
+                    if pd.isna(load_shedder.percentageLoad):
+                        raise Exception
+                    if Capacity_market_costs == 0:
+                        continue
+                    else:
+                        non_subscription_costs = averageENS*load_shedder.VOLL
+                        if  pd.isna(averageENS) :
+                            continue
+                        else:
+                            addSubscribed = round((non_subscription_costs - Capacity_market_costs)/Capacity_market_costs/10 ,3) # Eur/Mwh
+                            if addSubscribed <= 0:   # if there are less shortages than expected then do nothing
+                                addSubscribed = 0
+
+                            new_value = load_shedder.percentageLoad - addSubscribed
+                            if new_value < 0:
+                                addSubscribed = load_shedder.percentageLoad
+                                new_value = 0
+                            else:
+                                pass
+                            subscribed += addSubscribed
+                            load_shedder.percentageLoad = new_value
+                            print(load_shedder.name  +" increase subscribed % by " + str(addSubscribed))
+
                 else:
-                    changeVOLLnextgroup = round((averageLOLE - reliability_standard)/reliability_standard/10 ,2) # Eur/Mwh
-                    if changeVOLLnextgroup <= 0 or count == last:   # if there are less shortages than expected then do nothing
-                        changeVOLLnextgroup = 0
-
-                    new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
-                    if new_value < 0:
-                        changeVOLLnextgroup = load_shedder.percentageLoad + change_from_last_group
-
-                    new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
-                    change_from_last_group = changeVOLLnextgroup
-                    print(load_shedder.name  +"increase % load to next group" + " by " + str(changeVOLLnextgroup))
-                    load_shedder.percentageLoad = new_value
-                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
+                    print(load_shedder.name + "-adding-subscribed-"+ str(load_shedder.percentageLoad))
+                    load_shedder.percentageLoad = load_shedder.percentageLoad + subscribed
+                    print(load_shedder.name + "-adding-subscribed-"+ str(load_shedder.percentageLoad))
 
             """
             increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
             """
-            descending_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE_no_hydrogen(reverse=True)
-            last = len(descending_load_shedders_byCONE_no_hydrogen) - 1
-            for count, load_shedder in enumerate(descending_load_shedders_byCONE_no_hydrogen):
-                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
-                averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
-                reliability_standard =  load_shedder.reliability_standard
-                if  pd.isna(averageLOLE):
-                    pass
-                else:
-                    changeVOLLnextgroup =  -  round((averageLOLE - reliability_standard)/reliability_standard/100,2)  # Eur/Mwh
-                    if changeVOLLnextgroup <= 0 or count == last:   # if there are more shortages than expected then do nothing
-                        changeVOLLnextgroup = 0
+            descending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(reverse=True)
 
-                    new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
-                    change_from_last_group = changeVOLLnextgroup
-                    print(load_shedder.name  + "decrease % load to next group" + " by " + str(changeVOLLnextgroup))
-                    load_shedder.percentageLoad = new_value
-                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
+            unsubscribed = 0
+            for count, load_shedder in enumerate(descending_load_shedders_no_hydrogen):
+                if count != 0:
+                    print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
+                    averageENS= load_shedder.realized_rs[ticks_to_generate].mean()
+                    Capacity_market_costs = capacity_market_price * peak_demand  * load_shedder.percentageLoad
+                    non_subscription_costs = averageENS*load_shedder.VOLL
+                    if pd.isna(load_shedder.percentageLoad):
+                        pass
+#                        raise Exception
+                    if Capacity_market_costs == 0:
+                        continue
+                    else:
+                        if  pd.isna(averageENS):
+                            pass
+                        else:
+                            unsubscribe =  -   round((non_subscription_costs - Capacity_market_costs)/Capacity_market_costs/100 ,3)  # Eur/Mwh
+                            if unsubscribe <= 0 or count == last:   # if there are more shortages than expected then do nothing
+                                unsubscribe = 0
+                            new_value = load_shedder.percentageLoad - unsubscribe
+                            print(load_shedder.name  + "decrease % load to next group" + " by " + str(unsubscribe))
+                            load_shedder.percentageLoad = new_value
+                            unsubscribed += unsubscribe
+                else:
+                    pass
+            # subscrtracting unsubscribed from most expensive load shedder
+            ascending_load_shedders_no_hydrogen[last].percentageLoad = ascending_load_shedders_no_hydrogen[last].percentageLoad - unsubscribed
 
             """
             check if the VOLLs are unique and add one unit if there is a repeated value 

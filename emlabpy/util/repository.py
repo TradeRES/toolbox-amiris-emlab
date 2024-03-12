@@ -675,9 +675,7 @@ class Repository:
         """
         return [i for i in self.power_plants.values()
                 if i.technology.name not in globalNames.technologies_not_in_CM and
-                ((
-                         i.status == globalNames.power_plant_status_inPipeline \
-                         and i.age  >= -forward_years_CM)
+                ((i.status == globalNames.power_plant_status_inPipeline )
                  or ( i.status in [ globalNames.power_plant_status_operational, globalNames.power_plant_status_to_be_decommissioned] and
                  ( i.age + forward_years_CM)  < (i.technology.expected_lifetime + i.technology.maximumLifeExtension))
                  )]
@@ -817,16 +815,16 @@ class Repository:
 
         # ----------------------------------------------------------------------------section Capacity Mechanisms
 
-    def get_sorted_load_shedders_by_increasingCONE_no_hydrogen(self, reverse) -> \
+    def get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(self, reverse) -> \
             List[LoadShedder]:
         return sorted([i for i in self.loadShedders.values() if
-                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=reverse)
+                       i.name != "hydrogen" ], key=lambda i: i.VOLL , reverse=reverse)
 
 
-    def get_sorted_load_shedders_by_increasingCONE(self) -> \
+    def get_sorted_load_shedders_by_increasingVOLL(self) -> \
             List[LoadShedder]:
         sorted_load_shedders = sorted([i for i in self.loadShedders.values() if
-                       i.name != "hydrogen" ], key=lambda i: i.VOLL * i.reliability_standard , reverse=False)
+                       i.name != "hydrogen" ], key=lambda i: i.VOLL , reverse=False)
         sorted_load_shedders.append(self.loadShedders["hydrogen"])
         return sorted_load_shedders
 
