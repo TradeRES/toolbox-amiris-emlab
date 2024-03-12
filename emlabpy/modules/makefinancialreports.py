@@ -212,7 +212,6 @@ class CreatingFinancialReports(DefaultModule):
                 hourly_load_shedders[unit[5:]] = df[unit]
 
         production_not_shedded_MWh = pd.DataFrame()
-        load_shedded_per_group_MWh = pd.DataFrame()
         total_yearly_electrolysis_consumption = pd.DataFrame()
         total_yearly_hydrogen_input_demand = self.reps.loadShedders["hydrogen"].ShedderCapacityMW * 8760
         hydrogen_input_demand = [self.reps.loadShedders["hydrogen"].ShedderCapacityMW] * 8760
@@ -231,14 +230,16 @@ class CreatingFinancialReports(DefaultModule):
             else:
                 id_shedder = int(name) * 100000
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
-                load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
+        #        load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
 
         realized_curtailments = total_load_shedded.where(total_load_shedded > 0).count()
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
-
+        for name, values in self.reps.loadShedders.items():
+            print(name   + "-"+ str(realized_curtailments[name]))
+            self.reps.loadShedders[name].realized_rs[self.reps.current_tick] = realized_curtailments[name]
 
     def modify_CS_parameter(self):
-        if  self.reps.current_tick < 5 or self.reps.capacity_remuneration_mechanism != "capacity_subscription":
+        if  self.reps.current_tick < 4 or self.reps.capacity_remuneration_mechanism != "capacity_subscription":
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
             """
@@ -253,6 +254,7 @@ class CreatingFinancialReports(DefaultModule):
             increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
             """
             for count, load_shedder in enumerate(ascending_load_shedders_byCONE_no_hydrogen):
+                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
                 reliability_standard =  load_shedder.reliability_standard
                 if  pd.isna(averageLOLE):
@@ -278,18 +280,19 @@ class CreatingFinancialReports(DefaultModule):
             descending_load_shedders_byCONE_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasingCONE_no_hydrogen(reverse=True)
             last = len(descending_load_shedders_byCONE_no_hydrogen) - 1
             for count, load_shedder in enumerate(descending_load_shedders_byCONE_no_hydrogen):
+                print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
                 averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
                 reliability_standard =  load_shedder.reliability_standard
                 if  pd.isna(averageLOLE):
                     pass
                 else:
-                    changeVOLLnextgroup =  -  round((averageLOLE - reliability_standard)/reliability_standard/10,2)  # Eur/Mwh
-                    if changeVOLLnextgroup > 0 or count == last:   # if there are more shortages than expected then do nothing
+                    changeVOLLnextgroup =  -  round((averageLOLE - reliability_standard)/reliability_standard/100,2)  # Eur/Mwh
+                    if changeVOLLnextgroup <= 0 or count == last:   # if there are more shortages than expected then do nothing
                         changeVOLLnextgroup = 0
 
                     new_value = load_shedder.percentageLoad - changeVOLLnextgroup + change_from_last_group
                     change_from_last_group = changeVOLLnextgroup
-                    print(load_shedder.name  +"decrease % load to next group" + " by " + str(changeVOLLnextgroup))
+                    print(load_shedder.name  + "decrease % load to next group" + " by " + str(changeVOLLnextgroup))
                     load_shedder.percentageLoad = new_value
                 print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
 

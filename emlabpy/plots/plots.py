@@ -1943,7 +1943,10 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 id_shedder = int(name) * 100000
                 if id_shedder in selected_df.columns:
                     total_load_shedded[name] = selected_df[(id_shedder)]
-                    VOLL_per_year.at[name, year] = values.percentageLoad[year]
+                    if reps.capacity_remuneration_mechanism == "capacity_subscription":
+                        VOLL_per_year.at[name, year] = values.percentageLoad[year]
+                    else:
+                        VOLL_per_year.at[name, year]  = values.percentageLoad[reps.start_simulation_year]
                 else:
                     print("---------" + str(year) )
                     print(id_shedder)
@@ -2075,7 +2078,10 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     for year in years_to_generate:
         for lshedder in reps.loadShedders.values():
             if lshedder.name != "hydrogen":
-                sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[year]
+                if reps.capacity_remuneration_mechanism == "capacity_subscription":
+                    sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[year]
+                else:
+                    sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[reps.start_simulation_year]
                 load_shedded = load_shedded_per_group_MWh.loc[year, lshedder.name]
                 percentage_load_shedded.at[year, lshedder.name] = load_shedded / sheddable_load
 
@@ -2617,6 +2623,7 @@ fuel_colors = {
     "collectable_residues": "gray",
     'LNG': "darkgoldenrod",
     'hard_coal': "indianred",
+    'oil': "gray",
     'heavy_oil': "gray",
     'light_oil': "lightsteelblue",
     "oil_shale": "mediumpurple",
@@ -2669,31 +2676,27 @@ technology_colors = {
     'Biomass_CHP_wood_pellets_DH': "green",
     'Biofuel': "green",
     "Biomass_CHP_wood_pellets_PH": "greenyellow",
-    'Coal PSC': "black",
-    "Fuel oil PGT": "gray",
-    'Lignite PSC': "darkgoldenrod",
+    'Hard Coal': "black",
+    "Oil": "gray",
+    'Lignite': "darkgoldenrod",
     'CCGT': "indianred",
+    "CCS gas": "indianred",
     'OCGT': "gray",
     'PV_utility_systems': "gold",
     "Solar PV large": "gold",
     "Solar CSP": "gold",
     'PV': "gold",
-    'PV_residential': "khaki",
     'Solar PV rooftop': "khaki",
-    'WTG_onshore': "cornflowerblue",
     'Wind Onshore': "cornflowerblue",
-    "WTG_offshore": "navy",
     "Wind Offshore": "navy",
     "central gas boiler": "black",
     "Nuclear": "mediumorchid",
-    "Hydropower_ROR": "aquamarine",
-    'Hydropower_reservoir_medium': "darkcyan",
+    "Hydropower ROR": "aquamarine",
+    'Hydro Reservoir': "darkcyan",
     "Hydropower": "darkcyan",
-    "Lithium_ion_battery": "hotpink",
     "Lithium ion battery": "hotpink",
     "Lithium_ion_battery_charge": "hotpink",
-    "Pumped_hydro": "darkcyan",
-    "Pumped hydro": "darkcyan",
+    "PHS Discharge": "darkcyan",
     "CCGT_CHP_backpressure_DH": "orange",
     "CCGT_CHP_backpressure_PH": "orange",
     "CCS": "orange",
@@ -2844,7 +2847,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-CS_changepercentageload"]
+    SCENARIOS = ["NL-208942strategic_reserve_gerNL"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
