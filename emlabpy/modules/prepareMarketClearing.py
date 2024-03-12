@@ -240,12 +240,7 @@ class PrepareMarket(DefaultModule):
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
-                    if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                        VOLL =  self.reps.get_capacity_subscription_operator(self.reps.country).VOLL_CS
-                        VOLL = VOLL + increase_by_one
-                        increase_by_one += 1
-                    else:
-                        VOLL = loadshedder.VOLL
+                    VOLL = loadshedder.VOLL
                     Identifiers.append(int(loadshedder.name) *100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFile)
@@ -258,12 +253,7 @@ class PrepareMarket(DefaultModule):
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
-                    if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                        VOLL =  self.reps.get_capacity_subscription_operator(self.reps.country).VOLL_CS
-                        VOLL = VOLL + increase_by_one
-                        increase_by_one += 1
-                    else:
-                        VOLL = loadshedder.VOLL
+                    VOLL = loadshedder.VOLL
                     Identifiers.append(int(loadshedder.name) *100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)
