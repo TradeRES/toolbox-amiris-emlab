@@ -25,6 +25,7 @@ class CreatingFinancialReports(DefaultModule):
     def __init__(self, reps):
         super().__init__("Creating Financial Reports", reps)
         self.agent = reps.energy_producers[reps.agent]
+        self.start_tick_CS = 3
         if reps.current_tick == 0:
             reps.dbrw.stage_init_financial_results_structure()
             reps.dbrw.stage_init_cash_agent()
@@ -234,12 +235,13 @@ class CreatingFinancialReports(DefaultModule):
 
         realized_curtailments = total_load_shedded.where(total_load_shedded > 0).count()
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
-        for name, values in self.reps.loadShedders.items():
-            print(name   + "-"+ str(realized_curtailments[name]))
-            self.reps.loadShedders[name].realized_rs[self.reps.current_tick] = realized_curtailments[name]
+        if self.reps.current_tick >=   self.start_tick_CS :
+            for name, values in self.reps.loadShedders.items():
+                print(name   + "-"+ str(realized_curtailments[name]))
+                self.reps.loadShedders[name].realized_rs[self.reps.current_tick] = realized_curtailments[name]
 
     def modify_CS_parameter(self):
-        if  self.reps.current_tick < 4 or self.reps.capacity_remuneration_mechanism != "capacity_subscription":
+        if  self.reps.current_tick <   self.start_tick_CS:
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
             """
