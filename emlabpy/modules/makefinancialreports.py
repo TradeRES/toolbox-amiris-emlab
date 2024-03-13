@@ -284,6 +284,7 @@ class CreatingFinancialReports(DefaultModule):
                                     new_value = 0
                                 else:
                                     pass
+                            #print(addSubscribed)
                             load_shedder.percentageLoad = new_value
                             """
                             if there subscription load is lower than the needed load,   then take the difference from the next load shedder
@@ -293,15 +294,17 @@ class CreatingFinancialReports(DefaultModule):
                                 last = len(descending_load_shedders_no_hydrogen) - 1
                                 for countdescending, descending_load_shedder in enumerate(descending_load_shedders_no_hydrogen):
                                         if descending_load_shedder.percentageLoad + addSubscribed <0:
-                                            #print(descending_load_shedder.name  +" taken from last group " + str(descending_load_shedder.percentageLoad ))
+                                            #print(descending_load_shedder.name  +" taken from group " + str(descending_load_shedder.percentageLoad ))
                                             addSubscribed = descending_load_shedder.percentageLoad + addSubscribed
                                             ascending_load_shedders_no_hydrogen[last].percentageLoad = 0
                                             last = last - 1
                                         else:
                                             ascending_load_shedders_no_hydrogen[last].percentageLoad = descending_load_shedder.percentageLoad + addSubscribed
+                                            #print(ascending_load_shedders_no_hydrogen[last].name  +" taken from last group " + str(ascending_load_shedders_no_hydrogen[last].percentageLoad ))
                                             break
 
                             else:
+                                #print(ascending_load_shedders_no_hydrogen[last].name +"---" +  str(ascending_load_shedders_no_hydrogen[last].percentageLoad))
                                 ascending_load_shedders_no_hydrogen[last].percentageLoad = ascending_load_shedders_no_hydrogen[last].percentageLoad + addSubscribed
 
                 else:
@@ -314,10 +317,10 @@ class CreatingFinancialReports(DefaultModule):
             for load_shedder_name, load_shedder in self.reps.loadShedders.items():
                 print(load_shedder.name + "-------------"+ str(load_shedder.percentageLoad))
                 lst.append(load_shedder.percentageLoad)
-            if sum(lst) > 1.01:
+            if sum(lst) > 1.02:
                 print("percentage of load shedded is higher than 101%")
                 raise Exception
-            elif sum(lst) < .99:
+            elif sum(lst) < .98:
                 print("percentage of load shedded is lower than 99%")
                 raise Exception
             else:

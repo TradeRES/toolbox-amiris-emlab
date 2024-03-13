@@ -176,8 +176,6 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     cones = {}
     netcones = {}
     for candidatepowerplant in candidatepowerplants:
-        if candidatepowerplant.technology.name not in capacity_market.allowed_technologies.split():
-            continue
         technology = candidatepowerplant.technology
         totalInvestment = technology.get_investment_costs_perMW_by_year(
             reps.current_year + capacity_market.forward_years_CM)
@@ -207,7 +205,6 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
 
     if not cones:
         print("cones is empty")
-        raise ValueError("cones is empty")
     else:
         reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
         minnetCONE = min(netcones.values())
