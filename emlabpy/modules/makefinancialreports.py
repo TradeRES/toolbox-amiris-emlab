@@ -158,14 +158,14 @@ class CreatingFinancialReports(DefaultModule):
                     if averageirr < 0.01:
                         pass # and IRR of 10% is normal
                     elif old_value - decrease < 0:
-                        pass
-                    elif old_value - decrease > 0.2:
-                        pass
+                        new_value = 0.05
+                    elif old_value - decrease > 0.15:
+                        new_value = 0.15
                     else:
                         new_value = old_value - decrease
-                        print("decrease IRR of " + technology_name + " by " + str(decrease))
-                        self.reps.power_generating_technologies[technology_name].interestRate = new_value
-                        self.reps.dbrw.stage_new_irr(self.reps.power_generating_technologies[technology_name])
+                    print("decrease IRR of " + technology_name + " by " + str(decrease))
+                    self.reps.power_generating_technologies[technology_name].interestRate = new_value
+                    self.reps.dbrw.stage_new_irr(self.reps.power_generating_technologies[technology_name])
     def getProjectIRR(self, pp, operational_profit_withFixedCosts, loans, agent):
         totalInvestment = pp.getActualInvestedCapital()
         depreciationTime = pp.technology.depreciation_time
