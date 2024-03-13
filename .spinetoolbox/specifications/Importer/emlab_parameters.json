@@ -1167,6 +1167,46 @@
                         ]
                     }
                 }
+            ],
+            "LS_NL": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "LoadShedders_feb24": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1285,7 +1325,9 @@
             "LSyearly": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "LoadShedders_feb24": {},
+            "LS_NL": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1294,7 +1336,10 @@
                 "2": "float",
                 "3": "float",
                 "4": "float",
-                "5": "string"
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string"
             },
             "ElectricitySpotMarkets": {
                 "0": "string",
@@ -1601,7 +1646,9 @@
                 "3": "float",
                 "4": "float",
                 "5": "float",
-                "6": "float"
+                "6": "float",
+                "7": "string",
+                "8": "string"
             }
         },
         "table_default_column_type": {},

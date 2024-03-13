@@ -547,11 +547,11 @@ class Investmentdecision(DefaultModule):
 
         if self.reps.investmentIteration == 0 and self.reps.current_tick > 0:
             """
-            during initialization price cap would be too low, so take a 
+            during initialization price cap would be too low, so take an initial value. 
+            price cap is saved only in the first year of the investment
             """
             calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
         else:
-
             print("price cap is not calculated" + str(capacity_market.PriceCap) )
 
         for powerplant in self.reps.power_plants.values():
