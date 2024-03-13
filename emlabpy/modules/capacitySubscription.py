@@ -44,7 +44,7 @@ class CapacitySubscriptionClearing(MarketModule):
         self.agent = reps.energy_producers[reps.agent]
 
     def act(self):
-        print("capacity subscription ")
+        print("capacity subscription clearing")
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)

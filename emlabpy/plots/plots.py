@@ -536,7 +536,7 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
     plt.ylabel('Capacity factor [%]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     plt.grid()
-    axs23.set_title(scenario_name + ' Capacity factor (production/capacity*8760)')
+    axs23.set_title(scenario_name + ' Capacity factor (production/capacity*hoursinyear)')
     fig23 = axs23.get_figure()
     fig23.savefig(path_to_plots + '/' + 'All technologies capacity factor new.png', bbox_inches='tight', dpi=300)
 
@@ -1573,7 +1573,7 @@ def prepare_future_fuel_prices(reps):
 
 
 def prepare_screening_curves(reps, year):
-    hours = np.array(list(range(1, 8760)))
+    hours = np.array(list(range(1, reps.hours_in_year)))
     agent = reps.energy_producers[reps.agent]
 
     yearly_costs = pd.DataFrame(index=hours)
@@ -1608,7 +1608,7 @@ def prepare_screening_curves(reps, year):
 
 
 def prepare_screening_curves_candidates(reps, year):
-    hours = np.array(list(range(1, 8760)))
+    hours = np.array(list(range(1, reps.hours_in_year)))
     agent = reps.energy_producers[reps.agent]
     wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate \
            + agent.debtRatioOfInvestments * agent.loanInterestRate
@@ -1752,7 +1752,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                 if power_plant is not None:
                     if power_plant.technology.name == technology_name:
                         generation_per_tech += pp_production_in_MWh
-                        capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * 8760))
+                        capacity_factor_per_tech.append(pp_production_in_MWh / (power_plant.capacity * reps.hours_in_year))
                         full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
                         totalproduction += pp_production_in_MWh
                         totalrevenues += dispatch_per_year.revenues[id]
@@ -1770,7 +1770,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                     if id == str(99999999999) and electrolyzer_read == True:
                         if technology_name == "electrolyzer":
                             consumption_per_tech = pp_consumption_in_MWh
-                            capacity_factor_per_tech.append(pp_consumption_in_MWh / (30000 * 8760))
+                            capacity_factor_per_tech.append(pp_consumption_in_MWh / (30000 * reps.hours_in_year))
                             if pp_consumption_in_MWh > 0:
                                 market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_consumption_in_MWh)
 
@@ -1881,7 +1881,7 @@ def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenar
                 ["res", "storages_charging", "storages_discharging", "conventionals", "electrolysis_power_consumption"]]
 
     if calculate_monthly_generation == True:
-        total_sum = pd.DataFrame(0, index=range(8760), columns=["res", "storages_charging", "storages_discharging",
+        total_sum = pd.DataFrame(0, index=range(reps.hours_in_year), columns=["res", "storages_charging", "storages_discharging",
                                                                 "conventionals", "electrolysis_power_consumption"])
         for df in dfs.values():
             total_sum = total_sum + df
@@ -1984,7 +1984,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     #         load = yearly_load[year]
     #         for i, load_shedder in sorted_shedders.iterrows() :
     #             if load_shedder.name == "hydrogen":
-    #                 maximumLS['hydrogen'] = [reps.loadShedders["hydrogen"].ShedderCapacityMW]*8760
+    #                 maximumLS['hydrogen'] = [reps.loadShedders["hydrogen"].ShedderCapacityMW]*reps.hours_in_year
     #             else:
     #                 maximumLS[load_shedder.name] = load*load_shedder["percentageLoad"]
     #         generation_and_prices = pd.concat([hourly_load_shedded[year], electricity_prices[year]], ignore_index=True,
@@ -2042,8 +2042,8 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
     load_shedded_per_group_MWh = pd.DataFrame()
     total_yearly_electrolysis_consumption = pd.DataFrame()
-    total_yearly_hydrogen_input_demand = reps.loadShedders["hydrogen"].ShedderCapacityMW * 8760
-    hydrogen_input_demand = [reps.loadShedders["hydrogen"].ShedderCapacityMW] * 8760
+    total_yearly_hydrogen_input_demand = reps.loadShedders["hydrogen"].ShedderCapacityMW * reps.hours_in_year
+    hydrogen_input_demand = [reps.loadShedders["hydrogen"].ShedderCapacityMW] * reps.hours_in_year
     input_shifter_demand = reps.loadShifterDemand[
                                'Industrial_load_shifter'].averagemonthlyConsumptionMWh * 12
 
@@ -2091,7 +2091,7 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
 
 def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electricity_prices,
                                        yearly_load, LOLE_per_group):
-    simple_electricity_prices_average = yearly_electricity_prices.sum(axis=0) / 8760
+    simple_electricity_prices_average = yearly_electricity_prices.sum(axis=0) / reps.hours_in_year
     # average electricity prices calculated in prepare capacpity and generation are the same
     shortage_hours = pd.DataFrame(index=years_to_generate)
     inflexible_shedding = hourly_load_shedded - reps.loadShedders["hydrogen"].ShedderCapacityMW
@@ -2704,7 +2704,7 @@ technology_colors = {
     "electrolyzer": "gray",
     "hydrogen_turbine": "darkred",
     "hydrogen turbine": "darkred",
-    "hydrogen_CHP": "indianred",
+    "hydrogen OCGT": "indianred",
     "hydrogen CHP": "indianred",
     "hydrogen_combined_cycle": "coral",
     "hydrogen combined cycle": "coral"
@@ -2847,7 +2847,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-208942strategic_reserve_gerNL"]
+    SCENARIOS = ["NL-208958capacity_subscriptionCS"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)

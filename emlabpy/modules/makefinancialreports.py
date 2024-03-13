@@ -214,8 +214,8 @@ class CreatingFinancialReports(DefaultModule):
 
         production_not_shedded_MWh = pd.DataFrame()
         total_yearly_electrolysis_consumption = pd.DataFrame()
-        total_yearly_hydrogen_input_demand = self.reps.loadShedders["hydrogen"].ShedderCapacityMW * 8760
-        hydrogen_input_demand = [self.reps.loadShedders["hydrogen"].ShedderCapacityMW] * 8760
+        total_yearly_hydrogen_input_demand = self.reps.loadShedders["hydrogen"].ShedderCapacityMW * self.reps.hours_in_year
+        hydrogen_input_demand = [self.reps.loadShedders["hydrogen"].ShedderCapacityMW] * self.reps.hours_in_year
         total_load_shedded = pd.DataFrame()
         year = self.reps.current_year
         for name, values in self.reps.loadShedders.items():
@@ -300,6 +300,7 @@ class CreatingFinancialReports(DefaultModule):
             for count, load_shedder in enumerate(descending_load_shedders_no_hydrogen):
                 if count != 0:
                     print(load_shedder.name + "-----"+ str(load_shedder.percentageLoad))
+
                     averageENS= load_shedder.realized_rs[ticks_to_generate].mean()
                     Capacity_market_costs = capacity_market_price * peak_demand  * load_shedder.percentageLoad
                     non_subscription_costs = averageENS*load_shedder.VOLL
@@ -312,28 +313,31 @@ class CreatingFinancialReports(DefaultModule):
                         if  pd.isna(averageENS):
                             pass
                         else:
-                            unsubscribe =  -   round((non_subscription_costs - Capacity_market_costs)/Capacity_market_costs/100 ,3)  # Eur/Mwh
+                            unsubscribe =  - round((non_subscription_costs - Capacity_market_costs)/Capacity_market_costs/100 ,3)  # Eur/Mwh
                             if unsubscribe <= 0 or count == last:   # if there are more shortages than expected then do nothing
                                 unsubscribe = 0
                             new_value = load_shedder.percentageLoad - unsubscribe
-                            print(load_shedder.name  + "decrease % load to next group" + " by " + str(unsubscribe))
+                            print(load_shedder.name  + "decrease subscribed by " + str(unsubscribe))
                             load_shedder.percentageLoad = new_value
                             unsubscribed += unsubscribe
                 else:
                     pass
             # subscrtracting unsubscribed from most expensive load shedder
-            ascending_load_shedders_no_hydrogen[last].percentageLoad = ascending_load_shedders_no_hydrogen[last].percentageLoad - unsubscribed
-
+            ascending_load_shedders_no_hydrogen[last].percentageLoad = ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribed
+            print("ascending_load_shedders_no_hydrogen[last].percentageLoad" + str(ascending_load_shedders_no_hydrogen[last].percentageLoad))
             """
-            check if the VOLLs are unique and add one unit if there is a repeated value 
+            checking that the percentage of load shedded is not higher than 100%
             """
             lst = []
             for load_shedder_name, load_shedder in self.reps.loadShedders.items():
-                lst.append(load_shedder.VOLL)
-                if load_shedder in lst:
-                    print("making VOLL unequal")
-                    load_shedder.VOLL = load_shedder.VOLL + 1
-                else:
-                    pass
+                lst.append(load_shedder.percentageLoad)
+            if sum(lst) > 100:
+                print("percentage of load shedded is higher than 101%")
+                raise Exception
+            elif sum(lst) < 99:
+                print("percentage of load shedded is lower than 99%")
+                raise Exception
+            else:
+                pass
 
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)

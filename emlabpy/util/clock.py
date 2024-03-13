@@ -123,6 +123,8 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                                           "Wind Offshore profiles",
                                           "Sun PV profiles",
                                           "Load"])
+        global hours_in_year
+        hours_in_year = len(next(iter(excel.values())).index)
 
         if modality == "initialize":
             global peak_load
@@ -217,7 +219,7 @@ def prepare_initialization_load_for_future_year(excel, representative_year_inves
 
 
 def prepare_hydrogen_initilization_future(excel):
-    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMW"]] * 8760,
+    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMW"]] * hours_in_year,
                                    index=excel['Load'].index)
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath(
         load_shedders.loc["hydrogen", "TimeSeriesFileFuture"]))
@@ -226,7 +228,7 @@ def prepare_hydrogen_initilization_future(excel):
 
 def prepare_hydrogen_initilization(excel):
     # TODO: make hydrogen dynamic
-    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMW"]] * 8760,
+    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMW"]] * hours_in_year,
                                    index=excel['Load'].index)
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path,
                                                    os.path.normpath(load_shedders.loc["hydrogen", "TimeSeriesFile"]))

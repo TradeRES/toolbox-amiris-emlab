@@ -144,7 +144,6 @@ class SpineDBReaderWriter:
                 reps.investment_initialization_years = int(row['parameter_value'])
             elif row['parameter_name'] == 'decommission_from_input':
                 reps.decommission_from_input = bool(row['parameter_value'])
-
             elif row['parameter_name'] == 'Limit investment to potentials':
                 reps.limit_investments = bool(row['parameter_value'])
             elif row['parameter_name'] == 'initialization_investment':

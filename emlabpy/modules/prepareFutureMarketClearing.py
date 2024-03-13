@@ -88,6 +88,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def act(self):
         print("investment iteration " + str(self.reps.investmentIteration))
+
         self.setTimeHorizon()
         self.setFuelPrices()
         self.filter_power_plants_to_be_operational()
@@ -104,7 +105,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.write_load_shifter_with_price_cap()
         self.write_times()
         self.writer.close()
-
 
 
     def filter_power_plants_to_be_operational(self):
@@ -162,6 +162,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     else:
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                         decommissioned_list.append(powerplant.name)
+
                 elif self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations fictional_age <= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                     self.check_profitability( powerplant,requiredProfit , horizon,  fictional_age)
                 else:
@@ -172,8 +173,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 powerplant.fictional_status = globalNames.power_plant_status_inPipeline
             else:  # powerplant.commissionedYear > self.simulation_year
                 # planned power plants further in the future should not be considered.
-                # all plants that are not commissioned yet and that have not passed their lifetime are expected to be operational
-                # power plants in pipeline are also considered to be operational in the future
+                # all plants that  have not passed their lifetime are expected to be operational
                 self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
 
         self.save_decommissioned_expected_list(decommissioned_list)

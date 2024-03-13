@@ -96,6 +96,7 @@ class Repository:
         self.capacity_market_cleared_in_investment = False
         self.round_for_capacity_market = False
         self.limit_investments = True
+        self.hours_in_year = 8760
         self.change_IRR = False
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
@@ -671,7 +672,7 @@ class Repository:
 
     def get_operational_almost_operational_and_to_be_decommissioned(self, forward_years_CM) -> List[PowerPlant]:
         """
-        power plants that havent passed lifetime extension and that could be operational ( passed the pipeline)
+        power plants that havent passed lifetime extension and that will be operational (also plants in pipeline)
         """
         return [i for i in self.power_plants.values()
                 if i.technology.name not in globalNames.technologies_not_in_CM and
@@ -786,8 +787,11 @@ class Repository:
         return 0
 
     def get_expected_profits_by_tick(self, power_plant_name: int, tick: int) -> float:
-        if tick in self.power_plants[power_plant_name].expectedTotalProfits.index:
-            return self.power_plants[power_plant_name].expectedTotalProfits.loc[tick]
+        if hasattr(self.power_plants[power_plant_name], 'expectedTotalProfits'):
+            if tick in self.power_plants[power_plant_name].expectedTotalProfits.index:
+                return self.power_plants[power_plant_name].expectedTotalProfits.loc[tick]
+            else:
+                return None
         else:
             return None
 
