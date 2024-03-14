@@ -363,6 +363,12 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_allowed_technology_with_highest_availability(self, allowed_technologies):
+        max_number = max(self.candidatePowerPlants, key= lambda x: self.candidatePowerPlants[x].technology.peak_segment_dependent_availability
+                    if self.candidatePowerPlants[x].technology.name in allowed_technologies else 0)
+        return self.candidatePowerPlants[max_number].technology.name
+
+
     def get_unique_substances_names(self):
         try:
             return [i.name for i in self.substances.values()]

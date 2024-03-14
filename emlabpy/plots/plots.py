@@ -1065,12 +1065,12 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
     load_shedded_per_group_MWh.plot(ax=axs38[0], legend=False)
-    axs38[0].set_title('Load shedded', fontsize='medium')
+    axs38[0].set_title('ENS', fontsize='medium')
     percentage_load_shedded.plot(ax=axs38[1], legend=True)
-    axs38[1].set_title('load shedded / sheddable load', fontsize='medium')
-    axs38[0].set_ylabel('MWh', fontsize='medium')
+    axs38[1].set_title('normalized ENS (excluding industrial heating load)', fontsize='medium')
+    axs38[0].set_ylabel('[MWh]', fontsize='medium')
     axs38[1].set_xlabel('Years', fontsize='medium')
-    axs38[1].set_ylabel('%', fontsize='medium')
+    axs38[1].set_ylabel('normalized ENS [%]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig38.savefig(path_to_plots + '/' + 'Load_shedded.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -2847,7 +2847,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-208958capacity_subscriptionCS"]
+    SCENARIOS = ["NL-SR_newdata"]
     results_excel = "NL_CM_newexpectationFuture.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)

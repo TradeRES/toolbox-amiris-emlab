@@ -28,7 +28,6 @@ class CapacityMarketSubmitBids(MarketModule):
     def act(self):
         # in the future : do for every EnergyProducer
         # Retrieve every power plant in the active energy producer for the defined country
-
         market = self.reps.get_capacity_market_in_country(self.reps.country)
         # self.future_installed_plants_ids = self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick )
         print(
@@ -172,44 +171,47 @@ class CapacityMarketClearing(MarketModule):
             self.reps.dbrw.stage_bids_status(accepted)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
-    print("calculating CONE")
+    """CONE is calculated  for every technology and the minimum is chosen as the price cap"""
     cones = {}
     netcones = {}
     for candidatepowerplant in candidatepowerplants:
-        technology = candidatepowerplant.technology
-        totalInvestment = technology.get_investment_costs_perMW_by_year(
-            reps.current_year + capacity_market.forward_years_CM)
-        depreciationTime = technology.depreciation_time
-        buildingTime = technology.expected_leadtime
-        fixed_costs = technology.get_fixed_costs_by_commissioning_year(
-            reps.current_year + capacity_market.forward_years_CM)
-        equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
-        investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
-        investmentCashFlowNETCONE = [0 for i in range(depreciationTime + buildingTime)]
-        for i in range(0, buildingTime + depreciationTime):
-            if i < buildingTime:
-                investmentCashFlow[i] =  equalTotalDownPaymentInstallment
-                investmentCashFlowNETCONE[i] =  equalTotalDownPaymentInstallment
-            else:
-                investmentCashFlow[i] =  fixed_costs
-                investmentCashFlowNETCONE[i] = fixed_costs - candidatepowerplant.get_Profit()/candidatepowerplant.capacity # per MW
-        wacc = technology.interestRate
-        discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
-        discountedprojectvalueNETCONE = npf.npv(wacc, investmentCashFlowNETCONE)
+        if candidatepowerplant.technology.name not in capacity_market.allowed_technologies:
+            continue
+        else:
+            technology = candidatepowerplant.technology
+            totalInvestment = technology.get_investment_costs_perMW_by_year(
+                reps.current_year + capacity_market.forward_years_CM)
+            depreciationTime = technology.depreciation_time
+            buildingTime = technology.expected_leadtime
+            fixed_costs = technology.get_fixed_costs_by_commissioning_year(
+                reps.current_year + capacity_market.forward_years_CM)
+            equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
+            investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
+            investmentCashFlowNETCONE = [0 for i in range(depreciationTime + buildingTime)]
+            for i in range(0, buildingTime + depreciationTime):
+                if i < buildingTime:
+                    investmentCashFlow[i] =  equalTotalDownPaymentInstallment
+                    investmentCashFlowNETCONE[i] =  equalTotalDownPaymentInstallment
+                else:
+                    investmentCashFlow[i] =  fixed_costs
+                    investmentCashFlowNETCONE[i] = fixed_costs - candidatepowerplant.get_Profit()/candidatepowerplant.capacity # per MW
+            wacc = technology.interestRate
+            discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
+            discountedprojectvalueNETCONE = npf.npv(wacc, investmentCashFlowNETCONE)
 
-        factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
-        CONE = discountedprojectvalue * factor
-        NETCONE = discountedprojectvalueNETCONE * factor
-        cones[technology.name ] = CONE
-        netcones[technology.name ] = NETCONE
-
+            factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
+            CONE = discountedprojectvalue * factor
+            NETCONE = discountedprojectvalueNETCONE * factor
+            cones[technology.name ] = CONE
+            netcones[technology.name ] = NETCONE
     if not cones:
         print("cones is empty")
     else:
         reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
-        minnetCONE = min(netcones.values())
-        minCONE = min(cones.values())
-        chosenCONE = max(minCONE, minnetCONE * capacity_market.PriceCapTimesCONE)
+        technology_highest_availability = reps.get_allowed_technology_with_highest_availability(capacity_market.allowed_technologies)
+        netCONE = netcones[technology_highest_availability]
+        cone = cones[technology_highest_availability]
+        chosenCONE = max(netCONE, cone * capacity_market.PriceCapTimesCONE)
         price_cap = int(chosenCONE)
         print("price_cap")
         print(price_cap)
