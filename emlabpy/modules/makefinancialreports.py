@@ -256,6 +256,7 @@ class CreatingFinancialReports(DefaultModule):
             """
             ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(reverse=False)
             last = len(ascending_load_shedders_no_hydrogen) - 1
+            minimumvalue_per_group = 0.01
             for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
                 if count < last:
                     averageENS= load_shedder.realized_rs[ticks_to_generate].mean()
@@ -274,13 +275,13 @@ class CreatingFinancialReports(DefaultModule):
                                 """
                                 when there are less shortages the consumers unsubscribe slower
                                 """
-                                addSubscribed = addSubscribed/50
+                                addSubscribed = addSubscribed/10
                                 new_value = load_shedder.percentageLoad - addSubscribed
                             else:
                                 new_value = load_shedder.percentageLoad - addSubscribed
-                                if new_value < 0: # cannot decrease more than the available value
+                                if new_value < minimumvalue_per_group: # cannot decrease more than the available value
                                     addSubscribed = load_shedder.percentageLoad
-                                    new_value = 0
+                                    new_value = minimumvalue_per_group
                                 else:
                                     pass
                             #print(addSubscribed)
@@ -288,14 +289,14 @@ class CreatingFinancialReports(DefaultModule):
                             """
                             if there subscription load is lower than the needed load,   then take the difference from the next load shedder
                             """
-                            if  ascending_load_shedders_no_hydrogen[last].percentageLoad + addSubscribed <0:
+                            if  ascending_load_shedders_no_hydrogen[last].percentageLoad + addSubscribed < minimumvalue_per_group:
                                 descending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(reverse=True)
                                 last = len(descending_load_shedders_no_hydrogen) - 1
                                 for countdescending, descending_load_shedder in enumerate(descending_load_shedders_no_hydrogen):
-                                        if descending_load_shedder.percentageLoad + addSubscribed <0:
+                                        if descending_load_shedder.percentageLoad + addSubscribed < minimumvalue_per_group:
                                             #print(descending_load_shedder.name  +" taken from group " + str(descending_load_shedder.percentageLoad ))
                                             addSubscribed = descending_load_shedder.percentageLoad + addSubscribed
-                                            ascending_load_shedders_no_hydrogen[last].percentageLoad = 0
+                                            ascending_load_shedders_no_hydrogen[last].percentageLoad =  minimumvalue_per_group
                                             last = last - 1
                                         else:
                                             ascending_load_shedders_no_hydrogen[last].percentageLoad = descending_load_shedder.percentageLoad + addSubscribed
