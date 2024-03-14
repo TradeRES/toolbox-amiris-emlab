@@ -119,8 +119,7 @@ def plot_investments(annual_installed_capacity, annual_commissioned, annual_deco
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.5))
     if write_titles == True:
         axs6[0].set_title(
-            scenario_name + '\n Investments by decision year (up) and by commissioning year (down) Maximum ' +
-            str(reps.maximum_investment_capacity_per_year / 1000) + 'GW')
+            scenario_name + '\n Investments by decision year (up) \n and by commissioning year (down)')
     fig6.savefig(path_to_plots + '/' + 'Capacity Investments.png', bbox_inches='tight', dpi=300)
 
 
