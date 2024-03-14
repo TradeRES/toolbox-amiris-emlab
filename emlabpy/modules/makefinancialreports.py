@@ -134,8 +134,7 @@ class CreatingFinancialReports(DefaultModule):
             start = self.reps.current_tick -4
             ticks_to_generate = list(range(start, self.reps.current_tick ))
             irrs_per_tech_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
-            for technology in self.reps.power_generating_technologies:
-                technology_name = technology.name
+            for technology_name , technology in self.reps.power_generating_technologies.items():
                 powerplants_per_tech = self.reps.get_power_plants_by_technology(technology_name)
                 irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
                 for plant in powerplants_per_tech:
