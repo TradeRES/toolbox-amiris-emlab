@@ -449,6 +449,26 @@
                         ]
                     }
                 }
+            ],
+            "readme": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -493,7 +513,8 @@
             "NL": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "readme": {}
         },
         "table_types": {
             "investmentCosts": {
@@ -557,6 +578,9 @@
             "NL": {
                 "0": "string",
                 "1": "float"
+            },
+            "readme": {
+                "0": "string"
             }
         },
         "table_default_column_type": {},
