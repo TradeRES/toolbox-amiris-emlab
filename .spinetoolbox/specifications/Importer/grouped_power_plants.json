@@ -869,10 +869,47 @@
                         ]
                     }
                 }
+            ],
+            "superGroupedNL (2)": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "superGroupedNL"
+            "superGroupedNL (2)"
         ],
         "table_options": {
             "germany2019": {
@@ -941,6 +978,10 @@
                 "read_until_row": true
             },
             "groupedDecarbonizedNL_S1": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "superGroupedNL (2)": {
                 "read_until_col": true,
                 "read_until_row": true
             }
@@ -1228,10 +1269,24 @@
                 "4": "float",
                 "5": "float",
                 "6": "float"
+            },
+            "superGroupedNL (2)": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float"
             }
         },
         "table_default_column_type": {},
-        "table_row_types": {},
+        "table_row_types": {
+            "superGroupedNL (2)": {
+                "0": "string"
+            }
+        },
         "source_type": "ExcelConnector"
     },
     "description": ""
