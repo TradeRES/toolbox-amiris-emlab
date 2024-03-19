@@ -366,7 +366,7 @@ class CreatingFinancialReports(DefaultModule):
                     if Capacity_market_costs == 0:
                         continue
                     else:
-                        non_subscription_costs = averageENS*load_shedder.VOLL
+                        non_subscription_costs = averageENS*load_shedder.VOLL*25
                         if  pd.isna(averageENS) :
                             continue
                         else:
@@ -394,13 +394,13 @@ class CreatingFinancialReports(DefaultModule):
                     if Capacity_market_costs == 0:
                         continue
                     else:
-                        non_subscription_costs = averageENS*load_shedder.VOLL
+                        non_subscription_costs = averageENS*load_shedder.VOLL*25
                         if  pd.isna(averageENS) :
                             continue
                         else:
                             unsubscribe =  (non_subscription_costs - Capacity_market_costs)/Capacity_market_costs
                             if unsubscribe <= 0:
-                                unsubscribe = round(unsubscribe/200,3) #when there are less shortages the consumers unsubscribe slower
+                                unsubscribe = round(unsubscribe/10,3) #when there are less shortages the consumers unsubscribe slower
                                 new_value = load_shedder.percentageLoad - unsubscribe # larger load percentage
                             else: # unsubscribe is positive
                                 continue

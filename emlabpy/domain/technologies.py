@@ -102,7 +102,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':
             self.fuel = reps.substances[parameter_value]
-        elif parameter_name == 'totalPotential' and alternative == reps.country:
+        elif parameter_name == 'totalPotential':
             self.totalPotential = float(parameter_value)
         elif parameter_name == 'yearlyPotential' and alternative == reps.country:
             array = parameter_value.to_dict()

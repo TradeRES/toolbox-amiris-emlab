@@ -71,7 +71,7 @@ class CapacitySubscriptionClearing(MarketModule):
         peakExpectedDemand = peak_load * (expectedDemandFactor)
         load_shedders = self.reps.get_load_shedders_by_time(self.reps.current_tick)
         for ls in load_shedders:
-            ls.price = ls.VOLL * 20
+            ls.price = ls.VOLL * 25
         sorted_demand = sorted(load_shedders, key=lambda x: x.price, reverse=True)
         total = 0
         for i, demand in enumerate(sorted_demand):
