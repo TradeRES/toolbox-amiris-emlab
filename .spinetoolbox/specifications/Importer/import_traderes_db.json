@@ -435,8 +435,8 @@
                             },
                             {
                                 "map_type": "Alternative",
-                                "position": "table_name",
-                                "value": "NL"
+                                "position": "hidden",
+                                "value": "0"
                             },
                             {
                                 "map_type": "ParameterValueMetadata",
