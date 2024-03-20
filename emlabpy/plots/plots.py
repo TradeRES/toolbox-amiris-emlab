@@ -1039,7 +1039,7 @@ def plot_grouped_monthly_production_per_type(average_yearly_generation):
 
 
 def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded):
+                      normalized_load_shedded):
     fig37, axs37 = plt.subplots(2, 1)
     fig37.tight_layout()
     production_not_shedded_TWh = production_not_shedded_MWh[["hydrogen_produced", "industrial_heat_demand"]] / 1000000
@@ -1063,9 +1063,9 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     #load_shedded_per_group_MWh.drop('hydrogen', axis=1, inplace=True)
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
-    load_shedded_per_group_MWh.plot(ax=axs38[0], legend=False)
+    load_shedded_per_group_MWh.plot(ax=axs38[0], cmap = "viridis",  legend=False)
     axs38[0].set_title('ENS', fontsize='medium')
-    percentage_load_shedded.plot(ax=axs38[1], legend=True)
+    normalized_load_shedded.plot(ax=axs38[1], cmap = "viridis", legend=True)
     axs38[1].set_title('normalized ENS (excluding industrial heating load)', fontsize='medium')
     axs38[0].set_ylabel('[MWh]', fontsize='medium')
     axs38[1].set_xlabel('Years', fontsize='medium')
@@ -1076,14 +1076,14 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
 
 
 
-def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year, total_load_shedded_per_year):
+def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year):
     LOLE_per_group.drop(inplace=True, index='hydrogen')
     max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
     fig39, axs39 = plt.subplots(3, 1)
     fig39.tight_layout()
-    VOLL_per_year.T.plot(ax=axs39[0], legend=False)
-    LOLE_per_group.T.plot(ax=axs39[1], legend=False)
-    max_ENS_in_a_row.T.plot(ax=axs39[2], legend=False)
+    VOLL_per_year.T.plot(ax=axs39[0], legend=False,  cmap='viridis' )
+    LOLE_per_group.T.plot(ax=axs39[1], legend=False,  cmap='viridis')
+    max_ENS_in_a_row.T.plot(ax=axs39[2], legend=False,  cmap='viridis')
     axs39[0].set_ylabel('Load percentage', fontsize='medium')
     axs39[1].set_ylabel('hours', fontsize='medium')
     axs39[2].set_ylabel('Max continous \n hours in a row', fontsize='medium')
@@ -2073,7 +2073,7 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     if calculate_monthly_generation == True:
         average_yearly_generation["electrolysis consumption"] = total_yearly_electrolysis_consumption.mean(axis=1)
 
-    percentage_load_shedded = pd.DataFrame()
+    normalized_load_shedded = pd.DataFrame()
     for year in years_to_generate:
         for lshedder in reps.loadShedders.values():
             if lshedder.name != "hydrogen":
@@ -2082,10 +2082,10 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
                 else:
                     sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[reps.start_simulation_year]
                 load_shedded = load_shedded_per_group_MWh.loc[year, lshedder.name]
-                percentage_load_shedded.at[year, lshedder.name] = load_shedded / sheddable_load
+                normalized_load_shedded.at[year, lshedder.name] = load_shedded / sheddable_load
 
-    percentage_load_shedded = percentage_load_shedded * 100
-    return percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation
+    normalized_load_shedded = normalized_load_shedded * 100
+    return normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation
 
 
 def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electricity_prices,
@@ -2155,7 +2155,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     unique_technologies = reps.get_unique_technologies_names()
     # conventional_technologies = ['Coal PSC', "Fuel oil PGT", 'Lignite PSC', "CCGT_CHP_backpressure_DH", \
     #                             'CCGT', 'OCGT', 'Nuclear', 'fuel_cell', "Pumped_hydro"]
-
+    if reps.capacity_remuneration_mechanism == "none":
+        calculate_capacity_mechanisms = False
+    else:
+        calculate_capacity_mechanisms = True
     renewable_technologies = reps.get_intermittent_technologies_names()
     unique_candidate_power_plants = reps.get_unique_candidate_technologies_names()
     unique_candidate_power_plants += ["Lithium_ion_battery_charge"]  # adding technology for negative production
@@ -2204,14 +2207,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     else:
         pass
 
-    percentage_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation =\
+    normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation =\
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
 
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                           percentage_load_shedded)
+                      normalized_load_shedded)
 
-    plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year,  total_load_shedded_per_year)
+    plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year)
 
     if calculate_monthly_generation == True and calculate_hourly_shedders_new == True:
         plot_grouped_monthly_production_per_type(average_yearly_generation)
@@ -2361,7 +2364,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_screening_curve(yearly_costs, marginal_costs_per_hour, path_to_plots, test_year)
     future_fuel_prices = prepare_future_fuel_prices(reps)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
-    # section -----------------------------------------------------------------------------------------------Write Excel
 
     extended_lifetime_tech = prepare_pp_lifetime_extension(reps)
     # section -----------------------------------------------------------------------------------------------Write Excel
@@ -2385,7 +2387,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         last_year_operational_capacity_data = pd.read_excel(path_to_results, sheet_name='last_year_capacity',
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
-        AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology', index_col=0)
+        AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology',   index_col=0)
         Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
         Overall_NPV_data = pd.read_excel(path_to_results, sheet_name='overallNPV', index_col=0)
         Overall_IRR_data = pd.read_excel(path_to_results, sheet_name='overallIRR', index_col=0)
@@ -2443,7 +2445,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             capacity_market_capacity_data = pd.concat([capacity_market_capacity_data, df], axis=1)
 
         total_costs_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_total_costs', index_col=0)
-        lifeextension_data[scenario_name]  = extended_lifetime_tech["Extension"]
+        if extended_lifetime_tech.size>0:
+            lifeextension_data[scenario_name]  = extended_lifetime_tech["Extension"]
         Last_year_PDC_data[scenario_name] = electricity_prices[years_to_generate[-1]]
         CostRecovery_data[scenario_name] = cost_recovery
         LOL_data[scenario_name] = shortages
@@ -2455,7 +2458,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Overall_IRR_data[scenario_name] = overall_IRR_per_technology.T
         ElectricityPrices_data[scenario_name] = average_electricity_price["wholesale price"]
         TotalSystemCosts_data[scenario_name] = DispatchSystemCostInEUR
-        ENS_data[scenario_name] = load_shedded_per_group_MWh["base"]
+        ENS_data[scenario_name] = load_shedded_per_group_MWh.sum(axis=1)
         Inflexible_load[scenario_name] = yearly_load.sum(axis=0)
         ShareRES_data[scenario_name] = share_RES
         Dismantled_capacity_data[scenario_name] = capacity_per_status.Decommissioned
@@ -2746,7 +2749,6 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
     global write_titles
     global template_excel
 
-
     write_titles = True
     save_excel = False
     test_tick = 0
@@ -2760,7 +2762,6 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
     calculate_investments = True
     calculate_investments_per_iteration = False  # ProfitsC
     calculate_profits_candidates_per_iteration = False
-    calculate_capacity_mechanisms = True
     calculate_vres_support = False
     electrolyzer_read = True
 
@@ -2846,45 +2847,15 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-SR_newdata"]
-    results_excel = "NL_CM_newexpectationFuture.xlsx"
+    SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
+    #SCENARIOS = ["NL-CS_interrupted"]
+    results_excel = "NL_CRM.xlsx"
     existing_scenario = True
-    plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario)
+    plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
 # write the name of the existing scenario or the new scenario
 # The short name from the scenario will start from "-"
-
-# SCENARIOS = ["NL-noSR", "NL-strategic_reserve_7", "NL-strategic_reserve_15"]
-
-# SCENARIOS = ["NL-LowRES_(2010)", "NL-medianRES_(2004)", "NL-highRES_(1990)"]
-# SCENARIOS = ["NL-SR_10_1500_with_loans", "NL-Strategic_Reserve_10_1500"]
-# "S1_S2"
-# SCENARIOS = ["NL-fix_profiles", "NL-stochastic_increase_demand", "NL-iteration1", "NL-iteration2",
-#              "NL-iteration3", "NL-iteration4", "NL-iteration5", "NL-iteration6",
-#              "NL-iteration7", "NL-iteration8", "NL-iteration9", "NL-iteration10",
-#             ]  # add a dash before!
-# SCENARIOS = ["NL-capacity market_with_loans", "NL-capacity_market_no_loans"]
-# SCENARIOS = [ "NL-noSR", "NL-Strategic_Reserve_5_1500", "NL-SR4years"]
-# "NL-EOM-nolifetimeextension", "NL-EOM_5GWNuclear","NL-EOM_3GWNuclear","NL-EOM_lessDSR","NL-EOM_DSR500"
-# SCENARIOS = ["NL-EOM-newData" , "NL-CM40000", "NL-CM60000","NL-CM60000noRES"]
-# SCENARIOS = ["NL-EOM-newData", "NL-CM40000", "NL-CM60000", "NL-CM60000noRES", "NL-CM60000_DSR150"]
-# results_excel = "NL_CMarketnewData.xlsx"
-
-#
-# SCENARIOS = ["NL-CMrecalculatingmarketforCM_5years"]
-# results_excel = "NL_S1.xlsx"
-
-
-# SCENARIOS = ["NL-EOM-newData", "NL-SR_M10_P1600",  "NL-SR_M10_P1600",   "NL-SR_M15_P1600",  "NL-SR_M20_P1600"]
-# results_excel = "NL_SRnewData.xlsx"
-
-# SCENARIOS = ["NL-CM60000_S1"]
-# results_excel = "NL_EOM_S1_S4.xlsx"
-
-# "EOM-newData" , "CM40000", "CM40000_nofutureExpectation","CM60000","CM60000noRES", "CM60000_DSR150"
-# SIMULATION_YEARS = list(range(0,40) )
-# Set the x-axis ticks and labels
 
 
 # amirisdb = SpineDB(sys.argv[2])
