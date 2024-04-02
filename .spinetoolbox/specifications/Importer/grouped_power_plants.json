@@ -1323,7 +1323,7 @@
                 "7": "float"
             },
             "groupedDecarbonizedNLCRMs": {
-                "0": "float",
+                "0": "string",
                 "1": "float",
                 "2": "float",
                 "3": "float",
