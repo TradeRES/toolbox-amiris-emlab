@@ -140,14 +140,14 @@ class CapacityMarket(Market):
         self.PriceCap = 0
         self.forward_years_CM = 0
         self.PriceCapTimesCONE = 0
-        self.allowed_technologies = []
+        self.allowed_technologies_capacity_market = []
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         if parameter_name == 'forward_years_CM':
             self.forward_years_CM = int(parameter_value)
         elif parameter_name == 'allowed_technologies':
-            self.allowed_technologies = parameter_value.split(",")
+            self.allowed_technologies_capacity_market = parameter_value.split(",")
         else:
             setattr(self, parameter_name, parameter_value)
 

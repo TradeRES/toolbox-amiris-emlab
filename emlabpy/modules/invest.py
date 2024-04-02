@@ -635,7 +635,12 @@ class Investmentdecision(DefaultModule):
 
     def group_power_plants(self):
         plants_to_delete = []
-        for candidate_technology in self.reps.get_unique_candidate_technologies():
+        if self.reps.capacity_remuneration_mechanism == "capacity_market":
+            capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
+            technologies = self.reps.get_technologies_except_marginals_for_CM(capacity_market.allowed_technologies_capacity_market)
+        else:
+            technologies = self.reps.get_unique_candidate_technologies()
+        for candidate_technology in technologies:
             commissionedYear = self.reps.current_year + self.look_ahead_years
             new_plants_per_tech = self.reps.get_power_plants_invested_in_tick_by_technology(commissionedYear,
                                                                                             candidate_technology.name)

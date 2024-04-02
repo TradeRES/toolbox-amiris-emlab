@@ -175,7 +175,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
     cones = {}
     netcones = {}
     for candidatepowerplant in candidatepowerplants:
-        if candidatepowerplant.technology.name not in capacity_market.allowed_technologies:
+        if candidatepowerplant.technology.name not in capacity_market.allowed_technologies_capacity_market:
             continue
         else:
             technology = candidatepowerplant.technology
@@ -208,7 +208,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         print("cones is empty")
     else:
         reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
-        technology_highest_availability = reps.get_allowed_technology_with_highest_availability(capacity_market.allowed_technologies)
+        technology_highest_availability = reps.get_allowed_technology_with_highest_availability(capacity_market.allowed_technologies_capacity_market)
         netCONE = netcones[technology_highest_availability]
         cone = cones[technology_highest_availability]
         chosenCONE = max(netCONE, cone * capacity_market.PriceCapTimesCONE)
