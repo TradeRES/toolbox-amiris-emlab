@@ -141,7 +141,7 @@ class CapacityMarketClearing(MarketModule):
                 if total_supply_volume > sdc.lm_volume and total_supply_volume < sdc.um_volume:
                     clearing_price =  supply.price
                 else:
-                    clearing_price =   sdc.get_price_at_volume(total_supply_volume + supply.amount)
+                    clearing_price =   sdc.get_price_at_volume(total_supply_volume + supply.amount/2)
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted
                 supply.accepted_amount = supply.amount
                 print(supply.plant , " partly ACCEPTED ", total_supply_volume, "", clearing_price)
