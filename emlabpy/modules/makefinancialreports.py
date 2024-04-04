@@ -247,8 +247,8 @@ class CreatingFinancialReports(DefaultModule):
             """
             start = self.reps.current_tick -1
             ticks_to_generate = list(range(start, self.reps.current_tick+1 ))
-            market = self.reps.get_capacity_market_in_country(self.reps.country)
-            capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time( market.name, self.reps.current_tick)
+            capacity_subscription_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
+            capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time( capacity_subscription_market.name, self.reps.current_tick)
             peak_demand = self.reps.get_peak_future_demand_by_year(self.reps.current_year)
             """
             increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
@@ -339,20 +339,18 @@ class CreatingFinancialReports(DefaultModule):
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
 
     def modify_CS_parameter_costs(self):
+        """
+        modify load percentage for Capacity Subscription according to the difference of costs of subscribing and not subscribing
+        """
         if  self.reps.current_tick < self.start_tick_CS:
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
-            """
-            modify load percentage for Capacity Subscription
-            """
+
             start = self.reps.current_tick -1
             ticks_to_generate = list(range(start, self.reps.current_tick+1 ))
-            market = self.reps.get_capacity_market_in_country(self.reps.country)
-            capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time( market.name, self.reps.current_tick)
+            capacity_subscription_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
+            capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time( capacity_subscription_market.name, self.reps.current_tick)
             peak_demand = self.reps.get_peak_future_demand_by_year(self.reps.current_year)
-            """
-            increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
-            """
             ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(reverse=False)
             last = len(ascending_load_shedders_no_hydrogen) - 1
             minimumvalue_per_group = 0.01

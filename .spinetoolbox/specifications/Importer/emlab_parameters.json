@@ -1337,9 +1337,10 @@
                 "3": "float",
                 "4": "float",
                 "5": "string",
-                "6": "string",
+                "6": "boolean",
                 "7": "string",
-                "8": "string"
+                "8": "string",
+                "9": "string"
             },
             "ElectricitySpotMarkets": {
                 "0": "string",

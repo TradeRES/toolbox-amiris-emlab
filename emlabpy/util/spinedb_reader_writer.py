@@ -171,7 +171,7 @@ class SpineDBReaderWriter:
             elif row['parameter_name'] == 'capacity_market_cleared_in_investment':
                 reps.capacity_market_cleared_in_investment = bool(row['parameter_value'])
             elif row['parameter_name'] == 'round_for_capacity_market':
-                reps.round_for_capacity_market = bool(row['parameter_value'])
+                reps.round_for_capacity_market_y_1 = bool(row['parameter_value'])
             elif row['parameter_name'] == 'change_IRR':
                 reps.change_IRR= bool(row['parameter_value'])
         # these are the years that need to be added to the power plants on the first simulation tick
@@ -263,10 +263,6 @@ class SpineDBReaderWriter:
         self.stage_object_parameter('MarketStabilityReserve', param_name)
         self.stage_object_parameter_values('MarketStabilityReserve', msr.name, [(param_name, reserve)], time)
 
-    def stage_bids_status(self, bid):
-        self.stage_object_parameter_values("Bids", bid.name,
-                                           [('accepted_amount', bid.accepted_amount),
-                                            ('status', bid.status)], '0')
 
     def stage_power_plant_status(self, power_plant):
         self.stage_object(self.powerplant_installed_classname, power_plant.name)
@@ -440,6 +436,14 @@ class SpineDBReaderWriter:
             self.db.import_object_parameter_values(
                 [(self.powerplant_installed_classname, power_plant_name, "Status", values.status, '0'),
                  (self.powerplant_installed_classname, power_plant_name, "Age", values.age, '0')])
+
+    def stage_init_years_in_long_term_capacity_market(self):
+        self.stage_object_parameter(self.powerplant_installed_classname, 'years_left_in_LCM')
+        self.stage_object_parameter(self.powerplant_installed_classname, "last_year_in_capacity_market")
+    def stage_power_plant_years_in_long_term_capacity_market(self, power_plant, last_year_in_capacity_market):
+        self.db.import_object_parameter_values(
+            [(self.powerplant_installed_classname, power_plant, "last_year_in_capacity_market", last_year_in_capacity_market, '0'),
+             ])
 
     def stage_init_power_plants_fixed_costs(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['actualFixedOperatingCost'])
@@ -815,9 +819,10 @@ class SpineDBReaderWriter:
         self.stage_object_parameters(self.financial_reports_object_classname,
                                      ['capacityMechanismRevenues'])
 
-    def stage_CM_revenues(self, power_plant, amount, tick: int):
+    def stage_CM_revenues(self, power_plant, amount, ticks):
         self.stage_object(self.financial_reports_object_classname, power_plant)
-        self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
+        for tick in ticks:
+            self.stage_object_parameter_values(self.financial_reports_object_classname, power_plant,
                                            [('capacityMechanismRevenues', Map([str(tick)], [amount]))],
                                            '0')
 
@@ -1053,7 +1058,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
                 setattr(pp.loan, parameter_name, parameter_value)
             else:
                 setattr(pp.downpayment, parameter_name, parameter_value)
-    elif object_class_name == 'FinancialReports':
+    elif object_class_name == 'FinancialReports' :
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.candidatesNPV, CandidatesNPV)

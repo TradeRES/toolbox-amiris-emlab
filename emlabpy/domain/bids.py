@@ -12,6 +12,7 @@ class Bid(ImportObject):
         self.bidder = ""
         self.market = ""
         self.plant = ""
+        self.long_term_contract = False
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         setattr(self, parameter_name, parameter_value)

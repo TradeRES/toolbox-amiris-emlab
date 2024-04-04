@@ -58,6 +58,7 @@ class PowerPlant(EMLabAgent):
         self.initialEnergyLevelInMWH = 0
         self.DecommissionInYear = 0
         self.cash = 0
+        self.last_year_in_capacity_market = 0 # should be initiated with a value higher than the last tick
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if reps.runningModule != "plotting" and self.name in (
@@ -82,6 +83,8 @@ class PowerPlant(EMLabAgent):
             self.technology = reps.power_generating_technologies[parameter_value]
         elif parameter_name == 'Capacity':
             self.capacity = parameter_value
+        elif parameter_name == 'last_year_in_capacity_market':
+            self.last_year_in_capacity_market = int(parameter_value)
         elif parameter_name == 'Age':
             if reps.current_tick == 0 and reps.runningModule == "run_decommission_module":
                 # In the first decommission step,the year of the power plants list is added to the age of power plants

@@ -53,8 +53,8 @@ class StrategicReserveAssignment_ger(MarketModule):
         self.reserveFull = False
 
     def act(self):
-        # Retrieve the active capacity market
-        market = self.reps.get_capacity_market_in_country(self.reps.country)
+        # Retrieve the active capacity market just for clearing functionality
+        market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
         # Retrieve the active strategic reserve operator in the country
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
@@ -194,7 +194,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         print("SR_payment_to_plant" + str(SR_payment_to_plant))
 
         # saving the revenues in financial reports
-        self.reps.dbrw.stage_CM_revenues(plant.name, SR_payment_to_plant, self.reps.current_tick)
+        self.reps.dbrw.stage_CM_revenues(plant.name, SR_payment_to_plant, [self.reps.current_tick])
         self.reps.financialPowerPlantReports[plant.name].capacityMarketRevenues_in_year = SR_payment_to_plant
         #Payment (fixed costs and variable costs ) from operator to plant
         self.reps.createCashFlow(operator, plant,

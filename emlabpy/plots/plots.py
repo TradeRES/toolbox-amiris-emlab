@@ -292,7 +292,7 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
 
 def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                      CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume,
-                    total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp,
+                    total_costs_CM,  SR_operator_revenues, cm_revenues_per_pp,
                      path_to_plots, colors_unique_techs):
     # df.plot(x='Team', kind='bar', stacked=True,
     axs26 = accepted_pp_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
@@ -331,40 +331,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight',
                       dpi=300)
 
-    if ran_CRM == "capacity_market":
-        axs27 = CM_clearing_volume.plot()
-        capacity_market_future_volume.plot(ax=axs27,  marker='o', linestyle='--')
-        axs27.set_axisbelow(True)
-        plt.xlabel('Simulation year', fontsize='medium')
-        plt.ylabel('CM clearing volume [€/MW]', fontsize='medium')
-        plt.legend(["realized", "estimated"],fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
-        plt.grid()
-        axs27.set_title('Capacity Mechanism clearing volume')
-        fig27 = axs27.get_figure()
-        fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
-
-        axs28 = CM_clearing_price.plot()
-        capacity_market_future_price.plot(ax=axs28 ,marker='o', linestyle='--')
-        axs28.set_axisbelow(True)
-        plt.xlabel('Simulation year', fontsize='medium')
-        plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
-        plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
-        plt.grid()
-        axs28.set_title('Capacity Mechanism clearing price')
-        fig28 = axs28.get_figure()
-        fig28.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing price.png', bbox_inches='tight', dpi=300)
-
-        axs29 = total_costs_CM.plot()
-        axs29.set_axisbelow(True)
-        plt.xlabel('tick', fontsize='medium')
-        plt.ylabel('total costs [€]', fontsize='medium')
-        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
-        plt.grid()
-        axs29.set_title('Capacity Mechanism total costs')
-        fig29 = axs29.get_figure()
-        fig29.savefig(path_to_plots + '/' + 'Capacity Mechanism total costs.png', bbox_inches='tight', dpi=300)
-
-    else:
+    if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
         axs29 = SR_operator_revenues.plot()
         axs29.set_axisbelow(True)
         plt.xlabel('tick', fontsize='medium')
@@ -386,7 +353,38 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs28.set_title('SR_results_per_pp')
         fig28 = axs28.get_figure()
         fig28.savefig(path_to_plots + '/' + 'SR_results_per_pp.png', bbox_inches='tight', dpi=300)
+    else:
+        axs27 = CM_clearing_volume.plot()
+        capacity_market_future_volume.plot(ax=axs27,  marker='o', linestyle='--')
+        axs27.set_axisbelow(True)
+        plt.xlabel('Simulation year', fontsize='medium')
+        plt.ylabel('CM clearing volume [€/MW]  in effective year ', fontsize='medium')
+        plt.legend(["realized", "estimated"],fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid()
+        axs27.set_title('Capacity Mechanism clearing volume')
+        fig27 = axs27.get_figure()
+        fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
 
+        axs28 = CM_clearing_price.plot()
+        capacity_market_future_price.plot(ax=axs28 ,marker='o', linestyle='--')
+        axs28.set_axisbelow(True)
+        plt.xlabel('Simulation year', fontsize='medium')
+        plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
+        plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid()
+        axs28.set_title('Capacity Mechanism clearing price in effective year')
+        fig28 = axs28.get_figure()
+        fig28.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing price.png', bbox_inches='tight', dpi=300)
+
+        axs29 = total_costs_CM.plot()
+        axs29.set_axisbelow(True)
+        plt.xlabel('tick', fontsize='medium')
+        plt.ylabel('total costs [€]', fontsize='medium')
+        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid()
+        axs29.set_title('Capacity Mechanism total costs')
+        fig29 = axs29.get_figure()
+        fig29.savefig(path_to_plots + '/' + 'Capacity Mechanism total costs.png', bbox_inches='tight', dpi=300)
 
 def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, profits_with_loans_all,
                                         path_to_plots, technology_colors):
@@ -1073,9 +1071,21 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig38.savefig(path_to_plots + '/' + 'Load_shedded.png', bbox_inches='tight', dpi=300)
     plt.close('all')
-
-
-
+def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_per_group):
+    print("d")
+    CM_subsription_cost = CM_clearing_price.values*load_per_group
+    cost_non_subcription.plot()
+    fig38, axs38 = plt.subplots(2, 1)
+    fig38.tight_layout()
+    CM_subsription_cost.plot(ax=axs38[0], cmap = "viridis",  legend=False)
+    axs38[0].set_title('Subscription costs', fontsize='medium')
+    cost_non_subcription.plot(ax=axs38[1], cmap = "viridis", legend=True)
+    axs38[1].set_title('Non subcription costs', fontsize='medium')
+    axs38[0].set_ylabel('[Eur]', fontsize='medium')
+    axs38[1].set_xlabel('Years', fontsize='medium')
+    axs38[1].set_ylabel('[Eur]', fontsize='medium')
+    fig38.savefig(path_to_plots + '/' + 'Costsnonsubscription.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year):
     LOLE_per_group.drop(inplace=True, index='hydrogen')
     max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
@@ -1142,18 +1152,18 @@ def prepare_pp_decommissioned(reps):
     groupeddf2 = plants_decommissioned_per_year.groupby(['decommissionInYear', 'technology'])[
         'Capacity'].sum()
 
-    df2 = groupeddf2.unstack()
-    df1['category'] = 'expected'
-    df2['category'] = 'decommissioned'
-    combined_df = pd.concat([df1, df2])
-    melted = pd.melt(combined_df, id_vars=['category'], ignore_index=False)
-    melted.index.name = 'year'
-    melted = melted.reset_index()
-    fig = sns.catplot(data=melted, x="year", y="value", hue="category", col="technology", kind="bar", height=4,
-                      aspect=1.2)
-    [plt.setp(ax.get_xticklabels(), rotation=90) for ax in fig.axes.flat]
-    # fig.set_xticklabels(fig.get_xticklabels(), rotation=90, horizontalalignment='right')
-    fig.savefig(path_to_plots + '/' + 'DecommissionedvsExpected2.png', bbox_inches='tight', dpi=300)
+    # df2 = groupeddf2.unstack()
+    # df1['category'] = 'expected'
+    # df2['category'] = 'decommissioned'
+    # combined_df = pd.concat([df1, df2])
+    # melted = pd.melt(combined_df, id_vars=['category'], ignore_index=False)
+    # melted.index.name = 'year'
+    # melted = melted.reset_index()
+    # fig = sns.catplot(data=melted, x="year", y="value", hue="category", col="technology", kind="bar", height=4,
+    #                   aspect=1.2)
+    # [plt.setp(ax.get_xticklabels(), rotation=90) for ax in fig.axes.flat]
+    # # fig.set_xticklabels(fig.get_xticklabels(), rotation=90, horizontalalignment='right')
+    # fig.savefig(path_to_plots + '/' + 'DecommissionedvsExpected2.png', bbox_inches='tight', dpi=300)
 
 
 def prepare_pp_lifetime_extension(reps):
@@ -1654,11 +1664,11 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     CM_clearing_volume = pd.DataFrame(index=ticks_to_generate).fillna(0)
     capacity_market_future_volume = pd.DataFrame(index=ticks_to_generate).fillna(0)
     SR_operator_revenues = pd.DataFrame(index=ticks_to_generate).fillna(0)
-    ticks_to_generate.pop()  # the last year doesnt have the results of the following year
+    #ticks_to_generate.pop()  # the last year doesnt have the results of the following year #Attention
     # attention: FOR STRATEGIC RESERVES
     sr_operator = reps.get_strategic_reserve_operator(reps.country)
-    if sr_operator.cash != 0:
-        ran_CRM = "strategic_reserve"
+
+    if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
         for tick in ticks_to_generate:
             if tick in sr_operator.list_of_plants_all:
                 accepted_per_tick = sr_operator.list_of_plants_all[tick]
@@ -1674,14 +1684,15 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
 
     # attention: FOR CAPACITY MARKETS
     else:
-        ran_CRM = "capacity_market"
-        market = reps.get_capacity_market_in_country(reps.country)
+        if reps.capacity_remuneration_mechanism == "capacity_market":
+            market = reps.get_capacity_market_in_country(reps.country, False)
+        else:
+            market = reps.get_capacity_market_in_country(reps.country, True)
         for tick in ticks_to_generate:
-            CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick)
-            #CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick)[1]
-            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)
-            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick)
-            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)
+            CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick + market.forward_years_CM)
+            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
+            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick + market.forward_years_CM)
+            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
 
     cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
@@ -1708,7 +1719,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     capacity_mechanisms_volume_per_tech.dropna(axis=1, how='all', inplace=True)
     return (CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech,
             CM_clearing_price, capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,total_costs_CM, \
-            ran_CRM, SR_operator_revenues, cm_revenues_per_pp)
+             SR_operator_revenues, cm_revenues_per_pp)
 
 
 # def market_value_per_technology(reps, unique_technologies, years_to_generate):
@@ -2040,6 +2051,7 @@ def prepareCONE():
 def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
     load_shedded_per_group_MWh = pd.DataFrame()
+    cost_non_subcription = pd.DataFrame()
     total_yearly_electrolysis_consumption = pd.DataFrame()
     total_yearly_hydrogen_input_demand = reps.loadShedders["hydrogen"].ShedderCapacityMW * reps.hours_in_year
     hydrogen_input_demand = [reps.loadShedders["hydrogen"].ShedderCapacityMW] * reps.hours_in_year
@@ -2047,8 +2059,9 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
                                'Industrial_load_shifter'].averagemonthlyConsumptionMWh * 12
 
     total_load_shedded = pd.DataFrame()
+    load_per_group =  pd.DataFrame()
     for year in years_to_generate:
-        for name, values in reps.loadShedders.items():
+        for name, LS in reps.loadShedders.items():
             selected_df = hourly_load_shedders_per_year[year]
             test_list = [int(i) for i in selected_df.columns.values]
             selected_df.columns = test_list
@@ -2062,6 +2075,7 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
                 id_shedder = int(name)* 100000
                 total_load_shedded[name] = selected_df[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = selected_df[(id_shedder)].sum()
+                cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum()*LS.VOLL*25
 
         if industrial_demand_as_flex_demand_with_cap == True:
             flexconsumer_MWh = hourly_industrial_heat[year].sum()
@@ -2078,14 +2092,18 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
         for lshedder in reps.loadShedders.values():
             if lshedder.name != "hydrogen":
                 if reps.capacity_remuneration_mechanism == "capacity_subscription":
-                    sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[year]
+                    percentage_load = lshedder.percentageLoad[year]
+                    sheddable_load = yearly_load[year].sum() * percentage_load
                 else:
-                    sheddable_load = yearly_load[year].sum() * lshedder.percentageLoad[reps.start_simulation_year]
+                    percentage_load = lshedder.percentageLoad[reps.start_simulation_year]
+                    sheddable_load = yearly_load[year].sum() * percentage_load
                 load_shedded = load_shedded_per_group_MWh.loc[year, lshedder.name]
                 normalized_load_shedded.at[year, lshedder.name] = load_shedded / sheddable_load
 
+                load_per_group.at[year, lshedder.name] = percentage_load * reps.get_realized_peak_demand_by_year( year)
     normalized_load_shedded = normalized_load_shedded * 100
-    return normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation
+    return (normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh,
+            average_yearly_generation, cost_non_subcription, load_per_group)
 
 
 def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electricity_prices,
@@ -2207,7 +2225,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     else:
         pass
 
-    normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation =\
+    (normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation,
+     cost_non_subcription, load_per_group) =\
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
 
 
@@ -2314,18 +2333,18 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
         CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
-            capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, ran_CRM, \
+            capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, \
             SR_operator_revenues, cm_revenues_per_pp = \
             prepare_accepted_CapacityMechanism(
             reps, ticks_to_generate)
         plot_CM_revenues(CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                          CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,
-                         total_costs_CM, ran_CRM, SR_operator_revenues, cm_revenues_per_pp, path_to_plots,
+                         total_costs_CM, SR_operator_revenues, cm_revenues_per_pp, path_to_plots,
                          colors_unique_techs)
-        if ran_CRM == "strategic_reserve":
+        plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
+        if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
-        elif ran_CRM == "capacity_market":
-            plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
+
     if reps.capacity_remuneration_mechanism == "capacity_market":
         prepareCONE()
     if calculate_vres_support == True:
@@ -2349,7 +2368,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         if calculate_capacity_mechanisms == True:
             CM_price = total_costs_CM / annual_generation
             average_electricity_price['CRM_Costs'] = CM_price.values
-            if ran_CRM == "strategic_reserve":
+            if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
                 revenues_SR = SR_operator_revenues[0] / annual_generation
                 average_electricity_price['SR_revenues'] = - revenues_SR.values
 
@@ -2467,9 +2486,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         if calculate_capacity_mechanisms == True:
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
             CRM_data[scenario_name] = CM_price.values
-            if ran_CRM == "strategic_reserve":
+            if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
                 SR_data[scenario_name] = revenues_SR.values
-            elif ran_CRM == "capacity_market":
+            else:
                 clearing_price_capacity_market_data[scenario_name] = CM_clearing_price
 
         if calculate_vres_support == True:
@@ -2847,10 +2866,11 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    #SCENARIOS = ["NL-CS_interrupted"]
+    #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
+    SCENARIOS = ["NL-test"]
+
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 

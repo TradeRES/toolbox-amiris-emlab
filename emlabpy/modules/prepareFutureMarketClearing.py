@@ -38,10 +38,10 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 self.power_plants_list = []
                 self.look_ahead_years = reps.lookAhead
 
-        elif reps.round_for_capacity_market ==True:
-            print("CAPACITY MARKET")
-            if self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription"]:
-                market = reps.get_capacity_market_in_country(reps.country)
+        elif reps.round_for_capacity_market_y_1 ==True:
+            print("for CAPACITY MARKET Y-1")
+            if self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription", "forward_capacity_market"]:
+                market = reps.get_capacity_market_in_country(reps.country, long_term=False)
                 self.look_ahead_years = market.forward_years_CM
             elif self.reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
                 SR_operator = self.reps.get_strategic_reserve_operator(self.reps.country)
@@ -153,9 +153,9 @@ class PrepareFutureMarketClearing(PrepareMarket):
                       except the ones that should be decommissioned by then
                     """
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-                elif  self.reps.round_for_capacity_market ==True:
+                elif  self.reps.round_for_capacity_market_y_1 ==True:
                     """
-                    for the capacity market estimation all power plants that might be decommissioned should participate in the market ? 
+                    for the capacity market y-1 all power plants that might be decommissioned should participate in the market
                     """
                     if fictional_age < powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                         self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)

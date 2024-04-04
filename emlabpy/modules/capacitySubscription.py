@@ -45,7 +45,7 @@ class CapacitySubscriptionClearing(MarketModule):
 
     def act(self):
         print("capacity subscription clearing")
-        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country)
+        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
         clearing_price, total_supply_volume, = self.capacity_subscription_clearing(sorted_ppdp, capacity_market,
@@ -55,8 +55,7 @@ class CapacitySubscriptionClearing(MarketModule):
         for accepted in accepted_supply_bid:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount,
-                                             self.reps.current_tick + capacity_market.forward_years_CM)
-            self.reps.dbrw.stage_bids_status(accepted)
+                                             [self.reps.current_tick + capacity_market.forward_years_CM])
 
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.reps.current_tick + capacity_market.forward_years_CM)

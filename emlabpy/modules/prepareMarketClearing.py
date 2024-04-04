@@ -104,7 +104,7 @@ class PrepareMarket(DefaultModule):
                     peakdemand = 0
                     load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
 
-                    if self.reps.investmentIteration <= 0 or self.reps.round_for_capacity_market == True:
+                    if self.reps.investmentIteration <= 0 or self.reps.round_for_capacity_market_y_1 == True:
                         for load_shedder_name , load_shedder in self.reps.loadShedders.items():
                             if load_shedder_name == "hydrogen":
                                 pass
@@ -115,8 +115,6 @@ class PrepareMarket(DefaultModule):
                                     originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                     originalload[1] = (originalload[1] * fuel_price)
                                     peakdemand += originalload[1]
-                                    # print("original peak demand" )
-                                    # print(max(originalload[1] ))
                                     load_shedder_file_for_amiris = os.path.join(load_folder, os.path.normpath(load_shedder.TimeSeriesFile))
                                     originalload.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=False)
                                 else:

@@ -22,7 +22,6 @@ from modules.payments import PayAndBankCO2Allowances, UseCO2Allowances
 from util.spinedb_reader_writer import *
 
 from modules.capacitymarket import *
-from modules.forwardcapacitymarket import *
 from modules.strategicreserve_new import *
 from modules.strategicreserve_swe import *
 from modules.strategicreserve_ger import *
@@ -190,19 +189,19 @@ try:  # Try statement to always close DB properly
 
         elif reps.capacity_remuneration_mechanism == "capacity_market":
             print('Start Run Capacity Market')
-            capacity_market_submit_bids = CapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-            capacity_market_clear = CapacityMarketClearing(reps)  # This function adds rep to class capacity markets
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps,  long_term=False)  # This function stages new dispatch power plant
+            capacity_market_clear = CapacityMarketClearing(reps, long_term=False)  # This function adds rep to class capacity markets
             capacity_market_submit_bids.act_and_commit()
             capacity_market_clear.act_and_commit()
             print('End Run Capacity Market')
 
         elif reps.capacity_remuneration_mechanism == "forward_capacity_market":
-            print('Start Run Capacity Market')
-            capacity_market_submit_bids = ForwardCapacityMarketSubmitBids(reps)  # This function stages new dispatch power plant
-            capacity_market_clear = ForwardCapacityMarketClearing(reps)  # This function adds rep to class capacity markets
+            print('End Forward Capacity Market and start yearly')
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps, long_term=True)  # forward_capacity_market
+            capacity_market_clear = CapacityMarketClearing(reps, long_term=True)   # forward_capacity_market
             capacity_market_submit_bids.act_and_commit()
             capacity_market_clear.act_and_commit()
-            print('End Run Capacity Market')
+            print('End Forward Capacity Market')
 
         elif reps.capacity_remuneration_mechanism == "strategic_reserve_swe":
             print('Start strategic reserve')
