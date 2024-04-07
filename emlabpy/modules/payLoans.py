@@ -25,7 +25,7 @@ class PayForLoansRole(DefaultModule):
                 if plant.age >= 0:
                     loan = plant.getLoan()
 
-                    if loan is not None:
+                    if loan.getAmountPerPayment() != None:
                         if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                             payment = loan.getAmountPerPayment()
                             loan.setNumberOfPaymentsDone(loan.getNumberOfPaymentsDone() + 1)
@@ -40,9 +40,11 @@ class PayForLoansRole(DefaultModule):
                             self.reps.dbrw.set_number_loan_payments(plant)
                             # print("Paying {0} (euro) for loan {1}".format(payment, plant.name))
                             # print("Number of payments done {0}, total needed: {1}".format( loan.getNumberOfPaymentsDone(), loan.getTotalNumberOfPayments()))
+                    else:
+                        raise Exception("Loan amount per payment is 0")
                 else:
                     downpayment = plant.downpayment
-                    if downpayment is not None:
+                    if downpayment.getAmountPerPayment() != None:
                         if downpayment.getNumberOfPaymentsDone() < downpayment.getTotalNumberOfPayments():
                             if - plant.getActualLeadtime() <= plant.age:
                                 payment = downpayment.getAmountPerPayment()

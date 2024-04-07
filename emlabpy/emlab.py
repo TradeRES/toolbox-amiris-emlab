@@ -13,7 +13,6 @@ Jim Hommes - 25-3-2021
 import logging
 import time
 
-
 from modules.payLoans import PayForLoansRole
 from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
@@ -35,7 +34,7 @@ if not os.path.isdir('logs'):
     os.makedirs('logs')
 logging.basicConfig(filename='logs/' + str(round(time.time() * 1000)) + '-log.txt', level=logging.DEBUG)
 # Log to console? Uncomment next line
-#logging.getLogger().addHandler(logging.StreamHandler())
+# logging.getLogger().addHandler(logging.StreamHandler())
 logging.info('Starting EM-Lab Run')
 
 run_electricity_spot_market = False
@@ -51,7 +50,7 @@ run_initialize_power_plants = False
 run_pay_loans = False
 run_create_results = False
 run_CRM = False
-#tic = time.perf_counter()
+# tic = time.perf_counter()
 # Loop over provided arguments and select modules
 # Depending on which booleans have been set to True, these modules will be run
 # logging.info('Selected modules: ' + str(sys.argv[2:]))
@@ -84,13 +83,13 @@ for arg in sys.argv[3:]:
 # following modules need the results from AMIRIS that are being stored in a DB
 if sys.argv[3] in globalNames.modules_need_AMIRIS:
     emlab_url = sys.argv[1]
-    logging.info('emlab database: %s' , str(emlab_url))
+    logging.info('emlab database: %s', str(emlab_url))
     amiris_url = sys.argv[2]
-    logging.info('amiris database:  %s' , str(amiris_url))
+    logging.info('amiris database:  %s', str(amiris_url))
     spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
 else:
     emlab_url = sys.argv[1]
-    logging.info('emlab database:  %s' , str(emlab_url))
+    logging.info('emlab database:  %s', str(emlab_url))
     spinedb_reader_writer = SpineDBReaderWriter("none", emlab_url)
 
 try:  # Try statement to always close DB properly
@@ -170,14 +169,22 @@ try:  # Try statement to always close DB properly
             strategic_reserve_submit_bids.act_and_commit()
             strategic_reserve.act_and_commit()
             print('End strategic reserve')
-
-        elif  reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
+        elif reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
             print('Start strategic reserve german')
             strategic_reserve_submit_bids = StrategicReserveSubmitBids_ger(reps)
             strategic_reserve = StrategicReserveAssignment_ger(reps)
             strategic_reserve_submit_bids.act_and_commit()
             strategic_reserve.act_and_commit()
             print('End strategic reserve german')
+        elif reps.capacity_remuneration_mechanism == "strategic_reserve_swe":
+            print('Start strategic reserve')
+            strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
+            strategic_reserve = StrategicReserveAssignment_swe(reps)
+            strategic_reserve_submit_bids.act_and_commit()
+            strategic_reserve.act_and_commit()
+            print('End strategic reserve')
+        else:
+            print('no SR')
 
         if reps.capacity_remuneration_mechanism == "capacity_subscription":
             print('Start capacity subscription')
@@ -189,8 +196,10 @@ try:  # Try statement to always close DB properly
 
         elif reps.capacity_remuneration_mechanism == "capacity_market":
             print('Start Run Capacity Market')
-            capacity_market_submit_bids = CapacityMarketSubmitBids(reps,  long_term=False)  # This function stages new dispatch power plant
-            capacity_market_clear = CapacityMarketClearing(reps, long_term=False)  # This function adds rep to class capacity markets
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps,
+                                                                   long_term=False)  # This function stages new dispatch power plant
+            capacity_market_clear = CapacityMarketClearing(reps,
+                                                           long_term=False)  # This function adds rep to class capacity markets
             capacity_market_submit_bids.act_and_commit()
             capacity_market_clear.act_and_commit()
             print('End Run Capacity Market')
@@ -198,21 +207,12 @@ try:  # Try statement to always close DB properly
         elif reps.capacity_remuneration_mechanism == "forward_capacity_market":
             print('End Forward Capacity Market and start yearly')
             capacity_market_submit_bids = CapacityMarketSubmitBids(reps, long_term=True)  # forward_capacity_market
-            capacity_market_clear = CapacityMarketClearing(reps, long_term=True)   # forward_capacity_market
+            capacity_market_clear = CapacityMarketClearing(reps, long_term=True)  # forward_capacity_market
             capacity_market_submit_bids.act_and_commit()
             capacity_market_clear.act_and_commit()
             print('End Forward Capacity Market')
-
-        elif reps.capacity_remuneration_mechanism == "strategic_reserve_swe":
-            print('Start strategic reserve')
-            strategic_reserve_submit_bids = StrategicReserveSubmitBids_swe(reps)
-            strategic_reserve = StrategicReserveAssignment_swe(reps)
-            strategic_reserve_submit_bids.act_and_commit()
-            strategic_reserve.act_and_commit()
-            print('End strategic reserve')
         else:
-            print('no CRM')
-
+            print('no CM')
 
     if run_prepare_next_year_market_clearing:
         logging.info('Start Run preparing market for next year')
@@ -243,7 +243,6 @@ try:  # Try statement to always close DB properly
         logging.info('Start Run Investment')
         investing.act_and_commit()
         logging.info('End Run Investment')
-
 
     if run_pay_loans:
         paying_loans = PayForLoansRole(reps)

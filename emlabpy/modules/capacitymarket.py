@@ -32,7 +32,7 @@ class CapacityMarketSubmitBids(MarketModule):
         market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # self.future_installed_plants_ids = self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick )
         print(
-            "technology" + "name" + ";" + "price_to_bid" + ";" + " profits" + ";" + "fixed_on_m_cost" + ";" + "pending_loan")
+            "technologyname;price_to_bid;capacity;profits;fixed_on_m_cost;pending_loan")
         if self.long_term == False:
             power_plants = self.reps.get_operational_and_to_be_decommissioned(
                 market.forward_years_CM)
@@ -48,6 +48,9 @@ class CapacityMarketSubmitBids(MarketModule):
             # Bid price is zero, unless net revenues are negative
             price_to_bid = 0
             loan = powerplant.getLoan()
+            """
+            for the capacity market runs, there are no downpayments
+            """
             pending_loan = 0
             if loan is not None:
                 if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
@@ -81,6 +84,7 @@ class CapacityMarketSubmitBids(MarketModule):
                   powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity * powerplant.technology.peak_segment_dependent_availability) + ";"  + str(profits) + ";" + str(
                 fixed_on_m_cost) + ";" + str(
                 pending_loan))
+
             # all power plants place a bid pair of price and capacity on the market
             capacity_to_bid = capacity * powerplant.technology.peak_segment_dependent_availability
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, long_term_contract, capacity_to_bid, \
@@ -159,7 +163,7 @@ class CapacityMarketClearing(MarketModule):
                     # y2 =  sdc.get_price_at_volume(total_supply_volume -  supply.amount)
                     clearing_price =  supply.price
                 else:
-                    clearing_price =   sdc.get_price_at_volume(total_supply_volume - supply.amount/2)
+                    clearing_price =   sdc.get_price_at_volume(total_supply_volume)
 
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted
                 supply.accepted_amount = supply.amount
@@ -188,11 +192,9 @@ class CapacityMarketClearing(MarketModule):
             ticks_awarded = list(range(self.reps.current_tick + market.forward_years_CM, \
                                        self.reps.current_tick + market.forward_years_CM + int(market.years_long_term_market )))
             if accepted.long_term_contract:
-                print(accepted.plant, "long term contract")
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, ticks_awarded)
                 self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant, market.years_long_term_market +  self.reps.current_year)
             else:
-                print(accepted.plant, "short contract")
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + 1])
 
 

@@ -27,6 +27,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.conventionalLabel = "ConventionalPlantOperator"
         self.storageLabel = "StorageTrader"
         reps.dbrw.stage_init_future_prices_structure()
+
         if reps.current_tick == 0 and reps.initialization_investment == True:
             if reps.investmentIteration >= 0:
                 print("initialization investments for year  " + str(reps.investment_initialization_years))

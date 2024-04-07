@@ -93,7 +93,7 @@ class Repository:
         self.dummy_capacity_to_test = 1
         self.run_quick_investments = False
         self.capacity_remuneration_mechanism = None
-        self.capacity_market_cleared_in_investment = False
+        self.maximum_installed_share_initialization = 0.1
         self.round_for_capacity_market_y_1 = False
         self.limit_investments = True
         self.hours_in_year = 8760
@@ -352,7 +352,6 @@ class Repository:
                                            for i in self.power_plants.values() if
                                            self.power_plant_still_in_reserve( i, forward_years_CM)
                                           ]
-        print("here")
         return sum(capacity_under_long_term_market)
 
     # ----------------------------------------------------------------------------section technologies

@@ -9,7 +9,7 @@ class Loan:
         self.from_agent = ""
         self.to = ""
         self.regardingPowerPlant = None
-        self.amountPerPayment = 0
+        self.amountPerPayment = None
         self.totalNumberOfPayments = 0
         self.numberOfPaymentsDone = 0
         self.loanStartTick = 0

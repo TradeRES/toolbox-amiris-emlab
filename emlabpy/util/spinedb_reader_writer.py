@@ -133,7 +133,6 @@ class SpineDBReaderWriter:
                 reps.increase_demand = bool(row['parameter_value'])
             elif row['parameter_name'] == 'Representative year':
                 reps.representative_year = int(row['parameter_value'])
-
             elif row['parameter_name'] == 'Power plants year':
                 reps.Power_plants_from_year = int(row['parameter_value'])
             elif row['parameter_name'] == 'install_at_look_ahead_year':
@@ -168,9 +167,9 @@ class SpineDBReaderWriter:
                 reps.scenarioWeatheryearsExcel = str(row['parameter_value'])
             elif row['parameter_name'] == 'capacity_remuneration_mechanism':
                 reps.capacity_remuneration_mechanism = (row['parameter_value'])
-            elif row['parameter_name'] == 'capacity_market_cleared_in_investment':
-                reps.capacity_market_cleared_in_investment = bool(row['parameter_value'])
-            elif row['parameter_name'] == 'round_for_capacity_market':
+            elif row['parameter_name'] == 'maximum_installed_share_initialization':
+                reps.maximum_installed_share_initialization = float(row['parameter_value'])
+            elif row['parameter_name'] == 'round_for_capacity_market_y_1':
                 reps.round_for_capacity_market_y_1 = bool(row['parameter_value'])
             elif row['parameter_name'] == 'change_IRR':
                 reps.change_IRR= bool(row['parameter_value'])
@@ -413,19 +412,12 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values(self.cone_classname, technology_name ,
                                                [("netcone" , Map([str(current_tick)], [float(netcone)]))], "0")
 
-    def stage_calculate_future_capacity_market(self, status):
-        self.stage_object_class(self.configuration_object_classname)
-        self.stage_object_parameter(self.configuration_object_classname, "capacity_market_cleared_in_investment")
-        self.stage_object(self.configuration_object_classname, "SimulationYears")
-        self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [('capacity_market_cleared_in_investment', status)], "0")
-
     def stage_iteration_for_CM(self, status):
         self.stage_object_class(self.configuration_object_classname)
-        self.stage_object_parameter(self.configuration_object_classname, "round_for_capacity_market")
+        self.stage_object_parameter(self.configuration_object_classname, "round_for_capacity_market_y_1")
         self.stage_object(self.configuration_object_classname, "SimulationYears")
         self.stage_object_parameter_values(self.configuration_object_classname, "SimulationYears",
-                                           [('round_for_capacity_market', status)], "0")
+                                           [('round_for_capacity_market_y_1', status)], "0")
 
     def stage_init_power_plants_status(self):
         self.stage_object_parameters(self.powerplant_installed_classname, ['Status'])

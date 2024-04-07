@@ -453,7 +453,7 @@ try:
                 year_load_shedder = StartYear
             read_load_shedders(year_load_shedder)
 
-            if updated_year >= final_year:
+            if updated_year > final_year:
                 print("final year achieved " + str(final_year))
                 start_plot = True
                 # updating file to stop simulation.
@@ -468,13 +468,13 @@ try:
                 db_emlab.commit('Clock increment')
                 print('Done incrementing clock (tick +' + str(step) + '), resetting invest file and years file')
 
-            if available_years_data == True:
-                prepare_AMIRIS_data(updated_year, new_tick, fix_demand_to_representative_year,
-                                    fix_profiles_to_representative_year,
-                                    "increment")
-                print("prepared AMIRIS data ")
-            else:  # no dynamic data for other cases
-                print("no dynamic data for this country")
+                if available_years_data == True:
+                    prepare_AMIRIS_data(updated_year, new_tick, fix_demand_to_representative_year,
+                                        fix_profiles_to_representative_year,
+                                        "increment")
+                    print("prepared AMIRIS data ")
+                else:  # no dynamic data for other cases
+                    print("no dynamic data for this country")
 
         else:
             raise Exception

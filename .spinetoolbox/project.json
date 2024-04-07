@@ -643,7 +643,7 @@
                 ],
                 "condition": {
                     "type": "python-script",
-                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.txt\")\nprint(\"sys argument\", int(sys.argv[1]))  # Loop counter is supplied as first \n\nf = open(years_file, \"r\")\nyears_str = f.read()\nyears = years_str.split(\"/\")\ncurrent_year = int(years[0])\nstart_year = int(years[1])\nfinal_year = int(years[2])\nfuture_year = int(years[3])\n\nprint(1 if current_year >= final_year else 0)\nexit(1 if current_year >= final_year else 0)\n"
+                    "script": "import pandas as pd\nimport os\nimport sys\n\nprint(\"current\",os.getcwd())\nyears_file = os.path.join(os.getcwd(),\"emlabpy\",  \"years.txt\")\nprint(\"sys argument\", int(sys.argv[1]))  # Loop counter is supplied as first \n\nf = open(years_file, \"r\")\nyears_str = f.read()\nyears = years_str.split(\"/\")\ncurrent_year = int(years[0])\nstart_year = int(years[1])\nfinal_year = int(years[2])\nfuture_year = int(years[3])\n\nprint(1 if current_year > final_year else 0)\nexit(1 if current_year > final_year else 0)\n"
                 },
                 "cmd_line_args": []
             },
