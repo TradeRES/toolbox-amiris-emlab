@@ -364,7 +364,7 @@ class CreatingFinancialReports(DefaultModule):
                     if Capacity_market_costs == 0:
                         continue
                     else:
-                        non_subscription_costs = averageENS*load_shedder.VOLL*25
+                        non_subscription_costs = averageENS*load_shedder.VOLL*self.reps.factor_fromVOLL
                         if  pd.isna(averageENS) :
                             continue
                         else:
@@ -392,7 +392,7 @@ class CreatingFinancialReports(DefaultModule):
                     if Capacity_market_costs == 0:
                         continue
                     else:
-                        non_subscription_costs = averageENS*load_shedder.VOLL*25
+                        non_subscription_costs = averageENS*load_shedder.VOLL*self.reps.factor_fromVOLL
                         if  pd.isna(averageENS) :
                             continue
                         else:

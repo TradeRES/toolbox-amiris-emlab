@@ -47,7 +47,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.minimum_fuel_quality = 0
         self.maximum_installed_capacity_fraction_per_agent = 0
         self.base_segment_dependent_availability = 0
-        self.peak_segment_dependent_availability = 0
+        self.deratingFactor = 0
         self.applicable_for_long_term_contract = False
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -65,8 +65,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.efficiency = float(parameter_value)
             self.efficiency_time_series = reps.trends[self.name + "EfficiencyTimeSeries"] # geometric Trends
             self.efficiency_time_series.start = self.efficiency
-        elif parameter_name == 'PeakSegmentDependentAvailability':
-            self.peak_segment_dependent_availability = float(parameter_value)
+        elif parameter_name == 'deratingFactor':
+            self.deratingFactor = float(parameter_value)
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':

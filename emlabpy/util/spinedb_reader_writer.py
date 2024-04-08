@@ -173,6 +173,10 @@ class SpineDBReaderWriter:
                 reps.round_for_capacity_market_y_1 = bool(row['parameter_value'])
             elif row['parameter_name'] == 'change_IRR':
                 reps.change_IRR= bool(row['parameter_value'])
+            elif row['parameter_name'] == 'factor_fromVOLL':
+                reps.factor_fromVOLL = float(row['parameter_value'])
+
+
         # these are the years that need to be added to the power plants on the first simulation tick
         reps.add_initial_age_years = reps.start_simulation_year - reps.Power_plants_from_year
 

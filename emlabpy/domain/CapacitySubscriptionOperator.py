@@ -4,6 +4,7 @@ class CapacitySubscriptionOperator(EMLabAgent):
     def __init__(self, name):
         super().__init__(name)
         self.VOLL_CS = None
+        self.factor_fromVOLL_toCSV = None
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative):

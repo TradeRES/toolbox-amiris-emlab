@@ -68,7 +68,7 @@ class CapacityMarketSubmitBids(MarketModule):
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / \
-                               (capacity * powerplant.technology.peak_segment_dependent_availability)
+                               (capacity * powerplant.technology.deratingFactor)
             else:
                 pass  # if positive revenues price_to_bid remains 0
             """
@@ -81,12 +81,12 @@ class CapacityMarketSubmitBids(MarketModule):
                 else:
                     price_to_bid = min(market.PriceCap/2, price_to_bid)
             print(powerplant.technology.name +
-                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity * powerplant.technology.peak_segment_dependent_availability) + ";"  + str(profits) + ";" + str(
+                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity * powerplant.technology.deratingFactor) + ";" + str(profits) + ";" + str(
                 fixed_on_m_cost) + ";" + str(
                 pending_loan))
 
             # all power plants place a bid pair of price and capacity on the market
-            capacity_to_bid = capacity * powerplant.technology.peak_segment_dependent_availability
+            capacity_to_bid = capacity * powerplant.technology.deratingFactor
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, long_term_contract, capacity_to_bid, \
                                                                        price_to_bid, self.reps.current_tick)
 
@@ -153,9 +153,8 @@ class CapacityMarketClearing(MarketModule):
                 accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
                 """
                 total_supply_volume = total_supply_volume +  supply.amount
-                # if total_supply_volume < sdc.lm_volume:
-                #     clearing_price = supply.price
-                if total_supply_volume >= sdc.lm_volume and total_supply_volume < sdc.um_volume and supply.price < sdc.price_cap:
+
+                if total_supply_volume >= sdc.lm_volume and supply.price < sdc.price_cap:
                     # cost_for_extra_reliabilty =  supply.amount * supply.price # todo finish according to elia rules.
                     # willingness_to_pay_for_extra_reliability = (
                     #     sdc.get_price_at_volume(total_supply_volume))

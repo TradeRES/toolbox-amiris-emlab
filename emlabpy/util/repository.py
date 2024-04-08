@@ -98,6 +98,7 @@ class Repository:
         self.limit_investments = True
         self.hours_in_year = 8760
         self.change_IRR = False
+        self.factor_fromVOLL = 1
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -348,7 +349,7 @@ class Repository:
 
 
     def get_capacity_under_long_term_contract(self, forward_years_CM):
-        capacity_under_long_term_market = [i.capacity * i.technology.peak_segment_dependent_availability
+        capacity_under_long_term_market = [i.capacity * i.technology.deratingFactor
                                            for i in self.power_plants.values() if
                                            self.power_plant_still_in_reserve( i, forward_years_CM)
                                           ]
@@ -372,7 +373,7 @@ class Repository:
 
     def get_allowed_technology_with_highest_availability(self, allowed_technologies):
         max_number = max(self.candidatePowerPlants,
-                         key=lambda x: self.candidatePowerPlants[x].technology.peak_segment_dependent_availability
+                         key=lambda x: self.candidatePowerPlants[x].technology.deratingFactor
                          if self.candidatePowerPlants[x].technology.name in allowed_technologies else 0)
         return self.candidatePowerPlants[max_number].technology.name
 
@@ -581,13 +582,13 @@ class Repository:
         peaksupply = 0
         for plant in self.power_plants.values():
             if plant.id in future_installed_plants_ids:  # this list was kept in the future expected power plants
-                peaksupply += plant.capacity * plant.technology.peak_segment_dependent_availability
+                peaksupply += plant.capacity * plant.technology.deratingFactor
         expected_effective_operationalcapacity = dict()
         for candidate in investable_candidate_plants:
             # capacity from installed power plant
             capacity = 0
             capacity = peaksupply + (
-                    candidate.capacityTobeInstalled * candidate.technology.peak_segment_dependent_availability)
+                    candidate.capacityTobeInstalled * candidate.technology.deratingFactor)
             expected_effective_operationalcapacity[candidate.technology.name] = capacity
         return peaksupply, expected_effective_operationalcapacity
 
@@ -602,7 +603,7 @@ class Repository:
 
     def calculateEffecticeCapacityOfOperationalPowerPlants(self):
         plantsoftechnology = [
-            i.capacity * self.power_generating_technologies[i.technology.name].peak_segment_dependent_availability
+            i.capacity * self.power_generating_technologies[i.technology.name].deratingFactor
             for i in self.power_plants.values() if i.status in [globalNames.power_plant_status_operational,
                                                                 globalNames.power_plant_status_to_be_decommissioned,
                                                                 globalNames.power_plant_status_strategic_reserve]]

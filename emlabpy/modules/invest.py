@@ -190,7 +190,7 @@ class Investmentdecision(DefaultModule):
                         if self.reps.capacity_remuneration_mechanism == None:
                             pass
                         else:
-                            operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability
+                            operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
 
                         # if self.reps.capacity_remuneration_mechanism == "capacity_market":
                         #     peaksupply,  effectiveExpectedCapacityperTechnology = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
@@ -574,7 +574,7 @@ class Investmentdecision(DefaultModule):
                 net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
                 if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                     price_to_bid = -1 * net_revenues / \
-                                   (powerplant.capacity * powerplant.technology.peak_segment_dependent_availability)
+                                   (powerplant.capacity * powerplant.technology.deratingFactor)
                 else:
                     pass  # if positive revenues price_to_bid remains 0
                 long_term_contract = False
@@ -584,7 +584,7 @@ class Investmentdecision(DefaultModule):
                     else:
                         price_to_bid = min(capacity_market.PriceCap / 2, price_to_bid)
 
-                capacity_to_bid = powerplant.capacity * powerplant.technology.peak_segment_dependent_availability
+                capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
                                                                            long_term_contract, capacity_to_bid, \
                                                                            price_to_bid, self.futureTick)
@@ -607,7 +607,7 @@ class Investmentdecision(DefaultModule):
         """
         if the market is no longer undersubscribed then sop investing, otherwise ther could be eternal investments
         """
-        if bids_lower_than_price_cap > peak_load:
+        if bids_lower_than_price_cap > peak_load or  isMarketUndersuscribed == False :
             capacity_market_price = 0
         # peaksupply, expected_effective_operationalcapacity = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
         #     self.future_installed_plants_ids, self.investable_candidate_plants)
@@ -634,10 +634,10 @@ class Investmentdecision(DefaultModule):
                 net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
                 if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                     price_to_bid = -1 * net_revenues / \
-                                   (powerplant.capacity * powerplant.technology.peak_segment_dependent_availability)
+                                   (powerplant.capacity * powerplant.technology.deratingFactor)
                 else:
                     pass  # if positive revenues price_to_bid remains 0
-                capacity_to_bid = powerplant.capacity * powerplant.technology.peak_segment_dependent_availability
+                capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
                                                                            capacity_to_bid, \
                                                                            price_to_bid, self.futureTick)
@@ -746,7 +746,7 @@ class Investmentdecision(DefaultModule):
             clearing_price = 0
         else:
             raise Exception
-        capacityRevenue = candidatepowerplant.capacity * candidatepowerplant.technology.peak_segment_dependent_availability * clearing_price
+        capacityRevenue = candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor * clearing_price
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, totalPeakDemandAtFuturePoint,
                                                          self.futureTick)

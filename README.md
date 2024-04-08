@@ -7,9 +7,9 @@ The co-simulation workflow is best illustrated with following diagram.
 ![](WorkflowEMLabpy-AMIRIS.jpg)
 
 ### Requirements
-- Install Anaconda (not miniconda)
-- Install Git https://git-scm.com/download/win
-- Make sure that java 11 is installed
+- Java 11
+- Anaconda (not miniconda)
+- Git https://git-scm.com/download/win (optional)
 
 ### 1. Prepare environments
 To run this project, 3 anaconda environments (or any other virtual environment of your preference) should be created: emlabEnv, EMLabpy, Spinetoolbox

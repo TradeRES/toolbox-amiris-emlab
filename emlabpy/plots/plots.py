@@ -1204,7 +1204,7 @@ def prepare_pp_lifetime_extension(reps):
     return extended_lifetime_tech
 
 
-def prepare_pp_status(years_to_generate, reps):
+def prepare_pp_status(years_to_generate,unique_technologies,  reps):
     if reps.decommission_from_input == True:  # the initial power plants have negative age to avoid all to be commmissioned in one year
         if reps.current_year + 1 + reps.lookAhead > 2050:
             until = reps.current_year + 1 + reps.lookAhead
@@ -1300,6 +1300,7 @@ def prepare_pp_status(years_to_generate, reps):
         all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
         last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
         last_year_strategic_reserve_capacity, number_per_status, number_per_status_last_year
+
 
 
 def prepare_capacity_per_iteration(future_year, future_tick, reps, unique_candidate_power_plants):
@@ -1706,7 +1707,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
             if isinstance(CMrevenues, pd.Series):
                 df_whereCMawarded = CMrevenues
                 df_whereCMawarded[
-                    df_whereCMawarded > 0] = pp.capacity * pp.technology.peak_segment_dependent_availability
+                    df_whereCMawarded > 0] = pp.capacity * pp.technology.deratingFactor
                 capacity_awarded[pp.name] = df_whereCMawarded
             else:
                 pass
@@ -2075,7 +2076,7 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
                 id_shedder = int(name)* 100000
                 total_load_shedded[name] = selected_df[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = selected_df[(id_shedder)].sum()
-                cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum()*LS.VOLL*25
+                cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum()*LS.VOLL*reps.factor_fromVOLL
 
         if industrial_demand_as_flex_demand_with_cap == True:
             flexconsumer_MWh = hourly_industrial_heat[year].sum()
@@ -2123,9 +2124,8 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     supply_ratio = installedCapacity.divide(a, fill_value=np.nan)  # available supply at peak over peak demand.
     """
     reserve margin 
-    available generation capacty - peak demand / peak demand
+    (available generation capacty - peak demand) / peak demand
     """
-
     return shortage_hours, supply_ratio, simple_electricity_prices_average
 
 
