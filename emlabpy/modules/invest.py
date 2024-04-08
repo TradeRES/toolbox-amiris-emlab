@@ -459,7 +459,7 @@ class Investmentdecision(DefaultModule):
             if self.reps.initialization_investment == True:
                 print(capacityOfTechnologyInvestedAtyear)
                 print(
-                    " will not invest in " + technology.name + " more than " + self.reps.maximum_installed_share_initialization +  " of peak demand")
+                    " will not invest in " + technology.name + " more than " + str(self.reps.maximum_installed_share_initialization) +  " of peak demand")
                 candidatepowerplant.setViableInvestment(False)
                 return False
             else:
