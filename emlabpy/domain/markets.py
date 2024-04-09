@@ -50,8 +50,7 @@ class ElectricitySpotMarket(Market):
 
     def get_peak_load_per_year(self, year):
         """
-        NOT CONSIDERING LOAD SHIFTER
-
+        NOT CONSIDERING LOAD SHIFTER or hydrogen, not in use
         :param year:
         :return:
         """

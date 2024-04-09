@@ -3,7 +3,9 @@ from plots.plots import prepare_pp_status
 from util.spinedb_reader_writer import *
 import matplotlib.pyplot as plt
 type = "sqlite:///"
-folder = "C:\\toolbox-amiris-emlab\\emlabpy\\plots\\Scenarios\\"
+init_folder = "C:\\toolbox-amiris-emlab\\"
+folder = init_folder + "emlabpy\\plots\\Scenarios\\"
+
 first = type + folder
 emlab_sql = "\\EmlabDB.sqlite"
 amiris_sql = "\\AMIRIS db.sqlite"
@@ -33,9 +35,13 @@ hourly_load_shedders_per_year = pd.DataFrame()
 hourly_industrial_heat = pd.DataFrame()
 hourly_generation_res = pd.DataFrame()
 derating_factor = pd.DataFrame()
+
+demand_excel = init_folder + "data\\40weatherYears2050TNO.xlsx"
+demand =  pd.read_excel(demand_excel, sheet_name=["Load"])
+demand_near_scarcity = pd.DataFrame()
 for year in years_to_generate:
     year_excel = folder + scenario_name + "\\" + str(year) + ".xlsx"
-    df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load", "hourly_generation"])
+    df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "hourly_generation"])
     hourly_load_shedders = pd.DataFrame()
     for unit in df['hourly_generation'].columns.values:
         if unit[0:4] == "unit"  and unit[5:] != "8888888" :
@@ -53,8 +59,13 @@ for year in years_to_generate:
         else:
             pass
 
+
     total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
     yearly_near_scarcity_hours =  total_hourly_load_shedders[total_hourly_load_shedders >0].index
+
+    demand_near_scarcity.at["prices", year] = df["energy_exchange"]["ElectricityPriceInEURperMWH"].loc[yearly_near_scarcity_hours].mean()
+    demand_near_scarcity.at["awarded_power", year] = df["energy_exchange"]["TotalAwardedPowerInMW"].loc[yearly_near_scarcity_hours].mean()
+    demand_near_scarcity.at["orginal_load", year] = demand["Load"].loc[yearly_near_scarcity_hours, year -2050 + 1980].mean()
 
     for tech in all_techs_capacity:
         if tech in all_techs_capacity.loc[year] and tech in hourly_generation_res.columns:
@@ -64,8 +75,11 @@ for year in years_to_generate:
         else:
             pass
 
+with pd.ExcelWriter("near_scarcity.xlsx") as writer:
+    derating_factor.to_excel(writer, sheet_name="derating_factors")
+    demand_near_scarcity.to_excel(writer, sheet_name="demand_near_scarcity")
 
-derating_factor.to_excel("derating_factors.xlsx")
+
 axs21 = derating_factor.T.plot() #color=colors_unique_techs
 axs21.set_axisbelow(True)
 plt.xlabel('Years', fontsize='medium')
