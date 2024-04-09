@@ -538,7 +538,7 @@ class Investmentdecision(DefaultModule):
             during initialization price cap would be too low, so take an initial value. 
             price cap is saved only in the first year of the investment
             """
-            capacity_market.PriceCap = capacity_market.PriceCap * capacity_market.PriceCapTimesCONE
+            capacity_market.PriceCap = capacity_market.PriceCap
             print("for the initialization phase the price cap is exogenous" + str(capacity_market.PriceCap))
         else:
             if self.reps.investmentIteration == 0:
