@@ -707,7 +707,7 @@ class Repository:
         power plant hasnt passed lifetime or it will not longer be in long term capacity market
         """
         return [i for i in self.power_plants.values() if
-             (i.age + forward_years_CM) < (i.technology.expected_lifetime + i.technology.maximumLifeExtension)
+             (i.age + forward_years_CM) <= (i.technology.expected_lifetime + i.technology.maximumLifeExtension)
              and self.power_plant_still_in_reserve(i, forward_years_CM ) == False
              ]
 

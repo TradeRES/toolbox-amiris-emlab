@@ -161,7 +161,7 @@ class CapacityMarketClearing(MarketModule):
                     # y1 =  sdc.get_price_at_volume(total_supply_volume )
                     # y2 =  sdc.get_price_at_volume(total_supply_volume -  supply.amount)
                     clearing_price =  supply.price
-                else:
+                else: #supply.price < sdc.price_cap or  total_supply_volume < sdc.lm_volume
                     clearing_price =   sdc.get_price_at_volume(total_supply_volume)
 
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted

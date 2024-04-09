@@ -1691,9 +1691,9 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
             market = reps.get_capacity_market_in_country(reps.country, True)
         for tick in ticks_to_generate:
             CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick + market.forward_years_CM)
-            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
+            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick + market.forward_years_CM)  # saved according to effective year
             CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick + market.forward_years_CM)
-            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
+            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick + market.forward_years_CM)  # saved according to effective year
 
     cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
@@ -2269,7 +2269,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
         last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
         last_year_strategic_reserve_capacity, capacity_per_status, number_per_status_last_year = \
-        prepare_pp_status(years_to_generate, reps)
+        prepare_pp_status(years_to_generate, unique_technologies, reps)
     if calculate_investments != False:
         plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
                          path_to_plots, colors_unique_techs)
@@ -2867,10 +2867,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-test"]
-
+    SCENARIOS = ["NL-CM_newDeratingFactors"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
