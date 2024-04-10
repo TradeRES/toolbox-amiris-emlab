@@ -146,22 +146,22 @@ class CapacityMarketClearing(MarketModule):
                 clearing_price = sdc.get_price_at_volume(total_supply_volume + supply.amount)
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted
                 supply.accepted_amount = supply.amount
-
-            elif supply.price < sdc.get_price_at_volume(total_supply_volume):
+                print(clearing_price)
+            elif supply.price < sdc.get_price_at_volume(total_supply_volume) and supply.price < sdc.price_cap:
                 """
                 the price of the next bid is higher than the price cap.
                 accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
                 """
                 total_supply_volume = total_supply_volume +  supply.amount
 
-                if total_supply_volume >= sdc.lm_volume and supply.price < sdc.price_cap:
+                if total_supply_volume >= sdc.lm_volume:
                     # cost_for_extra_reliabilty =  supply.amount * supply.price # todo finish according to elia rules.
                     # willingness_to_pay_for_extra_reliability = (
                     #     sdc.get_price_at_volume(total_supply_volume))
                     # y1 =  sdc.get_price_at_volume(total_supply_volume )
                     # y2 =  sdc.get_price_at_volume(total_supply_volume -  supply.amount)
                     clearing_price =  supply.price
-                else: #supply.price < sdc.price_cap or  total_supply_volume < sdc.lm_volume
+                else:
                     clearing_price =   sdc.get_price_at_volume(total_supply_volume)
 
                 supply.status = globalNames.power_plant_dispatch_plan_status_accepted
