@@ -94,7 +94,7 @@ class CapacityMarketSubmitBids(MarketModule):
                                                                        price_to_bid, self.reps.current_tick)
             total_offered_capacity += capacity_to_bid
             # todo delete this later
-        expected_capacity = self.reps.get_cleared_volume_for_market_and_time(market.name, self.reps.current_tick)
+        expected_capacity = self.reps.get_cleared_volume_for_market_and_time(market.name, self.reps.current_tick + market.forward_years_CM)
         if expected_capacity != total_offered_capacity:
             raise ValueError("Total volume of bids is not equal to total offered capacity")
 
