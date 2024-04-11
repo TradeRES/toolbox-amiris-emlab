@@ -225,28 +225,35 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             technology = candidatepowerplant.technology
             totalInvestment = technology.get_investment_costs_perMW_by_year(
                 reps.current_year + capacity_market.forward_years_CM)
+
             depreciationTime = technology.depreciation_time
             buildingTime = technology.expected_leadtime
             fixed_costs = technology.get_fixed_costs_by_commissioning_year(
                 reps.current_year + capacity_market.forward_years_CM)
             equalTotalDownPaymentInstallment = (totalInvestment) / buildingTime
+            # agent = reps.energy_producers[reps.agent]
+            # equalTotalDownPaymentInstallment = (totalInvestment * (1 - agent.debtRatioOfInvestments)) / buildingTime
+            # debt = totalInvestment * agent.debtRatioOfInvestments
+            # annuity = - npf.pmt(technology.interestRate, depreciationTime, debt, fv=1, when='end')
             investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
             investmentCashFlowNETCONE = [0 for i in range(depreciationTime + buildingTime)]
+            wacc = technology.interestRate
             for i in range(0, buildingTime + depreciationTime):
                 if i < buildingTime:
                     investmentCashFlow[i] = equalTotalDownPaymentInstallment
-                    investmentCashFlowNETCONE[i] = equalTotalDownPaymentInstallment
+                    investmentCashFlowNETCONE[i] =  equalTotalDownPaymentInstallment
                 else:
                     investmentCashFlow[i] = fixed_costs
                     investmentCashFlowNETCONE[
                         i] = fixed_costs - candidatepowerplant.get_Profit() / candidatepowerplant.capacity  # per MW
-            wacc = technology.interestRate
+
             discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
-            discountedprojectvalueNETCONE = npf.npv(wacc, investmentCashFlowNETCONE)
+            discountedprojectvalueNETCONE = npf.npv(wacc, investmentCashFlowNETCONE) # it is equivalent as summing up the discounted cash flows
 
             factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
-            CONE = discountedprojectvalue * factor
-            NETCONE = discountedprojectvalueNETCONE * factor
+
+            CONE = discountedprojectvalue * factor/ technology.deratingFactor
+            NETCONE = discountedprojectvalueNETCONE * factor/ technology.deratingFactor
             cones[technology.name] = CONE
             netcones[technology.name] = NETCONE
     if not cones:
