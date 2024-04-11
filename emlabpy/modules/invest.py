@@ -546,6 +546,7 @@ class Investmentdecision(DefaultModule):
             else:
                 pass
         bids_lower_than_price_cap = 0
+        total_offered_capacity = 0
         for powerplant in self.reps.power_plants.values():
             if powerplant.id in self.future_installed_plants_ids:
                 """
@@ -597,12 +598,14 @@ class Investmentdecision(DefaultModule):
                 if price_to_bid < capacity_market.PriceCap:
                     bids_lower_than_price_cap += capacity_to_bid
 
+                total_offered_capacity += capacity_to_bid
+
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isMarketUndersuscribed, targetVolume = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
-        self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_supply_volume,
+        self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_offered_capacity,
                                                          self.futureTick)
         """
         if the market is no longer undersubscribed then sop investing, otherwise ther could be eternal investments

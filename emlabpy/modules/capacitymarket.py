@@ -13,8 +13,8 @@ from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.markets import SlopingDemandCurve
 
-class CapacityMarketSubmitBids(MarketModule):
 
+class CapacityMarketSubmitBids(MarketModule):
     """
     The class that submits all bids to the Capacity Market
     """
@@ -37,8 +37,9 @@ class CapacityMarketSubmitBids(MarketModule):
             power_plants = self.reps.get_operational_and_to_be_decommissioned(
                 market.forward_years_CM)
         else:
-            power_plants = self.reps.get_plants_that_can_be_operational_not_in_ltcm(market.forward_years_CM) # retrieve plants that will be operational in 1 -4 years
-
+            power_plants = self.reps.get_plants_that_can_be_operational_not_in_ltcm(
+                market.forward_years_CM)  # retrieve plants that will be operational in 1 -4 years
+        total_offered_capacity = 0
         for powerplant in power_plants:
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
             capacity = powerplant.get_actual_nominal_capacity()
@@ -79,17 +80,23 @@ class CapacityMarketSubmitBids(MarketModule):
                 if powerplant.status == globalNames.power_plant_status_inPipeline:
                     long_term_contract = True
                 else:
-                    price_to_bid = min(market.PriceCap/2, price_to_bid)
+                    price_to_bid = min(market.PriceCap / 2, price_to_bid)
             print(powerplant.technology.name +
-                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity * powerplant.technology.deratingFactor) + ";" + str(profits) + ";" + str(
+                  powerplant.name + ";" + str(price_to_bid) + ";" + str(
+                capacity * powerplant.technology.deratingFactor) + ";" + str(profits) + ";" + str(
                 fixed_on_m_cost) + ";" + str(
                 pending_loan))
 
             # all power plants place a bid pair of price and capacity on the market
             capacity_to_bid = capacity * powerplant.technology.deratingFactor
-            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market, long_term_contract, capacity_to_bid, \
+            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market,
+                                                                       long_term_contract, capacity_to_bid, \
                                                                        price_to_bid, self.reps.current_tick)
-
+            total_offered_capacity += capacity_to_bid
+            # todo delete this later
+        expected_capacity = self.reps.get_cleared_volume_for_market_and_time(market.name, self.reps.current_tick)
+        if expected_capacity != total_offered_capacity:
+            raise ValueError("Total volume of bids is not equal to total offered capacity")
 
 
 class CapacityMarketClearing(MarketModule):
@@ -108,16 +115,18 @@ class CapacityMarketClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
+
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
-        clearing_price, total_supply_volume, is_the_market_undersubscribed, targetVolume = self.capacity_market_clearing(sorted_supply,
-                                                                                                           capacity_market,
-                                                                                                           capacity_market_year)
+        clearing_price, total_supply_volume, is_the_market_undersubscribed, targetVolume = self.capacity_market_clearing(
+            sorted_supply,
+            capacity_market,
+            capacity_market_year)
 
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(capacity_market, clearing_price)
         # saving market clearing point
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
-                                                         self.reps.current_tick +  capacity_market.forward_years_CM) # saved according to effective year
+                                                         self.reps.current_tick + capacity_market.forward_years_CM)  # saved according to effective year
 
     def capacity_market_clearing(self, sorted_supply, capacity_market, capacity_market_year):
         def check_if_market_under_subscribed(total_supply_volume, targetVolume):
@@ -125,15 +134,17 @@ class CapacityMarketClearing(MarketModule):
                 return False
             else:
                 return True
+
         # spot_market = self.reps.get_spot_market_in_country(self.reps.country)
         # expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
         #                                                                               True)
         # # changed to fix number because peak load can change per weather year.
         # # changing peak load according to higher than median year.
-        #peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
+        # peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
         # # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
         # peakExpectedDemand = peak_load * (expectedDemandFactor)
-        effective_capacity_long_term_CM = self.reps.get_capacity_under_long_term_contract(capacity_market.forward_years_CM)
+        effective_capacity_long_term_CM = self.reps.get_capacity_under_long_term_contract(
+            capacity_market.forward_years_CM)
         targetVolume = capacity_market.TargetCapacity
         targetVolume -= effective_capacity_long_term_CM
         print("targetVolume" + str(targetVolume))
@@ -145,7 +156,7 @@ class CapacityMarketClearing(MarketModule):
         isMarketUndersuscribed = True
         for supply in sorted_supply:
             if isMarketUndersuscribed == True:
-            # As long as the market is not cleared
+                # As long as the market is not cleared
                 if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
                     total_supply_volume += supply.amount
                     clearing_price = sdc.get_price_at_volume(total_supply_volume + supply.amount)
@@ -157,7 +168,7 @@ class CapacityMarketClearing(MarketModule):
                     the price of the next bid is higher than the price cap.
                     accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
                     """
-                    total_supply_volume = total_supply_volume +  supply.amount
+                    total_supply_volume = total_supply_volume + supply.amount
 
                     if total_supply_volume >= sdc.lm_volume:
                         # cost_for_extra_reliabilty =  supply.amount * supply.price # todo finish according to elia rules.
@@ -165,13 +176,13 @@ class CapacityMarketClearing(MarketModule):
                         #     sdc.get_price_at_volume(total_supply_volume))
                         # y1 =  sdc.get_price_at_volume(total_supply_volume )
                         # y2 =  sdc.get_price_at_volume(total_supply_volume -  supply.amount)
-                        clearing_price =  supply.price
+                        clearing_price = supply.price
                     else:
-                        clearing_price =   sdc.get_price_at_volume(total_supply_volume)
+                        clearing_price = sdc.get_price_at_volume(total_supply_volume)
 
                     supply.status = globalNames.power_plant_dispatch_plan_status_accepted
                     supply.accepted_amount = supply.amount
-                    print(supply.plant , " last ACCEPTED ", total_supply_volume, "", clearing_price)
+                    print(supply.plant, " last ACCEPTED ", total_supply_volume, "", clearing_price)
                     break
                 else:
                     supply.status = globalNames.power_plant_dispatch_plan_status_failed
@@ -193,10 +204,12 @@ class CapacityMarketClearing(MarketModule):
         for accepted in accepted_ppdp:
             amount = accepted.accepted_amount * clearing_price
             ticks_awarded = list(range(self.reps.current_tick + market.forward_years_CM, \
-                                       self.reps.current_tick + market.forward_years_CM + int(market.years_long_term_market )))
+                                       self.reps.current_tick + market.forward_years_CM + int(
+                                           market.years_long_term_market)))
             if accepted.long_term_contract:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, ticks_awarded)
-                self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant, market.years_long_term_market +  self.reps.current_year)
+                self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant,
+                                                                                    market.years_long_term_market + self.reps.current_year)
             else:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + 1])
 
@@ -216,16 +229,17 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             buildingTime = technology.expected_leadtime
             fixed_costs = technology.get_fixed_costs_by_commissioning_year(
                 reps.current_year + capacity_market.forward_years_CM)
-            equalTotalDownPaymentInstallment = (totalInvestment ) / buildingTime
+            equalTotalDownPaymentInstallment = (totalInvestment) / buildingTime
             investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
             investmentCashFlowNETCONE = [0 for i in range(depreciationTime + buildingTime)]
             for i in range(0, buildingTime + depreciationTime):
                 if i < buildingTime:
-                    investmentCashFlow[i] =  equalTotalDownPaymentInstallment
-                    investmentCashFlowNETCONE[i] =  equalTotalDownPaymentInstallment
+                    investmentCashFlow[i] = equalTotalDownPaymentInstallment
+                    investmentCashFlowNETCONE[i] = equalTotalDownPaymentInstallment
                 else:
-                    investmentCashFlow[i] =  fixed_costs
-                    investmentCashFlowNETCONE[i] = fixed_costs - candidatepowerplant.get_Profit()/candidatepowerplant.capacity # per MW
+                    investmentCashFlow[i] = fixed_costs
+                    investmentCashFlowNETCONE[
+                        i] = fixed_costs - candidatepowerplant.get_Profit() / candidatepowerplant.capacity  # per MW
             wacc = technology.interestRate
             discountedprojectvalue = npf.npv(wacc, investmentCashFlow)
             discountedprojectvalueNETCONE = npf.npv(wacc, investmentCashFlowNETCONE)
@@ -233,13 +247,14 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             factor = (wacc * (1 + wacc) ** (buildingTime + depreciationTime)) / (((1 + wacc) ** depreciationTime) - 1)
             CONE = discountedprojectvalue * factor
             NETCONE = discountedprojectvalueNETCONE * factor
-            cones[technology.name ] = CONE
-            netcones[technology.name ] = NETCONE
+            cones[technology.name] = CONE
+            netcones[technology.name] = NETCONE
     if not cones:
         print("cones is empty")
     else:
-        reps.dbrw.stage_yearly_CONE(  netcones, cones, reps.current_tick )
-        technology_highest_availability = reps.get_allowed_technology_with_highest_availability(capacity_market.allowed_technologies_capacity_market)
+        reps.dbrw.stage_yearly_CONE(netcones, cones, reps.current_tick)
+        technology_highest_availability = reps.get_allowed_technology_with_highest_availability(
+            capacity_market.allowed_technologies_capacity_market)
         netCONE = netcones[technology_highest_availability]
         cone = cones[technology_highest_availability]
         chosenCONE = max(netCONE, cone * capacity_market.PriceCapTimesCONE)
@@ -250,6 +265,4 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             raise ValueError("Price cap is negative")
         if reps.current_tick == 0:
             capacity_market.PriceCap = price_cap
-            reps.dbrw.stage_price_cap( capacity_market.name, price_cap )
-
-
+            reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
