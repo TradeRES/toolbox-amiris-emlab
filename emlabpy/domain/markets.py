@@ -142,6 +142,7 @@ class CapacityMarket(Market):
         self.allowed_technologies_capacity_market = []
         self.long_term = False
         self.years_long_term_market = 15
+        self.TargetCapacity = 0
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):

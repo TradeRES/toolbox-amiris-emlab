@@ -598,7 +598,7 @@ class Investmentdecision(DefaultModule):
                     bids_lower_than_price_cap += capacity_to_bid
 
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
-        capacity_market_price, total_supply_volume, isMarketUndersuscribed, peak_load = CapacityMarketClearing.capacity_market_clearing(
+        capacity_market_price, total_supply_volume, isMarketUndersuscribed, targetVolume = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
@@ -607,7 +607,7 @@ class Investmentdecision(DefaultModule):
         """
         if the market is no longer undersubscribed then sop investing, otherwise ther could be eternal investments
         """
-        if bids_lower_than_price_cap > peak_load or  isMarketUndersuscribed == False :
+        if bids_lower_than_price_cap > targetVolume or  isMarketUndersuscribed == False :
             capacity_market_price = 0
         # peaksupply, expected_effective_operationalcapacity = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
         #     self.future_installed_plants_ids, self.investable_candidate_plants)
@@ -734,6 +734,7 @@ class Investmentdecision(DefaultModule):
                                                                                            globalNames.future_prices,
                                                                                            self.futureInvestmentyear)
         totalPeakDemandAtFuturePoint = self.peak_demand * expectedDemandFactor
+        totalPeakDemandAtFuturePoint = capacity_market.TargetCapacity
         sdc = capacity_market.get_sloping_demand_curve(totalPeakDemandAtFuturePoint)
         clearing_price = 0
         if effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] <= sdc.um_volume:

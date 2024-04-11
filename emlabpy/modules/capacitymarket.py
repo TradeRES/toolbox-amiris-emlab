@@ -109,78 +109,82 @@ class CapacityMarketClearing(MarketModule):
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
-        clearing_price, total_supply_volume, is_the_market_undersubscribed, peak_load = self.capacity_market_clearing(sorted_supply,
+        clearing_price, total_supply_volume, is_the_market_undersubscribed, targetVolume = self.capacity_market_clearing(sorted_supply,
                                                                                                            capacity_market,
                                                                                                            capacity_market_year)
 
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(capacity_market, clearing_price)
-
         # saving market clearing point
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.reps.current_tick +  capacity_market.forward_years_CM) # saved according to effective year
 
     def capacity_market_clearing(self, sorted_supply, capacity_market, capacity_market_year):
-
+        def check_if_market_under_subscribed(total_supply_volume, targetVolume):
+            if total_supply_volume > targetVolume:
+                return False
+            else:
+                return True
         # spot_market = self.reps.get_spot_market_in_country(self.reps.country)
-        expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
-                                                                                      True)
-        # changed to fix number because peak load can change per weather year.
-        # changing peak load according to higher than median year.
-        peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
-        # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
-        peakExpectedDemand = peak_load * (expectedDemandFactor)
+        # expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
+        #                                                                               True)
+        # # changed to fix number because peak load can change per weather year.
+        # # changing peak load according to higher than median year.
+        #peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
+        # # The expected peak load volume is defined as the base peak load with a demand factor for the defined year
+        # peakExpectedDemand = peak_load * (expectedDemandFactor)
         effective_capacity_long_term_CM = self.reps.get_capacity_under_long_term_contract(capacity_market.forward_years_CM)
-        peakExpectedDemand -= effective_capacity_long_term_CM
-        print("peak load " + str(peakExpectedDemand))
+        targetVolume = capacity_market.TargetCapacity
+        targetVolume -= effective_capacity_long_term_CM
+        print("targetVolume" + str(targetVolume))
         # Retrieve the sloping demand curve for the expected peak load volume
-        sdc = capacity_market.get_sloping_demand_curve(peakExpectedDemand)
+        sdc = capacity_market.get_sloping_demand_curve(targetVolume)
 
         clearing_price = 0
         total_supply_volume = 0
-
+        isMarketUndersuscribed = True
         for supply in sorted_supply:
+            if isMarketUndersuscribed == True:
             # As long as the market is not cleared
-            if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
-                total_supply_volume += supply.amount
-                clearing_price = sdc.get_price_at_volume(total_supply_volume + supply.amount)
-                supply.status = globalNames.power_plant_dispatch_plan_status_accepted
-                supply.accepted_amount = supply.amount
-                print(clearing_price)
-            elif supply.price < sdc.get_price_at_volume(total_supply_volume) and supply.price < sdc.price_cap:
-                """
-                the price of the next bid is higher than the price cap.
-                accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
-                """
-                total_supply_volume = total_supply_volume +  supply.amount
+                if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
+                    total_supply_volume += supply.amount
+                    clearing_price = sdc.get_price_at_volume(total_supply_volume + supply.amount)
+                    supply.status = globalNames.power_plant_dispatch_plan_status_accepted
+                    supply.accepted_amount = supply.amount
 
-                if total_supply_volume >= sdc.lm_volume:
-                    # cost_for_extra_reliabilty =  supply.amount * supply.price # todo finish according to elia rules.
-                    # willingness_to_pay_for_extra_reliability = (
-                    #     sdc.get_price_at_volume(total_supply_volume))
-                    # y1 =  sdc.get_price_at_volume(total_supply_volume )
-                    # y2 =  sdc.get_price_at_volume(total_supply_volume -  supply.amount)
-                    clearing_price =  supply.price
+                elif supply.price < sdc.get_price_at_volume(total_supply_volume) and supply.price < sdc.price_cap:
+                    """
+                    the price of the next bid is higher than the price cap.
+                    accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
+                    """
+                    total_supply_volume = total_supply_volume +  supply.amount
+
+                    if total_supply_volume >= sdc.lm_volume:
+                        # cost_for_extra_reliabilty =  supply.amount * supply.price # todo finish according to elia rules.
+                        # willingness_to_pay_for_extra_reliability = (
+                        #     sdc.get_price_at_volume(total_supply_volume))
+                        # y1 =  sdc.get_price_at_volume(total_supply_volume )
+                        # y2 =  sdc.get_price_at_volume(total_supply_volume -  supply.amount)
+                        clearing_price =  supply.price
+                    else:
+                        clearing_price =   sdc.get_price_at_volume(total_supply_volume)
+
+                    supply.status = globalNames.power_plant_dispatch_plan_status_accepted
+                    supply.accepted_amount = supply.amount
+                    print(supply.plant , " last ACCEPTED ", total_supply_volume, "", clearing_price)
+                    break
                 else:
-                    clearing_price =   sdc.get_price_at_volume(total_supply_volume)
-
-                supply.status = globalNames.power_plant_dispatch_plan_status_accepted
-                supply.accepted_amount = supply.amount
-                print(supply.plant , " last ACCEPTED ", total_supply_volume, "", clearing_price)
-                break
+                    supply.status = globalNames.power_plant_dispatch_plan_status_failed
+                    break
             else:
                 supply.status = globalNames.power_plant_dispatch_plan_status_failed
                 break
-
-        if total_supply_volume > peak_load:
-            isMarketUndersuscribed = False
-        else:
-            isMarketUndersuscribed = True
+            isMarketUndersuscribed = check_if_market_under_subscribed(total_supply_volume, targetVolume)
+        isMarketUndersuscribed = check_if_market_under_subscribed(total_supply_volume, targetVolume)
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
         print("isMarketUndersuscribed ", isMarketUndersuscribed)
-
-        return clearing_price, total_supply_volume, isMarketUndersuscribed, peak_load
+        return clearing_price, total_supply_volume, isMarketUndersuscribed, targetVolume
 
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
