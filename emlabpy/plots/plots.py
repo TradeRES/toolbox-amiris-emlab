@@ -1690,10 +1690,10 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
         else:
             market = reps.get_capacity_market_in_country(reps.country, True)
         for tick in ticks_to_generate:
-            CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick + market.forward_years_CM)
-            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick + market.forward_years_CM)  # saved according to effective year
-            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick + market.forward_years_CM)
-            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick + market.forward_years_CM)  # saved according to effective year
+            CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick )
+            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
+            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick )
+            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
 
     cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
@@ -2867,9 +2867,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CM_newDeratingFactors"]
+    SCENARIOS = ["NL-test"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 

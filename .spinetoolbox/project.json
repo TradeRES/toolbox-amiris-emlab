@@ -565,17 +565,6 @@
                 ]
             },
             {
-                "name": "from Invest to CRM",
-                "from": [
-                    "Invest",
-                    "left"
-                ],
-                "to": [
-                    "CRM",
-                    "right"
-                ]
-            },
-            {
                 "name": "from EmlabDB2 to CRM",
                 "from": [
                     "EmlabDB2",
@@ -606,6 +595,17 @@
                 "to": [
                     "Next year",
                     "left"
+                ]
+            },
+            {
+                "name": "from Invest to CRM",
+                "from": [
+                    "Invest",
+                    "left"
+                ],
+                "to": [
+                    "CRM",
+                    "right"
                 ]
             }
         ],
@@ -688,8 +688,8 @@
         "Import EMLAB Init": {
             "type": "Importer",
             "description": "",
-            "x": -1335.7595140848712,
-            "y": -502.5730911704076,
+            "x": -1337.5274073443481,
+            "y": -502.57309117040757,
             "specification": "Emlab parameters",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -849,7 +849,7 @@
         "prepare future market": {
             "type": "Tool",
             "description": "",
-            "x": -32.72222276501155,
+            "x": -30.115924845332927,
             "y": -169.48771687400568,
             "specification": "Prepare future market",
             "execute_in_work": false,
@@ -873,8 +873,8 @@
         "AMIRIS future": {
             "type": "Tool",
             "description": "",
-            "x": -164.85877546919826,
-            "y": -47.97424765122079,
+            "x": -162.2524775495196,
+            "y": -47.974247651220786,
             "specification": "Amiris future",
             "execute_in_work": false,
             "cmd_line_args": [],
@@ -955,8 +955,8 @@
         "power plants importer": {
             "type": "Importer",
             "description": "",
-            "x": -1330.5930584264777,
-            "y": -391.62276556150914,
+            "x": -1332.360951685955,
+            "y": -391.6227655615091,
             "specification": "grouped power plants",
             "cancel_on_error": false,
             "on_conflict": "merge",
@@ -1034,8 +1034,8 @@
         "Invest": {
             "type": "Tool",
             "description": "",
-            "x": -382.38498750492624,
-            "y": -30.910690309497397,
+            "x": -379.7786895852476,
+            "y": -30.91069030949739,
             "specification": "Invest",
             "execute_in_work": false,
             "cmd_line_args": [

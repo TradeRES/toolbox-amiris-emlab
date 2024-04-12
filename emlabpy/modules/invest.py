@@ -603,7 +603,7 @@ class Investmentdecision(DefaultModule):
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isMarketUndersuscribed, targetVolume = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
-
+        # todo: change back total_offered_capacity to total_supply_volume
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_offered_capacity,
                                                          self.futureTick)

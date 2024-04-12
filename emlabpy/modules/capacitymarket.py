@@ -94,9 +94,11 @@ class CapacityMarketSubmitBids(MarketModule):
                                                                        price_to_bid, self.reps.current_tick)
             total_offered_capacity += capacity_to_bid
             # todo delete this later
-        expected_capacity = self.reps.get_cleared_volume_for_market_and_time(market.name, self.reps.current_tick + market.forward_years_CM)
-        if expected_capacity != total_offered_capacity:
+        expected_capacity = self.reps.get_cleared_volume_for_market_and_time("capacity_market_future", self.reps.current_tick + market.forward_years_CM)
+        if expected_capacity != int(total_offered_capacity):
             raise ValueError("Total volume of bids is not equal to total offered capacity")
+        else:
+            pass
 
 
 class CapacityMarketClearing(MarketModule):
@@ -209,9 +211,9 @@ class CapacityMarketClearing(MarketModule):
             if accepted.long_term_contract:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, ticks_awarded)
                 self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant,
-                                                                                    market.years_long_term_market + self.reps.current_year)
+                                                                                     self.reps.current_year + market.years_long_term_market)
             else:
-                self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + 1])
+                self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + market.years_long_term_market])
 
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
