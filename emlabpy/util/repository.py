@@ -697,7 +697,7 @@ class Repository:
         return [i for i in self.power_plants.values() if
                 (i.status in [globalNames.power_plant_status_operational,
                               globalNames.power_plant_status_to_be_decommissioned] and
-                 (i.age + forward_years_CM) < (i.technology.expected_lifetime + i.technology.maximumLifeExtension)
+                 (i.age + forward_years_CM) <= (i.technology.expected_lifetime + i.technology.maximumLifeExtension)
                  or (i.status == globalNames.power_plant_status_inPipeline and i.age + forward_years_CM >= 0)
                  )]
 
