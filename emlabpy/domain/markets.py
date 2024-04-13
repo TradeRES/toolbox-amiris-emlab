@@ -148,15 +148,17 @@ class CapacityMarket(Market):
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         if parameter_name == 'forward_years_CM':
             self.forward_years_CM = int(parameter_value)
+        elif parameter_name == 'years_long_term_market':
+            self.years_long_term_market = int(parameter_value)
         elif parameter_name == 'allowed_technologies':
             self.allowed_technologies_capacity_market = parameter_value.split(",")
         else:
             setattr(self, parameter_name, parameter_value)
 
-    def get_sloping_demand_curve(self, d_peak):
+    def get_sloping_demand_curve(self, target_volume):
         return SlopingDemandCurve(self.InstalledReserveMargin,
                                   self.LowerMargin,
-                                  self.UpperMargin, d_peak, self.PriceCap)
+                                  self.UpperMargin, target_volume, self.PriceCap)
 
 
 class Cone(ImportObject):
@@ -213,13 +215,13 @@ class SlopingDemandCurve:
     The SlopingDemandCurve as required in the CapacityMarket.
     """
 
-    def __init__(self, irm, lm, um, d_peak, price_cap):
+    def __init__(self, irm, lm, um, target_volume, price_cap):
         self.irm = irm
         self.lm = lm
-        self.lm_volume = d_peak * (1 + irm - lm)
+        self.lm_volume = target_volume * (1 + irm - lm)
         self.um = um
-        self.um_volume = d_peak * (1 + irm + um)
-        self.d_peak = d_peak
+        self.um_volume = target_volume * (1 + irm + um)
+        self.target_volume = target_volume
         self.price_cap = price_cap
         self.m = self.price_cap / (self.um_volume - self.lm_volume)
 
@@ -232,16 +234,16 @@ class SlopingDemandCurve:
         elif self.um_volume < volume:
             return 0
 
-    def get_volume_at_price(self, price):
-        m = self.price_cap / (self.um_volume - self.lm_volume)
-        if price >= self.price_cap:
-            raise Exception
-        elif price == 0:
-            print("BID PRICE IS ZERO")
-            raise Exception
-            # return None
-        else:
-            return ((self.price_cap - price) / m) + self.lm_volume
+    # def get_volume_at_price(self, price):
+    #     m = self.price_cap / (self.um_volume - self.lm_volume)
+    #     if price >= self.price_cap:
+    #         raise Exception
+    #     elif price == 0:
+    #         print("BID PRICE IS ZERO")
+    #         raise Exception
+    #         # return None
+    #     else:
+    #         return ((self.price_cap - price) / m) + self.lm_volume
 
 
 class MarketStabilityReserve(ImportObject):

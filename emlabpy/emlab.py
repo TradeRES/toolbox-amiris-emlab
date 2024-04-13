@@ -188,7 +188,7 @@ try:  # Try statement to always close DB properly
 
         if reps.capacity_remuneration_mechanism == "capacity_subscription":
             print('Start capacity subscription')
-            capacity_market_submit_bids = CapacityMarketSubmitBids(reps)
+            capacity_market_submit_bids = CapacityMarketSubmitBids(reps, long_term=False)
             capacity_subscription_clear = CapacitySubscriptionClearing(reps)
             capacity_market_submit_bids.act_and_commit()
             capacity_subscription_clear.act_and_commit()

@@ -115,7 +115,7 @@ class CreatingFinancialReports(DefaultModule):
             self.modifyIRR()
             # modifying the IRR by technology
         if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-            self.modify_CS_parameter_costs()
+            self.modify_CS_parameter_by_costs()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -238,7 +238,7 @@ class CreatingFinancialReports(DefaultModule):
                 print(name   + "-"+ str(realized_curtailments[name]))
                 self.reps.loadShedders[name].realized_rs[self.reps.current_tick] = realized_curtailments[name]
 
-    def modify_CS_parameter(self):
+    def modify_CS_parameter_by_RS(self):
         if  self.reps.current_tick < self.start_tick_CS:
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
@@ -338,7 +338,7 @@ class CreatingFinancialReports(DefaultModule):
 
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
 
-    def modify_CS_parameter_costs(self):
+    def modify_CS_parameter_by_costs(self):
         """
         modify load percentage for Capacity Subscription according to the difference of costs of subscribing and not subscribing
         """
@@ -349,7 +349,10 @@ class CreatingFinancialReports(DefaultModule):
             start = self.reps.current_tick -1
             ticks_to_generate = list(range(start, self.reps.current_tick+1 ))
             capacity_subscription_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
-            capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time( capacity_subscription_market.name, self.reps.current_tick)
+            last_year_prices =[]
+            for t in ticks_to_generate:
+              last_year_prices.append(self.reps.get_market_clearing_point_price_for_market_and_time( capacity_subscription_market.name, t))
+            capacity_market_price = np.mean(last_year_prices)
             peak_demand = self.reps.get_peak_future_demand_by_year(self.reps.current_year)
             ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(reverse=False)
             last = len(ascending_load_shedders_no_hydrogen) - 1
@@ -359,6 +362,7 @@ class CreatingFinancialReports(DefaultModule):
                     print(load_shedder.name + "+++++++++++++++++++++++++++++++"+ str(load_shedder.percentageLoad))
                     averageENS= load_shedder.realized_rs[ticks_to_generate].mean()
                     Capacity_market_costs = capacity_market_price * peak_demand  * load_shedder.percentageLoad
+
                     if pd.isna(load_shedder.percentageLoad):
                         raise Exception
                     if Capacity_market_costs == 0:

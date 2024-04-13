@@ -60,12 +60,12 @@ class CapacityMarketSubmitBids(MarketModule):
             # if power plant is not dispatched, the net revenues are minus the fixed operating costs
             if profits is None:
                 # print("no dispatch found for " + str(powerplant.id)+  " with name "+str(powerplant.name))
-                net_revenues = - fixed_on_m_cost - pending_loan
+                net_revenues = - fixed_on_m_cost
                 profits = 0
 
             # if power plant is dispatched, the net revenues are the revenues minus the total costs
             else:
-                net_revenues = profits - fixed_on_m_cost - pending_loan
+                net_revenues = profits - fixed_on_m_cost
             # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / \
@@ -93,7 +93,8 @@ class CapacityMarketSubmitBids(MarketModule):
                                                                        long_term_contract, capacity_to_bid, \
                                                                        price_to_bid, self.reps.current_tick)
             total_offered_capacity += capacity_to_bid
-            # todo delete this later
+            print(  "total offered capacity" + str(total_offered_capacity))
+            # todo: delete this later
         expected_capacity = self.reps.get_cleared_volume_for_market_and_time("capacity_market_future", self.reps.current_tick + market.forward_years_CM)
         if expected_capacity != int(total_offered_capacity):
             raise ValueError("Total volume of bids is not equal to total offered capacity")
@@ -119,7 +120,7 @@ class CapacityMarketClearing(MarketModule):
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
 
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
-        clearing_price, total_supply_volume, is_the_market_undersubscribed, targetVolume = self.capacity_market_clearing(
+        clearing_price, total_supply_volume, is_the_market_undersubscribed, upperVolume = self.capacity_market_clearing(
             sorted_supply,
             capacity_market,
             capacity_market_year)
@@ -149,6 +150,8 @@ class CapacityMarketClearing(MarketModule):
             capacity_market.forward_years_CM)
         targetVolume = capacity_market.TargetCapacity
         targetVolume -= effective_capacity_long_term_CM
+        # uppertargetVolume = capacity_market.UpperTargetCapacity
+        # uppertargetVolume -= effective_capacity_long_term_CM
         print("targetVolume" + str(targetVolume))
         # Retrieve the sloping demand curve for the expected peak load volume
         sdc = capacity_market.get_sloping_demand_curve(targetVolume)
@@ -197,7 +200,7 @@ class CapacityMarketClearing(MarketModule):
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
         print("isMarketUndersuscribed ", isMarketUndersuscribed)
-        return clearing_price, total_supply_volume, isMarketUndersuscribed, targetVolume
+        return clearing_price, total_supply_volume, isMarketUndersuscribed, sdc.um_volume
 
     def stageCapacityMechanismRevenues(self, market, clearing_price):
         print("staging capacity market")
@@ -213,7 +216,7 @@ class CapacityMarketClearing(MarketModule):
                 self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant,
                                                                                      self.reps.current_year + market.years_long_term_market)
             else:
-                self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + market.years_long_term_market])
+                self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + market.forward_years_CM])
 
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
@@ -266,8 +269,8 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             capacity_market.allowed_technologies_capacity_market)
         netCONE = netcones[technology_highest_availability]
         cone = cones[technology_highest_availability]
-        chosenCONE = max(netCONE, cone * capacity_market.PriceCapTimesCONE)
-        price_cap = int(chosenCONE)
+       # according to the belgian authorities the price cap should range between 80000 and 100000
+        price_cap = int(netCONE * capacity_market.PriceCapTimesCONE)
         print("price_cap")
         print(price_cap)
         if price_cap < 0:

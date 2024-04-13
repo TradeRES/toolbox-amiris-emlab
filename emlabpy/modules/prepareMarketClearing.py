@@ -230,6 +230,7 @@ class PrepareMarket(DefaultModule):
         Identifiers = []
         increase_by_one = 0
         sorted_load_shedders_byCONE = self.reps.get_sorted_load_shedders_by_increasingVOLL()
+        
         if self.reps.runningModule == "run_prepare_next_year_market_clearing":
             for  loadshedder in sorted_load_shedders_byCONE:
                 Type_ls.append("SHEDDING")
@@ -238,7 +239,11 @@ class PrepareMarket(DefaultModule):
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
-                    VOLL = loadshedder.VOLL
+                    if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
+                        VOLL = loadshedder.VOLL
+                    else:
+                        VOLL = 4000 - increase_by_one
+                        increase_by_one += 1
                     Identifiers.append(int(loadshedder.name) *100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFile)
@@ -251,7 +256,11 @@ class PrepareMarket(DefaultModule):
                                * self.reps.power_generating_technologies["electrolyzer"].efficiency
                     Identifiers.append(8888888)
                 else:
-                    VOLL = loadshedder.VOLL
+                    if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
+                        VOLL = loadshedder.VOLL
+                    else:
+                        VOLL = 4000 - increase_by_one
+                        increase_by_one += 1
                     Identifiers.append(int(loadshedder.name) *100000)
                 VOLLs.append(VOLL)
                 TimeSeries.append(loadshedder.TimeSeriesFileFuture)

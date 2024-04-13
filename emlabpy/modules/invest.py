@@ -8,7 +8,7 @@ import math
 from modules.capacitymarket import CapacityMarketClearing, calculate_cone
 from modules.capacitySubscription import *
 from datetime import datetime
-
+import shutil
 
 class Investmentdecision(DefaultModule):
     """
@@ -105,6 +105,7 @@ class Investmentdecision(DefaultModule):
 
         self.pp_profits = pd.DataFrame([profits], columns=names)
         # self.calculate_capacity_market_price()
+
         if self.first_run == True:
             """
             the first iteration on the first year, no investments are done, it is only to check the old power plants profits in a future market
@@ -116,6 +117,7 @@ class Investmentdecision(DefaultModule):
                                                                            self.future_installed_plants_ids,
                                                                            self.futureTick, self.look_ahead_years)
             self.continue_iteration()
+
         elif self.reps.round_for_capacity_market_y_1 == True:
             """
             no investments are done, it is only to get expected profits for capacity market Y-1 
@@ -128,6 +130,7 @@ class Investmentdecision(DefaultModule):
 
             self.stop_iteration()
             self.reps.dbrw.stage_iteration_for_CM(False)
+
         elif self.reps.targetinvestment_per_year == True and self.reps.target_investments_done == False:
             # todo: these variables could be removed once the model is validated
             # self.reps.dbrw.stage_future_operational_profits_installed_plants(self.reps, pp_dispatched_names, pp_profits)
@@ -240,12 +243,14 @@ class Investmentdecision(DefaultModule):
                                                                            "forward_capacity_market",
                                                                            "strategic_reserve_ger"]):
                         if self.reps.round_for_capacity_market_y_1 == False:
-                            print("************************************* finished_investments to Y-1 calculation")
+                            print("************************************* finished_investments to Y-forwardyears calculation")
                             self.reset_status_candidates_to_investable()
                             self.continue_iteration()
                             self.reps.dbrw.stage_iteration_for_CM(True)
                             self.reps.dbrw.stage_iteration(0)
                             self.reps.dbrw.stage_last_testing_technology(False)
+                            # #todo delete
+                            # shutil.copy2(globalNames.amiris_data_path, "C:\\toolbox-amiris-emlab\\amirisdatadstructor.xlsx")
 
                     elif self.reps.initialization_investment == True:
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
@@ -572,7 +577,7 @@ class Investmentdecision(DefaultModule):
                                              totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end')
                     fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
 
-                net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
+                net_revenues = operatingProfit - fixed_on_m_cost
                 if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                     price_to_bid = -1 * net_revenues / \
                                    (powerplant.capacity * powerplant.technology.deratingFactor)
@@ -601,7 +606,7 @@ class Investmentdecision(DefaultModule):
                 total_offered_capacity += capacity_to_bid
 
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
-        capacity_market_price, total_supply_volume, isMarketUndersuscribed, targetVolume = CapacityMarketClearing.capacity_market_clearing(
+        capacity_market_price, total_supply_volume, isMarketUndersuscribed, upperVolume = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
         # todo: change back total_offered_capacity to total_supply_volume
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
@@ -610,7 +615,7 @@ class Investmentdecision(DefaultModule):
         """
         if the market is no longer undersubscribed then sop investing, otherwise ther could be eternal investments
         """
-        if bids_lower_than_price_cap > targetVolume or  isMarketUndersuscribed == False :
+        if bids_lower_than_price_cap > upperVolume:
             capacity_market_price = 0
         # peaksupply, expected_effective_operationalcapacity = self.reps.calculateEffectiveCapacityExpectedofListofPlants(
         #     self.future_installed_plants_ids, self.investable_candidate_plants)
@@ -641,7 +646,7 @@ class Investmentdecision(DefaultModule):
                 else:
                     pass  # if positive revenues price_to_bid remains 0
                 capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
+                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market, False,
                                                                            capacity_to_bid, \
                                                                            price_to_bid, self.futureTick)
                 print(powerplant.technology.name +
@@ -654,6 +659,8 @@ class Investmentdecision(DefaultModule):
 
         clearing_price, total_supply_volume = CapacitySubscriptionClearing.capacity_subscription_clearing(
             self, sorted_supply, capacity_market, self.futureInvestmentyear)
+
+
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.futureTick)
@@ -737,8 +744,8 @@ class Investmentdecision(DefaultModule):
                                                                                            globalNames.future_prices,
                                                                                            self.futureInvestmentyear)
         totalPeakDemandAtFuturePoint = self.peak_demand * expectedDemandFactor
-        totalPeakDemandAtFuturePoint = capacity_market.TargetCapacity
-        sdc = capacity_market.get_sloping_demand_curve(totalPeakDemandAtFuturePoint)
+        target_volume = capacity_market.TargetCapacity
+        sdc = capacity_market.get_sloping_demand_curve(target_volume)
         clearing_price = 0
         if effectiveExpectedCapacityperTechnology[candidatepowerplant.technology.name] <= sdc.um_volume:
             clearing_price = capacity_market.PriceCap
