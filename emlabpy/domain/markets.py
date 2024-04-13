@@ -225,14 +225,25 @@ class SlopingDemandCurve:
         self.price_cap = price_cap
         self.m = self.price_cap / (self.um_volume - self.lm_volume)
 
+
     def get_price_at_volume(self, volume):
         m = self.price_cap / (self.um_volume - self.lm_volume)
         if volume < self.lm_volume:
             return self.price_cap
-        elif self.lm_volume <= volume <= self.um_volume:
+        elif self.lm_volume <= volume:
             return self.price_cap - m * (volume - self.lm_volume)
-        elif self.um_volume < volume:
+        else:
             return 0
+
+
+    # def get_price_at_volume(self, volume):
+    #     m = self.price_cap / (self.um_volume - self.lm_volume)
+    #     if volume < self.lm_volume:
+    #         return self.price_cap
+    #     elif self.lm_volume <= volume <= self.um_volume:
+    #         return self.price_cap - m * (volume - self.lm_volume)
+    #     elif self.um_volume < volume:
+    #         return 0
 
     # def get_volume_at_price(self, price):
     #     m = self.price_cap / (self.um_volume - self.lm_volume)
