@@ -152,7 +152,6 @@ class CapacityMarketClearing(MarketModule):
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
         # uppertargetVolume -= effective_capacity_long_term_CM
-        print("targetVolume" + str(targetVolume))
         # Retrieve the sloping demand curve for the expected peak load volume
         sdc = capacity_market.get_sloping_demand_curve(targetVolume)
 
