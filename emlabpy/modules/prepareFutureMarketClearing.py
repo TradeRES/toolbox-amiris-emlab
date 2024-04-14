@@ -154,15 +154,15 @@ class PrepareFutureMarketClearing(PrepareMarket):
                       except the ones that should be decommissioned by then
                     """
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-                elif  self.reps.round_for_capacity_market_y_1 ==True:
-                    """
-                    for the capacity market y-1 all power plants that might be decommissioned should participate in the market
-                    """
-                    if fictional_age <= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
-                        self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-                    else:
-                        powerplant.fictional_status = globalNames.power_plant_status_decommissioned
-                        decommissioned_list.append(powerplant.name)
+                # elif  self.reps.round_for_capacity_market_y_1 ==True:
+                #     """
+                #     for the capacity market y-1 all power plants that might be decommissioned should participate in the market
+                #     """
+                #     if fictional_age <= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
+                #         self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+                #     else:
+                #         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
+                #         decommissioned_list.append(powerplant.name)
 
                 elif self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead): # there are enough past simulations fictional_age <= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                     self.check_profitability( powerplant,requiredProfit , horizon,  fictional_age)
