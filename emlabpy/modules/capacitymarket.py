@@ -95,11 +95,11 @@ class CapacityMarketSubmitBids(MarketModule):
             total_offered_capacity += capacity_to_bid
             print(  "total offered capacity" + str(total_offered_capacity))
             # todo: delete this later
-        expected_capacity = self.reps.get_cleared_volume_for_market_and_time("capacity_market_future", self.reps.current_tick + market.forward_years_CM)
-        if expected_capacity != int(total_offered_capacity):
-            raise ValueError("Total volume of bids is not equal to total offered capacity")
-        else:
-            pass
+        # expected_capacity = self.reps.get_cleared_volume_for_market_and_time("capacity_market_future", self.reps.current_tick + market.forward_years_CM)
+        # if expected_capacity != int(total_offered_capacity):
+        #     raise ValueError("Total volume of bids is not equal to total offered capacity")
+        # else:
+        #     pass
 
 
 class CapacityMarketClearing(MarketModule):

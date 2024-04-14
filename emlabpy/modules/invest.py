@@ -250,7 +250,7 @@ class Investmentdecision(DefaultModule):
                             self.reps.dbrw.stage_iteration(0)
                             self.reps.dbrw.stage_last_testing_technology(False)
                             # #todo delete
-                            # shutil.copy2(globalNames.amiris_data_path, "C:\\toolbox-amiris-emlab\\amirisdatadstructor.xlsx")
+                            shutil.copy2(globalNames.amiris_data_path, "C:\\toolbox-amiris-emlab\\amirisdatadstructor.xlsx")
 
                     elif self.reps.initialization_investment == True:
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
@@ -610,7 +610,7 @@ class Investmentdecision(DefaultModule):
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
         # todo: change back total_offered_capacity to total_supply_volume
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
-        self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_offered_capacity,
+        self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_supply_volume,
                                                          self.futureTick)
         """
         if the market is no longer undersubscribed then sop investing, otherwise ther could be eternal investments

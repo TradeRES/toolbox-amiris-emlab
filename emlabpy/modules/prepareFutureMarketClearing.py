@@ -158,7 +158,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     """
                     for the capacity market y-1 all power plants that might be decommissioned should participate in the market
                     """
-                    if fictional_age < powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
+                    if fictional_age <= powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                         self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
                     else:
                         powerplant.fictional_status = globalNames.power_plant_status_decommissioned
