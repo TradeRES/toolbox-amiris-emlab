@@ -159,10 +159,8 @@ class Investmentdecision(DefaultModule):
                 self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
                     self.future_installed_plants_ids, self.investable_candidate_plants, False)
                 self.capacity_calculations()
-
-                if self.reps.capacity_remuneration_mechanism in [None, "strategic_reserve_ger"]:
-                    capacity_market_price = 0
-                elif self.reps.capacity_remuneration_mechanism == "capacity_subscription":
+                capacity_market_price = 0
+                if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
                     capacity_market_price = self.calculate_capacity_subscription()
                 elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
                     capacity_market_price = self.calculate_forward_capacity_market_price(long_term=True)
@@ -190,7 +188,7 @@ class Investmentdecision(DefaultModule):
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
                         operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
-                        if self.reps.capacity_remuneration_mechanism == None:
+                        if self.reps.capacity_remuneration_mechanism == "none":
                             pass
                         else:
                             operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor

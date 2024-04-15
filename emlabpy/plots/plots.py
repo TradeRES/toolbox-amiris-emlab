@@ -764,9 +764,8 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     colors = plt.cm.rainbow(np.linspace(0, 1, n))
     fig24, axs24 = plt.subplots(nrows=2, ncols=1)
     sorted_prices.plot(color=colors, ax=axs24[0], legend=None)
-    # plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1.1, 1.1), ncol=3)
     plt.ylim([0, 200])
-    axs24[0].legend(fontsize='small', loc='upper right', ncol=5)
+    axs24[0].legend(fontsize='small', loc='upper right', ncol=2 ,bbox_to_anchor=(1.1, 1.1))
     axs24[0].set_title('Price duration curve')
     axs24[1] = sorted_prices.plot(color=colors, ax=axs24[1], legend=None)
     plt.xlabel('hours', fontsize='medium')
@@ -1072,7 +1071,6 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     fig38.savefig(path_to_plots + '/' + 'Load_shedded.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_per_group):
-    print("d")
     CM_subsription_cost = CM_clearing_price.values*load_per_group
     cost_non_subcription.plot()
     fig38, axs38 = plt.subplots(2, 1)
@@ -1685,7 +1683,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
 
     # attention: FOR CAPACITY MARKETS
     else:
-        if reps.capacity_remuneration_mechanism == "capacity_market":
+        if reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription"]:
             market = reps.get_capacity_market_in_country(reps.country, False)
         else:
             market = reps.get_capacity_market_in_country(reps.country, True)
@@ -2867,9 +2865,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-test"]
+    SCENARIOS = ["NL-CSbycosts_test"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
