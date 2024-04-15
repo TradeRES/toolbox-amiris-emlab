@@ -114,7 +114,7 @@ class CreatingFinancialReports(DefaultModule):
             self.modifyIRR()
             # modifying the IRR by technology
         if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-            self.modify_CS_parameter_by_costs()
+            self.modify_CS_parameter_by_RS()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
