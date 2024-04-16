@@ -229,7 +229,7 @@ class PrepareMarket(DefaultModule):
         Type_ls = []
         Identifiers = []
         increase_by_one = 0
-        sorted_load_shedders_byCONE = self.reps.get_sorted_load_shedders_by_increasingVOLL()
+        sorted_load_shedders_byVOLL = self.reps.get_sorted_load_shedders_by_increasingVOLL()
         
         if self.reps.runningModule == "run_prepare_next_year_market_clearing":
             for  loadshedder in sorted_load_shedders_byVOLL:
