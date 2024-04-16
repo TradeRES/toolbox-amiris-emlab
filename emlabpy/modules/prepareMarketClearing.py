@@ -232,7 +232,7 @@ class PrepareMarket(DefaultModule):
         sorted_load_shedders_byCONE = self.reps.get_sorted_load_shedders_by_increasingVOLL()
         
         if self.reps.runningModule == "run_prepare_next_year_market_clearing":
-            for  loadshedder in sorted_load_shedders_byCONE:
+            for  loadshedder in sorted_load_shedders_byVOLL:
                 Type_ls.append("SHEDDING")
                 if loadshedder.name == "hydrogen":
                     VOLL = self.reps.substances[loadshedder.name].simulatedPrice_inYear \
@@ -240,7 +240,7 @@ class PrepareMarket(DefaultModule):
                     Identifiers.append(8888888)
                 else:
                     if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                        VOLL = 4000 - increase_by_one
+                        VOLL = 4000 + increase_by_one
                         increase_by_one += 1
                     else:
                         VOLL = loadshedder.VOLL
@@ -249,7 +249,7 @@ class PrepareMarket(DefaultModule):
                 TimeSeries.append(loadshedder.TimeSeriesFile)
 
         elif self.reps.runningModule == "run_future_market":
-            for  loadshedder in sorted_load_shedders_byCONE:
+            for  loadshedder in sorted_load_shedders_byVOLL:
                 Type_ls.append("SHEDDING")
                 if loadshedder.name == "hydrogen":
                     VOLL = self.reps.substances[loadshedder.name].futurePrice_inYear \
@@ -257,7 +257,7 @@ class PrepareMarket(DefaultModule):
                     Identifiers.append(8888888)
                 else:
                     if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                        VOLL = 4000 - increase_by_one
+                        VOLL = 4000 + increase_by_one
                         increase_by_one += 1
                     else:
                         VOLL = loadshedder.VOLL

@@ -114,7 +114,7 @@ class CreatingFinancialReports(DefaultModule):
             self.modifyIRR()
             # modifying the IRR by technology
         if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-            self.modify_CS_parameter_by_RS()
+            self.modify_CS_parameter_by_costs()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -248,7 +248,7 @@ class CreatingFinancialReports(DefaultModule):
             """
             increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
             """
-            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick))
+            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick + 1))
             ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(
                 reverse=False)
             last = len(ascending_load_shedders_no_hydrogen) - 1
@@ -263,7 +263,7 @@ class CreatingFinancialReports(DefaultModule):
                     else:
                         unsubscribe = round((averageLOLE - reliability_standard) / reliability_standard / 10, 2)
                         if unsubscribe <= 0:
-                            pass
+                            pass # does not want to subscribe more.
                         else:  # unsubscribe is positive
                             print(unsubscribe)
                             new_value = load_shedder.percentageLoad - unsubscribe  # smaller load percentage
@@ -353,7 +353,7 @@ class CreatingFinancialReports(DefaultModule):
         if self.reps.current_tick < self.start_tick_CS:
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
-            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick))
+            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick + 1))
             capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
             last_year_prices = []
             for t in ticks_to_generate:
@@ -382,11 +382,11 @@ class CreatingFinancialReports(DefaultModule):
                             continue
                         else:
                             unsubscribe = round(
-                                (non_subscription_costs - Capacity_market_costs) / (Capacity_market_costs),
+                                (non_subscription_costs - Capacity_market_costs) / (Capacity_market_costs)*10,
                                 3)  # Eur/Mwh
                             if unsubscribe <= 0:
                                 pass
-                            else:  # unsubscribe is positive
+                            else:  # higher costs of non subscription
                                 new_value = load_shedder.percentageLoad - unsubscribe  # smaller load percentage
                                 if new_value < minimumvalue_per_group:  # cannot decrease more than the available value
                                     unsubscribe = load_shedder.percentageLoad - minimumvalue_per_group
@@ -396,6 +396,8 @@ class CreatingFinancialReports(DefaultModule):
                                 load_shedder.percentageLoad = new_value
                                 ascending_load_shedders_no_hydrogen[last].percentageLoad = \
                                 ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+
+
 
             for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
                 if count < last:

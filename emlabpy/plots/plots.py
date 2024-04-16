@@ -1075,10 +1075,10 @@ def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_pe
     cost_non_subcription.plot()
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
-    CM_subsription_cost.plot(ax=axs38[0], cmap = "viridis",  legend=False)
+    CM_subsription_cost.plot(ax=axs38[0], cmap = "viridis",  legend=True, bbox_to_anchor=(1, 1.1))
     axs38[0].set_title('Subscription costs', fontsize='medium')
-    cost_non_subcription.plot(ax=axs38[1], cmap = "viridis", legend=True)
-    axs38[1].set_title('Non subcription costs', fontsize='medium')
+    cost_non_subcription.plot(ax=axs38[1], cmap = "viridis", legend=False)
+    axs38[1].set_title('Non subscription costs', fontsize='medium')
     axs38[0].set_ylabel('[Eur]', fontsize='medium')
     axs38[1].set_xlabel('Years', fontsize='medium')
     axs38[1].set_ylabel('[Eur]', fontsize='medium')
@@ -2865,7 +2865,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CSbycosts_test"]
+    SCENARIOS = ["NL-CS_byRSwithDSR"]
     results_excel = "NL_CRM.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
