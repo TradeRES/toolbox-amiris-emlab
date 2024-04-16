@@ -248,7 +248,7 @@ class CreatingFinancialReports(DefaultModule):
             """
             increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
             """
-            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick + 1))
+            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick))
             ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(
                 reverse=False)
             last = len(ascending_load_shedders_no_hydrogen) - 1
@@ -353,7 +353,7 @@ class CreatingFinancialReports(DefaultModule):
         if self.reps.current_tick < self.start_tick_CS:
             self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         else:
-            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick + 1))
+            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick))
             capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
             last_year_prices = []
             for t in ticks_to_generate:
