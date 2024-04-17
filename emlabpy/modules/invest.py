@@ -537,6 +537,7 @@ class Investmentdecision(DefaultModule):
                 calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
             else:
                 pass
+        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isMarketUndersuscribed, upperVolume = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
@@ -547,7 +548,7 @@ class Investmentdecision(DefaultModule):
         """
         if the market is no longer undersubscribed then sop investing, otherwise there could be eternal investments
         """
-        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market)
+
 
         if bids_lower_than_price_cap > upperVolume:
             capacity_market_price = 0
@@ -595,13 +596,13 @@ class Investmentdecision(DefaultModule):
                     fixed_on_m_cost = powerplant.actualFixedOperatingCost
                 else: # for new power plants
                     totalInvestment = self.getActualInvestedCapitalperMW(powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed
-                    pending_loan = - npf.pmt(powerplant.technology.interestRate, powerplant.technology.depreciation_time,
+                    pending_loan = npf.pmt(powerplant.technology.interestRate, powerplant.technology.depreciation_time,
                                              totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end')
                     fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
                 """
                 new power plants bid their loans, which is what they need in long term
                 """
-                if powerplant.age == -self.look_ahead_years:
+                if powerplant.age <= -self.look_ahead_years:
                     net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
                 else:
                     net_revenues = operatingProfit - fixed_on_m_cost
