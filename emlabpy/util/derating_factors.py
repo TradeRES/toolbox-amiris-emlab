@@ -10,7 +10,7 @@ first = type + folder
 emlab_sql = "\\EmlabDB.sqlite"
 amiris_sql = "\\AMIRIS db.sqlite"
 energy_exchange_url_sql = "\\energy exchange.sqlite"
-scenario_name = "NL-EOM"
+scenario_name = "NL-EOM_lowLoadshedders"
 emlab_url = first + scenario_name + emlab_sql
 amiris_url = first + scenario_name + emlab_sql
 spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
@@ -18,8 +18,10 @@ reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 global years_to_generate
 years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
 
+LOLE = 4
 global unique_technologies
 unique_technologies = reps.get_unique_candidate_technologies_names()
+unique_technologies.append("Nuclear")
 annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
     last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
@@ -38,13 +40,17 @@ derating_factor = pd.DataFrame()
 
 demand_excel = init_folder + "data\\40weatherYears2050TNO.xlsx"
 demand =  pd.read_excel(demand_excel, sheet_name=["Load"])
-demand_near_scarcity = pd.DataFrame()
+demand_at_scarcity = pd.DataFrame()
+
+original_demand = pd.DataFrame()
+shedded = pd.DataFrame()
+
 for year in years_to_generate:
     year_excel = folder + scenario_name + "\\" + str(year) + ".xlsx"
     df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "hourly_generation"])
     hourly_load_shedders = pd.DataFrame()
     for unit in df['hourly_generation'].columns.values:
-        if unit[0:4] == "unit"  and unit[5:] != "8888888" :
+        if unit[0:4] == "unit"  and unit[5:] != "8888888":
             hourly_load_shedders[unit[5:]] = df['hourly_generation'][unit]
         elif unit =="PV":
             hourly_generation_res["Solar PV large"] = df['hourly_generation'][unit]
@@ -60,25 +66,39 @@ for year in years_to_generate:
             pass
 
 
-    total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
-    yearly_near_scarcity_hours =  total_hourly_load_shedders[total_hourly_load_shedders >0].index
 
-    demand_near_scarcity.at["prices", year] = df["energy_exchange"]["ElectricityPriceInEURperMWH"].loc[yearly_near_scarcity_hours].mean()
-    demand_near_scarcity.at["awarded_power", year] = df["energy_exchange"]["TotalAwardedPowerInMW"].loc[yearly_near_scarcity_hours].mean()
-    demand_near_scarcity.at["orginal_load", year] = demand["Load"].loc[yearly_near_scarcity_hours, year -2050 + 1980].mean()
+    total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
+    yearly_at_scarcity_hours =  total_hourly_load_shedders[total_hourly_load_shedders > 0 ].index
+
+    demand_at_scarcity.at["prices", year] = df["energy_exchange"]["ElectricityPriceInEURperMWH"].loc[yearly_at_scarcity_hours].mean()
+    demand_at_scarcity.at["awarded_power", year] = df["energy_exchange"]["TotalAwardedPowerInMW"].loc[yearly_at_scarcity_hours].mean()
+
+    shedded[year] = total_hourly_load_shedders
+    original_demand[year] = demand["Load"][year - 2050 + 1980]
 
     for tech in all_techs_capacity:
         if tech in all_techs_capacity.loc[year] and tech in hourly_generation_res.columns:
             installed_capacity = all_techs_capacity.loc[year, tech]
-            average_generation = hourly_generation_res.loc[yearly_near_scarcity_hours, tech].mean()
+            average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
             derating_factor.at[tech,year] = average_generation / installed_capacity
         else:
             pass
 
+demand_LOLE = pd.DataFrame()
+demand_LOLE["shortages"] = shedded.stack().reset_index(drop=True)
+demand_LOLE["load"] = original_demand.stack().reset_index(drop=True)
+sorted_demand_LOLE = demand_LOLE.sort_values(by='shortages', ascending=False, ignore_index=True)
+
+
+selected_rows = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].head(LOLE*len(years_to_generate))
+selected_rows_1_5 = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].head(int(LOLE*len(years_to_generate)*1.5))
+demand_near_scarcity = pd.DataFrame({LOLE: [selected_rows["load"].mean()], LOLE*1.5: [selected_rows_1_5["load"].mean()]})
+
+
 with pd.ExcelWriter("near_scarcity.xlsx") as writer:
     derating_factor.to_excel(writer, sheet_name="derating_factors")
+    demand_at_scarcity.to_excel(writer, sheet_name="demand_at_scarcity")
     demand_near_scarcity.to_excel(writer, sheet_name="demand_near_scarcity")
-
 
 axs21 = derating_factor.T.plot() #color=colors_unique_techs
 axs21.set_axisbelow(True)
