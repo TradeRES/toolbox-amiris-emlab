@@ -564,8 +564,8 @@ class Investmentdecision(DefaultModule):
 
     def calculate_capacity_subscription(self):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
-        sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         bids_lower_than_price_cap = self.capacity_market_bids(capacity_market)
+        sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         clearing_price, total_supply_volume = CapacitySubscriptionClearing.capacity_subscription_clearing(
             self, sorted_supply, capacity_market, self.futureInvestmentyear)
 
@@ -616,8 +616,8 @@ class Investmentdecision(DefaultModule):
                 long_term_contract = False
                 if self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
                     long_term_contract = True  # plant is new
-                    if powerplant.age == -self.look_ahead_years:
-                        price_to_bid = min(capacity_market.PriceCap / 2, price_to_bid)
+                    # if powerplant.age == -self.look_ahead_years:
+                    #     price_to_bid = min(capacity_market.PriceCap / 2, price_to_bid) the current intermediate price is set by DSR.
                 capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
                                                                            long_term_contract, capacity_to_bid, \
