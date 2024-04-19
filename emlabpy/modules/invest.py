@@ -596,8 +596,8 @@ class Investmentdecision(DefaultModule):
                     fixed_on_m_cost = powerplant.actualFixedOperatingCost
                 else: # for new power plants
                     totalInvestment = self.getActualInvestedCapitalperMW(powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed
-                    pending_loan = npf.pmt(powerplant.technology.interestRate, powerplant.technology.depreciation_time,
-                                             totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end')
+                    pending_loan =  - npf.pmt(powerplant.technology.interestRate, powerplant.technology.depreciation_time,
+                                             totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end') # pending loan is left as negative
                     fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
                 """
                 new power plants bid their loans, which is what they need in long term
@@ -625,12 +625,12 @@ class Investmentdecision(DefaultModule):
 
                 if price_to_bid < capacity_market.PriceCap:
                     bids_lower_than_price_cap += capacity_to_bid
-
-                print(powerplant.technology.name +
-                      powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
-                    operatingProfit) + ";" + str(
-                    fixed_on_m_cost) + ";" + str(
-                    pending_loan))
+                if powerplant.age <= -self.look_ahead_years:
+                    print(powerplant.technology.name +
+                          powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
+                        operatingProfit) + ";" + str(
+                        fixed_on_m_cost) + ";" + str(
+                        pending_loan))
 
         return bids_lower_than_price_cap
 

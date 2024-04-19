@@ -43,6 +43,7 @@ class CapacityMarketSubmitBids(MarketModule):
             power_plants = self.reps.get_plants_that_can_be_operational_not_in_ltcm(
                 market.forward_years_CM)  # retrieve plants that will be operational in 1 -4 years
         total_offered_capacity = 0
+
         for powerplant in power_plants:
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
             capacity = powerplant.get_actual_nominal_capacity()
@@ -56,20 +57,20 @@ class CapacityMarketSubmitBids(MarketModule):
             for the capacity market runs, there are no downpayments
             """
             pending_loan = 0
-            if loan is not None:
-                if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
-                    pending_loan = loan.getAmountPerPayment()
-
+            if powerplant.age <= - market.forward_years_CM:
+                if loan is not None:
+                    if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
+                        pending_loan = loan.getAmountPerPayment()
+            else:
+                pending_loan = 0
             # if power plant is not dispatched, the net revenues are minus the fixed operating costs
             if profits is None:
-                # print("no dispatch found for " + str(powerplant.id)+  " with name "+str(powerplant.name))
-                net_revenues = - fixed_on_m_cost
+                net_revenues = - fixed_on_m_cost - pending_loan
                 profits = 0
+            else: # if power plant is dispatched, the net revenues are the revenues minus the total costs
+                net_revenues = profits - fixed_on_m_cost -pending_loan
 
-            # if power plant is dispatched, the net revenues are the revenues minus the total costs
-            else:
-                net_revenues = profits - fixed_on_m_cost
-            # if net revenues are negative, the bid price is the net revenues per mw of capacity
+        # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
                 price_to_bid = -1 * net_revenues / \
                                (capacity * powerplant.technology.deratingFactor)
