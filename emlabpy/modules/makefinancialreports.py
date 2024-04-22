@@ -256,7 +256,7 @@ class CreatingFinancialReports(DefaultModule):
         ENS_per_LS = total_load_shedded.sum(axis=0)
         ENS_subscribed = ENS_per_LS["1"]
         if ENS_subscribed > 0:
-            print("subscribe consumers are curtailed!!!!!!!!!!!")
+            print("subscribed consumers are curtailed!!!!!!!!!!!")
         ENS_unsubscribed = ENS_per_LS["2"]  # MWh
         peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         expensive_capacity = (self.reps.loadShedders["1"].percentageLoad  +  self.reps.loadShedders["2"].percentageLoad) * peak_demand

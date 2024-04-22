@@ -239,8 +239,6 @@ class Investmentdecision(DefaultModule):
                             self.reps.dbrw.stage_iteration_for_CM(True)
                             self.reps.dbrw.stage_iteration(0)
                             self.reps.dbrw.stage_last_testing_technology(False)
-                            # #todo delete
-                            shutil.copy2(globalNames.amiris_data_path, "C:\\toolbox-amiris-emlab\\amirisdatadstructor.xlsx")
 
                     elif self.reps.initialization_investment == True:
                         if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
