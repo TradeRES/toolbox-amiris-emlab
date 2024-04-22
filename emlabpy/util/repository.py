@@ -96,7 +96,6 @@ class Repository:
         self.capacity_remuneration_mechanism = None
         self.maximum_installed_share_initialization = 0.1
         self.round_for_capacity_market_y_1 = False
-        self.limit_investments = True
         self.hours_in_year = 8760
         self.change_IRR = False
         self.factor_fromVOLL = 1

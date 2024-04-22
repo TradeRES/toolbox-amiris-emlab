@@ -150,18 +150,32 @@ class Investmentdecision(DefaultModule):
             highestNPVCandidatePP = None
             highestNPV = 0
             # power plants are investable when they havent passed the capacity limits
+
+            self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
+                self.future_installed_plants_ids, self.reps.get_investable_candidate_power_plants(), False)
+
+            self.capacity_calculations()
+            for candidatepowerplant in self.reps.get_investable_candidate_power_plants():
+                investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
+                if investable == False:
+                    candidatepowerplant.setViableInvestment(False)
+                    print(
+                        "set to non investable " + candidatepowerplant.technology.name)
+                    # saving if the candidate power plant remains or not as investable
+                    self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+                else:
+                    candidatepowerplant.specifyCandidatePPCapacityLocationOwner(self.reps, self.agent)
+
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
+
 
             if self.investable_candidate_plants:  # check if there are investable power plants
                 # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
                 #     # filter out intermittent technologies
                 #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
-                self.expectedInstalledCapacityPerTechnology = self.reps.calculateCapacityExpectedofListofPlants(
-                    self.future_installed_plants_ids, self.investable_candidate_plants, False)
-                self.capacity_calculations()
                 capacity_market_price = 0
                 if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                    capacity_market_price = self.calculate_capacity_subscription()
+                    capacity_market_price = self.calculate_capacity_subscription(long_term=False)
                 elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
                     capacity_market_price = self.calculate_forward_capacity_market_price(long_term=True)
                 elif self.reps.capacity_remuneration_mechanism == "capacity_market":
@@ -173,46 +187,33 @@ class Investmentdecision(DefaultModule):
                     cp_numbers.append(candidatepowerplant.name)
                     cp_profits.append(candidatepowerplant.operationalProfit)
                     # calculate which is the power plant (technology) with the highest NPV
-                    candidatepowerplant.specifyCandidatePPCapacityLocationOwner(self.reps, self.agent)
 
-                    if self.reps.limit_investments == True:
-                        investable = self.calculateandCheckFutureCapacityExpectation(candidatepowerplant)
+                    operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
+                    if self.reps.capacity_remuneration_mechanism == "none":
+                        pass
                     else:
-                        investable = True
+                        operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
 
-                    if investable == False:
-                        candidatepowerplant.setViableInvestment(False)
-                        print(
-                            "set to non investable " + candidatepowerplant.technology.name)
+                    cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
+                    projectvalue = self.npv(candidatepowerplant.technology, cashflow)
+
+                    # saving the list of power plants values that have been candidates per investmentIteration.
+                    self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name,
+                                                                      projectvalue / candidatepowerplant.capacity,
+                                                                      self.reps.investmentIteration,
+                                                                      self.futureInvestmentyear,
+                                                                      )
+                    if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
+                        highestNPV = projectvalue / candidatepowerplant.capacity
+                        highestNPVCandidatePP = candidatepowerplant
+
+                    elif projectvalue < 0:
+                        # the power plant should not be investable in next rounds
                         # saving if the candidate power plant remains or not as investable
+                        candidatepowerplant.setViableInvestment(False)
                         self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
                     else:
-                        operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
-                        if self.reps.capacity_remuneration_mechanism == "none":
-                            pass
-                        else:
-                            operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
-
-                        cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
-                        projectvalue = self.npv(candidatepowerplant.technology, cashflow)
-
-                        # saving the list of power plants values that have been candidates per investmentIteration.
-                        self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name,
-                                                                          projectvalue / candidatepowerplant.capacity,
-                                                                          self.reps.investmentIteration,
-                                                                          self.futureInvestmentyear,
-                                                                          )
-                        if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
-                            highestNPV = projectvalue / candidatepowerplant.capacity
-                            highestNPVCandidatePP = candidatepowerplant
-
-                        elif projectvalue < 0:
-                            # the power plant should not be investable in next rounds
-                            # saving if the candidate power plant remains or not as investable
-                            candidatepowerplant.setViableInvestment(False)
-                            self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
-                        else:
-                            logging.info("technology%s negative NPV", candidatepowerplant.technology)
+                        logging.info("technology%s negative NPV", candidatepowerplant.technology)
 
                 # saving: operational profits from candidate plant
                 # todo: this can be avoid, saving for debugging
@@ -535,7 +536,8 @@ class Investmentdecision(DefaultModule):
                 calculate_cone(self.reps, capacity_market, self.investable_candidate_plants)
             else:
                 pass
-        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market)
+
+        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isMarketUndersuscribed, upperVolume = CapacityMarketClearing.capacity_market_clearing(
             self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
@@ -546,7 +548,6 @@ class Investmentdecision(DefaultModule):
         """
         if the market is no longer undersubscribed then sop investing, otherwise there could be eternal investments
         """
-
 
         if bids_lower_than_price_cap > upperVolume:
             capacity_market_price = 0
@@ -560,9 +561,9 @@ class Investmentdecision(DefaultModule):
         #     print("peaksupply " + str(peaksupply) + "peakExpectedDemand " + str(peakExpectedDemand))
         return capacity_market_price
 
-    def calculate_capacity_subscription(self):
-        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
-        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market)
+    def calculate_capacity_subscription(self,long_term ):
+        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
+        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         clearing_price, total_supply_volume = CapacitySubscriptionClearing.capacity_subscription_clearing(
             self, sorted_supply, capacity_market, self.futureInvestmentyear)
@@ -572,63 +573,68 @@ class Investmentdecision(DefaultModule):
                                                          self.futureTick)
         return clearing_price
 
-    def capacity_market_bids(self, capacity_market):
+    def capacity_market_bids(self, capacity_market, long_term):
         print("technologyname;price_to_bid;capacityderated;opexprofits;fixed_on_m_cost;pending_loan")
         bids_lower_than_price_cap = 0
+        candidates_and_existing = []
         for powerplant in self.reps.power_plants.values():
-            if powerplant.id in self.future_installed_plants_ids:
-                """
-                power plants that get a long term revenues should not participate in the capacity market
-                unless they are finished with their long term contract
-                """
-                if self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
-                    continue  # in long term market should not participate in the capacity market
-                else:
-                    pass
-                price_to_bid = 0
-                operatingProfit = powerplant.get_Profit()  # for installed capacity
-                loan = powerplant.getLoan()
-                if loan.getAmountPerPayment() != None:
-                    if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
-                        pending_loan = loan.getAmountPerPayment()
-                    fixed_on_m_cost = powerplant.actualFixedOperatingCost
-                else: # for new power plants
-                    totalInvestment = self.getActualInvestedCapitalperMW(powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed
-                    pending_loan =  - npf.pmt(powerplant.technology.interestRate, powerplant.technology.depreciation_time,
-                                             totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end') # pending loan is left as negative
-                    fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
-                """
-                new power plants bid their loans, which is what they need in long term
-                """
-                if powerplant.age <= -self.look_ahead_years:
-                    net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
-                else:
-                    net_revenues = operatingProfit - fixed_on_m_cost
+            """
+            power plants that get a long term revenues should not participate in the capacity market
+            unless they are finished with their long term contract
+            """
+            if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
+                candidates_and_existing.append(powerplant)
+            else:
+                print(str(powerplant.id) + "not in capacity market")
 
-                if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                    price_to_bid = -1 * net_revenues / \
-                                   (powerplant.capacity * powerplant.technology.deratingFactor)
-                else:
-                    pass  # if positive revenues price_to_bid remains 0
+        if long_term == True:
+            candidates_and_existing = candidates_and_existing + self.investable_candidate_plants
 
-                long_term_contract = False
-                if self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
-                    long_term_contract = True  # plant is new
-                    # if powerplant.age == -self.look_ahead_years:
-                    #     price_to_bid = min(capacity_market.PriceCap / 2, price_to_bid) the current intermediate price is set by DSR.
-                capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
-                                                                           long_term_contract, capacity_to_bid, \
-                                                                           price_to_bid, self.futureTick)
+        for powerplant in candidates_and_existing:
+            price_to_bid = 0
+            operatingProfit = powerplant.get_Profit()  # for installed capacity
+            loan = powerplant.getLoan()
+            if loan.getAmountPerPayment() != None:
+                if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
+                    pending_loan = loan.getAmountPerPayment()
+                fixed_on_m_cost = powerplant.actualFixedOperatingCost
+            else: # for new power plants
+                totalInvestment = self.getActualInvestedCapitalperMW(powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed
+                pending_loan =  - npf.pmt(powerplant.technology.interestRate, powerplant.technology.depreciation_time,
+                                         totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end') # pending loan is left as negative
+                fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
+            """
+            new power plants bid their loans, which is what they need in long term
+            """
+            if powerplant.age <= -self.look_ahead_years:
+                net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
+            else:
+                net_revenues = operatingProfit - fixed_on_m_cost
 
-                if price_to_bid < capacity_market.PriceCap:
-                    bids_lower_than_price_cap += capacity_to_bid
-                if powerplant.age <= -self.look_ahead_years:
-                    print(powerplant.technology.name +
-                          powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
-                        operatingProfit) + ";" + str(
-                        fixed_on_m_cost) + ";" + str(
-                        pending_loan))
+            if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
+                price_to_bid = -1 * net_revenues / \
+                               (powerplant.capacity * powerplant.technology.deratingFactor)
+            else:
+                pass  # if positive revenues price_to_bid remains 0
+
+            long_term_contract = False
+            if self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
+                long_term_contract = True  # plant is new
+                # if powerplant.age == -self.look_ahead_years:
+                #     price_to_bid = min(capacity_market.PriceCap / 2, price_to_bid) the current intermediate price is set by DSR.
+            capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
+            self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
+                                                                       long_term_contract, capacity_to_bid, \
+                                                                       price_to_bid, self.futureTick)
+
+            if price_to_bid < capacity_market.PriceCap:
+                bids_lower_than_price_cap += capacity_to_bid
+
+            print(powerplant.technology.name +
+                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
+                operatingProfit) + ";" + str(
+                fixed_on_m_cost) + ";" + str(
+                pending_loan))
 
         return bids_lower_than_price_cap
 
