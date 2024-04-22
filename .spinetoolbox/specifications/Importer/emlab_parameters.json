@@ -1059,43 +1059,6 @@
                     }
                 }
             ],
-            "CapacitySubscriptionOperators": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "table_name"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "LoadShedders_copy": [
                 {
                     "Mapping 1": {
@@ -1227,6 +1190,116 @@
                         ]
                     }
                 }
+            ],
+            "LoadShedders (2)": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "CapacitySubscriptionConsumer": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "CapacitySubscriptionConsumer"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "CS_subscribed": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "CapacitySubscriptionConsumer"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1248,9 +1321,9 @@
             "LoadShedders",
             "LoadShifterCap",
             "peakLoad",
-            "CapacitySubscriptionOperators",
             "LSyearly",
-            "derating"
+            "CapacitySubscriptionConsumer",
+            "CS_subscribed"
         ],
         "table_options": {
             "CapacityMarkets": {},
@@ -1341,7 +1414,6 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "CapacitySubscriptionOperators": {},
             "LoadShedders_copy": {},
             "LSyearly": {
                 "read_until_col": true,
@@ -1349,7 +1421,16 @@
             },
             "LoadShedders_feb24": {},
             "LS_NL": {},
-            "derating": {}
+            "derating": {},
+            "LoadShedders (2)": {},
+            "CapacitySubscriptionConsumer": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "CS_subscribed": {
+                "read_until_col": true,
+                "read_until_row": true
+            }
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1659,21 +1740,43 @@
                 "4": "float",
                 "5": "float"
             },
-            "CapacitySubscriptionOperators": {
-                "0": "string",
-                "1": "float",
-                "2": "float"
-            },
             "LSyearly": {
                 "0": "string",
                 "1": "float",
                 "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
+                "3": "float"
+            },
+            "derating": {
+                "0": "string",
+                "1": "string",
+                "2": "string"
+            },
+            "CapacitySubscriptionConsumer": {
+                "0": "string",
+                "1": "float",
+                "2": "float"
+            },
+            "LoadShedders (2)": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
                 "7": "string",
-                "8": "string"
+                "8": "string",
+                "9": "string",
+                "10": "string",
+                "11": "string",
+                "12": "string",
+                "13": "string",
+                "14": "string"
+            },
+            "CS_subscribed": {
+                "0": "string",
+                "1": "float",
+                "2": "string"
             }
         },
         "table_default_column_type": {},
@@ -1692,6 +1795,9 @@
                 "0": "string"
             },
             "LSyearly": {
+                "0": "string"
+            },
+            "CS_subscribed": {
                 "0": "string"
             }
         },

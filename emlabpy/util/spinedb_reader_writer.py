@@ -8,7 +8,7 @@ import logging
 from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
 
-from domain.CapacitySubscriptionOperator import CapacitySubscriptionOperator
+from domain.CapacitySubscriptionConsumer import CapacitySubscriptionConsumer
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import CandidatesNPV, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
 from domain.load_shifter_with_cap_demand import LoadShifterwCap
@@ -32,6 +32,7 @@ class SpineDBReaderWriter:
         self.db = SpineDB(db_urls[0])  # the first url is always emlab
         self.powerplant_installed_classname = 'PowerPlantsInstalled'
         self.load_shedders_classname = 'LoadShedders'
+        self.consumer_classname = "CapacitySubscriptionConsumer"
         self.technologies_classname = 'Technologies'
         self.powerplantprofits_classname = 'Profits'
         self.candidate_powerplant_installed_classname = 'CandidatePowerPlants'
@@ -738,14 +739,14 @@ class SpineDBReaderWriter:
                                            '0')
     def stage_init_load_shedded(self):
         self.stage_object_class(self.load_shedders_classname)
-        self.stage_object_parameters(self.load_shedders_classname, ['realized_rs'])
+        self.stage_object_parameters(self.load_shedders_classname, ['realized_LOLE'])
 
-    def stage_load_shedders_realized_lole(self, realized_curtailments, tick):
+    def stage_load_shedders_realized_lole(self, realized_LOLE, tick):
         # iterate over elements in the series realized_curtailments
-        for ls_name, ls in realized_curtailments.iteritems():
+        for ls_name, ls in realized_LOLE.iteritems():
             self.stage_object(self.load_shedders_classname, ls_name)
             self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-            [("realized_rs", Map([str(tick)], [ls]))], "0")
+            [("realized_LOLE", Map([str(tick)], [ls]))], "0")
 
 
     def stage_load_shedders_voll_not_hydrogen(self, load_shedders, tick):
@@ -753,12 +754,20 @@ class SpineDBReaderWriter:
             if ls_name == "hydrogen":
                 pass
             else:
-
                 self.stage_object(self.load_shedders_classname, ls_name)
                 self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
                                                    [("percentage_load", Map([str(tick)], [ls.percentageLoad]))], "0")
 
 
+    def stage_consumers_bids(self , consumer, bid, tick):
+        self.stage_object(self.consumer_classname, consumer)
+        self.stage_object_parameter_values(self.consumer_classname, consumer,
+                                           [("bid", Map([str(tick)], [bid]))], "0")
+
+    def stage_consumer_subscribed(self , consumer,subscribed_yearly ,  tick):
+        self.stage_object(self.consumer_classname, consumer)
+        self.stage_object_parameter_values(self.consumer_classname, consumer,
+                                           [("subscribed_yearly", Map([str(tick)], [subscribed_yearly]))], "0")
 
     def stage_init_cash_agent(self):
         self.stage_object_class(self.energyProducer_classname)
@@ -1028,8 +1037,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.loadShedders, LoadShedder)
     elif object_class_name == 'StrategicReserveOperators':
         add_parameter_value_to_repository(reps, db_line, reps.sr_operator, StrategicReserveOperator)
-    elif object_class_name == 'CapacitySubscriptionOperators':
-        add_parameter_value_to_repository(reps, db_line, reps.cs_operator, CapacitySubscriptionOperator)
+    elif object_class_name == 'CapacitySubscriptionConsumer':
+        add_parameter_value_to_repository(reps, db_line, reps.cs_consumers, CapacitySubscriptionConsumer)
     elif object_class_name == 'StrategicReserveResults':
         new_db_line = list(db_line)
         new_db_line[1] = "SRO_" + reps.country  # object name

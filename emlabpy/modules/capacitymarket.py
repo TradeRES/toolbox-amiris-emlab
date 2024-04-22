@@ -68,7 +68,7 @@ class CapacityMarketSubmitBids(MarketModule):
                 net_revenues = - fixed_on_m_cost - pending_loan
                 profits = 0
             else: # if power plant is dispatched, the net revenues are the revenues minus the total costs
-                net_revenues = profits - fixed_on_m_cost -pending_loan
+                net_revenues = profits - fixed_on_m_cost - pending_loan
 
         # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:

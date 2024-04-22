@@ -9,6 +9,7 @@ from typing import Optional, Dict, List
 
 import pandas as pd
 
+from domain.CapacitySubscriptionConsumer import CapacitySubscriptionConsumer
 from domain.actors import *
 from domain.cashflow import CashFlow
 from domain.powerplantDispatchPlan import *
@@ -155,7 +156,7 @@ class Repository:
         self.bids_sr = dict()
         # Create Strategic Reserve Operator
         self.sr_operator = dict()
-        self.cs_operator = dict()
+        self.cs_consumers = dict()
 
     """
     Repository functions:
@@ -312,7 +313,7 @@ class Repository:
 
     def get_realized_peak_demand_by_year(self, year):
         """
-        saved in future market preparation, include industrial load
+        saved in future market preparation,
         """
         try:
             return next(i.realized_demand_peak.loc[year] for i in self.electricity_spot_markets.values() if
@@ -330,6 +331,20 @@ class Repository:
                         i.country == self.country)
         except StopIteration:
             return None
+
+    def get_percentage_load_LS(self, name):
+        """
+        saved in future market preparation, exclude industrial load and electrolyzers (only static demand)
+        """
+        try:
+            # the load was already updated in the clock step
+            return next(i.percentageLoad for i in self.loadShedders.values() if
+                        i.name == name)
+        except StopIteration:
+            return None
+
+
+
 
     def get_peak_future_demand(self):
         try:
@@ -842,6 +857,7 @@ class Repository:
     def get_load_shedders_by_time(self, time: int):
         return [(i) for i in self.loadShedders.values() if i.name != "hydrogen"]
 
+
     def get_power_plant_dispatch_plans_by_plant(self, plant: PowerPlant) -> List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans_in_year.values() if i.plant == plant]
 
@@ -867,6 +883,10 @@ class Repository:
         sorted_load_shedders.append(self.loadShedders["hydrogen"])
         return sorted_load_shedders
 
+    def get_sorted_load_shedders_by_name(self, name) -> \
+            List[LoadShedder]:
+        return next(i for i in self.loadShedders.values() if i.name == name)
+
     def get_strategic_reserve_operator(self, zone) -> Optional[StrategicReserveOperator]:
         try:
             return next(i for i in self.sr_operator.values() if
@@ -874,12 +894,31 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_capacity_subscription_operator(self, country) -> Optional[StrategicReserveOperator]:
+    def get_CS_consumer_descending_WTP(self):
         try:
-            return next(i for i in self.cs_operator.values() if
-                        i.country == country)
+            return sorted(self.cs_consumers.values(), key=lambda x: x.WTP, reverse=True)
         except StopIteration:
             return None
+
+
+    def get_CS_subscribed_consumers_descending_bid(self):
+        try:
+            # subscribed = [i for i in self.cs_consumers.values() if i.subscribed_yearly > 0]
+            # unsubscribed = CapacitySubscriptionConsumer("unsubscribed")
+            # unsubscribed.bid = 0
+            # unsubscribed.subscribed_yearly = 1 - sum([i.subscribed_yearly for i in self.cs_consumers.values()])
+            # subscribed.append(unsubscribed)
+            subscribed = [i for i in self.cs_consumers.values()]
+            return sorted(subscribed , key=lambda x: x.bid, reverse=True)
+        except StopIteration:
+            return None
+
+    def get_subscribed_yearly(self, name, tick):
+        try:
+            return next( round(i[tick],3) for i in self.cs_consumers.values() if i.name == name)
+        except StopIteration:
+            return None
+
 
     def get_capacity_market_for_plant(self, plant: PowerPlant) -> Optional[CapacityMarket]:
         try:

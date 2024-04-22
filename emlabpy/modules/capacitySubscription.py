@@ -17,19 +17,17 @@ class DemandCurve:
         price = self.price_cap
         # print("-----------------------------------" + str(cummulative_supply))
         for demand in self.sorted_demand:
-            # print(str(demand.cummulative_quantity)  +  ";" + str(demand.price))
             last_capacity = cummulative_supply - supply.amount
             if demand.cummulative_quantity >= cummulative_supply:
-                price = demand.price
+                price = demand.bid
                 break
             else:
                 # demand quantity is still less than supply quantity but the price is
-                if demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
-                 #   print("price" + str(demand.price) )
-                    price = demand.price
+                if demand.bid < supply.price and demand.cummulative_quantity >= last_capacity:
+                    price = demand.bid
                     break
                 # if there is no demand, take the last price
-                price = demand.price
+                price = demand.bid
         return price
 
 
@@ -63,26 +61,23 @@ class CapacitySubscriptionClearing(MarketModule):
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
     def capacity_subscription_clearing(self, sorted_supply, capacity_market, capacity_market_year):
-
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
                                                                                       True)
         peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
-        peakExpectedDemand = peak_load * (expectedDemandFactor)
-        load_shedders = self.reps.get_load_shedders_by_time(self.reps.current_tick)
-        for ls in load_shedders:
-            ls.price = ls.VOLL * self.reps.factor_fromVOLL
-        sorted_demand = sorted(load_shedders, key=lambda x: x.price, reverse=True)
-        total = 0
-        for i, demand in enumerate(sorted_demand):
-            total += demand.percentageLoad * peakExpectedDemand
-            demand.cummulative_quantity = total
-            print(str(total) + ";" + str(demand.price))
+        expensive_load_peak =  peak_load * expectedDemandFactor *( self.reps.get_percentage_load_LS("1") + self.reps.get_percentage_load_LS("2"))
+        sorted_consumers = self.reps.get_CS_subscribed_consumers_descending_bid()
 
-        print("peak load " + str(peakExpectedDemand))
+        total = 0
+        print("consumer;cummulative_bids;bid")
+        for i, consumer in enumerate(sorted_consumers):
+            total += consumer.subscribed_yearly[self.reps.current_tick] * expensive_load_peak
+            consumer.cummulative_quantity = total
+            print(consumer.name +";"+ str(total) + ";" + str(consumer.bid))
+
         clearing_price = 0
         total_supply_volume = 0
 
-        demandCurve = DemandCurve(capacity_market.PriceCap, sorted_demand)
+        demandCurve = DemandCurve(sorted_consumers[0].WTP, sorted_consumers) # price cap is set as the WTP of the most expensive consumer
         cummulative_supply = 0
         for supply_bid in sorted_supply:
             # As long as the market is not cleared

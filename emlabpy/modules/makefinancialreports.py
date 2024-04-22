@@ -32,8 +32,13 @@ class CreatingFinancialReports(DefaultModule):
             reps.dbrw.stage_init_load_shedded()
 
     def act(self):
-        self.prepare_percentage_load_shedded()
+
+        total_load_shedded = self.prepare_percentage_load_shedded()
+        if self.reps.capacity_remuneration_mechanism == "capacity_subscription" :#and self.reps.current_tick >0:
+            self.assign_LOLE_by_subscription(total_load_shedded)
         self.createFinancialReportsForPowerPlantsAndTick()
+        # modifying the IRR by technology
+
         print("finished financial report")
 
     def createFinancialReportsForPowerPlantsAndTick(self):
@@ -112,9 +117,6 @@ class CreatingFinancialReports(DefaultModule):
         # modifying the IRR by technology
         if self.reps.change_IRR == True:
             self.modifyIRR()
-            # modifying the IRR by technology
-        if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-            self.modify_CS_parameter_by_costs()
         # saving
         self.reps.dbrw.stage_financial_results(financialPowerPlantReports)
         self.reps.dbrw.stage_cash_agent(self.agent, self.reps.current_tick)
@@ -200,8 +202,7 @@ class CreatingFinancialReports(DefaultModule):
 
     def prepare_percentage_load_shedded(self):
         """
-        prepare the percentage of load shedded for each load shedder. reading results for current year.
-        :return:
+        calculate LOLE by load shedder.
         """
         df = pd.read_csv(globalNames.hourly_generation_per_group_path)
         hourly_load_shedders = pd.DataFrame()
@@ -224,127 +225,180 @@ class CreatingFinancialReports(DefaultModule):
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
                 yearly_hydrogen_shedded = total_load_shedded[name].sum()
                 production_not_shedded_MWh.at[year, "hydrogen_produced"] = (
-                            total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded)
+                        total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded)
                 production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((
-                                                                                                   total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
+                                                                                               total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
                 total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
             else:
                 id_shedder = int(name) * 100000
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
         #        load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
         #        load_shedded_per_group_percentage.at[year, name] = (hourly_load_shedders[(id_shedder)].sum() / total_yearly_electrolysis_consumption[year].sum()) * 10
-        print(total_load_shedded.where(total_load_shedded > 0).count())
-        realized_curtailments = total_load_shedded.where(total_load_shedded > 0).sum()
-        self.reps.dbrw.stage_load_shedders_realized_lole(realized_curtailments, self.reps.current_tick)
-        if self.reps.current_tick >= self.start_tick_CS:
-            for name, values in self.reps.loadShedders.items():
-                print(name + "-" + str(realized_curtailments[name]))
-                self.reps.loadShedders[name].realized_rs[self.reps.current_tick] = realized_curtailments[name]
+        """
+        stage total LOLE
+        """
+        realized_LOLE = total_load_shedded.where(total_load_shedded > 0).sum()
+        print(realized_LOLE)
+        self.reps.dbrw.stage_load_shedders_realized_lole(realized_LOLE, self.reps.current_tick)
+        self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+        # for name, values in self.reps.loadShedders.items():
+        #     print(name + "-" + str(realized_LOLE[name]))
+        #     """
+        #     stage LOLE by load shedder
+        #     """
+        #     self.reps.loadShedders[name].realized_LOLE[self.reps.current_tick] = realized_LOLE[name]
+        return total_load_shedded
 
-    def modify_CS_parameter_by_RS(self):
-        if self.reps.current_tick < self.start_tick_CS:
-            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
-        else:
-            """
-            increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
-            """
-            ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick))
-            ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(
-                reverse=False)
-            last = len(ascending_load_shedders_no_hydrogen) - 1
-            minimumvalue_per_group = 0.01
-            for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
-                if count < last:
-                    print(load_shedder.name + "+++++++++++++++++++++++++++++++" + str(load_shedder.percentageLoad))
-                    averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
-                    reliability_standard = load_shedder.reliability_standard
-                    if pd.isna(averageLOLE):
-                        pass
-                    else:
-                        unsubscribe = round((averageLOLE - reliability_standard) / reliability_standard / 10, 2)
-                        if unsubscribe <= 0:
-                            pass # does not want to subscribe more.
-                        else:  # unsubscribe is positive
-                            print(unsubscribe)
-                            new_value = load_shedder.percentageLoad - unsubscribe  # smaller load percentage
-                            if new_value < minimumvalue_per_group:  # cannot decrease more than the available value
-                                unsubscribe = load_shedder.percentageLoad - minimumvalue_per_group
-                                new_value = minimumvalue_per_group
-                            else:
-                                pass
-                            load_shedder.percentageLoad = new_value
-                            ascending_load_shedders_no_hydrogen[last].percentageLoad = \
-                            ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
-                            print(ascending_load_shedders_no_hydrogen[last].name + " new value " + str( ascending_load_shedders_no_hydrogen[last].percentageLoad))
+    def assign_LOLE_by_subscription(self, total_load_shedded):
+        """
+        CS consumer descending by WTP
+        """
+        ENS_per_LS = total_load_shedded.sum(axis=0)
+        ENS_subscribed = ENS_per_LS["1"]
+        if ENS_subscribed > 0:
+            print("subscribe consumers are curtailed!!!!!!!!!!!")
+        ENS_unsubscribed = ENS_per_LS["2"]  # MWh
+        peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
+        expensive_capacity = (self.reps.loadShedders["1"].percentageLoad  +  self.reps.loadShedders["2"].percentageLoad) * peak_demand
+        volume_unsubscribed = self.reps.loadShedders["2"].percentageLoad  * peak_demand
+        average_LOLE_unsubscribed = ENS_unsubscribed / volume_unsubscribed  # MWH/MW
 
-            for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
-                if count < last:
-                    print(load_shedder.name + "---------------------------------" + str(load_shedder.percentageLoad))
-                    averageLOLE = load_shedder.realized_rs[ticks_to_generate].mean()
-                    reliability_standard = load_shedder.reliability_standard
-                    if pd.isna(averageLOLE):
-                        pass
-                    else:
-                        unsubscribe = round((averageLOLE - reliability_standard) / reliability_standard / 100, 2)
-                        if unsubscribe <= 0:
-                            new_value = load_shedder.percentageLoad - unsubscribe  # larger load percentage
-                        else:  # unsubscribe is positive
-                            continue
-                        print("addSubscribed" + str(unsubscribe))
-                        load_shedder.percentageLoad = new_value
-                        print(
-                            load_shedder.name + "---------------------------------" + str(load_shedder.percentageLoad))
-                        """
-                        if there subscription load is lower than the needed load, then take the difference from the next load shedder
-                        """
-                        if unsubscribe > 0:
-                            print(ascending_load_shedders_no_hydrogen[last].name + " adding group " + str(  ascending_load_shedders_no_hydrogen[last].percentageLoad))
-                            ascending_load_shedders_no_hydrogen[last].percentageLoad = \
-                            ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
-                        else:
-                            if ascending_load_shedders_no_hydrogen[
-                                last].percentageLoad + unsubscribe < minimumvalue_per_group:
-                                descending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(
-                                    reverse=True)
-                                last = len(descending_load_shedders_no_hydrogen) - 1
-                                for countdescending, descending_load_shedder in enumerate(
-                                        descending_load_shedders_no_hydrogen):
-                                    if descending_load_shedder.percentageLoad + unsubscribe < minimumvalue_per_group:
-                                        unsubscribe = unsubscribe + descending_load_shedder.percentageLoad - minimumvalue_per_group
-                                        ascending_load_shedders_no_hydrogen[
-                                            last].percentageLoad = minimumvalue_per_group
-                                        print(str(descending_load_shedder.percentageLoad) + " part from group " + descending_load_shedder.name)
-                                        last = last - 1
-                                    else:
-                                        ascending_load_shedders_no_hydrogen[
-                                            last].percentageLoad = descending_load_shedder.percentageLoad + unsubscribe
-                                        print(str(ascending_load_shedders_no_hydrogen[last].percentageLoad) + "  group " +
-                                            ascending_load_shedders_no_hydrogen[last].name)
-                                        break
-                            else:
-                                print(str(
-                                    ascending_load_shedders_no_hydrogen[last].percentageLoad) + " from  group enough " +
-                                      ascending_load_shedders_no_hydrogen[last].name)
-                                ascending_load_shedders_no_hydrogen[last].percentageLoad = \
-                                ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+        for consumer in self.reps.get_CS_consumer_descending_WTP():
+            print("--------------------------"+consumer.name)
+            costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
+            consumer.bid = costs_non_subscription
+            self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
 
-            """
-            checking that the percentage of load shedded is not higher than 100%
-            """
-            lst = []
-            for load_shedder_name, load_shedder in self.reps.loadShedders.items():
-                print(load_shedder.name + "-------------" + str(load_shedder.percentageLoad))
-                lst.append(load_shedder.percentageLoad)
-            if sum(lst) > 1.02:
-                print("percentage of load shedded is higher than 101%")
-                raise Exception
-            elif sum(lst) < .98:
-                print("percentage of load shedded is lower than 99%")
-                raise Exception
-            else:
+            if self.reps.current_tick == 0: # capacity_market_price = 0
+                """
+                for the first year there is no estimation of a capacity market
+                """
                 pass
+#                self.reps.dbrw.stage_consumer_subscribed(consumer.name, consumer.subscribed_yearly, self.reps.current_tick + 1)
+            else:
+                capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
+                capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
+                                                                                                  self.reps.current_tick - 1 + capacity_market.forward_years_CM)
+                change = (costs_non_subscription - capacity_market_price)/(capacity_market_price * 100)
+                print(change)
+                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
+                if next_year_subscription >  consumer.max_subscribed_percentage:
+                    next_year_subscription = consumer.max_subscribed_percentage
+                    print("passed max subscribed percentage")
+                elif next_year_subscription < 0:
+                    next_year_subscription = 0
+                    print("passed min subscribed percentage")
+                self.reps.dbrw.stage_consumer_subscribed(consumer.name, next_year_subscription, self.reps.current_tick)
+                #costs_subscription = consumer.subscribed_yearly * expensive_capacity * capacity_market_price
 
-            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+    # def modify_CS_parameter_by_RS(self):
+    #     if self.reps.current_tick < self.start_tick_CS:
+    #         self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+    #     else:
+    #         """
+    #         increase the percentage of load shedded by the difference between the realized LOLE and the reliability standard
+    #         """
+    #         ticks_to_generate = list(range(self.reps.current_tick - 1, self.reps.current_tick))
+    #         ascending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(
+    #             reverse=False)
+    #         last = len(ascending_load_shedders_no_hydrogen) - 1
+    #         minimumvalue_per_group = 0.01
+    #         for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
+    #             if count < last:
+    #                 print(load_shedder.name + "+++++++++++++++++++++++++++++++" + str(load_shedder.percentageLoad))
+    #                 averageLOLE = load_shedder.realized_LOLE[ticks_to_generate].mean()
+    #                 reliability_standard = load_shedder.reliability_standard
+    #                 if pd.isna(averageLOLE):
+    #                     pass
+    #                 else:
+    #                     unsubscribe = round((averageLOLE - reliability_standard) / reliability_standard / 10, 2)
+    #                     if unsubscribe <= 0:
+    #                         pass  # does not want to subscribe more.
+    #                     else:  # unsubscribe is positive
+    #                         print(unsubscribe)
+    #                         new_value = load_shedder.percentageLoad - unsubscribe  # smaller load percentage
+    #                         if new_value < minimumvalue_per_group:  # cannot decrease more than the available value
+    #                             unsubscribe = load_shedder.percentageLoad - minimumvalue_per_group
+    #                             new_value = minimumvalue_per_group
+    #                         else:
+    #                             pass
+    #                         load_shedder.percentageLoad = new_value
+    #                         ascending_load_shedders_no_hydrogen[last].percentageLoad = \
+    #                             ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+    #                         print(ascending_load_shedders_no_hydrogen[last].name + " new value " + str(
+    #                             ascending_load_shedders_no_hydrogen[last].percentageLoad))
+    #
+    #         for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
+    #             if count < last:
+    #                 print(load_shedder.name + "---------------------------------" + str(load_shedder.percentageLoad))
+    #                 averageLOLE = load_shedder.realized_LOLE[ticks_to_generate].mean()
+    #                 reliability_standard = load_shedder.reliability_standard
+    #                 if pd.isna(averageLOLE):
+    #                     pass
+    #                 else:
+    #                     unsubscribe = round((averageLOLE - reliability_standard) / reliability_standard / 100, 2)
+    #                     if unsubscribe <= 0:
+    #                         new_value = load_shedder.percentageLoad - unsubscribe  # larger load percentage
+    #                     else:  # unsubscribe is positive
+    #                         continue
+    #                     print("addSubscribed" + str(unsubscribe))
+    #                     load_shedder.percentageLoad = new_value
+    #                     print(
+    #                         load_shedder.name + "---------------------------------" + str(load_shedder.percentageLoad))
+    #                     """
+    #                     if there subscription load is lower than the needed load, then take the difference from the next load shedder
+    #                     """
+    #                     if unsubscribe > 0:
+    #                         print(ascending_load_shedders_no_hydrogen[last].name + " adding group " + str(
+    #                             ascending_load_shedders_no_hydrogen[last].percentageLoad))
+    #                         ascending_load_shedders_no_hydrogen[last].percentageLoad = \
+    #                             ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+    #                     else:
+    #                         if ascending_load_shedders_no_hydrogen[
+    #                             last].percentageLoad + unsubscribe < minimumvalue_per_group:
+    #                             descending_load_shedders_no_hydrogen = self.reps.get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(
+    #                                 reverse=True)
+    #                             last = len(descending_load_shedders_no_hydrogen) - 1
+    #                             for countdescending, descending_load_shedder in enumerate(
+    #                                     descending_load_shedders_no_hydrogen):
+    #                                 if descending_load_shedder.percentageLoad + unsubscribe < minimumvalue_per_group:
+    #                                     unsubscribe = unsubscribe + descending_load_shedder.percentageLoad - minimumvalue_per_group
+    #                                     ascending_load_shedders_no_hydrogen[
+    #                                         last].percentageLoad = minimumvalue_per_group
+    #                                     print(
+    #                                         str(descending_load_shedder.percentageLoad) + " part from group " + descending_load_shedder.name)
+    #                                     last = last - 1
+    #                                 else:
+    #                                     ascending_load_shedders_no_hydrogen[
+    #                                         last].percentageLoad = descending_load_shedder.percentageLoad + unsubscribe
+    #                                     print(
+    #                                         str(ascending_load_shedders_no_hydrogen[last].percentageLoad) + "  group " +
+    #                                         ascending_load_shedders_no_hydrogen[last].name)
+    #                                     break
+    #                         else:
+    #                             print(str(
+    #                                 ascending_load_shedders_no_hydrogen[last].percentageLoad) + " from  group enough " +
+    #                                   ascending_load_shedders_no_hydrogen[last].name)
+    #                             ascending_load_shedders_no_hydrogen[last].percentageLoad = \
+    #                                 ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+    #
+    #         """
+    #         checking that the percentage of load shedded is not higher than 100%
+    #         """
+    #         lst = []
+    #         for load_shedder_name, load_shedder in self.reps.loadShedders.items():
+    #             print(load_shedder.name + "-------------" + str(load_shedder.percentageLoad))
+    #             lst.append(load_shedder.percentageLoad)
+    #         if sum(lst) > 1.02:
+    #             print("percentage of load shedded is higher than 101%")
+    #             raise Exception
+    #         elif sum(lst) < .98:
+    #             print("percentage of load shedded is lower than 99%")
+    #             raise Exception
+    #         else:
+    #             pass
+    #
+    #         self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
 
     def modify_CS_parameter_by_costs(self):
         """
@@ -369,7 +423,7 @@ class CreatingFinancialReports(DefaultModule):
             for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
                 if count < last:
                     print(load_shedder.name + "+++++++++++++++++++++++++++++++" + str(load_shedder.percentageLoad))
-                    averageENS = load_shedder.realized_rs[ticks_to_generate].mean()
+                    averageENS = load_shedder.realized_LOLE[ticks_to_generate].mean()
                     Capacity_market_costs = capacity_market_price * peak_demand * load_shedder.percentageLoad
 
                     if pd.isna(load_shedder.percentageLoad):
@@ -382,7 +436,7 @@ class CreatingFinancialReports(DefaultModule):
                             continue
                         else:
                             unsubscribe = round(
-                                (non_subscription_costs - Capacity_market_costs) / (Capacity_market_costs)*10,
+                                (non_subscription_costs - Capacity_market_costs) / (Capacity_market_costs) * 10,
                                 3)  # Eur/Mwh
                             if unsubscribe <= 0:
                                 pass
@@ -395,14 +449,12 @@ class CreatingFinancialReports(DefaultModule):
                                     pass
                                 load_shedder.percentageLoad = new_value
                                 ascending_load_shedders_no_hydrogen[last].percentageLoad = \
-                                ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
-
-
+                                    ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
 
             for count, load_shedder in enumerate(ascending_load_shedders_no_hydrogen):
                 if count < last:
                     print(load_shedder.name + "---------------------------------" + str(load_shedder.percentageLoad))
-                    averageENS = load_shedder.realized_rs[ticks_to_generate].mean()
+                    averageENS = load_shedder.realized_LOLE[ticks_to_generate].mean()
                     Capacity_market_costs = capacity_market_price * peak_demand * load_shedder.percentageLoad
                     if pd.isna(load_shedder.percentageLoad):
                         raise Exception
@@ -428,7 +480,7 @@ class CreatingFinancialReports(DefaultModule):
                             """
                             if unsubscribe > 0:
                                 ascending_load_shedders_no_hydrogen[last].percentageLoad = \
-                                ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+                                    ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
                             else:
                                 if ascending_load_shedders_no_hydrogen[
                                     last].percentageLoad + unsubscribe < minimumvalue_per_group:
@@ -448,7 +500,7 @@ class CreatingFinancialReports(DefaultModule):
                                             break
                                 else:
                                     ascending_load_shedders_no_hydrogen[last].percentageLoad = \
-                                    ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
+                                        ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
 
             """
             checking that the percentage of load shedded is not higher than 100%

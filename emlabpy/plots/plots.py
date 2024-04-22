@@ -1075,7 +1075,7 @@ def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_pe
     cost_non_subcription.plot()
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
-    CM_subsription_cost.plot(ax=axs38[0], cmap = "viridis",  legend=True, bbox_to_anchor=(1, 1.1))
+    CM_subsription_cost.plot(ax=axs38[0], cmap = "viridis",  legend=True)
     axs38[0].set_title('Subscription costs', fontsize='medium')
     cost_non_subcription.plot(ax=axs38[1], cmap = "viridis", legend=False)
     axs38[1].set_title('Non subscription costs', fontsize='medium')
@@ -1687,11 +1687,12 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
             market = reps.get_capacity_market_in_country(reps.country, False)
         else:
             market = reps.get_capacity_market_in_country(reps.country, True)
+
         for tick in ticks_to_generate:
-            CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick )
-            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
-            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick )
-            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick)  # saved according to effective year
+            CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick + market.forward_years_CM )
+            capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick + market.forward_years_CM)  # saved according to effective year
+            CM_clearing_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time(market.name, tick + market.forward_years_CM)
+            capacity_market_future_volume.at[tick, 0] = reps.get_cleared_volume_for_market_and_time("capacity_market_future", tick+ market.forward_years_CM)  # saved according to effective year
 
     cm_revenues_per_pp = pd.DataFrame(index=ticks_to_generate).fillna(0)
     for technology_name in unique_technologies:
@@ -1934,7 +1935,6 @@ def reading_original_load(years_to_generate, list_ticks ):
     print("finish reading  excel")
     return yearly_load
 
-
 def prepare_percentage_load_shedded_new(reps, years_to_generate):
     total_load_shedded = pd.DataFrame()
     total_load_shedded_per_year = pd.DataFrame()
@@ -2037,15 +2037,37 @@ def prepareCONE():
     cones.sort_index(inplace=True)
     netcones.sort_index(inplace=True)
     axs21 = cones.plot() # color=colors_unique_techs
-    netcones.plot(ax= axs21)
+    netcones.plot(ax= axs21, linestyle='dashed')
     axs21.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel(' (€/MWh)', fontsize='medium')
-    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+
     plt.grid()
     fig21 = axs21.get_figure()
     fig21.savefig(path_to_plots + '/' + 'CONEs.png', bbox_inches='tight', dpi=300)
     plt.close('all')
+
+
+def prepare_subscribed_capacity():
+    subscribed_yearly = pd.DataFrame()
+    bid_yearly = pd.DataFrame()
+    for consumer in reps.cs_consumers.values():
+        subscribed_yearly[consumer.name] = consumer.subscribed_yearly
+        bid_yearly[consumer.name] = consumer.bid
+
+    sorted_bids = bid_yearly.sort_values(by=bid_yearly.index[0], axis=1)
+    column_order = sorted_bids.columns
+    subscribed_sorted = subscribed_yearly[column_order]
+    fig3, axs3 = plt.subplots(2, 1)
+    fig3.tight_layout()
+    subscribed_sorted.plot(ax=axs3[0], kind='bar', stacked=True, grid=True, legend=True,  cmap='viridis')
+    axs3[0].legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.1, 1.1))
+    sorted_bids.plot(ax=axs3[1], grid=True, legend=False,  cmap='viridis' )
+    axs3[0].set_ylabel('subscribed consumers', fontsize='large')
+    axs3[0].set_xlabel('CS Bids', fontsize='large')
+    axs3[1].set_ylabel('Cost non subscription \n [Eur/MW - y]', fontsize='large')
+    fig3.savefig(path_to_plots + '/' + 'subscribed_consumers.png', bbox_inches='tight', dpi=300)
+    plt.close()
 
 def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
@@ -2227,6 +2249,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
      cost_non_subcription, load_per_group) =\
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
 
+    if reps.capacity_remuneration_mechanism == "capacity_subscription":
+        prepare_subscribed_capacity()
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
                       normalized_load_shedded)
@@ -2345,6 +2369,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     if reps.capacity_remuneration_mechanism == "capacity_market":
         prepareCONE()
+
+
     if calculate_vres_support == True:
         yearly_vres_support = calculating_RES_support(reps, years_to_generate)
         plot_yearly_VRES_support(yearly_vres_support, path_to_plots)
@@ -2865,9 +2891,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CS_byRSwithDSR"]
+    SCENARIOS = ["NL-CS_by_avoidedcosts"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
