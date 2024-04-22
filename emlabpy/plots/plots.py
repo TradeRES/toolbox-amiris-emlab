@@ -2058,6 +2058,8 @@ def prepare_subscribed_capacity():
     sorted_bids = bid_yearly.sort_values(by=bid_yearly.index[0], axis=1)
     column_order = sorted_bids.columns
     subscribed_sorted = subscribed_yearly[column_order]
+    sorted_bids.sort_index(ascending=True, inplace=True)
+    subscribed_sorted.sort_index(ascending=True, inplace=True)
     fig3, axs3 = plt.subplots(2, 1)
     fig3.tight_layout()
     subscribed_sorted.plot(ax=axs3[0], kind='bar', stacked=True, grid=True, legend=True,  cmap='viridis')
@@ -2891,9 +2893,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CS_by_avoidedcosts"]
+    SCENARIOS = ["N-CS_by_avoided_costs"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 

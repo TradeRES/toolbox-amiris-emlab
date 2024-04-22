@@ -13,8 +13,7 @@
                                 "skip_columns": [
                                     1,
                                     6
-                                ],
-                                "read_start_row": 6
+                                ]
                             },
                             {
                                 "map_type": "Object",
