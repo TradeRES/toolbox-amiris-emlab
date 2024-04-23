@@ -210,43 +210,20 @@ class CreatingFinancialReports(DefaultModule):
             if unit[0:4] == "unit":
                 hourly_load_shedders[unit[5:]] = df[unit]
 
-        production_not_shedded_MWh = pd.DataFrame()
-        total_yearly_electrolysis_consumption = pd.DataFrame()
-        total_yearly_hydrogen_input_demand = self.reps.loadShedders[
-                                                 "hydrogen"].ShedderCapacityMW * self.reps.hours_in_year
-        hydrogen_input_demand = [self.reps.loadShedders["hydrogen"].ShedderCapacityMW] * self.reps.hours_in_year
         total_load_shedded = pd.DataFrame()
-        year = self.reps.current_year
         for name, values in self.reps.loadShedders.items():
             test_list = [int(i) for i in hourly_load_shedders.columns.values]
             hourly_load_shedders.columns = test_list
             if name == "hydrogen":  # hydrogen is the lowest load shedder
-                id_shedder = 8888888
-                total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
-                yearly_hydrogen_shedded = total_load_shedded[name].sum()
-                production_not_shedded_MWh.at[year, "hydrogen_produced"] = (
-                        total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded)
-                production_not_shedded_MWh.at[year, "hydrogen_percentage_produced"] = ((
-                                                                                               total_yearly_hydrogen_input_demand - yearly_hydrogen_shedded) / total_yearly_hydrogen_input_demand) * 100
-                total_yearly_electrolysis_consumption[year] = hydrogen_input_demand - total_load_shedded[name]
+                pass
             else:
                 id_shedder = int(name) * 100000
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
-        #        load_shedded_per_group_MWh.at[year, name] = hourly_load_shedders[(id_shedder)].sum()
-        #        load_shedded_per_group_percentage.at[year, name] = (hourly_load_shedders[(id_shedder)].sum() / total_yearly_electrolysis_consumption[year].sum()) * 10
-        """
-        stage total LOLE
-        """
-        realized_LOLE = total_load_shedded.where(total_load_shedded > 0).sum()
+
+        realized_LOLE = total_load_shedded.where(total_load_shedded > 0).count()
         print(realized_LOLE)
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_LOLE, self.reps.current_tick)
         self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
-        # for name, values in self.reps.loadShedders.items():
-        #     print(name + "-" + str(realized_LOLE[name]))
-        #     """
-        #     stage LOLE by load shedder
-        #     """
-        #     self.reps.loadShedders[name].realized_LOLE[self.reps.current_tick] = realized_LOLE[name]
         return total_load_shedded
 
     def assign_LOLE_by_subscription(self, total_load_shedded):
@@ -254,18 +231,20 @@ class CreatingFinancialReports(DefaultModule):
         CS consumer descending by WTP
         """
         ENS_per_LS = total_load_shedded.sum(axis=0)
-        ENS_subscribed = ENS_per_LS["1"]
-        if ENS_subscribed > 0:
+        if ENS_per_LS["1"] > 0:
             print("subscribed consumers are curtailed!!!!!!!!!!!")
-        ENS_unsubscribed = ENS_per_LS["2"]  # MWh
+        ENS_per_LS.drop("1", inplace=True)
+        ENS = ENS_per_LS.sum()  # MWh
         peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
-        expensive_capacity = (self.reps.loadShedders["1"].percentageLoad  +  self.reps.loadShedders["2"].percentageLoad) * peak_demand
-        volume_unsubscribed = self.reps.loadShedders["2"].percentageLoad  * peak_demand
-        average_LOLE_unsubscribed = ENS_unsubscribed / volume_unsubscribed  # MWH/MW
-
+        unsubcribed_volume = sum([i.percentageLoad for i in self.reps.loadShedders.values() if i.name != "1"])
+        volume_unsubscribed = unsubcribed_volume * peak_demand
+        if volume_unsubscribed == 0:
+            print("no volume is unsubscribed")
+        average_LOLE_unsubscribed = ENS / volume_unsubscribed  # MWH/MW
+        print(average_LOLE_unsubscribed)
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
+            costs_non_subscription =   consumer.WTP     # H * Eur/MWH = Eur/MW
             consumer.bid = costs_non_subscription
             self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
 
