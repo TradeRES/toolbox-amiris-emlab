@@ -128,6 +128,9 @@ class CapacityMarketClearing(MarketModule):
             capacity_market,
             capacity_market_year)
 
+        if clearing_price <0:
+            raise ValueError("Clearing price is negative")
+
         # saving yearly CM revenues to the power plants and update bids
         self.stageCapacityMechanismRevenues(capacity_market, clearing_price)
         # saving market clearing point
@@ -272,7 +275,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         netCONE = netcones[technology_highest_availability]
         cone = cones[technology_highest_availability]
        # according to the belgian authorities the price cap should range between 80000 and 100000
-        price_cap = int(netCONE * capacity_market.PriceCapTimesCONE)
+        price_cap = max(int(netCONE * capacity_market.PriceCapTimesCONE),cone)
         print("price_cap")
         print(price_cap)
 
