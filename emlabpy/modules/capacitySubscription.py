@@ -46,7 +46,7 @@ class CapacitySubscriptionClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-        clearing_price, total_supply_volume, = self.capacity_subscription_clearing(sorted_ppdp, capacity_market,
+        clearing_price, total_supply_volume,total_subscribed_volume = self.capacity_subscription_clearing(sorted_ppdp, capacity_market,
                                                                                    capacity_market_year)
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
@@ -67,12 +67,12 @@ class CapacitySubscriptionClearing(MarketModule):
         expensive_load_peak =  peak_load * expectedDemandFactor *( self.reps.get_percentage_load_LS("1") + self.reps.get_percentage_load_LS("2"))
         sorted_consumers = self.reps.get_CS_subscribed_consumers_descending_bid()
 
-        total = 0
+        total_subscribed_volume = 0
         print("consumer;cummulative_bids;bid")
         for i, consumer in enumerate(sorted_consumers):
-            total += consumer.subscribed_yearly[self.reps.current_tick] * expensive_load_peak
-            consumer.cummulative_quantity = total
-            print(consumer.name +";"+ str(total) + ";" + str(consumer.bid))
+            total_subscribed_volume += consumer.subscribed_yearly[self.reps.current_tick] * expensive_load_peak
+            consumer.cummulative_quantity = total_subscribed_volume
+            print(consumer.name +";"+ str(total_subscribed_volume) + ";" + str(consumer.bid))
 
         clearing_price = 0
         total_supply_volume = 0
@@ -84,7 +84,7 @@ class CapacitySubscriptionClearing(MarketModule):
             cummulative_supply = supply_bid.amount + cummulative_supply
             demand_price = demandCurve.get_demand_price_at_volume(cummulative_supply, supply_bid)
 
-            if supply_bid.price < demand_price:
+            if supply_bid.price < demand_price and total_supply_volume < total_subscribed_volume:
                 total_supply_volume += supply_bid.amount
                 supply_bid.accepted_amount = supply_bid.amount
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
@@ -100,4 +100,4 @@ class CapacitySubscriptionClearing(MarketModule):
 
         # from plots.testclearmarket import plot_CS_market
         # plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
-        return clearing_price, total_supply_volume
+        return clearing_price, total_supply_volume, total_subscribed_volume
