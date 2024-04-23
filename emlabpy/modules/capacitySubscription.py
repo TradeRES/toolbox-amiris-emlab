@@ -63,14 +63,12 @@ class CapacitySubscriptionClearing(MarketModule):
     def capacity_subscription_clearing(self, sorted_supply, capacity_market, capacity_market_year):
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
                                                                                       True)
-        peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year)
-        expensive_load_peak =  peak_load * expectedDemandFactor *( self.reps.get_percentage_load_LS("1") + self.reps.get_percentage_load_LS("2"))
+        peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year) * expectedDemandFactor
         sorted_consumers = self.reps.get_CS_subscribed_consumers_descending_bid()
-
         total_subscribed_volume = 0
         print("consumer;cummulative_bids;bid")
         for i, consumer in enumerate(sorted_consumers):
-            total_subscribed_volume += consumer.subscribed_yearly[self.reps.current_tick] * expensive_load_peak
+            total_subscribed_volume += consumer.subscribed_yearly[self.reps.current_tick] * peak_load
             consumer.cummulative_quantity = total_subscribed_volume
             print(consumer.name +";"+ str(total_subscribed_volume) + ";" + str(consumer.bid))
 

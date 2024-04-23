@@ -115,8 +115,8 @@ class LoadShedder(ImportObject):
                     self.percentageLoad = round(pd_series[reps.current_year],3)
                 else:
                     self.percentageLoad = round(pd_series[reps.start_simulation_year],3)
-        elif parameter_name == 'reliability_standard':
-            self.reliability_standard = parameter_value
+        # elif parameter_name == 'reliability_standard':
+        #     self.reliability_standard = parameter_value
         elif parameter_name == 'realized_LOLE':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]

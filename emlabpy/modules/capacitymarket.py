@@ -165,7 +165,6 @@ class CapacityMarketClearing(MarketModule):
         total_supply_volume = 0
         isMarketUndersuscribed = True
         for supply in sorted_supply:
-            print(supply.price )
             if isMarketUndersuscribed == True:
                 # As long as the market is not cleared
                 if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
