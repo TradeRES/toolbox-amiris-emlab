@@ -230,7 +230,7 @@ class SlopingDemandCurve:
         m = self.price_cap / (self.um_volume - self.lm_volume)
         if volume < self.lm_volume:
             return self.price_cap
-        elif self.lm_volume <= volume:
+        elif self.lm_volume <= volume: # inflexible demand after clearing point
             return self.price_cap - m * (volume - self.lm_volume)
         else:
             return 0

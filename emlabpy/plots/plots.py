@@ -292,7 +292,7 @@ def plot_screening_curve_candidates(yearly_costs_candidates, path_to_plots, futu
 
 def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                      CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume,
-                    total_costs_CM,  SR_operator_revenues, cm_revenues_per_pp,
+                    total_costs_CM,  SR_operator_revenues, cm_revenues_per_pp, price_cap,
                      path_to_plots, colors_unique_techs):
     # df.plot(x='Team', kind='bar', stacked=True,
     axs26 = accepted_pp_per_technology.plot(kind='bar', stacked=True, color=colors_unique_techs)
@@ -301,7 +301,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     plt.ylabel('Number awarded', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs26.set_title('Capacity Mechanism awarded plants')
+    axs26.set_title(reps.capacity_remuneration_mechanism + ' awarded plants')
     fig26 = axs26.get_figure()
     fig26.savefig(path_to_plots + '/' + 'Capacity Mechanisms awarded plants.png', bbox_inches='tight', dpi=300)
 
@@ -313,7 +313,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
     plt.ylabel('Revenues CM [€]', fontsize='medium')
     #plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs15.set_title('Capacity Mechanisms \n costs per technology')
+    axs15.set_title(reps.capacity_remuneration_mechanism + ' \n costs per technology')
     fig15 = axs15.get_figure()
     fig15.savefig(path_to_plots + '/' + 'Capacity Mechanisms costs per technology.png', bbox_inches='tight', dpi=300)
 
@@ -326,7 +326,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('Awarded Capacity [MW]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs27.set_title('Capacity Mechanism capacity per technology')
+        axs27.set_title(reps.capacity_remuneration_mechanism + 'capacity per technology')
         fig27 = axs27.get_figure()
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight',
                       dpi=300)
@@ -358,10 +358,10 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         capacity_market_future_volume.plot(ax=axs27,  marker='o', linestyle='--')
         axs27.set_axisbelow(True)
         plt.xlabel('Simulation year', fontsize='medium')
-        plt.ylabel('CM clearing volume [€/MW]  in effective year ', fontsize='medium')
+        plt.ylabel('CM clearing volume [MW]  \n in effective year ', fontsize='medium')
         plt.legend(["realized", "estimated"],fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs27.set_title('Capacity Mechanism clearing volume')
+        axs27.set_title(reps.capacity_remuneration_mechanism + '\n clearing volume')
         fig27 = axs27.get_figure()
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
 
@@ -372,7 +372,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
         plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs28.set_title('Capacity Mechanism clearing price in effective year')
+        axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price ' + str(price_cap) + ' €/MW')
         fig28 = axs28.get_figure()
         fig28.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing price.png', bbox_inches='tight', dpi=300)
 
@@ -382,7 +382,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('total costs [€]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs29.set_title('Capacity Mechanism total costs')
+        axs29.set_title(reps.capacity_remuneration_mechanism + '\n total costs')
         fig29 = axs29.get_figure()
         fig29.savefig(path_to_plots + '/' + 'Capacity Mechanism total costs.png', bbox_inches='tight', dpi=300)
 
@@ -1685,7 +1685,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     else:
         if reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription"]:
             market = reps.get_capacity_market_in_country(reps.country, False)
-        else:
+        else: # forward enery market is used
             market = reps.get_capacity_market_in_country(reps.country, True)
 
         for tick in ticks_to_generate:
@@ -1719,7 +1719,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     capacity_mechanisms_volume_per_tech.dropna(axis=1, how='all', inplace=True)
     return (CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech,
             CM_clearing_price, capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,total_costs_CM, \
-             SR_operator_revenues, cm_revenues_per_pp)
+             SR_operator_revenues, cm_revenues_per_pp, market.PriceCap)
 
 
 # def market_value_per_technology(reps, unique_technologies, years_to_generate):
@@ -2063,9 +2063,9 @@ def prepare_subscribed_capacity():
     fig3, axs3 = plt.subplots(2, 1)
     fig3.tight_layout()
     subscribed_sorted.plot(ax=axs3[0], kind='bar', stacked=True, grid=True, legend=True,  cmap='viridis')
-    axs3[0].legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.1, 1.1))
+    axs3[0].legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
     sorted_bids.plot(ax=axs3[1], grid=True, legend=False,  cmap='viridis' )
-    axs3[0].set_ylabel('subscribed consumers', fontsize='large')
+    axs3[0].set_ylabel('subscribed \n consumers', fontsize='large')
     axs3[0].set_xlabel('CS Bids', fontsize='large')
     axs3[1].set_ylabel('Cost non subscription \n [Eur/MW - y]', fontsize='large')
     fig3.savefig(path_to_plots + '/' + 'subscribed_consumers.png', bbox_inches='tight', dpi=300)
@@ -2358,12 +2358,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     if calculate_capacity_mechanisms == True:
         CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
             capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, \
-            SR_operator_revenues, cm_revenues_per_pp = \
+            SR_operator_revenues, cm_revenues_per_pp, price_cap = \
             prepare_accepted_CapacityMechanism(
             reps, ticks_to_generate)
         plot_CM_revenues(CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                          CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,
-                         total_costs_CM, SR_operator_revenues, cm_revenues_per_pp, path_to_plots,
+                         total_costs_CM, SR_operator_revenues, cm_revenues_per_pp, price_cap , path_to_plots,
                          colors_unique_techs)
         plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
         if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
@@ -2893,7 +2893,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["N-CS_by_avoided_costs"]
+    SCENARIOS = ["NL-CS_avoided_costs_faster_change"]
     results_excel = "NL_CRM.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
