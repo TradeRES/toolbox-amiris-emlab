@@ -260,11 +260,12 @@ class CreatingFinancialReports(DefaultModule):
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
 
                 change = (costs_non_subscription - capacity_market_price)/(capacity_market_price * 10)
-                print(change)
-                print(pd.isna(change))
+
+                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
                 if pd.isna(next_year_subscription):
                     raise Exception
-                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
+                else:
+                    print(str(change) + "new value " + str(next_year_subscription))
 
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
