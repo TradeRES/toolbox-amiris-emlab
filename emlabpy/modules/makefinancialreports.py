@@ -244,7 +244,7 @@ class CreatingFinancialReports(DefaultModule):
         print(average_LOLE_unsubscribed)
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            costs_non_subscription =   consumer.WTP     # H * Eur/MWH = Eur/MW
+            costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
             consumer.bid = costs_non_subscription
             self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
 
@@ -258,15 +258,19 @@ class CreatingFinancialReports(DefaultModule):
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
+
                 change = (costs_non_subscription - capacity_market_price)/(capacity_market_price * 10)
                 print(change)
+                print(pd.isna(change))
+                if pd.isna(next_year_subscription):
+                    raise Exception
                 next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
-                print(next_year_subscription)
+
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
-                elif next_year_subscription < 0:
-                    next_year_subscription = 0
+                elif next_year_subscription < 0.1:
+                    next_year_subscription = 0.1
                     print("passed min subscribed percentage")
                 self.reps.dbrw.stage_consumer_subscribed(consumer.name, next_year_subscription, self.reps.current_tick)
                 #costs_subscription = consumer.subscribed_yearly * expensive_capacity * capacity_market_price
