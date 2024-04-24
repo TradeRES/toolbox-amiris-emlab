@@ -233,7 +233,6 @@ class CreatingFinancialReports(DefaultModule):
         ENS_per_LS = total_load_shedded.sum(axis=0)
         if ENS_per_LS["1"] > 0:
             print("subscribed consumers are curtailed!!!!!!!!!!!")
-        ENS_per_LS.drop("1", inplace=True)
         ENS = ENS_per_LS.sum()  # MWh
         peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         unsubcribed_volume = sum([i.percentageLoad for i in self.reps.loadShedders.values() if i.name != "1"])
@@ -260,13 +259,12 @@ class CreatingFinancialReports(DefaultModule):
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
 
                 change = (costs_non_subscription - capacity_market_price)/(capacity_market_price * 10)
-
-                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
-                if pd.isna(next_year_subscription):
-                    raise Exception
+                if pd.isna(change):
+                    change = -1/10
                 else:
                     print(str(change) + "new value " + str(next_year_subscription))
 
+                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1] # +  change
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
