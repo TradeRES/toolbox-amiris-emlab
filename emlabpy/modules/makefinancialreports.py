@@ -264,11 +264,9 @@ class CreatingFinancialReports(DefaultModule):
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
                 change = (bid - capacity_market_price)/(capacity_market_price * 10)
                 if pd.isna(change):
-                    change = -1/10
-                else:
-                    pass
+                    raise Exception
                 print("change" + str(change) )
-                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
+                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1] # +  change
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
