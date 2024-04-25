@@ -36,9 +36,11 @@ class CreatingFinancialReports(DefaultModule):
         total_load_shedded = self.prepare_percentage_load_shedded()
         if self.reps.capacity_remuneration_mechanism == "capacity_subscription" :#and self.reps.current_tick >0:
             self.assign_LOLE_by_subscription(total_load_shedded)
+        else:
+            # load percentage doesnt change
+            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         self.createFinancialReportsForPowerPlantsAndTick()
         # modifying the IRR by technology
-
         print("finished financial report")
 
     def createFinancialReportsForPowerPlantsAndTick(self):
@@ -220,10 +222,10 @@ class CreatingFinancialReports(DefaultModule):
                 id_shedder = int(name) * 100000
                 total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
 
-        realized_LOLE = total_load_shedded.where(total_load_shedded > 0).count()
+        realized_LOLE = total_load_shedded.where(total_load_shedded > 0).sum()
         print(realized_LOLE)
         self.reps.dbrw.stage_load_shedders_realized_lole(realized_LOLE, self.reps.current_tick)
-        self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+
         return total_load_shedded
 
     def assign_LOLE_by_subscription(self, total_load_shedded):
@@ -241,38 +243,47 @@ class CreatingFinancialReports(DefaultModule):
             print("no volume is unsubscribed")
         average_LOLE_unsubscribed = ENS / volume_unsubscribed  # MWH/MW
         print(average_LOLE_unsubscribed)
+
+        subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
-            consumer.bid = costs_non_subscription
+            avoided_costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
+            last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
+            bid = last_year_bid + 0.5* ( avoided_costs_non_subscription - last_year_bid)
+            consumer.bid = bid
             self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
-
-            if self.reps.current_tick == 0: # capacity_market_price = 0
-                """
-                for the first year there is no estimation of a capacity market
-                """
+            """
+            changing consumer subscrpition percentage 
+            for the first year there is no estimation of a capacity market
+            """
+            if self.reps.current_tick == 0:
                 pass
-#                self.reps.dbrw.stage_consumer_subscribed(consumer.name, consumer.subscribed_yearly, self.reps.current_tick + 1)
             else:
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
-                change = (costs_non_subscription - capacity_market_price)/(capacity_market_price * 10)
+                change = (bid - capacity_market_price)/(capacity_market_price * 10)
                 if pd.isna(change):
                     change = -1/10
                 else:
                     pass
                 print("change" + str(change) )
                 next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
-
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
                 elif next_year_subscription < 0.1:
                     next_year_subscription = 0.1
                     print("passed min subscribed percentage")
+                subscribed_percentage.append(next_year_subscription)
                 self.reps.dbrw.stage_consumer_subscribed(consumer.name, next_year_subscription, self.reps.current_tick)
-                #costs_subscription = consumer.subscribed_yearly * expensive_capacity * capacity_market_price
+
+        load_shedders_not_hydrogen = self.reps.get_load_shedders_not_hydrogen()
+        voluntary_consumers = sum([i.percentageLoad for i in load_shedders_not_hydrogen if i.VOLL < 4000])
+        total_subcribed_percentage = sum(subscribed_percentage)
+        percentage_unsubscribed = 1 - total_subcribed_percentage - voluntary_consumers
+        self.reps.dbrw.stage_load_shedders("1", total_subcribed_percentage, self.reps.current_year + 1 )
+        self.reps.dbrw.stage_load_shedders("2", percentage_unsubscribed, self.reps.current_year + 1 )
 
     # def modify_CS_parameter_by_RS(self):
     #     if self.reps.current_tick < self.start_tick_CS:

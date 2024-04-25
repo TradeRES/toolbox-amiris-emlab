@@ -728,6 +728,9 @@ class Repository:
     def power_plant_still_in_reserve(self, powerplant, forward_years_CM):
         return powerplant.last_year_in_capacity_market > (forward_years_CM + self.current_year) and powerplant.last_year_in_capacity_market != 0
 
+    def power_plant_in_ltcm(self, powerplant):
+        return powerplant.last_year_in_capacity_market != 0
+
 
     def get_power_plants_by_status(self, list_of_status: list) -> List[PowerPlant]:
         return [i for i in self.power_plants.values()
@@ -853,9 +856,6 @@ class Repository:
         return sorted([i for i in self.bids.values()
                        if i.market == market.name and i.tick == time], key=lambda i: i.price)
 
-    def get_load_shedders_by_time(self, time: int):
-        return [(i) for i in self.loadShedders.values() if i.name != "hydrogen"]
-
 
     def get_power_plant_dispatch_plans_by_plant(self, plant: PowerPlant) -> List[PowerPlantDispatchPlan]:
         return [i for i in self.power_plant_dispatch_plans_in_year.values() if i.plant == plant]
@@ -869,6 +869,9 @@ class Repository:
             return None
 
         # ----------------------------------------------------------------------------section Capacity Mechanisms
+
+    def get_load_shedders_not_hydrogen(self):
+        return [i for i in self.loadShedders.values() if i.name != "hydrogen"]
 
     def get_sorted_load_shedders_by_increasing_VOLL_no_hydrogen(self, reverse) -> \
             List[LoadShedder]:
@@ -909,6 +912,12 @@ class Repository:
             # subscribed.append(unsubscribed)
             subscribed = [i for i in self.cs_consumers.values()]
             return sorted(subscribed , key=lambda x: x.bid, reverse=True)
+        except StopIteration:
+            return None
+
+    def get_last_year_bid(self, name):
+        try:
+            return next(i.bid[self.current_tick - 1] for i in self.cs_consumers.values() if i.name == name)
         except StopIteration:
             return None
 
@@ -962,7 +971,6 @@ class Repository:
         bid.accepted_amount = 0
         bid.tick = time
         self.bids[plant.name] = bid
-        # self.dbrw.stage_bids(bid)
         return bid
 
     def update_installed_pp_results(self, installed_pp_results):

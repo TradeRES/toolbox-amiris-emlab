@@ -31,5 +31,7 @@ class CapacitySubscriptionConsumer(EMLabAgent):
             pd_series = pd.Series(values, index=index)
             if reps.runningModule == "plotting":
                 self.bid = pd_series
-            elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule in ["run_CRM", "run_investment_module" ]:
+            elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule in ["run_CRM", "run_investment_module"]:
                 self.bid = round(pd_series[reps.current_tick],3)
+            elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule == "run_financial_results" :
+                self.bid = pd_series

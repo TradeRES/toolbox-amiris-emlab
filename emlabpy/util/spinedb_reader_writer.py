@@ -756,6 +756,12 @@ class SpineDBReaderWriter:
                 self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
                                                    [("percentage_load", Map([str(tick)], [ls.percentageLoad]))], "0")
 
+    def stage_load_shedders(self, ls_name, percentageLoad, tick):
+        self.stage_object(self.load_shedders_classname, ls_name)
+        self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
+                                           [("percentage_load", Map([str(tick)], [percentageLoad]))], "0")
+
+
 
     def stage_consumers_bids(self , consumer, bid, tick):
         self.stage_object(self.consumer_classname, consumer)
