@@ -372,7 +372,11 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
         plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price ' + str(price_cap) + ' €/MW')
+
+        if reps.capacity_remuneration_mechanism == "capacity_market":
+            axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price. \nPrice cap ' + str(price_cap) + ' €/MW')
+        else:
+            axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price  €/MW')
         fig28 = axs28.get_figure()
         fig28.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing price.png', bbox_inches='tight', dpi=300)
 
@@ -768,6 +772,7 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     axs24[0].legend(fontsize='small', loc='upper right', ncol=2 ,bbox_to_anchor=(1.1, 1.1))
     axs24[0].set_title('Price duration curve')
     axs24[1] = sorted_prices.plot(color=colors, ax=axs24[1], legend=None)
+    plt.xlim([0, 1000])
     plt.xlabel('hours', fontsize='medium')
     plt.ylabel('Wholesale market price (€/MWh)', fontsize='medium')
     axs24[1].yaxis.set_label_coords(-0.1, 1.02)
@@ -890,7 +895,7 @@ def plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per
     fig30.savefig(path_to_plots + '/' + 'NPV_Strategic reserve.png', bbox_inches='tight', dpi=300)
 
 
-def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_plants_all,
+def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, npv_long_term_market_plants_all, irrs_per_year_new_plants_all,
                         candidate_plants_project_value_per_MW,
                         test_year,
                         future_year, path_to_plots):
@@ -912,8 +917,17 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
                    fontsize='small')
     fig30.savefig(path_to_plots + '/' + 'IRR new plants.png', bbox_inches='tight', dpi=300)
 
+
+    fig1, axs1 = plt.subplots()
+    for key, data in npv_long_term_market_plants_all.items():
+        if data.size > 0:
+            data.plot(ax=axs1, label=key, color=technology_colors[key])
+    plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
+    axs1.set_title('NPV per MW for LTCM plants \n  (discount rate = 0)')
+    fig1.savefig(path_to_plots + '/' + 'NPV per MW for plants in LTCM.png', bbox_inches='tight', dpi=300)
+
+
     fig31, axs31 = plt.subplots()
-    # key gives the group name (i.e. category), data gives the actual values
     for key, data in npvs_per_year_new_plants_perMWall.items():
         if data.size > 0:
             data.plot(ax=axs31, label=key, color=technology_colors[key])
@@ -923,7 +937,7 @@ def plot_npv_new_plants(npvs_per_year_new_plants_perMWall, irrs_per_year_new_pla
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('mill. €', fontsize='medium')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1.1), ncol=5)
-    axs31.set_title('NPV per MW for new plants (discount rate = 0)')
+    axs31.set_title('NPV per MW for new plants \n  (discount rate = 0)')
     fig31.savefig(path_to_plots + '/' + 'NPV per MW for new plants.png', bbox_inches='tight', dpi=300)
 
     if test_tech is not None:
@@ -1517,6 +1531,7 @@ def prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_t
     npvs_per_tech_per_MW = pd.DataFrame(index=ticks_to_generate).fillna(0)
     profits_with_loans_all = pd.DataFrame(index=ticks_to_generate).fillna(0)
     npvs_per_year_new_plants_perMW_all = dict()
+    npv_long_term_market_plants_all = dict()
     irrs_per_year_new_plants_all = dict()
     sr_operator = reps.get_strategic_reserve_operator(reps.country)
     SR_powerplants = [j for i in sr_operator.list_of_plants_all.values() for j in i]
@@ -1526,6 +1541,7 @@ def prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_t
         irrs_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
         npvs_per_year_perMW = pd.DataFrame(index=ticks_to_generate).fillna(0)
         npvs_per_year_new_plants = pd.DataFrame(index=ticks_to_generate).fillna(0)
+        npvs_in_ltcm = pd.DataFrame(index=ticks_to_generate).fillna(0)
         irrs_per_year_new_plants = pd.DataFrame(index=ticks_to_generate).fillna(0)
         totalProfitswLoans = pd.DataFrame(index=ticks_to_generate).fillna(0)
         for plant in powerplants_per_tech:
@@ -1537,8 +1553,13 @@ def prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_t
                 a = reps.get_npvs_for_plant(plant.name) / plant.capacity
                 if plant.is_new_installed():
                     info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
-                    npvs_per_year_new_plants[info] = a
                     irrs_per_year_new_plants[info] = irr_per_plant
+
+                if reps.power_plant_in_ltcm(plant):
+                    info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
+                    npvs_in_ltcm[info] = a
+                else:
+                    npvs_per_year_new_plants[info] = a
 
                 if plant.name in SR_powerplants:
                     info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
@@ -1554,6 +1575,8 @@ def prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_t
                               inplace=True)
 
         npvs_per_year_new_plants_perMW_all[technology_name] = npvs_per_year_new_plants
+        npv_long_term_market_plants_all[technology_name] = npvs_in_ltcm
+
         irrs_per_year_new_plants_all[technology_name] = irrs_per_year_new_plants * 100  # making to percent
         if irrs_per_year.size != 0:
             irrs_per_tech_per_year[technology_name] = np.nanmean(irrs_per_year, axis=1)
@@ -1569,7 +1592,7 @@ def prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_t
     irrs_per_tech_per_year.set_index("years", inplace=True)
 
     return irrs_per_tech_per_year * 100, npvs_per_tech_per_MW, npvs_per_year_new_plants_perMW_all, \
-        irrs_per_year_new_plants_all, profits_with_loans_all, npvs_per_year_perMW_strategic_reseve
+        irrs_per_year_new_plants_all, profits_with_loans_all, npvs_per_year_perMW_strategic_reseve, npv_long_term_market_plants_all
 
 
 def prepare_future_fuel_prices(reps):
@@ -2055,11 +2078,28 @@ def prepare_subscribed_capacity():
         subscribed_yearly[consumer.name] = consumer.subscribed_yearly
         bid_yearly[consumer.name] = consumer.bid
 
-    sorted_bids = bid_yearly.sort_values(by=bid_yearly.index[0], axis=1)
+    sorted_bids = bid_yearly.sort_values(by=bid_yearly.index[0], axis=1, ascending=False)
     column_order = sorted_bids.columns
     subscribed_sorted = subscribed_yearly[column_order]
-    sorted_bids.sort_index(ascending=True, inplace=True)
+    sorted_bids.sort_index(ascending=False, inplace=True)
     subscribed_sorted.sort_index(ascending=True, inplace=True)
+
+    print(sorted_bids.iloc[32])
+    plt.close('all')
+    num_iterations = len(subscribed_sorted)
+    yearly_peak_demand = reps.get_realized_peak_demand()
+    for i in range(num_iterations):
+        print()
+        axs40 = plt.plot( np.cumsum(subscribed_sorted.iloc[i]* yearly_peak_demand.iloc[i] ), \
+                          sorted_bids.iloc[i], label = str(i),  color=plt.cm.inferno(i / num_iterations))
+    plt.xlabel('Volume [MW]', fontsize='medium')
+    plt.ylabel('Bids [Eur/MW]', fontsize='medium')
+    plt.title("demand curves per year")
+    plt.grid(True, which='minor')
+    plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1), ncol=3)
+    axs40[0].figure.savefig(path_to_plots + '/' + 'subscribed_demand_curves.png', bbox_inches='tight', dpi=300)
+    plt.show()
+
     fig3, axs3 = plt.subplots(2, 1)
     fig3.tight_layout()
     subscribed_sorted.plot(ax=axs3[0], kind='bar', stacked=True, grid=True, legend=True,  cmap='viridis')
@@ -2157,7 +2197,7 @@ def prepare_monthly_electricity_prices(electricity_prices):
     grouped = monthly_electricity_price.groupby(['monthly']).mean()
     monthly_electricity_price_grouped = grouped.melt()['value']
     # monthly_electricity_price_grouped = pd.melt(grouped, id_vars='index', value_name='Value')#grouped.melt()['value']
-    ax1 = monthly_electricity_price_grouped.plot()
+    ax1 = monthly_electricity_price_grouped.plot(cmap = 'inferno' )
     plt.xlabel('Months', fontsize='medium')
     plt.ylabel('€/MWh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
@@ -2303,7 +2343,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
     irrs_per_tech_per_year, npvs_per_tech_per_MW, npvs_per_year_new_plants_all, irrs_per_year_new_plants_all, \
-        profits_with_loans_all, npvs_per_year_perMW_strategic_reseve = \
+        profits_with_loans_all, npvs_per_year_perMW_strategic_reseve, npv_long_term_market_plants_all = \
         prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_to_generate)
 
     plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_per_MW, profits_with_loans_all,
@@ -2328,7 +2368,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         plot_profits_for_tech_per_year(new_pp_profits_for_tech, path_to_plots, colors_unique_techs)
     # reality vs expectation
 
-    NPVNewPlants = plot_npv_new_plants(npvs_per_year_new_plants_all, irrs_per_year_new_plants_all,
+    NPVNewPlants = plot_npv_new_plants(npvs_per_year_new_plants_all, npv_long_term_market_plants_all, irrs_per_year_new_plants_all,
                                        candidate_plants_project_value_per_MW, test_year,
                                        future_year, path_to_plots)
 
@@ -2798,7 +2838,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
     save_excel = False
     test_tick = 0
     # write None is no investment is expected,g
-    test_tech = None  # 'Lithium_ion_battery'  # None #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
+    test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
     industrial_demand_as_flex_demand_with_cap = True
     read_electricity_prices = True  # write False if not wished to graph electricity prices"
@@ -2893,7 +2933,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CS_avoided_costs_faster_change"]
+    SCENARIOS = ["NL-CS_97subscribed_change_VolandBid"]
     results_excel = "NL_CRM.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
