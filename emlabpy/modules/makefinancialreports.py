@@ -257,14 +257,14 @@ class CreatingFinancialReports(DefaultModule):
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
-
                 change = (costs_non_subscription - capacity_market_price)/(capacity_market_price * 10)
                 if pd.isna(change):
                     change = -1/10
                 else:
-                    print(str(change) + "new value " + str(next_year_subscription))
+                    pass
+                print("change" + str(change) )
+                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
 
-                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1] # +  change
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
