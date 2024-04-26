@@ -34,16 +34,16 @@ class CapacityMarketSubmitBids(MarketModule):
         print(
             "technologyname;price_to_bid;capacity;profits;fixed_on_m_cost;pending_loan")
         power_plants = []
-        if self.long_term == False:
-            # power_plants = self.reps.get_operational_and_to_be_decommissioned(
-            #     market.forward_years_CM)
-            for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick): # the installed power plants are filtered in the prepare futur market clearing file
-                power_plants.append( self.reps.get_power_plant_by_id(pp_id))
-        else:
-            power_plants = self.reps.get_plants_that_can_be_operational_not_in_ltcm(
-                market.forward_years_CM)  # retrieve plants that will be operational in 1 -4 years
-        total_offered_capacity = 0
 
+        # the installed power plants are filtered in the prepare futur market clearing file
+        for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
+            powerplant = self.reps.get_power_plant_by_id(pp_id)
+            if self.long_term == False and self.reps.power_plant_in_ltcm(powerplant):
+                pass
+            else:
+                power_plants.append(powerplant)
+
+        total_offered_capacity = 0
         for powerplant in power_plants:
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
             capacity = powerplant.get_actual_nominal_capacity()
