@@ -248,7 +248,10 @@ class CreatingFinancialReports(DefaultModule):
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
             avoided_costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
-
+            """
+            estimating bids with intertia
+            In the first year the bid is the avoided costs
+            """
             if self.reps.current_tick > 0:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
                 bid = last_year_bid + 0.5* ( avoided_costs_non_subscription - last_year_bid)
@@ -258,10 +261,10 @@ class CreatingFinancialReports(DefaultModule):
             self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
             """
             changing consumer subscrpition percentage 
-            for the first year there is no estimation of a capacity market
+            for the first year there is no estimation of a change in next year subcription
             """
             if self.reps.current_tick == 0:
-                pass
+                self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
             else:
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
