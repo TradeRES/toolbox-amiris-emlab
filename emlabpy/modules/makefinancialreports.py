@@ -248,8 +248,9 @@ class CreatingFinancialReports(DefaultModule):
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
             avoided_costs_non_subscription =  average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
-            last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
-            if self.reps.current_tick == 0:
+
+            if self.reps.current_tick > 0:
+                last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
                 bid = last_year_bid + 0.5* ( avoided_costs_non_subscription - last_year_bid)
             else:
                 bid = avoided_costs_non_subscription
