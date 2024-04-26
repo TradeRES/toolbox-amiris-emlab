@@ -269,7 +269,7 @@ class CreatingFinancialReports(DefaultModule):
                 if pd.isna(change):
                     raise Exception
                 print("change" + str(change) )
-                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1] # +  change
+                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
