@@ -264,7 +264,7 @@ class CreatingFinancialReports(DefaultModule):
                 # self.reps.dbrw.stage_consumers_bids(consumer.name, bid_year_0, self.reps.current_tick)
             else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
-                bid = last_year_bid + 0.5* ( avoided_costs_non_subscription - last_year_bid)
+                bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
                 consumer.bid = bid
                 self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
                 """
