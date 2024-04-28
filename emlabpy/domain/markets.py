@@ -111,7 +111,7 @@ class LoadShedder(ImportObject):
                 pd_series = pd.Series(values, index=index)
                 if reps.runningModule == "plotting":
                     self.percentageLoad = pd_series
-                elif reps.capacity_remuneration_mechanism == "capacity_subscription":
+                elif reps.capacity_remuneration_mechanism == globalNames.capacity_subscription:
                     self.percentageLoad = round(pd_series[reps.current_year],3)
                 else:
                     self.percentageLoad = round(pd_series[reps.start_simulation_year],3)

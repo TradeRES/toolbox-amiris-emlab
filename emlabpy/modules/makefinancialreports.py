@@ -34,7 +34,7 @@ class CreatingFinancialReports(DefaultModule):
     def act(self):
 
         total_load_shedded = self.prepare_percentage_load_shedded()
-        if self.reps.capacity_remuneration_mechanism == "capacity_subscription" :#and self.reps.current_tick >0:
+        if self.reps.capacity_remuneration_mechanism == globalNames.capacity_subscription :#and self.reps.current_tick >0:
             self.assign_LOLE_by_subscription(total_load_shedded)
         else:
             # load percentage doesnt change
@@ -235,6 +235,7 @@ class CreatingFinancialReports(DefaultModule):
         ENS_per_LS = total_load_shedded.sum(axis=0)
         if ENS_per_LS["1"] > 0:
             print("subscribed consumers are curtailed!!!!!!!!!!!")
+        ENS_per_LS.drop("1", inplace=True)  # the first year there could be too much ENS due to no capacity market.
         ENS = ENS_per_LS.sum()  # MWh
         peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         unsubcribed_volume = sum([i.percentageLoad for i in self.reps.loadShedders.values() if i.name != "1"])
@@ -242,7 +243,7 @@ class CreatingFinancialReports(DefaultModule):
         if volume_unsubscribed == 0:
             print("no volume is unsubscribed")
         average_LOLE_unsubscribed = ENS / volume_unsubscribed  # MWH/MW
-        print(average_LOLE_unsubscribed)
+        print("average_LOLE_unsubscribed [h]" + str(average_LOLE_unsubscribed))
 
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
@@ -252,43 +253,77 @@ class CreatingFinancialReports(DefaultModule):
             estimating bids with intertia
             In the first year the bid is the avoided costs
             """
-            if self.reps.current_tick > 0:
+            if self.reps.current_tick == 0:
+                bid = avoided_costs_non_subscription # reducing to half bids because of initializing the last year bids were 0
+                self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+                self.reps.dbrw.stage_consumer_subscribed_yearly(consumer.name, consumer.subscribed_yearly[self.reps.current_tick] , self.reps.current_tick + 1)
+                self.reps.dbrw.stage_consumers_bids(consumer.name, bid, self.reps.current_tick)
+
+                # # for first year changing bids but not volume
+                # bid_year_0  = avoided_costs_non_subscription
+                # self.reps.dbrw.stage_consumers_bids(consumer.name, bid_year_0, self.reps.current_tick)
+            else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
                 bid = last_year_bid + 0.5* ( avoided_costs_non_subscription - last_year_bid)
-            else:
-                bid = avoided_costs_non_subscription
-            consumer.bid = bid
-            self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
-            """
-            changing consumer subscrpition percentage 
-            for the first year there is no estimation of a change in next year subcription
-            """
-            if self.reps.current_tick == 0:
-                self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
-            else:
+                consumer.bid = bid
+                self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
+                """
+                changing consumer subscription percentage 
+                for the first year there is no estimation of a change in next year subcription
+                """
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
-                change = (bid - capacity_market_price)/(capacity_market_price * 10)
+                change = (bid - capacity_market_price)/(capacity_market_price * 100)
                 if pd.isna(change):
                     raise Exception
                 print("change" + str(change) )
-                next_year_subscription = consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change
+                next_year_subscription = round(consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change,2)
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")
-                elif next_year_subscription < 0.1:
-                    next_year_subscription = 0.1
+                elif next_year_subscription < 0:
+                    next_year_subscription = 0
                     print("passed min subscribed percentage")
+                    print("percentage_load")
+                print(next_year_subscription)
                 subscribed_percentage.append(next_year_subscription)
-                self.reps.dbrw.stage_consumer_subscribed(consumer.name, next_year_subscription, self.reps.current_tick)
+                self.reps.dbrw.stage_consumer_subscribed_yearly(consumer.name, next_year_subscription, self.reps.current_tick + 1)
 
-        load_shedders_not_hydrogen = self.reps.get_load_shedders_not_hydrogen()
-        voluntary_consumers = sum([i.percentageLoad for i in load_shedders_not_hydrogen if i.VOLL < 4000])
-        total_subcribed_percentage = sum(subscribed_percentage)
-        percentage_unsubscribed = 1 - total_subcribed_percentage - voluntary_consumers
-        self.reps.dbrw.stage_load_shedders("1", total_subcribed_percentage, self.reps.current_year + 1 )
-        self.reps.dbrw.stage_load_shedders("2", percentage_unsubscribed, self.reps.current_year + 1 )
+        if self.reps.current_tick > 0:
+            load_shedders_not_hydrogen = self.reps.get_load_shedders_not_hydrogen()
+            voluntary_consumers = sum([i.percentageLoad for i in load_shedders_not_hydrogen if i.VOLL < 4000])
+            total_subcribed_percentage = round(sum(subscribed_percentage),2)
+            percentage_unsubscribed = 1 - total_subcribed_percentage - voluntary_consumers
+            if percentage_unsubscribed < 0:
+                print("percentage_unsubscribed is negative")
+                raise Exception
+            self.reps.loadShedders["1"].percentageLoad = round(total_subcribed_percentage, 2)
+            print("subscribed")
+            print(total_subcribed_percentage)
+            self.reps.loadShedders["2"].percentageLoad = round(percentage_unsubscribed, 2)
+            print("unsubscribed")
+            print(percentage_unsubscribed)
+            self.saving_load_shedders_percentage(self.reps.current_year + 1)
+
+    def saving_load_shedders_percentage(self, year ):
+        """
+        checking that the percentage of load shedded is not higher than 100%
+        """
+        lst = []
+        for load_shedder_name, load_shedder in self.reps.loadShedders.items():
+            print(load_shedder.name + "-------------" + str(load_shedder.percentageLoad))
+            lst.append(load_shedder.percentageLoad)
+        if sum(lst) > 1.01:
+            print("percentage of load shedded is higher than 101%")
+            raise Exception
+        elif sum(lst) < .99:
+            print("percentage of load shedded is lower than 99%")
+            raise Exception
+        else:
+            pass
+
+        self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, year )
 
     # def modify_CS_parameter_by_RS(self):
     #     if self.reps.current_tick < self.start_tick_CS:
@@ -501,20 +536,3 @@ class CreatingFinancialReports(DefaultModule):
                                     ascending_load_shedders_no_hydrogen[last].percentageLoad = \
                                         ascending_load_shedders_no_hydrogen[last].percentageLoad + unsubscribe
 
-            """
-            checking that the percentage of load shedded is not higher than 100%
-            """
-            lst = []
-            for load_shedder_name, load_shedder in self.reps.loadShedders.items():
-                print(load_shedder.name + "-------------" + str(load_shedder.percentageLoad))
-                lst.append(load_shedder.percentageLoad)
-            if sum(lst) > 1.02:
-                print("percentage of load shedded is higher than 101%")
-                raise Exception
-            elif sum(lst) < .98:
-                print("percentage of load shedded is lower than 99%")
-                raise Exception
-            else:
-                pass
-
-            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)

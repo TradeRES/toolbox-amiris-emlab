@@ -24,6 +24,9 @@ power_plant_status_not_set = 'NOTSET'
 power_plant_status_strategic_reserve = 'InStrategicReserve'
 power_plant_status_decommissioned_from_SR = 'DecommissionedSR'
 
+capacity_subscription = 'capacity_subscription'
+
+
 power_plant_dispatch_plan_status_accepted = 'Accepted'
 power_plant_dispatch_plan_status_failed = 'Failed'
 power_plant_dispatch_plan_status_partly_accepted = 'Partly Accepted'

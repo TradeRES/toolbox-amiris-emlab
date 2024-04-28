@@ -747,28 +747,21 @@ class SpineDBReaderWriter:
             [("realized_LOLE", Map([str(tick)], [ls]))], "0")
 
 
-    def stage_load_shedders_voll_not_hydrogen(self, load_shedders, tick):
+    def stage_load_shedders_voll_not_hydrogen(self, load_shedders, year):
         for ls_name, ls in load_shedders.items():
             if ls_name == "hydrogen":
                 pass
             else:
                 self.stage_object(self.load_shedders_classname, ls_name)
                 self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-                                                   [("percentage_load", Map([str(tick)], [ls.percentageLoad]))], "0")
-
-    def stage_load_shedders(self, ls_name, percentageLoad, tick):
-        self.stage_object(self.load_shedders_classname, ls_name)
-        self.stage_object_parameter_values(self.load_shedders_classname, ls_name,
-                                           [("percentage_load", Map([str(tick)], [percentageLoad]))], "0")
-
-
+                                                   [("percentage_load", Map([str(year)], [ls.percentageLoad]))], "0")
 
     def stage_consumers_bids(self , consumer, bid, tick):
         self.stage_object(self.consumer_classname, consumer)
         self.stage_object_parameter_values(self.consumer_classname, consumer,
                                            [("bid", Map([str(tick)], [bid]))], "0")
 
-    def stage_consumer_subscribed(self , consumer,subscribed_yearly ,  tick):
+    def stage_consumer_subscribed_yearly(self , consumer,subscribed_yearly ,  tick):
         self.stage_object(self.consumer_classname, consumer)
         self.stage_object_parameter_values(self.consumer_classname, consumer,
                                            [("subscribed_yearly", Map([str(tick)], [subscribed_yearly]))], "0")

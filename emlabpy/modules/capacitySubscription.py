@@ -46,7 +46,7 @@ class CapacitySubscriptionClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-        clearing_price, total_supply_volume,total_subscribed_volume = self.capacity_subscription_clearing(sorted_ppdp, capacity_market,
+        clearing_price, total_supply_volume,total_subscribed_volume = self.capacity_subscription_clearing(sorted_ppdp,
                                                                                    capacity_market_year)
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
@@ -60,7 +60,7 @@ class CapacitySubscriptionClearing(MarketModule):
 
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
-    def capacity_subscription_clearing(self, sorted_supply, capacity_market, capacity_market_year):
+    def capacity_subscription_clearing(self, sorted_supply, capacity_market_year):
         expectedDemandFactor = self.reps.substances["electricity"].get_price_for_tick(self.reps, capacity_market_year,
                                                                                       True)
         peak_load = self.reps.get_peak_future_demand_by_year(capacity_market_year) * expectedDemandFactor

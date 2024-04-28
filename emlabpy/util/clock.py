@@ -447,11 +447,12 @@ try:
 
             updated_year = step + Current_year
 
-            if capacity_remuneration_mechanism =="capacity_subcription":
-                year_load_shedder = updated_year
+            if capacity_remuneration_mechanism == globalNames.capacity_subscription:
+                print("capacity subscription!!!")
+                read_load_shedders(updated_year)
             else:
-                year_load_shedder = StartYear
-            read_load_shedders(year_load_shedder)
+                read_load_shedders(StartYear)
+
 
             if updated_year > final_year:
                 print("final year achieved " + str(final_year))

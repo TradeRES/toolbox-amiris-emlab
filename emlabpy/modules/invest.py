@@ -566,13 +566,16 @@ class Investmentdecision(DefaultModule):
         bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         clearing_price, total_supply_volume, total_subscribed_volume = CapacitySubscriptionClearing.capacity_subscription_clearing(
-            self, sorted_supply, capacity_market, self.futureInvestmentyear)
+            self, sorted_supply, self.futureInvestmentyear)
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.futureTick)
 
         if total_supply_volume > total_subscribed_volume:
+            """
+            investors would not invest more than the subcribed capacity volume
+            """
             clearing_price = 0
 
         return clearing_price

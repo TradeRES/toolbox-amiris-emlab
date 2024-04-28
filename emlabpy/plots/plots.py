@@ -364,7 +364,6 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         axs27.set_title(reps.capacity_remuneration_mechanism + '\n clearing volume')
         fig27 = axs27.get_figure()
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
-
         axs28 = CM_clearing_price.plot()
         capacity_market_future_price.plot(ax=axs28 ,marker='o', linestyle='--')
         axs28.set_axisbelow(True)
@@ -376,7 +375,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         if reps.capacity_remuneration_mechanism == "capacity_market":
             axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price. \nPrice cap ' + str(price_cap) + ' €/MW')
         else:
-            axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price  €/MW')
+            axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price  €/MW' + "\n based on previous year results" )
         fig28 = axs28.get_figure()
         fig28.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing price.png', bbox_inches='tight', dpi=300)
 
@@ -1555,8 +1554,8 @@ def prepare_irr_and_npv_per_technology_per_year(reps, ticks_to_generate, years_t
                     info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
                     irrs_per_year_new_plants[info] = irr_per_plant
 
+                info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
                 if reps.power_plant_in_ltcm(plant):
-                    info = plant.name + " " + str(plant.capacity) + " MW " + str(plant.age)
                     npvs_in_ltcm[info] = a
                 else:
                     npvs_per_year_new_plants[info] = a
@@ -2084,12 +2083,15 @@ def prepare_subscribed_capacity():
     sorted_bids.sort_index(ascending=False, inplace=True)
     subscribed_sorted.sort_index(ascending=True, inplace=True)
 
-    print(sorted_bids.iloc[32])
+
     plt.close('all')
-    num_iterations = len(subscribed_sorted)
+
     yearly_peak_demand = reps.get_realized_peak_demand()
+    num_iterations = reps.current_tick
     for i in range(num_iterations):
-        print()
+        print(i)
+        print(subscribed_sorted.iloc[i]* yearly_peak_demand.iloc[i] )
+        print( sorted_bids.iloc[i])
         axs40 = plt.plot( np.cumsum(subscribed_sorted.iloc[i]* yearly_peak_demand.iloc[i] ), \
                           sorted_bids.iloc[i], label = str(i),  color=plt.cm.inferno(i / num_iterations))
     plt.xlabel('Volume [MW]', fontsize='medium')
@@ -2933,9 +2935,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CS_97subscribed_change_VolandBid"]
+    SCENARIOS = ["NL-CS"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
