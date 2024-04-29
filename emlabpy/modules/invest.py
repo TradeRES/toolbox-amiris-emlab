@@ -169,127 +169,125 @@ class Investmentdecision(DefaultModule):
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
 
 
-            if self.investable_candidate_plants:  # check if there are investable power plants
-                # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
-                #     # filter out intermittent technologies
-                #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
-                capacity_market_price = 0
-                if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                    capacity_market_price = self.calculate_capacity_subscription(long_term=False)
-                elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
-                    capacity_market_price = self.calculate_forward_capacity_market_price(long_term=True)
-                elif self.reps.capacity_remuneration_mechanism == "capacity_market":
-                    capacity_market_price = self.calculate_forward_capacity_market_price(long_term=False)
 
-                print("capacity_market_price " + str(capacity_market_price))
-                for candidatepowerplant in self.investable_candidate_plants:
-                    # print("..............." + candidatepowerplant.technology.name)
-                    cp_numbers.append(candidatepowerplant.name)
-                    cp_profits.append(candidatepowerplant.operationalProfit)
-                    # calculate which is the power plant (technology) with the highest NPV
+            # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
+            #     # filter out intermittent technologies
+            #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
+            capacity_market_price = 0
+            if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
+                capacity_market_price = self.calculate_capacity_subscription(long_term=False)
+            elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
+                capacity_market_price = self.calculate_forward_capacity_market_price(long_term=True)
+            elif self.reps.capacity_remuneration_mechanism == "capacity_market":
+                capacity_market_price = self.calculate_forward_capacity_market_price(long_term=False)
 
-                    operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
-                    if self.reps.capacity_remuneration_mechanism == "none":
-                        pass
-                    else:
-                        operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
+            print("capacity_market_price " + str(capacity_market_price))
+            for candidatepowerplant in self.investable_candidate_plants:
+                # print("..............." + candidatepowerplant.technology.name)
+                cp_numbers.append(candidatepowerplant.name)
+                cp_profits.append(candidatepowerplant.operationalProfit)
+                # calculate which is the power plant (technology) with the highest NPV
 
-                    cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
-                    projectvalue = self.npv(candidatepowerplant.technology, cashflow)
-
-                    # saving the list of power plants values that have been candidates per investmentIteration.
-                    self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name,
-                                                                      projectvalue / candidatepowerplant.capacity,
-                                                                      self.reps.investmentIteration,
-                                                                      self.futureInvestmentyear,
-                                                                      )
-                    if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
-                        highestNPV = projectvalue / candidatepowerplant.capacity
-                        highestNPVCandidatePP = candidatepowerplant
-
-                    elif projectvalue < 0:
-                        # the power plant should not be investable in next rounds
-                        # saving if the candidate power plant remains or not as investable
-                        candidatepowerplant.setViableInvestment(False)
-                        self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
-                    else:
-                        logging.info("technology%s negative NPV", candidatepowerplant.technology)
-
-                # saving: operational profits from candidate plant
-                # todo: this can be avoid, saving for debugging
-                self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
-                # if the power plant is correctly saved
-
-                if highestNPVCandidatePP is not None:
-                    # investing in best candidate power plant as it passed the checks.
-                    print("Investing in " + highestNPVCandidatePP.technology.name)
-                    newplant = self.invest(highestNPVCandidatePP, False)
-                    self.reps.dbrw.stage_new_power_plant(newplant)
-                    self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
-                    self.continue_iteration()
+                operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
+                if self.reps.capacity_remuneration_mechanism == "none":
+                    pass
                 else:
-                    print("no more power plant to invest, saving loans, next iteration")
-                    if self.reps.initialization_investment == False and \
-                            (self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription",
-                                                                           "forward_capacity_market",
-                                                                           "strategic_reserve_ger"]):
-                        if self.reps.round_for_capacity_market_y_1 == False:
-                            print("************************************* finished_investments to Y-forwardyears calculation")
-                            self.reset_status_candidates_to_investable()
-                            self.continue_iteration()
-                            self.reps.dbrw.stage_iteration_for_CM(True)
-                            self.reps.dbrw.stage_iteration(0)
-                            self.reps.dbrw.stage_last_testing_technology(False)
+                    operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
 
-                    elif self.reps.initialization_investment == True:
-                        if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
-                            print("finishing investment loop")
-                            self.reps.initialization_investment = False
-                            self.reps.dbrw.stage_initialization_investment(False)
-                            self.reps.dbrw.stage_last_testing_technology(False)
-                            self.stop_iteration()  # continue to main workflow
-                        else:
-                            print("next initialization year")
-                            self.reps.investment_initialization_years += 1
-                            self.continue_iteration()
-                            self.reps.dbrw.stage_testing_future_year(self.reps)
+                cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
+                projectvalue = self.npv(candidatepowerplant.technology, cashflow)
 
-                        self.reset_status_candidates_to_investable()
-                        self.reps.dbrw.stage_iteration(0)
+                # saving the list of power plants values that have been candidates per investmentIteration.
+                self.reps.dbrw.stage_candidate_power_plants_value(candidatepowerplant.name,
+                                                                  projectvalue / candidatepowerplant.capacity,
+                                                                  self.reps.investmentIteration,
+                                                                  self.futureInvestmentyear,
+                                                                  )
+                if projectvalue >= 0 and ((projectvalue / candidatepowerplant.capacity) > highestNPV):
+                    highestNPV = projectvalue / candidatepowerplant.capacity
+                    highestNPVCandidatePP = candidatepowerplant
 
-                        if self.reps.targetinvestment_per_year == True:
-                            self.reps.dbrw.stage_target_investments_done(False)
-                    else: # no CRM and no initilization
-                        # continue to next year in workflow
-                        # when testing last technolgy, candidate to be installed is tested with real capacity
-                        print("no capacity market, finish investments ")
-                        self.reps.dbrw.stage_last_testing_technology(False)
-                        self.reps.dbrw.stage_iteration(0)
-                        self.stop_iteration()
+                elif projectvalue < 0:
+                    # the power plant should not be investable in next rounds
+                    # saving if the candidate power plant remains or not as investable
+                    candidatepowerplant.setViableInvestment(False)
+                    self.reps.dbrw.stage_candidate_pp_investment_status(candidatepowerplant)
+                else:
+                    logging.info("technology%s negative NPV", candidatepowerplant.technology)
 
-                    if self.reps.groups_plants_per_installed_year == True:
-                        self.group_power_plants()
-                    else:
-                        pass  # not grouping power plants
+            # saving: operational profits from candidate plant
+            # todo: this can be avoid, saving for debugging
+            self.reps.dbrw.stage_candidate_plant_results(self.reps, cp_numbers, cp_profits)
+            # if the power plant is correctly saved
 
-                    # Ids of grouped power plants were removed, so here are the left ungrouped plants
-                    for pp_id in self.future_installed_plants_ids:
-                        if self.power_plant_installed_in_this_year(pp_id):
-                            newplant = self.reps.get_power_plant_by_id(pp_id)
-                            newplant = self.calculate_investments_of_ungrouped(newplant)
-                            self.stage_loans_and_downpayments_of_ungrouped(newplant)
-
-                    # saving profits of installed power plants for capacity market
-                    print("saving future total profits")
-                    self.reps.dbrw.stage_future_profits_withloans_installed_plants(self.reps,
-                                                                                   self.pp_dispatched_names,
-                                                                                   self.pp_profits,
-                                                                                   self.future_installed_plants_ids,
-                                                                                   self.futureTick,
-                                                                                   self.look_ahead_years)
+            if highestNPVCandidatePP is not None:
+                # investing in best candidate power plant as it passed the checks.
+                print("Investing in " + highestNPVCandidatePP.technology.name)
+                newplant = self.invest(highestNPVCandidatePP, False)
+                self.reps.dbrw.stage_new_power_plant(newplant)
+                self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
+                self.continue_iteration()
             else:
-                print("all technologies are unprofitable")
-                raise Exception
+                print("no more power plant to invest, saving loans, next iteration")
+                if self.reps.initialization_investment == False and \
+                        (self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription",
+                                                                       "forward_capacity_market",
+                                                                       "strategic_reserve_ger"]):
+                    if self.reps.round_for_capacity_market_y_1 == False:
+                        print("************************************* finished_investments to Y-forwardyears calculation")
+                        self.reset_status_candidates_to_investable()
+                        self.continue_iteration()
+                        self.reps.dbrw.stage_iteration_for_CM(True)
+                        self.reps.dbrw.stage_iteration(0)
+                        self.reps.dbrw.stage_last_testing_technology(False)
+
+                elif self.reps.initialization_investment == True:
+                    if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
+                        print("finishing investment loop")
+                        self.reps.initialization_investment = False
+                        self.reps.dbrw.stage_initialization_investment(False)
+                        self.reps.dbrw.stage_last_testing_technology(False)
+                        self.stop_iteration()  # continue to main workflow
+                    else:
+                        print("next initialization year")
+                        self.reps.investment_initialization_years += 1
+                        self.continue_iteration()
+                        self.reps.dbrw.stage_testing_future_year(self.reps)
+
+                    self.reset_status_candidates_to_investable()
+                    self.reps.dbrw.stage_iteration(0)
+
+                    if self.reps.targetinvestment_per_year == True:
+                        self.reps.dbrw.stage_target_investments_done(False)
+                else: # no CRM and no initilization
+                    # continue to next year in workflow
+                    # when testing last technolgy, candidate to be installed is tested with real capacity
+                    print("no capacity market, finish investments ")
+                    self.reps.dbrw.stage_last_testing_technology(False)
+                    self.reps.dbrw.stage_iteration(0)
+                    self.stop_iteration()
+
+                if self.reps.groups_plants_per_installed_year == True:
+                    self.group_power_plants()
+                else:
+                    pass  # not grouping power plants
+
+                # Ids of grouped power plants were removed, so here are the left ungrouped plants
+                for pp_id in self.future_installed_plants_ids:
+                    if self.power_plant_installed_in_this_year(pp_id):
+                        newplant = self.reps.get_power_plant_by_id(pp_id)
+                        newplant = self.calculate_investments_of_ungrouped(newplant)
+                        self.stage_loans_and_downpayments_of_ungrouped(newplant)
+
+                # saving profits of installed power plants for capacity market
+                print("saving future total profits")
+                self.reps.dbrw.stage_future_profits_withloans_installed_plants(self.reps,
+                                                                               self.pp_dispatched_names,
+                                                                               self.pp_profits,
+                                                                               self.future_installed_plants_ids,
+                                                                               self.futureTick,
+                                                                               self.look_ahead_years)
+
 
     def power_plant_installed_in_this_year(self, pp_id):
         return str(pp_id)[:4] == str(self.futureInvestmentyear)
@@ -565,14 +563,14 @@ class Investmentdecision(DefaultModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
         bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
-        clearing_price, total_supply_volume, total_subscribed_volume = CapacitySubscriptionClearing.capacity_subscription_clearing(
+        clearing_price, total_supply_volume, oversubscribed = CapacitySubscriptionClearing.capacity_subscription_clearing(
             self, sorted_supply, self.futureInvestmentyear)
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.futureTick)
 
-        if total_supply_volume > total_subscribed_volume:
+        if oversubscribed:
             """
             investors would not invest more than the subcribed capacity volume
             """
