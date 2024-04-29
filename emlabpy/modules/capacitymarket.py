@@ -38,7 +38,7 @@ class CapacityMarketSubmitBids(MarketModule):
         # the installed power plants are filtered in the prepare futur market clearing file
         for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
             powerplant = self.reps.get_power_plant_by_id(pp_id)
-            if self.long_term == False and self.reps.power_plant_in_ltcm(powerplant):
+            if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
                 pass
             else:
                 power_plants.append(powerplant)
