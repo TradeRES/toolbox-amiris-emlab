@@ -371,7 +371,6 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
         plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-
         if reps.capacity_remuneration_mechanism == "capacity_market":
             axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price. \nPrice cap ' + str(price_cap) + ' €/MW')
         else:
@@ -2935,9 +2934,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CS"]
+    SCENARIOS = ["NL-CS_89"]
     results_excel = "NL_CRM.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
