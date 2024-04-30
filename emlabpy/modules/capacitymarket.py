@@ -219,7 +219,7 @@ class CapacityMarketClearing(MarketModule):
             if accepted.long_term_contract:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, ticks_awarded)
                 self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant,
-                                                                                     self.reps.current_year + market.years_long_term_market)
+                                         self.reps.current_year + market.forward_years_CM + market.years_long_term_market)
             else:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + market.forward_years_CM])
 
