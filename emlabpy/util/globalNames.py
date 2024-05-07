@@ -25,7 +25,7 @@ power_plant_status_strategic_reserve = 'InStrategicReserve'
 power_plant_status_decommissioned_from_SR = 'DecommissionedSR'
 
 capacity_subscription = 'capacity_subscription'
-
+capacity_market = "capacity_market"
 
 power_plant_dispatch_plan_status_accepted = 'Accepted'
 power_plant_dispatch_plan_status_failed = 'Failed'
@@ -43,7 +43,7 @@ modules_need_bids = [ "run_financial_results", "run_create_results", "plotting",
 
 fuels_in_AMIRIS = ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "OTHER", "HYDROGEN", "BIOMASS", "WASTE"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
-technologies_not_in_SR =[ "Nuclear","Lithium ion battery" , "OCGT"]
+technologies_not_in_SR =[ "Nuclear","Lithium ion battery", "Lithium ion battery 4"]
 
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)
 
