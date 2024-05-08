@@ -371,7 +371,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('CM clearing price [€/MW]', fontsize='medium')
         plt.legend(["realized", "estimated"], fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        if reps.capacity_remuneration_mechanism == "capacity_market":
+        if reps.capacity_remuneration_mechanism in [globalNames.capacity_subscription, globalNames.capacity_market]:
             axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price. \nPrice cap ' + str(price_cap) + ' €/MW')
         else:
             axs28.set_title(reps.capacity_remuneration_mechanism + '\n clearing price  €/MW' + "\n based on previous year results" )
@@ -2198,7 +2198,7 @@ def prepare_monthly_electricity_prices(electricity_prices):
     grouped = monthly_electricity_price.groupby(['monthly']).mean()
     monthly_electricity_price_grouped = grouped.melt()['value']
     # monthly_electricity_price_grouped = pd.melt(grouped, id_vars='index', value_name='Value')#grouped.melt()['value']
-    ax1 = monthly_electricity_price_grouped.plot(cmap = 'inferno' )
+    ax1 = monthly_electricity_price_grouped.plot( )
     plt.xlabel('Months', fontsize='medium')
     plt.ylabel('€/MWh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
@@ -2218,12 +2218,12 @@ def prepare_monthly_electricity_prices(electricity_prices):
     # plt.xticks(rotation=90, size = 15)
     # axs1.savefig(path_to_plots + '/' + 'Monthly_electricity_prices.png', bbox_inches='tight', dpi=300)
 
-    ax1 = grouped.plot()
+    ax1 = grouped.plot(cmap = 'inferno' )
     ax1.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.xlabel('Months', fontsize='medium')
     plt.ylabel('€/MWh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
-    plt.legend(fontsize='small', loc='upper right', ncol=5)
+    plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1))
     fig1 = ax1.get_figure()
     fig1.savefig(path_to_plots + '/' + 'Monthly_electricity_prices_by_year.png', bbox_inches='tight', dpi=300)
     return monthly_electricity_price_grouped
@@ -2485,6 +2485,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
         Last_year_PDC_data = pd.read_excel(path_to_results, sheet_name='Last_year_pdc', index_col=0)
         voluntaryENS_data = pd.read_excel(path_to_results, sheet_name='voluntaryENS', index_col=0)
+        # Load_shedders_data = pd.read_excel(path_to_results, sheet_name='Load_shedders', index_col=0)
 
         all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
         df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
@@ -2552,7 +2553,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
         if calculate_capacity_mechanisms == True:
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
-            CRM_data[scenario_name] = CM_price.values
+            pd.concat([CRM_data, CM_price], ignore_index=True, axis=1)
+
             if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
                 SR_data[scenario_name] = revenues_SR.values
             else:
@@ -2783,7 +2785,7 @@ technology_colors = {
     'Hydro Reservoir': "darkcyan",
     "Hydropower": "darkcyan",
     "Lithium ion battery": "hotpink",
-    "Lithium_ion_battery_charge": "hotpink",
+    "Lithium ion battery 4": "pink",
     "PHS Discharge": "darkcyan",
     "CCGT_CHP_backpressure_DH": "orange",
     "CCGT_CHP_backpressure_PH": "orange",
@@ -2791,7 +2793,7 @@ technology_colors = {
     "fuel_cell": "gold",
     "electrolyzer": "gray",
     "hydrogen_turbine": "darkred",
-    "hydrogen turbine": "darkred",
+    "hydrogen CCGT": "darkred",
     "hydrogen OCGT": "indianred",
     "hydrogen CHP": "indianred",
     "hydrogen_combined_cycle": "coral",
@@ -2815,7 +2817,9 @@ technology_names = {
 
 
 def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
+
     global save_excel
+    save_excel = False
     global scenario_name
     global calculate_hourly_shedders_new
     global calculate_monthly_generation
@@ -2836,7 +2840,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
     global template_excel
 
     write_titles = True
-    save_excel = False
+
     test_tick = 0
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
@@ -2933,9 +2937,9 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    #SCENARIOS = ["NL-EOM" , "NL-capacity_market_lowerCONE" , "NL-capacity_market_higherCONE" , "NL-capacity_subscription_byLOLE", "NL-strategic_reserve"]
-    SCENARIOS = ["NL-CS_89"]
-    results_excel = "NL_CRM.xlsx"
+#    SCENARIOS = ["NL-CS_lower_WTP", "NL-CS_89" , "N-CS_97", "NL-CS_97_weather_years", "NL-CS_y_1"]
+    SCENARIOS = ["NL-oldinterests"]
+    results_excel = "NL_Capacity_markets.xlsx"
     existing_scenario = True
     plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
