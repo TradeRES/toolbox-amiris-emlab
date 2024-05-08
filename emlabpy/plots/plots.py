@@ -2785,6 +2785,7 @@ technology_colors = {
     'Hydro Reservoir': "darkcyan",
     "Hydropower": "darkcyan",
     "Lithium ion battery": "hotpink",
+    "Lithium_ion_battery_charge": "hotpink",
     "Lithium ion battery 4": "pink",
     "PHS Discharge": "darkcyan",
     "CCGT_CHP_backpressure_DH": "orange",
