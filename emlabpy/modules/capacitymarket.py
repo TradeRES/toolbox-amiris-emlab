@@ -241,13 +241,14 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             fixed_costs = technology.get_fixed_costs_by_commissioning_year(
                 reps.current_year + capacity_market.forward_years_CM)
             equalTotalDownPaymentInstallment = (totalInvestment) / buildingTime
-            # agent = reps.energy_producers[reps.agent]
+            agent = reps.energy_producers[reps.agent]
             # equalTotalDownPaymentInstallment = (totalInvestment * (1 - agent.debtRatioOfInvestments)) / buildingTime
-            # debt = totalInvestment * agent.debtRatioOfInvestments
+            #debt = totalInvestment * agent.debtRatioOfInvestments
             # annuity = - npf.pmt(technology.interestRate, depreciationTime, debt, fv=1, when='end')
             investmentCashFlow = [0 for i in range(depreciationTime + buildingTime)]
             investmentCashFlowNETCONE = [0 for i in range(depreciationTime + buildingTime)]
-            wacc = technology.interestRate
+
+            wacc = (1 - agent.debtRatioOfInvestments) * agent.equityInterestRate + agent.debtRatioOfInvestments * technology.interestRate
             for i in range(0, buildingTime + depreciationTime):
                 if i < buildingTime:
                     investmentCashFlow[i] = equalTotalDownPaymentInstallment

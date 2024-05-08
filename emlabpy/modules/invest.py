@@ -403,7 +403,7 @@ class Investmentdecision(DefaultModule):
 
     def npv(self, technology, investmentCashFlow):
         # print("WACC  ", wacc, " ", [round(x) for x in investmentCashFlow])
-        discountedprojectvalue = npf.npv(technology.interestRate, investmentCashFlow)
+        discountedprojectvalue = npf.npv(self.agent.equityInterestRate, investmentCashFlow)
         return discountedprojectvalue
 
     def getActualInvestedCapitalperMW(self, technology):
@@ -599,6 +599,7 @@ class Investmentdecision(DefaultModule):
             price_to_bid = 0
             operatingProfit = powerplant.get_Profit()  # for installed capacity
             loan = powerplant.getLoan()
+
             if loan.getAmountPerPayment() != None:
                 if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                     pending_loan = loan.getAmountPerPayment()
@@ -609,7 +610,8 @@ class Investmentdecision(DefaultModule):
                                          totalInvestment * self.agent.debtRatioOfInvestments, fv=1, when='end') # pending loan is left as negative
                 fixed_on_m_cost = self.getActualFixedCostsperMW(powerplant.technology) * powerplant.capacity
             """
-            new power plants bid their loans, which is what they need in long term
+            new power plants bid their loans, which is what they need in long term. 
+            existing plants only bid their missing money
             """
             if powerplant.age <= -self.look_ahead_years:
                 net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
@@ -627,6 +629,7 @@ class Investmentdecision(DefaultModule):
                 long_term_contract = True  # plant is new
                 # if powerplant.age == -self.look_ahead_years:
                 #     price_to_bid = min(capacity_market.PriceCap / 2, price_to_bid) the current intermediate price is set by DSR.
+
             capacity_to_bid = powerplant.capacity * powerplant.technology.deratingFactor
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, capacity_market,
                                                                        long_term_contract, capacity_to_bid, \

@@ -194,7 +194,7 @@ class CreatingFinancialReports(DefaultModule):
             for i in range(buildingTime, depreciationTime + buildingTime):
                 investmentCashFlow[i] = operational_profit_withFixedCosts - restPayment
 
-        npv = npf.npv(pp.technology.interestRate, investmentCashFlow)
+        npv = npf.npv(agent.equityInterestRate, investmentCashFlow)
 
         IRR = npf.irr(investmentCashFlow)
         if pd.isna(IRR):
