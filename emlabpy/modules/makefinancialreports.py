@@ -153,16 +153,16 @@ class CreatingFinancialReports(DefaultModule):
                 if pd.isna(averageirr):
                     pass
                 else:
-                    decrease = (averageirr - 0.1) * 0.1
-                    old_value = self.reps.power_generating_technologies[technology_name].interestRate
+                    decrease = (averageirr)/ 10
+                    old_irr = self.reps.power_generating_technologies[technology_name].interestRate
                     if averageirr < 0.01:
-                        pass  # and IRR of 10% is normal
-                    elif old_value - decrease < 0:
+                        continue   # and IRR of 10% is normal
+                    elif old_irr - decrease < 0:
                         new_value = 0.05
-                    elif old_value - decrease > 0.15:
+                    elif old_irr - decrease > 0.15:
                         new_value = 0.15
                     else:
-                        new_value = old_value - decrease
+                        new_value = old_irr - decrease
                     print("decrease IRR of " + technology_name + " by " + str(decrease))
                     self.reps.power_generating_technologies[technology_name].interestRate = new_value
                     self.reps.dbrw.stage_new_irr(self.reps.power_generating_technologies[technology_name])
