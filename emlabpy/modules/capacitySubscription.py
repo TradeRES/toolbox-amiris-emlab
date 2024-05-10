@@ -18,18 +18,16 @@ class DemandCurve:
         # print("-----------------------------------" + str(cummulative_supply))
         for demand in self.sorted_demand:
             last_capacity = cummulative_supply - supply.amount
-            demand_at_price = demand.cummulative_quantity
+            demand_volume = demand.cummulative_quantity
+            price = demand.bid
             if demand.cummulative_quantity >= cummulative_supply:
-                price = demand.bid
                 break
             else:
                 # demand quantity is still less than supply quantity but the price is
                 if demand.bid < supply.price and demand.cummulative_quantity >= last_capacity:
-                    price = demand.bid
                     break
                 # if there is no demand, take the last price
-                price = demand.bid
-        return price, demand_at_price
+        return price, demand_volume
 
 
 class CapacitySubscriptionClearing(MarketModule):
@@ -81,11 +79,11 @@ class CapacitySubscriptionClearing(MarketModule):
         for supply_bid in sorted_supply:
             # As long as the market is not cleared
             cummulative_supply = supply_bid.amount + cummulative_supply
-            demand_price, demand_at_price = demandCurve.get_demand_price_at_volume(cummulative_supply, supply_bid)
+            demand_price, demand_volume = demandCurve.get_demand_price_at_volume(cummulative_supply, supply_bid)
             oversubscribed = False
-            if cummulative_supply > demand_at_price:
+            if cummulative_supply > demand_volume:
                 print("not accepted last supply bid")
-                print("cummulative_supply", cummulative_supply,  "> demand_at_price", demand_at_price)
+                print("cummulative_supply", cummulative_supply,  "> demand_at_price", demand_volume)
                 oversubscribed = True
                 break
 

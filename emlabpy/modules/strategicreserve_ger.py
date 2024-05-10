@@ -36,7 +36,7 @@ class StrategicReserveSubmitBids_ger(MarketModule):
             # Place bids on market only if plant is conventional (full capacity at cost price per MW)
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
-                                                                           market, power_plant_capacity,
+                                                                           market, False, power_plant_capacity,
                                                                            Bid, self.reps.current_tick)
 
 
