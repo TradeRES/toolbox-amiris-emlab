@@ -10,7 +10,7 @@ first = type + folder
 emlab_sql = "\\EmlabDB.sqlite"
 amiris_sql = "\\AMIRIS db.sqlite"
 energy_exchange_url_sql = "\\energy exchange.sqlite"
-scenario_name = "NL-EOM_lowLoadshedders"
+scenario_name = "NL-EOM_nolifetimeextension"
 emlab_url = first + scenario_name + emlab_sql
 amiris_url = first + scenario_name + emlab_sql
 spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
@@ -46,6 +46,7 @@ original_demand = pd.DataFrame()
 shedded = pd.DataFrame()
 
 for year in years_to_generate:
+    print(year)
     year_excel = folder + scenario_name + "\\" + str(year) + ".xlsx"
     df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "hourly_generation"])
     hourly_load_shedders = pd.DataFrame()
@@ -65,8 +66,6 @@ for year in years_to_generate:
         else:
             pass
 
-
-
     total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
     yearly_at_scarcity_hours =  total_hourly_load_shedders[total_hourly_load_shedders > 0 ].index
 
@@ -76,9 +75,14 @@ for year in years_to_generate:
     shedded[year] = total_hourly_load_shedders
     original_demand[year] = demand["Load"][year - 2050 + 1980]
 
+    all_techs_capacity.rename(columns={"Lithium ion battery 4": "Lithium ion battery"}, inplace=True)
+
     for tech in all_techs_capacity:
         if tech in all_techs_capacity.loc[year] and tech in hourly_generation_res.columns:
-            installed_capacity = all_techs_capacity.loc[year, tech]
+            if tech =="Lithium ion battery": # there are 2 types of batteries
+                installed_capacity = all_techs_capacity.loc[year, tech].sum()
+            else:
+                installed_capacity = all_techs_capacity.loc[year, tech]
             average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
             derating_factor.at[tech,year] = average_generation / installed_capacity
         else:
