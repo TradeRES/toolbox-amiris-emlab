@@ -603,6 +603,8 @@ class Investmentdecision(DefaultModule):
             if loan.getAmountPerPayment() != None:
                 if loan.getNumberOfPaymentsDone() < loan.getTotalNumberOfPayments():
                     pending_loan = loan.getAmountPerPayment()
+                else:
+                    pending_loan = 0
                 fixed_on_m_cost = powerplant.actualFixedOperatingCost
             else: # for new power plants
                 totalInvestment = self.getActualInvestedCapitalperMW(powerplant.technology) * powerplant.capacity  # candidate power plants only have 1MW installed
