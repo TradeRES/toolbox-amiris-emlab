@@ -57,12 +57,16 @@ class Dismantle(DefaultModule):
         requiredProfit = producer.getDismantlingRequiredOperatingProfit()
         for plant in self.reps.get_power_plants_to_be_decommissioned(producer.name):   # TODO is the power plant subsidized ? then dismantle
             profit = self.calculateAveragePastOperatingProfit(plant, horizon, requiredProfit)
-            if profit <= requiredProfit:
-                print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
-                      .format(plant.name, horizon, profit, requiredProfit))
+            if self.reps.current_tick < self.reps.pastTimeHorizon:
+                print(str(plant.name) + "for initialization")
                 self.set_plant_dismantled(plant)
             else:
-                pass
+                if profit <= requiredProfit:
+                    print("{}  operating loss on average in the last {} years: was {} which is less than required:  {} " \
+                          .format(plant.name, horizon, profit, requiredProfit))
+                    self.set_plant_dismantled(plant)
+                else:
+                    pass
 
     def increase_fixed_cost(self, plant):
         print("dont dismantle but increase FOM of  {} ".format(plant.name))
