@@ -244,7 +244,12 @@ class CreatingFinancialReports(DefaultModule):
             print("no volume is unsubscribed")
         average_LOLE_unsubscribed = ENS / volume_unsubscribed  # MWH/MW
         print("average_LOLE_unsubscribed [h]" + str(average_LOLE_unsubscribed))
-
+        if average_LOLE_unsubscribed > 1.5:
+            average_LOLE_unsubscribed = 1.5
+        elif average_LOLE_unsubscribed < 0.5:
+            average_LOLE_unsubscribed = 0.5
+        else:
+            pass
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
