@@ -326,7 +326,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('Awarded Capacity [MW]', fontsize='medium')
         plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs27.set_title(reps.capacity_remuneration_mechanism + 'capacity per technology')
+        axs27.set_title(reps.capacity_remuneration_mechanism + '\n capacity per technology')
         fig27 = axs27.get_figure()
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism capacity per technology.png', bbox_inches='tight',
                       dpi=300)
@@ -667,8 +667,8 @@ def plot_yearly_VRES_support(yearl_vres_support, path_to_plots):
     plt.close('all')
 
 
-def plot_costs_to_society(total_electricity_price, path_to_plots):
-    axs30 = total_electricity_price.plot.area()
+def plot_costs_to_society(average_electricity_price, path_to_plots):
+    axs30 = average_electricity_price.plot.area()
     axs30.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Total price', fontsize='medium')
@@ -766,10 +766,11 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     colors = plt.cm.rainbow(np.linspace(0, 1, n))
     fig24, axs24 = plt.subplots(nrows=2, ncols=1)
     sorted_prices.plot(color=colors, ax=axs24[0], legend=None)
-    plt.ylim([0, 200])
-    axs24[0].legend(fontsize='small', loc='upper right', ncol=2 ,bbox_to_anchor=(1.1, 1.1))
+
+    axs24[0].legend(fontsize='small', loc='upper left', ncol=2 ,bbox_to_anchor=(1.1, 1.1))
     axs24[0].set_title('Price duration curve')
     axs24[1] = sorted_prices.plot(color=colors, ax=axs24[1], legend=None)
+    plt.ylim([0, 1600])
     plt.xlim([0, 1000])
     plt.xlabel('hours', fontsize='medium')
     plt.ylabel('Wholesale market price (€/MWh)', fontsize='medium')
@@ -1689,6 +1690,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     sr_operator = reps.get_strategic_reserve_operator(reps.country)
 
     if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
+        pricecap = None
         for tick in ticks_to_generate:
             if tick in sr_operator.list_of_plants_all:
                 accepted_per_tick = sr_operator.list_of_plants_all[tick]
@@ -1706,9 +1708,10 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     else:
         if reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription"]:
             market = reps.get_capacity_market_in_country(reps.country, False)
+            pricecap = market.PriceCap
         else: # forward enery market is used
             market = reps.get_capacity_market_in_country(reps.country, True)
-
+            pricecap = market.PriceCap
         for tick in ticks_to_generate:
             CM_clearing_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time(market.name, tick + market.forward_years_CM )
             capacity_market_future_price.at[tick, 0] = reps.get_market_clearing_point_price_for_market_and_time("capacity_market_future", tick + market.forward_years_CM)  # saved according to effective year
@@ -1740,7 +1743,7 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
     capacity_mechanisms_volume_per_tech.dropna(axis=1, how='all', inplace=True)
     return (CM_costs_per_technology, number_accepted_pp_per_technology, capacity_mechanisms_volume_per_tech,
             CM_clearing_price, capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,total_costs_CM, \
-             SR_operator_revenues, cm_revenues_per_pp, market.PriceCap)
+             SR_operator_revenues, cm_revenues_per_pp, pricecap )
 
 
 # def market_value_per_technology(reps, unique_technologies, years_to_generate):
@@ -2082,11 +2085,10 @@ def prepare_subscribed_capacity():
     sorted_bids.sort_index(ascending=False, inplace=True)
     subscribed_sorted.sort_index(ascending=True, inplace=True)
 
-
     plt.close('all')
-
     yearly_peak_demand = reps.get_realized_peak_demand()
     num_iterations = reps.current_tick
+
     for i in range(num_iterations):
         print(i)
         print(subscribed_sorted.iloc[i]* yearly_peak_demand.iloc[i] )
@@ -2099,7 +2101,6 @@ def prepare_subscribed_capacity():
     plt.grid(True, which='minor')
     plt.legend(fontsize='small', loc='upper left', bbox_to_anchor=(1, 1), ncol=3)
     axs40[0].figure.savefig(path_to_plots + '/' + 'subscribed_demand_curves.png', bbox_inches='tight', dpi=300)
-    plt.show()
 
     fig3, axs3 = plt.subplots(2, 1)
     fig3.tight_layout()
@@ -2111,7 +2112,7 @@ def prepare_subscribed_capacity():
     axs3[1].set_ylabel('Cost non subscription \n [Eur/MW - y]', fontsize='large')
     fig3.savefig(path_to_plots + '/' + 'subscribed_consumers.png', bbox_inches='tight', dpi=300)
     plt.close()
-
+    return subscribed_sorted
 def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     production_not_shedded_MWh = pd.DataFrame()
     load_shedded_per_group_MWh = pd.DataFrame()
@@ -2198,7 +2199,9 @@ def prepare_monthly_electricity_prices(electricity_prices):
     grouped = monthly_electricity_price.groupby(['monthly']).mean()
     monthly_electricity_price_grouped = grouped.melt()['value']
     # monthly_electricity_price_grouped = pd.melt(grouped, id_vars='index', value_name='Value')#grouped.melt()['value']
-    ax1 = monthly_electricity_price_grouped.plot( )
+
+    ax1 = monthly_electricity_price_grouped.plot(  )
+    plt.legend(fontsize='small', loc='upper left', ncol=2 ,bbox_to_anchor=(1.1, 1.1))
     plt.xlabel('Months', fontsize='medium')
     plt.ylabel('€/MWh', fontsize='medium')
     ax1.set_title('Monthly electricity prices')
@@ -2291,9 +2294,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     (normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation,
      cost_non_subcription, load_per_group) =\
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
-
+    subscribed_sorted = pd.DataFrame()
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
-        prepare_subscribed_capacity()
+        subscribed_sorted = prepare_subscribed_capacity()
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
                       normalized_load_shedded)
@@ -2406,10 +2409,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                          CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,
                          total_costs_CM, SR_operator_revenues, cm_revenues_per_pp, price_cap , path_to_plots,
                          colors_unique_techs)
-        plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
+
         if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
-
+        else:
+            plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
     if reps.capacity_remuneration_mechanism == "capacity_market":
         prepareCONE()
 
@@ -2439,7 +2443,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 revenues_SR = SR_operator_revenues[0] / annual_generation
                 average_electricity_price['SR_revenues'] = - revenues_SR.values
 
-        plot_costs_to_society(average_electricity_price, path_to_plots)
+      #  plot_costs_to_society(average_electricity_price, path_to_plots)
 
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
@@ -2456,8 +2460,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     if save_excel == True:
         path_to_results = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
         CostRecovery_data = pd.read_excel(path_to_results, sheet_name='CostRecovery', index_col=0)
+        LOLvoluntary_data = pd.read_excel(path_to_results, sheet_name='LOLvoluntary', index_col=0)
         LOL_data = pd.read_excel(path_to_results, sheet_name='LOL', index_col=0)
         ENS_data = pd.read_excel(path_to_results, sheet_name='ENS', index_col=0)
+        voluntaryENS_data = pd.read_excel(path_to_results, sheet_name='voluntaryENS', index_col=0)
         Inflexible_load = pd.read_excel(path_to_results, sheet_name='Inflexible_load', index_col=0)
         SupplyRatio_data = pd.read_excel(path_to_results, sheet_name='SupplyRatio', index_col=0)
         ElectricityPrices_data = pd.read_excel(path_to_results, sheet_name='ElectricityPrices', index_col=0)
@@ -2484,8 +2490,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
         Last_year_PDC_data = pd.read_excel(path_to_results, sheet_name='Last_year_pdc', index_col=0)
-        voluntaryENS_data = pd.read_excel(path_to_results, sheet_name='voluntaryENS', index_col=0)
-        # Load_shedders_data = pd.read_excel(path_to_results, sheet_name='Load_shedders', index_col=0)
+        total_subscribed_consumers = pd.read_excel(path_to_results, sheet_name='subscribedCons', index_col=0)
+
+        total_subscribed_consumers[scenario_name]  = subscribed_sorted.sum(axis=1)
 
         all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
         df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
@@ -2506,7 +2513,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         df = LS_pergroup.iloc[:-1]
         df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
         voluntaryENS_data = pd.concat([voluntaryENS_data, df], axis=1)
-
 
         irrs_per_tech_per_year.at["scenario_name", :] = scenario_name
         last_row = irrs_per_tech_per_year.iloc[-1]
@@ -2536,13 +2542,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             lifeextension_data[scenario_name]  = extended_lifetime_tech["Extension"]
         Last_year_PDC_data[scenario_name] = electricity_prices[years_to_generate[-1]]
         CostRecovery_data[scenario_name] = cost_recovery
-        LOL_data[scenario_name] = shortages
+        LOL_data[scenario_name] = LOLE_per_group.T[["1", "2"]].sum(axis =1) # involutary shedding comparison
+        LOLvoluntary_data[scenario_name] = LOLE_per_group.T["3"] # volutary shedding comparison
         SupplyRatio_data[scenario_name] = supply_ratio
         Monthly_electricity_data[scenario_name] = monthly_electricity_price_grouped
         H2_production_data[scenario_name] = production_not_shedded_MWh["hydrogen_produced"]
         IndustrialHeat_data[scenario_name] = production_not_shedded_MWh["industrial_heat_demand"]
-        Overall_NPV_data[scenario_name] = overall_NPV_per_technology.T
-        Overall_IRR_data[scenario_name] = overall_IRR_per_technology.T
+        Overall_NPV_data[scenario_name] = overall_NPV_per_technology.T # plants that were installed and decommissioned during simulation
+        Overall_IRR_data[scenario_name] = overall_IRR_per_technology.T # plants that were installed and decommissioned during simulation
         ElectricityPrices_data[scenario_name] = average_electricity_price["wholesale price"]
         TotalSystemCosts_data[scenario_name] = DispatchSystemCostInEUR
         ENS_data[scenario_name] = load_shedded_per_group_MWh.sum(axis=1)
@@ -2553,7 +2560,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
         if calculate_capacity_mechanisms == True:
             total_costs_capacity_market_data[scenario_name] = total_costs_CM
-            pd.concat([CRM_data, CM_price], ignore_index=True, axis=1)
+            CRM_data[scenario_name]  = CM_price #= pd.concat([CRM_data, CM_price], ignore_index=True, axis=1)
 
             if reps.capacity_remuneration_mechanism == "strategic_reserve_ger":
                 SR_data[scenario_name] = revenues_SR.values
@@ -2573,7 +2580,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             Inflexible_load.to_excel(writer, sheet_name="Inflexible_load")
             CostRecovery_data.to_excel(writer, sheet_name='CostRecovery')
             LOL_data.to_excel(writer, sheet_name='LOL')
+            LOLvoluntary_data.to_excel(writer, sheet_name='LOLvoluntary')
             ENS_data.to_excel(writer, sheet_name='ENS')
+            voluntaryENS_data.to_excel(writer, sheet_name='voluntaryENS')
             SupplyRatio_data.to_excel(writer, sheet_name='SupplyRatio')
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
             TotalSystemCosts_data.to_excel(writer, sheet_name='TotalSystemCosts')
@@ -2590,7 +2599,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             Commissioned_capacity_data.to_excel(writer, sheet_name='Invested')
             Dismantled_capacity_data.to_excel(writer, sheet_name='Dismantled')
             Profits_with_loans_data.to_excel(writer, sheet_name='Profits')
-            voluntaryENS_data.to_excel(writer, sheet_name='voluntaryENS')
+            total_subscribed_consumers.to_excel(writer, sheet_name='subscribedCons')
 
             if calculate_capacity_mechanisms == True:
                 CRM_data.to_excel(writer, sheet_name='CRM')
@@ -2793,7 +2802,7 @@ technology_colors = {
     "CCS": "orange",
     "fuel_cell": "gold",
     "electrolyzer": "gray",
-    "hydrogen_turbine": "darkred",
+    "hydrogen turbine": "darkred",
     "hydrogen CCGT": "darkred",
     "hydrogen OCGT": "indianred",
     "hydrogen CHP": "indianred",
@@ -2842,7 +2851,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = True
 
-    test_tick = 0
+    test_tick = 4
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -2858,7 +2867,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     if save_excel == True:
         path_to_excel = os.path.join(os.getcwd(), "plots", "Scenarios", results_excel)
-        template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosComparisonTemplate.xlsx")
+        template_excel = os.path.join(os.getcwd(), "plots", "Scenarios", "ScenariosComparisonTEMPLATE.xlsx")
         if not os.path.exists(path_to_excel):
             shutil.copy(template_excel, path_to_excel)
 
@@ -2938,11 +2947,14 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-#    SCENARIOS = ["NL-CS_lower_WTP", "NL-CS_89" , "N-CS_97", "NL-CS_97_weather_years", "NL-CS_y_1"]
-    SCENARIOS = ["NL-oldinterests"]
-    results_excel = "NL_Capacity_markets.xlsx"
+    SCENARIOS = ["final-EOM", "final-CM", "final-LTCM", "final-CS_fix", "final-CS" , "final-SR" ]
+    #SCENARIOS = [ "final-SR"  ]
+    # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
+    results_excel = "final.xlsx"
+    # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
+    # results_excel = "Comparisontest.xlsx"
     existing_scenario = True
-    plotting(SCENARIOS, results_excel,sys.argv[1], sys.argv[2],existing_scenario )
+    plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
 # write the name of the existing scenario or the new scenario
