@@ -132,8 +132,7 @@ class CreatingFinancialReports(DefaultModule):
         if self.reps.current_tick < 5:
             pass
         else:
-            start = self.reps.current_tick - 4
-            ticks_to_generate = list(range(start, self.reps.current_tick))
+            ticks_to_generate = list(range(self.reps.current_tick - 4, self.reps.current_tick))
             irrs_per_tech_per_year = pd.DataFrame(index=ticks_to_generate).fillna(0)
             for technology_name, technology in self.reps.power_generating_technologies.items():
                 powerplants_per_tech = self.reps.get_power_plants_by_technology(technology_name)
@@ -157,8 +156,8 @@ class CreatingFinancialReports(DefaultModule):
                     old_irr = self.reps.power_generating_technologies[technology_name].interestRate
                     if averageirr < 0.01:
                         continue   # and IRR of 10% is normal
-                    elif old_irr - decrease < 0:
-                        new_value = 0.05
+                    elif old_irr - decrease < 0.04:
+                        new_value = 0.04
                     elif old_irr - decrease > 0.15:
                         new_value = 0.15
                     else:
