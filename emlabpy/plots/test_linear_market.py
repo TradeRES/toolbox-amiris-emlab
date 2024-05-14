@@ -11,7 +11,7 @@ demand = [
     Bid(price=49000, amount=5000),
     Bid(price=45000, amount=5000),
     Bid(price=35000, amount=5000),
-    Bid(price=29000, amount=5000),
+    # Bid(price=29000, amount=5000),
     Bid(price=25000, amount=5000),
 ]
 
@@ -52,7 +52,7 @@ def linearmarket():
         Bid(price=10000, amount=3000),
         Bid(price=15000, amount=3000),
         Bid(price=21000, amount=3000),
-        Bid(price=23000, amount=3000),
+        Bid(price=23000, amount=1000),
         Bid(price=25000, amount=2000)
     ]
 
@@ -68,7 +68,8 @@ def linearmarket():
     equilibriumprices = []
     # Example usage
     price_cap = sorted_demand[0].price
-    for supply in sorted_supply:
+
+    for num, supply in enumerate(sorted_supply):
         # As long as the market is not cleared
         print("--------------------------------------------------------------------")
         print("suuply_price " + str(supply.price) + "      supply volume" + str(supply.cummulative_quantity) )
@@ -82,14 +83,16 @@ def linearmarket():
             the price of the next bid is higher than the price cap.
             accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
             """
-            total_supply_volume = total_supply_volume + supply.amount
             clearing_price = segmented_line_y( supply.cummulative_quantity)
             if clearing_price == 0:
-                clearing_price = supply.price
+                clearing_price = sorted_supply[num-1].price
+            else:
+                total_supply_volume = total_supply_volume + supply.amount
             break
         else:
             break
-        total = 0
+
+    total = 0
     for i, supply in enumerate(sorted_supply):
         total += supply.amount
         supply.cummulative_quantity = total
@@ -113,7 +116,7 @@ def linearmarket():
     plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
     plt.step(demand_quantities, demand_prices, 'o-', label='demand', color='r')
     plt.grid(visible=None, which='major', axis='both', linestyle='--')
-    plt.scatter(supply_quantities, equilibriumprices, color='g', label='Equilibrium Prices')
+  #  plt.scatter(supply_quantities, equilibriumprices, color='g', label='Equilibrium Prices')
     plt.axhline(y=clearing_price, color='g', linestyle='--', label='Equilibrium Price')
     plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Equilibrium Quantity')
     plt.xlabel('Quantity')
