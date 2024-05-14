@@ -84,8 +84,10 @@ class CapacitySubscriptionClearing(MarketModule):
             # As long as the market is not cleared
             cummulative_supply = supply_bid.amount + cummulative_supply
             if supply_bid.price <= dc.get_demand_price( cummulative_supply):
-                total_supply_volume += supply_bid.amount
                 clearing_price =  dc.get_demand_price( total_supply_volume)
+                total_supply_volume += supply_bid.amount
+                supply_bid.accepted_amount = supply_bid.amount
+                supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
             elif supply_bid.price < dc.get_demand_price( total_supply_volume):
                 clearing_price = dc.get_demand_price( cummulative_supply)
                 if clearing_price == 0:
@@ -96,7 +98,7 @@ class CapacitySubscriptionClearing(MarketModule):
                     supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
                 break
             else:
-                clearing_price =  dc.get_demand_price( cummulative_supply)  # price set by demand
+                clearing_price = dc.get_demand_price( cummulative_supply)  # price set by demand
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_failed
                 supply_bid.accepted_amount = 0
                 break
