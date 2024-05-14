@@ -26,7 +26,7 @@ for i, demand in enumerate(sorted_demand):
     y_values.append(demand.price)
     x_values.append(total)
 # Define a function to return the y value from a segmented line given an x value
-def segmented_line_y( x):
+def get_demand_price( x):
     # Find the index of the nearest x value to the left of the given x
     left_index = np.searchsorted(x_values, x, side='right') - 1
     # If x is smaller than the smallest x value, return the corresponding y value
@@ -74,16 +74,16 @@ def linearmarket():
         print("--------------------------------------------------------------------")
         print("suuply_price " + str(supply.price) + "      supply volume" + str(supply.cummulative_quantity) )
 
-        if supply.price <= segmented_line_y( supply.cummulative_quantity):
+        if supply.price <= get_demand_price( supply.cummulative_quantity):
             total_supply_volume += supply.amount
-            clearing_price = segmented_line_y( total_supply_volume)
+            clearing_price = get_demand_price( total_supply_volume)
             equilibriumprices.append(clearing_price)
-        elif supply.price < segmented_line_y( total_supply_volume) and supply.price < price_cap:
+        elif supply.price < get_demand_price( total_supply_volume):
             """
             the price of the next bid is higher than the price cap.
             accepting the power plant, but giving lower price, otherwise the price dont decrease!!!
             """
-            clearing_price = segmented_line_y( supply.cummulative_quantity)
+            clearing_price = get_demand_price( supply.cummulative_quantity)
             if clearing_price == 0:
                 clearing_price = sorted_supply[num-1].price
             else:
