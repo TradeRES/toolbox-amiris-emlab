@@ -232,23 +232,23 @@ class CreatingFinancialReports(DefaultModule):
         CS consumer descending by WTP
         """
         ENS_per_LS = total_load_shedded.sum(axis=0)
-        if ENS_per_LS["1"] > 0:
-            print("subscribed consumers are curtailed!!!!!!!!!!!")
-        ENS_per_LS.drop("1", inplace=True)  # the first year there could be too much ENS due to no capacity market.
-        ENS = ENS_per_LS.sum()  # MWh
+        # if ENS_per_LS["1"] > 0:
+        #     print("subscribed consumers are curtailed!!!!!!!!!!!")
+        # ENS_per_LS.drop("1", inplace=True)  # the first year there could be too much ENS due to no capacity market.
+        ENS = ENS_per_LS.loc["2"]  # MWh
         peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
-        unsubcribed_volume = sum([i.percentageLoad for i in self.reps.loadShedders.values() if i.name != "1"])
+        unsubcribed_volume = self.reps.loadShedders["2"].percentageLoad
         volume_unsubscribed = unsubcribed_volume * peak_demand
         if volume_unsubscribed == 0:
             print("no volume is unsubscribed")
         average_LOLE_unsubscribed = ENS / volume_unsubscribed  # MWH/MW
         print("average_LOLE_unsubscribed [h]" + str(average_LOLE_unsubscribed))
-        if average_LOLE_unsubscribed > 1.5:
-            average_LOLE_unsubscribed = 1.5
-        elif average_LOLE_unsubscribed < 0.5:
-            average_LOLE_unsubscribed = 0.5
-        else:
-            pass
+        # if average_LOLE_unsubscribed > 1.5:
+        #     average_LOLE_unsubscribed = 1.5
+        # elif average_LOLE_unsubscribed < 0.5:
+        #     average_LOLE_unsubscribed = 0.5
+        # else:
+        #     pass
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
