@@ -263,6 +263,7 @@ def aggregate_results(data_manager, config, params):
     """Calculate refinancing-related results for AMIRIS agents"""
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
     renewables_energy_carriers = data_manager["renewables_energy_carriers"]
+    strike_price = data_manager["capacity_remuneration"].iloc[0, 1]
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
     to_concat = []
