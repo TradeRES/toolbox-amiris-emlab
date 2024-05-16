@@ -301,7 +301,7 @@ class CreatingFinancialReports(DefaultModule):
             voluntary_consumers = sum([i.percentageLoad for i in load_shedders_not_hydrogen if i.VOLL < 4000])
             total_subcribed_percentage = round(sum(subscribed_percentage),2)
             percentage_unsubscribed = 1 - total_subcribed_percentage - voluntary_consumers
-            if percentage_unsubscribed < 0:
+            if percentage_unsubscribed < -0.01:
                 print("percentage_unsubscribed is negative")
                 raise Exception
             self.reps.loadShedders["1"].percentageLoad = round(total_subcribed_percentage, 2)
