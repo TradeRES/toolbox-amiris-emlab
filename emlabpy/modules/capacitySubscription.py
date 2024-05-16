@@ -71,6 +71,9 @@ class CapacitySubscriptionClearing(MarketModule):
             consumer.cummulative_quantity = total_subscribed_volume
             print(consumer.name +";"+ str(total_subscribed_volume) + ";" + str(consumer.bid))
 
+        for i, supply in enumerate(sorted_supply):
+            total_subscribed_volume += supply.amount
+            supply.cummulative_quantity = total_subscribed_volume
         clearing_price = 0
         total_supply_volume = 0
 
@@ -79,7 +82,7 @@ class CapacitySubscriptionClearing(MarketModule):
         for numero, supply  in enumerate(sorted_supply):
             # As long as the market is not cleared
             cummulative_supply = supply.amount + cummulative_supply
-
+            supply.cummulative_quantity = total_subscribed_volume
             last_supply_price = sorted_supply[numero - 1].price
             last_supply_volume = sorted_supply[numero - 1].cummulative_quantity
             demand_price, demand_volume = demandCurve.get_demand_price_at_volume(cummulative_supply, supply)
