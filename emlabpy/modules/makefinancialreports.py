@@ -278,6 +278,8 @@ class CreatingFinancialReports(DefaultModule):
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
+                if capacity_market_price == 0:
+                    capacity_market_price = 1
                 change = (bid - capacity_market_price)/(capacity_market_price * 100)
                 if pd.isna(change):
                     raise Exception
