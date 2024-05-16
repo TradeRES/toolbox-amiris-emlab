@@ -240,7 +240,8 @@ class Investmentdecision(DefaultModule):
                         self.reps.dbrw.stage_iteration_for_CM(True)
                         self.reps.dbrw.stage_iteration(0)
                         self.reps.dbrw.stage_last_testing_technology(False)
-
+                        if self.reps.current_tick == 5:
+                            raise Exception
                 elif self.reps.initialization_investment == True:
                     if self.reps.investment_initialization_years >= self.reps.lookAhead - 1:
                         print("finishing investment loop")
