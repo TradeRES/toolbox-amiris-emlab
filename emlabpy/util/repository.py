@@ -426,6 +426,14 @@ class Repository:
                 i.technology.name in globalNames.vRES
                 ]
 
+    def get_ids_of_plants(self,list_of_dicts):
+        ids = []
+        for dictionary in list_of_dicts:
+            # Iterate through each dictionary in the list
+            if dictionary:  # Check if the dictionary is not empty
+                ids.append(dictionary.id)
+        return ids
+
     def get_investable_candidate_power_plants(self) -> List[CandidatePowerPlant]:
         return [i for i in self.candidatePowerPlants.values() if i.viableInvestment is True]
 

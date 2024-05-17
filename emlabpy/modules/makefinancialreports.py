@@ -239,9 +239,12 @@ class CreatingFinancialReports(DefaultModule):
         peak_demand = self.reps.get_realized_peak_demand_by_year(self.reps.current_year)
         unsubcribed_volume = self.reps.loadShedders["2"].percentageLoad
         volume_unsubscribed = unsubcribed_volume * peak_demand
+
         if volume_unsubscribed == 0:
-            print("no volume is unsubscribed")
-        average_LOLE_unsubscribed = ENS / volume_unsubscribed  # MWH/MW
+            average_LOLE_unsubscribed = ENS
+        else:
+            average_LOLE_unsubscribed = ENS / volume_unsubscribed
+        # MWH/MW
         print("average_LOLE_unsubscribed [h]" + str(average_LOLE_unsubscribed))
         # if average_LOLE_unsubscribed > 1.5:
         #     average_LOLE_unsubscribed = 1.5
@@ -252,7 +255,7 @@ class CreatingFinancialReports(DefaultModule):
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            avoided_costs_non_subscription =   consumer.WTP   #*average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
+            avoided_costs_non_subscription =   average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
             """
             estimating bids with intertia
             In the first year the bid is the avoided costs
@@ -263,9 +266,6 @@ class CreatingFinancialReports(DefaultModule):
                 self.reps.dbrw.stage_consumer_subscribed_yearly(consumer.name, consumer.subscribed_yearly[self.reps.current_tick] , self.reps.current_tick + 1)
                 self.reps.dbrw.stage_consumers_bids(consumer.name, bid, self.reps.current_tick)
 
-                # # for first year changing bids but not volume
-                # bid_year_0  = avoided_costs_non_subscription
-                # self.reps.dbrw.stage_consumers_bids(consumer.name, bid_year_0, self.reps.current_tick)
             else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
                 bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
@@ -278,13 +278,16 @@ class CreatingFinancialReports(DefaultModule):
                 capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
                 capacity_market_price = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
                                                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
-                if capacity_market_price == 0:
-                    capacity_market_price = 1
-                change = (bid - capacity_market_price)/(capacity_market_price * 100)
-                if pd.isna(change):
+                if capacity_market_price == 0 and bid ==0:
+                    increase = 0
+                elif capacity_market_price == 0 and bid !=0:
+                    increase = 1
+                else:
+                    increase = (bid - capacity_market_price)/(capacity_market_price * 100)
+                if pd.isna(increase):
                     raise Exception
-                print("change" + str(change) )
-                next_year_subscription = round(consumer.subscribed_yearly[self.reps.current_tick - 1]  +  change,2)
+                print("increase" + str(increase) )
+                next_year_subscription = round(consumer.subscribed_yearly[self.reps.current_tick - 1]  +  increase,2)
                 if next_year_subscription >  consumer.max_subscribed_percentage:
                     next_year_subscription = consumer.max_subscribed_percentage
                     print("passed max subscribed percentage")

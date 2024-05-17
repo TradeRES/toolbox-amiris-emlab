@@ -49,18 +49,18 @@ class Market:
         demand_price = self.price_cap
         for numero, demand in enumerate(self.sorted_demand):
             last_capacity = supply.cummulative_quantity - supply.amount
-            last_demand_price = self.sorted_demand[numero - 1].price
+          #  last_demand_price = self.sorted_demand[numero - 1].price
             print("price " + str(demand.price) +" q " + str(demand.cummulative_quantity) )
             demand_volume = demand.cummulative_quantity
             demand_price = demand.price
             # if  demand.price < supply.price and demand.cummulative_quantity >= last_capacity:
-            if demand.cummulative_quantity >= supply.cummulative_quantity:
+            if demand.cummulative_quantity >= supply.cummulative_quantity or demand.price < supply.price:
                 break
 
-            if demand.price < supply.price:
-                print("***")
-                break
-        return demand_price, demand_volume, last_demand_price
+            # if demand.price < supply.price:
+            #     print("***")
+            #     break
+        return demand_price, demand_volume #, last_demand_price
 
 
 class Bid:
@@ -81,28 +81,22 @@ def clear_market(sorted_supply, sorted_demand):
         # As long as the market is not cleared
         print("--------------------------------------------------------------------")
         print("suuply_price " + str(supply.price) + "      supply volume" + str(supply.cummulative_quantity) )
-        demand_price , demand_volume, last_demand_price = market.get_demand_price_at_volume_test(supply)
+        demand_price , demand_volume = market.get_demand_price_at_volume_test(supply)
         print("demand price ************" + str(demand_price) + " demandvolume " + str(demand_volume))
         clearing_price = demand_price
         last_supply_price = sorted_supply[numero - 1].price
         last_supply_volume = sorted_supply[numero - 1].cummulative_quantity
-        if supply.cummulative_quantity > demand_volume:
+        if supply.cummulative_quantity > demand_volume or supply.price > demand_price:
             print("supply volume > demand volume")
             print("cummulative_supply", supply.cummulative_quantity,  "> demand_at_price", demand_volume)
             total_supply_volume = last_supply_volume
             clearing_price = last_supply_price
-
-
             break
 
         if supply.price <= demand_price:
             total_supply_volume += supply.amount
-
-        elif supply.price > demand_price:
-            print("supply price > demand price")
-            total_supply_volume = last_supply_volume
-            clearing_price = last_supply_price
-            break
+        else:
+            raise Exception
 
     print("equilibrium_price: ", str(clearing_price))
     print("total_supply_volume", str(total_supply_volume))

@@ -592,9 +592,9 @@ class Investmentdecision(DefaultModule):
             else:
                 print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
 
-        if long_term == True:
-            candidates_and_existing = candidates_and_existing + self.investable_candidate_plants
 
+        candidates_and_existing = candidates_and_existing + self.investable_candidate_plants
+        candidates_ids = self.reps.get_ids_of_plants(self.investable_candidate_plants)
         for powerplant in candidates_and_existing:
             price_to_bid = 0
             operatingProfit = powerplant.get_Profit()  # for installed capacity
@@ -615,7 +615,7 @@ class Investmentdecision(DefaultModule):
             new power plants bid their loans, which is what they need in long term. 
             existing plants only bid their missing money
             """
-            if powerplant.age <= -self.look_ahead_years:
+            if powerplant.age <= -self.look_ahead_years or powerplant.id in candidates_ids:
                 net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
             else:
                 net_revenues = operatingProfit - fixed_on_m_cost
