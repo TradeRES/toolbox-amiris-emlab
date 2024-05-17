@@ -215,9 +215,20 @@ workflow:
 
   - action:
       project: general
+      call: parse_excel
+      data:
+        read_from_dmgr: null
+        write_to_dmgr: capacity_remuneration
+      args:
+        excelFile: amiris_data_structure.xlsx
+        excelSheet: capacity_remuneration
+        excelHeader: False
+
+  - action:
+      project: general
       call: aggregate_results
       data:
-        read_from_dmgr: renewables_energy_carriers
+        read_from_dmgr: [renewables_energy_carriers, capacity_remuneration]
         write_to_dmgr: all_outputs_per_agent
       args:
         write: True
@@ -226,3 +237,4 @@ workflow:
         file_name_res_infeed: hourly_res_infeed.csv
         file_name_generation: hourly_generation_per_group.csv
         file_name_final_storage_levels: final_storage_levels.csv
+        file_name_capped_revenues: capped_revenues_per_plant.csv
