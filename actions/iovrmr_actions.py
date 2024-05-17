@@ -34,8 +34,11 @@ from iovrmr_tools import (
     DEMAND,
     calculate_residual_load,
     calculate_overall_res_infeed,
-    evaluate_dispatch_per_group,
-    CONVENTIONAL_RESULTS_GROUPED, get_storage_strategist_type, adjust_contracts_for_storages,
+    evaluate_dispatch_and_capped_revenues,
+    CONVENTIONAL_RESULTS_GROUPED,
+    get_storage_strategist_type,
+    adjust_contracts_for_storages,
+    EXCHANGE,
 )
 
 
@@ -263,7 +266,10 @@ def aggregate_results(data_manager, config, params):
     """Calculate refinancing-related results for AMIRIS agents"""
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
     renewables_energy_carriers = data_manager["renewables_energy_carriers"]
-    strike_price = data_manager["capacity_remuneration"].iloc[0, 1]
+    try:
+        strike_price = data_manager["capacity_remuneration"].iloc[0, 1]
+    except IndexError:
+        strike_price = None
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
     to_concat = []
@@ -340,11 +346,22 @@ def aggregate_results(data_manager, config, params):
             outputs_per_agent.rename(columns=column_names, inplace=True)
             to_concat.append(outputs_per_agent)
 
+        elif file_name in EXCHANGE:
+            exchange_results = pd.read_csv(file, sep=";")
+
     overall_res_infeed = calculate_overall_res_infeed(residual_load_results, biogas_results)
     residual_load = calculate_residual_load(residual_load_results)
-    generation_per_group, final_storage_levels = evaluate_dispatch_per_group(
-        operator_results, conventional_results_grouped, residual_load_results[DEMAND[0]], renewables_energy_carriers
+    dispatch_and_capped_revenues = evaluate_dispatch_and_capped_revenues(
+        operator_results,
+        conventional_results_grouped,
+        residual_load_results[DEMAND[0]],
+        renewables_energy_carriers,
+        exchange_results,
+        strike_price,
     )
+    generation_per_group = dispatch_and_capped_revenues["generation_per_group"]
+    capped_revenues_per_plant = dispatch_and_capped_revenues["capped_revenues_per_plant"]
+    final_storage_levels = dispatch_and_capped_revenues["final_storage_levels"]
 
     if conventional_series:
         to_concat.append(pd.concat(conventional_series, axis=1))
@@ -375,6 +392,9 @@ def aggregate_results(data_manager, config, params):
                 config["user"]["global"]["output"]["pbOutputProcessed"]
                 + params["args"]["file_name_final_storage_levels"]
             )
+        capped_revenues_per_plant.to_csv(
+            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_capped_revenues"]
+        )
 
     with data_manager.overwrite:
         data_manager[params["data"]["write_to_dmgr"]] = all_outputs_per_agent

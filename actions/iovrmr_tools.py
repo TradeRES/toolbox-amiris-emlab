@@ -5,9 +5,11 @@ __email__ = "felix.nitsch@dlr.de"
 
 import math
 import os
+import warnings
 from enum import Enum, auto
 from typing import List, Callable, Dict, NoReturn, Any, Union, Hashable
 
+import numpy as np
 import pandas as pd
 import yaml
 from fameio.source.loader import load_yaml
@@ -669,9 +671,9 @@ def calculate_residual_load(
     overall_vres_generation = calculate_overall_value(to_aggregate["res_generation"])
     residual_load["res_potential"] = calculate_overall_value(to_aggregate["res_potential"])
     residual_load["planned_demand"] = calculate_overall_value(to_aggregate["planned_demand"])
-    residual_load["curtailed_res"]  =  residual_load["res_potential"] - to_aggregate["res_generation"][0]
+    residual_load["curtailed_res"] = residual_load["res_potential"] - to_aggregate["res_generation"][0]
     residual_load["residual_load_actual_infeed"] = residual_load["planned_demand"] - overall_vres_generation
-   # residual_load["residual_load_res_potential"] = residual_load["planned_demand"] - residual_load["res_potential"]
+    # residual_load["residual_load_res_potential"] = residual_load["planned_demand"] - residual_load["res_potential"]
     residual_load = residual_load.round(4)
     residual_load.reset_index(drop=True, inplace=True)
 
@@ -721,18 +723,31 @@ def calculate_overall_res_infeed(
     return overall_res_generation
 
 
-def evaluate_dispatch_per_group(
+def evaluate_dispatch_and_capped_revenues(
     operator_results: Dict,
     conventional_results: pd.DataFrame,
     demand_results: pd.DataFrame,
     renewables_energy_carriers: pd.DataFrame = None,
+    exchange_results: pd.DataFrame = None,
+    strike_price: float = None,
     operators_offset: int = 5,
     trader_offset: int = 4,
     demand_offset: int = 1,
 ) -> (pd.DataFrame, pd.DataFrame):
-    """Evaluate the dispatch per group (res, conventionals, storages) as well as final storage states"""
+    """Evaluate the dispatch per group, capped revenues per plant as well as final storage states
+
+    Returns a dictionary with the following information:
+    - generation_per_group: Hourly generation for technology group (res, conventionals, storages)
+    - capped_revenues_per_plant: Revenues capped to the strike price per plant
+    - final_storage_levels: The final storage levels at the end of a simulation year
+    """
     final_storage_levels = pd.DataFrame()
     dispatch = pd.DataFrame()
+    agent_capped_revenue = pd.DataFrame()
+    power_prices = prepare_power_prices(exchange_results)
+    if strike_price is None:
+        warnings.warn("You did not specify a strike price! Using '4000' (i.e. not effective) as a default.")
+        strike_price = 4000
     for key, val in operator_results.items():
         if key in ["Biogas", "VariableRenewableOperator"]:
             operator_results = val.loc[val["AwardedPowerInMWH"].notna()]
@@ -741,6 +756,7 @@ def evaluate_dispatch_per_group(
             if dispatch.empty:
                 dispatch = initialize_dispatch(operator_results)
             for group in operator_results.groupby("AgentId"):
+                agent_capped_revenue[group[0]] = calc_capped_revenue(group[1], power_prices, strike_price)
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
             if key == "VariableRenewableOperator":
                 dispatch = extract_generation_by_energy_carrier(operator_results, renewables_energy_carriers, dispatch)
@@ -791,6 +807,7 @@ def evaluate_dispatch_per_group(
     conventional_generation = conventional_generation.set_index("new_time_step")
 
     for group in conventional_generation.groupby("AgentId"):
+        agent_capped_revenue[group[0]] = calc_capped_revenue(group[1], power_prices, strike_price)
         dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
 
     # Ensure data set is sorted by agent ids in increasing order
@@ -807,7 +824,17 @@ def evaluate_dispatch_per_group(
 
     dispatch.reset_index(drop=True, inplace=True)
 
-    return dispatch, final_storage_levels
+    return {
+        "generation_per_group": dispatch,
+        "capped_revenues_per_plant": agent_capped_revenue.reset_index(drop=True),
+        "final_storage_levels": final_storage_levels,
+    }
+
+
+def prepare_power_prices(exchange_results: pd.DataFrame, exchange_offset: int = 3):
+    """Extract and return power prices from energy exchange results"""
+    exchange_results["new_time_step"] = exchange_results["TimeStep"] - exchange_offset
+    return exchange_results.set_index("new_time_step")["ElectricityPriceInEURperMWH"]
 
 
 def initialize_dispatch(dispatch_df) -> pd.DataFrame:
@@ -843,3 +870,9 @@ def extract_generation_by_energy_carrier(
             dispatch[energy_carrier] += group[1]["AwardedPowerInMWH"]
 
     return dispatch
+
+
+def calc_capped_revenue(generation: pd.DataFrame, power_prices: pd.DataFrame, strike_price: float):
+    """Returns a series with the minimum of award * power_price and award * strike_price per hour"""
+    price = np.where(power_prices > strike_price, strike_price, power_prices)
+    return generation["AwardedPowerInMWH"] * price
