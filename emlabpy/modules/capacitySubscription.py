@@ -45,7 +45,7 @@ class CapacitySubscriptionClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-        clearing_price, total_supply_volume,oversubscribed = self.capacity_subscription_clearing(sorted_ppdp,
+        clearing_price, total_supply_volume = self.capacity_subscription_clearing(sorted_ppdp,
                                                                                                  capacity_market_year)
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
