@@ -215,20 +215,12 @@ workflow:
 
   - action:
       project: general
-      call: parse_excel
-      data:
-        read_from_dmgr: null
-        write_to_dmgr: capacity_remuneration
-      args:
-        excelFile: amiris_data_structure.xlsx
-        excelSheet: capacity_remuneration
-        excelHeader: False
-
-  - action:
-      project: general
       call: aggregate_results
       data:
-        read_from_dmgr: [renewables_energy_carriers, capacity_remuneration]
+        read_from_dmgr:
+          - renewables_energy_carriers
+          - renewables
+          - powerPlants
         write_to_dmgr: all_outputs_per_agent
       args:
         write: True

@@ -266,12 +266,11 @@ def aggregate_results(data_manager, config, params):
     """Calculate refinancing-related results for AMIRIS agents"""
     folder_name = config["user"]["global"]["output"]["pbOutputRaw"]
     renewables_energy_carriers = data_manager["renewables_energy_carriers"]
-    try:
-        strike_price = data_manager["capacity_remuneration"].iloc[0, 1]
-    except IndexError:
-        strike_price = None
+    renewables = data_manager["renewables"]
+    power_plants = data_manager["powerPlants"]
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
+    generation_per_plant = pd.DataFrame  # Safeguard if no conventionals are in the system
     to_concat = []
     conventional_series = []
     residual_load_results = {}
@@ -327,6 +326,8 @@ def aggregate_results(data_manager, config, params):
                 "DispatchedPowerInMWHperPlant": AmirisOutputs.PRODUCTION_IN_MWH.name,
             }
             column = CONVENTIONAL_AGENT_RESULTS[file_name]
+            if column == "DispatchedPowerInMWHperPlant":
+                generation_per_plant = conventional_df.copy()
             column_per_plant = sum_per_plant(conventional_df, column, column_names[column])
             conventional_series.append(column_per_plant)
 
@@ -355,9 +356,11 @@ def aggregate_results(data_manager, config, params):
         operator_results,
         conventional_results_grouped,
         residual_load_results[DEMAND[0]],
+        renewables,
+        power_plants,
+        generation_per_plant,
         renewables_energy_carriers,
         exchange_results,
-        strike_price,
     )
     generation_per_group = dispatch_and_capped_revenues["generation_per_group"]
     capped_revenues_per_plant = dispatch_and_capped_revenues["capped_revenues_per_plant"]
