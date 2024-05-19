@@ -255,7 +255,7 @@ class CreatingFinancialReports(DefaultModule):
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            avoided_costs_non_subscription =   average_LOLE_unsubscribed * consumer.WTP     # H * Eur/MWH = Eur/MW
+            avoided_costs_non_subscription =   consumer.WTP  #*  average_LOLE_unsubscribed    # H * Eur/MWH = Eur/MW
             """
             estimating bids with intertia
             In the first year the bid is the avoided costs
