@@ -18,9 +18,6 @@ class DemandCurve:
         left_index = np.searchsorted(self.consumers_volume, x, side='right') - 1
         # If x is smaller than the smallest consumer volume, return the corresponding y value
 
-        if x > 17000:
-            print("here")
-
         if left_index == -1:
             return self.consumers_prices[0], False
         # If x is larger than the largest consumer volume, return the corresponding y value
@@ -123,4 +120,4 @@ class CapacitySubscriptionClearingLinear(MarketModule):
         print("total_supply_volume", total_supply_volume)
         # from plots.test_linear_market import plot_CS_linear
         # plot_CS_linear( supply_volumes, supply_prices, consumers_volume, consumers_prices, clearing_price, total_supply_volume, equilibriumprices )
-        # return clearing_price, total_supply_volume
+        return clearing_price, total_supply_volume
