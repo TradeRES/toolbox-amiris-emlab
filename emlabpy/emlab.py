@@ -13,6 +13,7 @@ Jim Hommes - 25-3-2021
 import logging
 import time
 
+from modules.capacitySubscription import CapacitySubscriptionClearing
 from modules.payLoans import PayForLoansRole
 from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports
@@ -189,7 +190,7 @@ try:  # Try statement to always close DB properly
         if reps.capacity_remuneration_mechanism == "capacity_subscription":
             print('Start capacity subscription')
             capacity_market_submit_bids = CapacityMarketSubmitBids(reps, long_term=False)
-            capacity_subscription_clear = CapacitySubscriptionClearingLinear(reps)
+            capacity_subscription_clear = CapacitySubscriptionClearing(reps)
             capacity_market_submit_bids.act_and_commit()
             capacity_subscription_clear.act_and_commit()
             print('Start capacity subscription')

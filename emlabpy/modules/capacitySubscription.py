@@ -20,7 +20,7 @@ class DemandCurve:
             if numero == (len(self.sorted_demand) - 1):
                 last_demand = True
 
-            demand_price = demand.price
+            demand_price = demand.bid
             if demand.cummulative_quantity >= supply_volume:
                 break
         return demand_price, last_demand
