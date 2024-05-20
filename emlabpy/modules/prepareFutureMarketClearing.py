@@ -70,7 +70,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
             uniquepp = self.power_plants_list[0]
             if reps.investmentIteration == 0:
                 # in the first iteration: test realitist capacity if there is only one power plant
-                uniquepp.capacity = uniquepp.capacityRealistic
+                uniquepp.capacity = uniquepp.capacityTobeInstalled
                 self.reps.dbrw.stage_last_testing_technology(True)
             else:
                 year_iteration = str(reps.current_year + self.look_ahead_years) + "-" + str(reps.investmentIteration -1)
@@ -79,7 +79,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
                 print(NPV_last_investment_decision)
                 if NPV_last_investment_decision< 10000:
                     print("last investment decision")
-                    uniquepp.capacity = uniquepp.capacityRealistic
+                    uniquepp.capacity = uniquepp.capacityTobeInstalled
                     self.reps.dbrw.stage_last_testing_technology(True)
                 else:
                     if reps.investmentIteration == 1:

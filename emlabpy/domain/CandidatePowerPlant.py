@@ -26,7 +26,7 @@ class CandidatePowerPlant(PowerPlant):
         self.flagOutputChanged = True
         self.capacity = 1 # all power plants are first tested for a capacity of 1 # capacity is the one being tested
         self.capacityTobeInstalled = 0
-        self.capacityRealistic = 1
+
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         if parameter_name == 'Id':
@@ -38,7 +38,6 @@ class CandidatePowerPlant(PowerPlant):
             self.viableInvestment = bool(parameter_value)
         # capacityTobeInstalled is the one being really installed, after the test of dummy capacity has been tested
         elif parameter_name == "Realistic_capacity":
-            self.capacityRealistic = int(parameter_value)
             if reps.last_investable_technology == True:
                 self.capacityTobeInstalled = int(parameter_value)
                 self.capacity = int(parameter_value)
