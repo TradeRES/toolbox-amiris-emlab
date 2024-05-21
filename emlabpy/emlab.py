@@ -13,6 +13,7 @@ Jim Hommes - 25-3-2021
 import logging
 import time
 
+from modules.capacitySubscription import CapacitySubscriptionClearing
 from modules.payLoans import PayForLoansRole
 from modules.short_invest import ShortInvestmentdecision
 from modules.makefinancialreports import CreatingFinancialReports

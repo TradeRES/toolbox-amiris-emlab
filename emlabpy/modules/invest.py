@@ -6,7 +6,9 @@ import os
 import logging
 import math
 from modules.capacitymarket import CapacityMarketClearing, calculate_cone
+from modules.capacitySubscriptionlinear import *
 from modules.capacitySubscription import *
+
 from datetime import datetime
 import shutil
 
@@ -98,13 +100,10 @@ class Investmentdecision(DefaultModule):
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:  # the installed power plants are filtered in the prepare futur market clearing file
             pp = self.reps.get_power_plant_by_id(pp_id)
             self.pp_dispatched_names.append(pp.name)
-            # pp_dispatched_ids.append(pp_id)
-            # pp_profits.append(pp.operationalProfit)
             profits.append(pp.operationalProfit)
             names.append(pp_id)
 
         self.pp_profits = pd.DataFrame([profits], columns=names)
-        # self.calculate_capacity_market_price()
 
         if self.first_run == True:
             """
@@ -592,9 +591,9 @@ class Investmentdecision(DefaultModule):
             else:
                 print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
 
-        if long_term == True:
-            candidates_and_existing = candidates_and_existing + self.investable_candidate_plants
 
+        candidates_and_existing = candidates_and_existing + self.investable_candidate_plants
+        candidates_ids = self.reps.get_ids_of_plants(self.investable_candidate_plants)
         for powerplant in candidates_and_existing:
             price_to_bid = 0
             operatingProfit = powerplant.get_Profit()  # for installed capacity
@@ -615,7 +614,7 @@ class Investmentdecision(DefaultModule):
             new power plants bid their loans, which is what they need in long term. 
             existing plants only bid their missing money
             """
-            if powerplant.age <= -self.look_ahead_years:
+            if powerplant.age <= -self.look_ahead_years or powerplant.id in candidates_ids:
                 net_revenues = operatingProfit - fixed_on_m_cost - pending_loan
             else:
                 net_revenues = operatingProfit - fixed_on_m_cost

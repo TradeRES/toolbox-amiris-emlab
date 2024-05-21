@@ -596,6 +596,7 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     fig19 = axs19.get_figure()
     fig19.savefig(path_to_plots + '/' + 'Annual Consumption per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
+    return all_techs_generation_nozeroes
 
 
 def plot_supply_ratio(supply_ratio, residual_load, yearly_load, path_to_plots):
@@ -2323,7 +2324,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
     plot_full_load_hours_values(all_techs_full_load_hours.T, path_to_plots, renewable_technologies, colors_unique_techs)
     plot_yearly_average_electricity_prices_and_RES_share(average_electricity_price, share_RES, path_to_plots)
-    plot_annual_generation(all_techs_generation.T, all_techs_consumption.T, path_to_plots, technology_colors,
+    all_techs_generation_nozeroes = plot_annual_generation(all_techs_generation.T, all_techs_consumption.T, path_to_plots, technology_colors,
                            )
 
     # section ---------------------------------------------------------------Cash energy producer
@@ -2478,14 +2479,15 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         ShareRES_data = pd.read_excel(path_to_results, sheet_name='ShareRES', index_col=0)
         last_year_operational_capacity_data = pd.read_excel(path_to_results, sheet_name='last_year_capacity',
                                                             index_col=0)
+        median_annual_production_data = pd.read_excel(path_to_results, sheet_name='median_annual_production',
+                                                            index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
         AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology',   index_col=0)
         Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
         Overall_NPV_data = pd.read_excel(path_to_results, sheet_name='overallNPV', index_col=0)
         Overall_IRR_data = pd.read_excel(path_to_results, sheet_name='overallIRR', index_col=0)
         IRRS_yearly_data = pd.read_excel(path_to_results, sheet_name='yearlyIRRs', index_col=0)
-
-
+        consumers_data =  pd.read_excel(path_to_results, sheet_name='consumers', index_col=0)
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
@@ -2525,6 +2527,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         df = profits_with_loans_all.iloc[:-1]
         df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
         Profits_with_loans_data = pd.concat([Profits_with_loans_data, df], axis=1)
+
+
+        subscribed_sorted.at["scenario_name", :] = scenario_name
+        last_row = subscribed_sorted.iloc[-1]
+        df = subscribed_sorted.iloc[:-1]
+        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
+        consumers_data = pd.concat([consumers_data, df], axis=1)
+
 
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
@@ -2571,6 +2581,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             VRES_data[scenario_name] = average_electricity_price['VRES support']
         last_year_operational_capacity_data[scenario_name] = all_techs_capacity.loc[years_to_generate[-1]].T
         print("last year " + str(years_to_generate[-1]))
+        median_annual_production_data[scenario_name] = all_techs_generation_nozeroes.loc[years_to_generate[-1]].T
 
         with pd.ExcelWriter(path_to_results,
                             mode="a",
@@ -2600,7 +2611,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             Dismantled_capacity_data.to_excel(writer, sheet_name='Dismantled')
             Profits_with_loans_data.to_excel(writer, sheet_name='Profits')
             total_subscribed_consumers.to_excel(writer, sheet_name='subscribedCons')
-
+            consumers_data.to_excel(writer, sheet_name='consumers')
             if calculate_capacity_mechanisms == True:
                 CRM_data.to_excel(writer, sheet_name='CRM')
                 clearing_price_capacity_market_data.to_excel(writer, sheet_name='CM_clearing_price')
@@ -2611,6 +2622,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 VRES_data.to_excel(writer, sheet_name='VRES')
             ShareRES_data.to_excel(writer, sheet_name='ShareRES')
             last_year_operational_capacity_data.to_excel(writer, sheet_name='last_year_capacity')
+            median_annual_production_data.to_excel(writer, sheet_name='median_annual_production')
             writer.save()
 
     # section -----------------------------------------------------------------------------------------------Capacity Markets
@@ -2947,10 +2959,13 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS = ["final-EOM", "final-CM", "final-LTCM", "final-CS_fix", "final-CS" , "final-SR" ]
-    #SCENARIOS = [ "final-SR"  ]
+    # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
+    #SCENARIOS = ["final-EOM", "final-SR1300", "final-SRy_4" ]
+    SCENARIOS = ["NL-CS_includecandid_interrupted"]
+   #  SCENARIOS = [ "final-EOM" , "final-SR1300" , "final-SR1500" , "final-SR4000" ]
+   #  SCENARIOS = [ "CS-2" ]
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
-    results_excel = "final.xlsx"
+    results_excel = "comparisonSRyears.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
     existing_scenario = True

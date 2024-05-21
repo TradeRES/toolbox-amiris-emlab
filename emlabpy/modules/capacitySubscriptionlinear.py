@@ -13,24 +13,25 @@ class DemandCurve:
         self.consumers_prices = consumers_prices
         self.consumers_volume = consumers_volume
 
-    def get_demand_price(self, x):
+    def get_demand_price(self, x) :
         # print("-----------------------------------" + str(cummulative_supply))
         left_index = np.searchsorted(self.consumers_volume, x, side='right') - 1
         # If x is smaller than the smallest consumer volume, return the corresponding y value
+
         if left_index == -1:
-            return self.consumers_prices[0]
+            return self.consumers_prices[0], False
         # If x is larger than the largest consumer volume, return the corresponding y value
         if left_index == len(self.consumers_volume) - 1:
-            return 0
+            return self.consumers_prices[-1], True
         #  return y_values[-1]
         # Interpolate between the nearest x values
         x_left, x_right = self.consumers_volume[left_index], self.consumers_volume[left_index + 1]
         y_left, y_right = self.consumers_prices[left_index], self.consumers_prices[left_index + 1]
         slope = (y_right - y_left) / (x_right - x_left)
-        return y_left + slope * (x - x_left)
+        return y_left + slope * (x - x_left), False
 
 
-class CapacitySubscriptionClearing(MarketModule):
+class CapacitySubscriptionClearingLinear(MarketModule):
     """
     After a capacity market has been cleared, the accepted bids are cleared and the revenues are staged.
     """
@@ -75,35 +76,48 @@ class CapacitySubscriptionClearing(MarketModule):
             print(consumer.name +";"+ str(total_subscribed_volume) + ";" + str(consumer.bid))
             consumers_prices.append(consumer.bid)
             consumers_volume.append(total_subscribed_volume)
-        dc = DemandCurve( consumers_prices,consumers_volume  ) # price cap is set as the WTP of the most expensive consumer
+        dc = DemandCurve( consumers_prices, consumers_volume  ) # price cap is set as the WTP of the most expensive consumer
 
         clearing_price = 0
         total_supply_volume = 0
         cummulative_supply = 0
+        supply_volumes = []
+        supply_prices = []
+        # equilibriumprices = [] # todelete
+
         for num, supply_bid in enumerate(sorted_supply):
             # As long as the market is not cleared
             cummulative_supply = supply_bid.amount + cummulative_supply
-            if supply_bid.price <= dc.get_demand_price( cummulative_supply):
-                clearing_price =  dc.get_demand_price( total_supply_volume)
+            supply_volumes.append(cummulative_supply)
+            supply_prices.append(supply_bid.price)
+            demand_price , isnotlast = dc.get_demand_price(cummulative_supply)
+            last_demand_price , is_last_demand = dc.get_demand_price( supply_volumes[num-1])
+
+            if supply_bid.price <= demand_price: # not crossed line, price set by demand
+                total_supply_volume += supply_bid.amount
+                clearing_price =  demand_price
+                supply_bid.accepted_amount = supply_bid.amount
+                supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
+
+                if is_last_demand == True: # last demand, price set by supply
+                    clearing_price = sorted_supply.price
+                    print("last demand and not crossed line, clearing price is last supply price")
+                    break
+                # equilibriumprices.append(clearing_price) # todelete
+
+            elif supply_bid.price < last_demand_price: # crossed line, price set by supply
+                clearing_price = supply_bid.price
                 total_supply_volume += supply_bid.amount
                 supply_bid.accepted_amount = supply_bid.amount
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
-            elif supply_bid.price < dc.get_demand_price( total_supply_volume):
-                clearing_price = dc.get_demand_price( cummulative_supply)
-                if clearing_price == 0:
-                    clearing_price = sorted_supply[num-1].price
-                else:
-                    total_supply_volume += supply_bid.amount
-                    supply_bid.accepted_amount = supply_bid.amount
-                    supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
+                # equilibriumprices.append(clearing_price) # todelete
                 break
-            else:
-                clearing_price = dc.get_demand_price( cummulative_supply)  # price set by demand
+            else: # crossed line from the beginning, clearing price is zero
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_failed
                 supply_bid.accepted_amount = 0
                 break
         print("clearing_price", clearing_price)
         print("total_supply_volume", total_supply_volume)
-        # from plots.testclearmarket import plot_CS_market
-        # plot_CS_market(sorted_supply, sorted_demand, clearing_price, total_supply_volume)
+        # from plots.test_linear_market import plot_CS_linear
+        # plot_CS_linear( supply_volumes, supply_prices, consumers_volume, consumers_prices, clearing_price, total_supply_volume, equilibriumprices )
         return clearing_price, total_supply_volume
