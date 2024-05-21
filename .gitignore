@@ -28,6 +28,7 @@ temporal_results/*
 data/powerplantsGermany/
 data/competesdata/
 data/traderes/
+data/Analysis/*
 emlabpy/Yearly_results.xlsx
 emlabpy/plots/Scenarios/
 emlabpy/util/plots/
@@ -132,3 +133,5 @@ amiris_workflow/amiris-config/data/future_LS_six.csv
 amiris_workflow/amiris-config/data/future_LS_three.csv
 amiris_workflow/amiris-config/data/future_LS_two.csv
 *.csv
+data/Analysis/CS.xlsx
+data/Analysis/NPV.xlsx
