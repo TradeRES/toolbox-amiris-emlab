@@ -727,9 +727,11 @@ def evaluate_dispatch_and_capped_revenues(
     operator_results: Dict,
     conventional_results: pd.DataFrame,
     demand_results: pd.DataFrame,
+    renewables: pd.DataFrame,
+    power_plants: pd.DataFrame,
+    generation_per_plant: pd.DataFrame,
     renewables_energy_carriers: pd.DataFrame = None,
     exchange_results: pd.DataFrame = None,
-    strike_price: float = None,
     operators_offset: int = 5,
     trader_offset: int = 4,
     demand_offset: int = 1,
@@ -745,17 +747,16 @@ def evaluate_dispatch_and_capped_revenues(
     dispatch = pd.DataFrame()
     agent_capped_revenue = pd.DataFrame()
     power_prices = prepare_power_prices(exchange_results)
-    if strike_price is None:
-        warnings.warn("You did not specify a strike price! Using '4000' (i.e. not effective) as a default.")
-        strike_price = 4000
+    warning_raised = False
     for key, val in operator_results.items():
         if key in ["Biogas", "VariableRenewableOperator"]:
             operator_results = val.loc[val["AwardedPowerInMWH"].notna()]
-            operator_results["new_time_step"] = operator_results["TimeStep"] - operators_offset
-            operator_results = operator_results.set_index("new_time_step")
+            operator_results = correct_time_by_output_offset(operator_results, -operators_offset)
             if dispatch.empty:
                 dispatch = initialize_dispatch(operator_results)
             for group in operator_results.groupby("AgentId"):
+                strike_price = extract_strike_price_for(group[0], renewables, warning_raised)
+                warning_raised = True
                 agent_capped_revenue[group[0]] = calc_capped_revenue(group[1], power_prices, strike_price)
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
             if key == "VariableRenewableOperator":
@@ -770,8 +771,7 @@ def evaluate_dispatch_and_capped_revenues(
                     "StoredEnergyInMWH",
                 ]
             ].dropna()
-            storage_results["new_time_step"] = storage_results["TimeStep"] - trader_offset
-            storage_results = storage_results.set_index("new_time_step")
+            storage_results = correct_time_by_output_offset(storage_results, -trader_offset)
             if dispatch.empty:
                 dispatch = initialize_dispatch(storage_results)
 
@@ -793,8 +793,7 @@ def evaluate_dispatch_and_capped_revenues(
                     "ProducedHydrogenInMWH",
                 ]
             ].dropna()
-            electrolysis_results["new_time_step"] = electrolysis_results["TimeStep"] - trader_offset
-            electrolysis_results = electrolysis_results.set_index("new_time_step")
+            electrolysis_results = correct_time_by_output_offset(electrolysis_results, -trader_offset)
             if dispatch.empty:
                 dispatch = initialize_dispatch(electrolysis_results)
 
@@ -803,20 +802,25 @@ def evaluate_dispatch_and_capped_revenues(
                 dispatch["electrolysis_hydrogen_generation"] += group[1]["ProducedHydrogenInMWH"]
 
     conventional_generation = conventional_results[["TimeStep", "AgentId", "AwardedPowerInMWH"]].dropna()
-    conventional_generation["new_time_step"] = conventional_generation["TimeStep"] - operators_offset
-    conventional_generation = conventional_generation.set_index("new_time_step")
+    conventional_generation = correct_time_by_output_offset(conventional_generation, -operators_offset)
 
     for group in conventional_generation.groupby("AgentId"):
-        agent_capped_revenue[group[0]] = calc_capped_revenue(group[1], power_prices, strike_price)
         dispatch["conventionals"] += group[1]["AwardedPowerInMWH"]
+
+    generation_per_plant = correct_time_by_output_offset(generation_per_plant, -operators_offset)
+    for group in generation_per_plant.groupby("ID"):
+        strike_price = extract_strike_price_for(group[0], power_plants, warning_raised)
+        warning_raised = True
+        agent_capped_revenue[group[0]] = calc_capped_revenue(
+            group[1], power_prices, strike_price, col_name="DispatchedPowerInMWHperPlant"
+        )
 
     # Ensure data set is sorted by agent ids in increasing order
     demand_results = demand_results.sort_values(by=["AgentId", "TimeStep"])
     demand_results["AwardedEnergyInMWH"].fillna(method="bfill", inplace=True)
     demand_dispatch = demand_results.dropna()
     demand_dispatch["Shedding"] = demand_dispatch["RequestedEnergyInMWH"] - demand_dispatch["AwardedEnergyInMWH"]
-    demand_dispatch["new_time_step"] = demand_dispatch["TimeStep"] + demand_offset
-    demand_dispatch = demand_dispatch.set_index("new_time_step")
+    demand_dispatch = correct_time_by_output_offset(demand_dispatch, demand_offset)
 
     for group in demand_dispatch.groupby("AgentId"):
         dispatch["load_shedding"] += group[1]["Shedding"]
@@ -831,7 +835,13 @@ def evaluate_dispatch_and_capped_revenues(
     }
 
 
-def prepare_power_prices(exchange_results: pd.DataFrame, exchange_offset: int = 3):
+def correct_time_by_output_offset(data_set: pd.DataFrame, offset: int):
+    """Return data set, but shifted by output offset"""
+    data_set["new_time_step"] = data_set["TimeStep"] + offset
+    return data_set.set_index("new_time_step")
+
+
+def prepare_power_prices(exchange_results: pd.DataFrame, exchange_offset: int = 3) -> pd.DataFrame:
     """Extract and return power prices from energy exchange results"""
     exchange_results["new_time_step"] = exchange_results["TimeStep"] - exchange_offset
     return exchange_results.set_index("new_time_step")["ElectricityPriceInEURperMWH"]
@@ -872,7 +882,23 @@ def extract_generation_by_energy_carrier(
     return dispatch
 
 
-def calc_capped_revenue(generation: pd.DataFrame, power_prices: pd.DataFrame, strike_price: float):
+def extract_strike_price_for(agent_id: int, data_set: pd.DataFrame, warning_raised: bool = True) -> float:
+    """Extract strike price for a given unit from given data set. Raise warning if not yet done before."""
+    strike_price = data_set.loc[data_set["identifier"] == agent_id, "strike_price"].item()
+    if math.isnan(strike_price):
+        if not warning_raised:
+            warnings.warn("Strike price not defined for at least one plant. Assuming 4,000 €/MWh for missing entries.")
+        strike_price = 4000
+
+    return strike_price
+
+
+def calc_capped_revenue(
+    generation: pd.DataFrame, power_prices: pd.DataFrame, strike_price: float, col_name: str = "AwardedPowerInMWH"
+) -> pd.Series:
     """Returns a series with the minimum of award * power_price and award * strike_price per hour"""
     price = np.where(power_prices > strike_price, strike_price, power_prices)
-    return generation["AwardedPowerInMWH"] * price
+    if len(generation) < len(price):
+        generation = generation.reindex(power_prices.index)
+        generation.loc[generation["DispatchedPowerInMWHperPlant"].isna(), "DispatchedPowerInMWHperPlant"] = 0
+    return generation[col_name] * price
