@@ -587,9 +587,11 @@ class Investmentdecision(DefaultModule):
             unless they are finished with their long term contract
             """
             if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
-                candidates_and_existing.append(powerplant)
+                if powerplant.technology.deratingFactor >0:
+                    candidates_and_existing.append(powerplant)
             else:
-                print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
+                pass
+                # print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
 
 
         candidates_and_existing = candidates_and_existing + self.investable_candidate_plants

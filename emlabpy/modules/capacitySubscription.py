@@ -66,10 +66,13 @@ class CapacitySubscriptionClearing(MarketModule):
             total_subscribed_volume += consumer.subscribed_yearly[self.reps.current_tick] * peak_load
             consumer.cummulative_quantity = total_subscribed_volume
             print(consumer.name +";"+ str(total_subscribed_volume) + ";" + str(consumer.bid))
-
+        print("--------------------sorted_supply-------------------")
+        total_volume = 0
         for i, supply in enumerate(sorted_supply):
-            total_subscribed_volume += supply.amount
-            supply.cummulative_quantity = total_subscribed_volume
+            total_volume += supply.amount
+            supply.cummulative_quantity = total_volume
+            print(str(total_volume) + ";" + str(supply.price))
+
         clearing_price = 0
         total_supply_volume = 0
 
@@ -92,7 +95,7 @@ class CapacitySubscriptionClearing(MarketModule):
                 supply_bid.accepted_amount = supply_bid.amount
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
 
-                if is_last_demand == True: # last demand, price set by supply
+                if is_last_demand == True and total_supply_volume > sorted_consumers[-1].cummulative_quantity: # last demand, price set by supply
                     clearing_price = supply_bid.price
                     print("last demand and not crossed line, clearing price is last supply price")
                     break

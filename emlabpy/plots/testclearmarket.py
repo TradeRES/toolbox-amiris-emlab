@@ -84,9 +84,8 @@ def clear_market(sorted_supply, sorted_demand):
             print("not crossed the line")
             total_supply_volume += supply.amount
             clearing_price = demand_price
-
             equilibriumprices.append(clearing_price)
-            if is_last_demand == True:
+            if is_last_demand == True and total_supply_volume > sorted_demand[-1].cummulative_quantity:
                 clearing_price = supply.price
                 print("last demand and not crossed line, clearing price is last supply price")
                 break
@@ -118,23 +117,23 @@ def example():
         Bid(price=24000, amount=1000)
     ]
 
-    # demand = [
-    #     Bid(price=51000, amount=5000),
-    #     Bid(price=46000, amount=5100),
-    #     Bid(price=36000, amount=4100),
-    #     Bid(price=26000, amount=2000),
-    #     Bid(price=22000, amount=2000),
-    #     Bid(price=18000, amount=2000),
-    #     Bid(price=17000, amount=2100),
-    # ]
-
-
     demand = [
-        Bid(price=0, amount=5000),
-        Bid(price=0, amount=5100),
-        Bid(price=0, amount=4100),
-
+        Bid(price=51000, amount=5000),
+        Bid(price=46000, amount=5100),
+        Bid(price=36000, amount=4100),
+        Bid(price=26000, amount=2000),
+        Bid(price=22000, amount=2000),
+        Bid(price=18000, amount=2000),
+        # Bid(price=17000, amount=2100),
     ]
+
+
+    # demand = [
+    #     Bid(price=0, amount=5000),
+    #     Bid(price=0, amount=5100),
+    #     Bid(price=0, amount=4100),
+    #
+    # ]
 
     sorted_supply = sorted(supply, key=lambda x: x.price, reverse=False)
     sorted_demand = sorted(demand, key=lambda x: x.price, reverse=True)

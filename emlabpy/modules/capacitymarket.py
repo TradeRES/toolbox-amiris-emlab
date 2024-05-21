@@ -40,6 +40,8 @@ class CapacityMarketSubmitBids(MarketModule):
             powerplant = self.reps.get_power_plant_by_id(pp_id)
             if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
                 pass
+            elif powerplant.technology.deratingFactor ==0:
+                pass
             else:
                 power_plants.append(powerplant)
 
@@ -72,11 +74,8 @@ class CapacityMarketSubmitBids(MarketModule):
 
         # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                if powerplant.technology.deratingFactor ==0:
-                    price_to_bid = 10000000
-                else:
-                    price_to_bid = -1 * net_revenues / \
-                                   (capacity * powerplant.technology.deratingFactor)
+                price_to_bid = -1 * net_revenues / \
+                               (capacity * powerplant.technology.deratingFactor)
             else:
                 pass  # if positive revenues price_to_bid remains 0
             """
