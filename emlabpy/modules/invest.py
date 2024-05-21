@@ -100,13 +100,10 @@ class Investmentdecision(DefaultModule):
         for pp_id in self.ids_of_future_installed_and_dispatched_pp:  # the installed power plants are filtered in the prepare futur market clearing file
             pp = self.reps.get_power_plant_by_id(pp_id)
             self.pp_dispatched_names.append(pp.name)
-            # pp_dispatched_ids.append(pp_id)
-            # pp_profits.append(pp.operationalProfit)
             profits.append(pp.operationalProfit)
             names.append(pp_id)
 
         self.pp_profits = pd.DataFrame([profits], columns=names)
-        # self.calculate_capacity_market_price()
 
         if self.first_run == True:
             """

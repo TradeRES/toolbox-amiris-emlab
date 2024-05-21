@@ -92,7 +92,7 @@ class CapacitySubscriptionClearing(MarketModule):
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
 
                 if is_last_demand == True: # last demand, price set by supply
-                    clearing_price = sorted_supply.price
+                    clearing_price = supply_bid.price
                     print("last demand and not crossed line, clearing price is last supply price")
                     break
                 # equilibriumprices.append(clearing_price) # todelete
