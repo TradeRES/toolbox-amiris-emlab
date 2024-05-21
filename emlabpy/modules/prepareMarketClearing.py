@@ -275,6 +275,8 @@ class PrepareMarket(DefaultModule):
         BlockSizeInMW = []
         InstalledPowerInMW = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
+        strike_price = []
+        plantsinCM = self.reps.get_power_plants_in_CM(self.tick)
         for pp in self.power_plants_list:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
@@ -287,9 +289,18 @@ class PrepareMarket(DefaultModule):
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
 
+                if self.reps.reliability_option_strike_price != None and plantsinCM != None:
+                    if pp.name in plantsinCM:
+                        strike_price.append(self.reps.reliability_option_strike_price)
+                    else:
+                        strike_price.append(None)
+                else:
+                    strike_price.append(None)
+
+
         d = {'identifier': identifier, 'FuelType': FuelType, 'OpexVarInEURperMWH': OpexVarInEURperMWH,
              'Efficiency': Efficiency, 'BlockSizeInMW': BlockSizeInMW,
-             'InstalledPowerInMW': InstalledPowerInMW}
+             'InstalledPowerInMW': InstalledPowerInMW, "strike_price": strike_price}
 
         df = pd.DataFrame(data=d)
         df.sort_values(by=['InstalledPowerInMW'], inplace=True)
@@ -305,7 +316,8 @@ class PrepareMarket(DefaultModule):
         Premium = []
         Lcoe = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
-
+        strike_price_renewables = []
+        plantsinCM = self.reps.get_power_plants_in_CM(self.tick)
         for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] != "Biogas":
@@ -322,9 +334,23 @@ class PrepareMarket(DefaultModule):
                 Premium.append("-")
                 Lcoe.append("-")
 
+
+
+                if self.reps.reliability_option_strike_price != None and plantsinCM != None:
+                    if pp.name in plantsinCM:
+                        strike_price_renewables.append(self.reps.reliability_option_strike_price)
+                    else:
+                        strike_price_renewables.append(None)
+                else:
+                    strike_price_renewables.append(None)
+
+
+
+
         d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
              'OpexVarInEURperMWH': OpexVarInEURperMWH,
-             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe}
+             'Set': Set, 'SupportInstrument': SupportInstrument, 'FIT': FIT, 'Premium': Premium, 'Lcoe': Lcoe,
+             "strike_price": strike_price_renewables}
 
         df = pd.DataFrame(data=d)
         df.to_excel(self.writer, sheet_name="renewables")

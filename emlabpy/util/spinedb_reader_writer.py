@@ -172,8 +172,8 @@ class SpineDBReaderWriter:
                 reps.round_for_capacity_market_y_1 = bool(row['parameter_value'])
             elif row['parameter_name'] == 'change_IRR':
                 reps.change_IRR= bool(row['parameter_value'])
-            elif row['parameter_name'] == 'factor_fromVOLL':
-                reps.factor_fromVOLL = float(row['parameter_value'])
+            elif row['parameter_name'] == 'reliability_option_SP':
+                reps.reliability_option_SP = row['parameter_value']
 
 
         # these are the years that need to be added to the power plants on the first simulation tick
@@ -250,6 +250,14 @@ class SpineDBReaderWriter:
                                             ('Price', mcp.price),
                                             ('Tick', mcp.tick),
                                             ('Volume', mcp.volume)], "0")
+
+    def stage_plants_in_CM(self, plantsinCM, tick):
+        self.stage_object_class('plantsinCM')
+        self.stage_object_parameter('plantsinCM', 'plantsinCM')
+        self.stage_object('plantsinCM', str(tick))
+        self.stage_object_parameter_values('plantsinCM', str(tick),
+                                           [('plantsinCM', plantsinCM)], "0")
+
 
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)
@@ -1062,6 +1070,8 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
                 setattr(pp.downpayment, parameter_name, parameter_value)
     elif object_class_name == 'FinancialReports' :
         add_parameter_value_to_repository(reps, db_line, reps.financialPowerPlantReports, FinancialPowerPlantReport)
+    elif object_class_name == 'plantsinCM' :
+        add_parameter_value_to_repository(reps, db_line, reps.plantsinCM, PlantsinCM)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.candidatesNPV, CandidatesNPV)
     elif object_class_name == 'weatherYears' and reps.runningModule == "plotting":

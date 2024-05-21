@@ -72,8 +72,11 @@ class CapacityMarketSubmitBids(MarketModule):
 
         # if net revenues are negative, the bid price is the net revenues per mw of capacity
             if powerplant.get_actual_nominal_capacity() > 0 and net_revenues <= 0:
-                price_to_bid = -1 * net_revenues / \
-                               (capacity * powerplant.technology.deratingFactor)
+                if powerplant.technology.deratingFactor ==0:
+                    price_to_bid = 10000000
+                else:
+                    price_to_bid = -1 * net_revenues / \
+                                   (capacity * powerplant.technology.deratingFactor)
             else:
                 pass  # if positive revenues price_to_bid remains 0
             """

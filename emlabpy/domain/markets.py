@@ -152,6 +152,8 @@ class CapacityMarket(Market):
             self.years_long_term_market = int(parameter_value)
         elif parameter_name == 'allowed_technologies':
             self.allowed_technologies_capacity_market = parameter_value.split(",")
+        elif parameter_name == 'plantsinCM':
+            self.plantsinCM = parameter_value
         else:
             setattr(self, parameter_name, parameter_value)
 
@@ -159,6 +161,16 @@ class CapacityMarket(Market):
         return SlopingDemandCurve(self.InstalledReserveMargin,
                                   self.LowerMargin,
                                   self.UpperMargin, target_volume, self.PriceCap)
+
+class PlantsinCM(Market):
+    """"""
+
+    def __init__(self, name: str):
+        """"""
+        super().__init__(name)
+        self.plantsinCM = []
+    def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
+        setattr(self, parameter_name, parameter_value)
 
 
 class Cone(ImportObject):

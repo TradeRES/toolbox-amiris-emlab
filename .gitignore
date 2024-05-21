@@ -31,6 +31,7 @@ data/traderes/
 data/Analysis/*
 emlabpy/Yearly_results.xlsx
 emlabpy/plots/Scenarios/
+!emlabpy/plots/Scenarios/ScenariosComparisonTEMPLATE.xlsx
 emlabpy/util/plots/
 emlabpy/logs
 data/competes/*

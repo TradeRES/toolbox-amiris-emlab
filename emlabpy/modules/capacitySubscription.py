@@ -44,14 +44,15 @@ class CapacitySubscriptionClearing(MarketModule):
                                                                                                  capacity_market_year)
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
+        plantsinCM = []
         for accepted in accepted_supply_bid:
             amount = accepted.accepted_amount * clearing_price
             self.reps.dbrw.stage_CM_revenues(accepted.plant, amount,
                                              [self.reps.current_tick + capacity_market.forward_years_CM])
-
+            plantsinCM.append(accepted.plant)
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.reps.current_tick + capacity_market.forward_years_CM)
-
+        self.reps.dbrw.stage_plants_in_CM(plantsinCM, self.reps.current_tick + capacity_market.forward_years_CM)
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
     def capacity_subscription_clearing(self, sorted_supply, capacity_market_year):

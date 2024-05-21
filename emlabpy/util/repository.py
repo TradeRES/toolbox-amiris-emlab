@@ -99,6 +99,8 @@ class Repository:
         self.hours_in_year = 8760
         self.change_IRR = False
         self.factor_fromVOLL = 1
+        self.reliability_option_strike_price = None
+
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -132,7 +134,7 @@ class Repository:
         self.investmentDecisions = dict()
         self.installedCapacity = dict()
         self.installedFuturePowerPlants = dict()
-
+        self.plantsinCM = dict()
         self.bigBank = BigBank("bank")
         self.manufacturer = PowerPlantManufacturer("manufacturer")
         self.decommissioned = dict()
@@ -140,7 +142,6 @@ class Repository:
         self.load = dict()
         self.emissions = dict()
         self.exports = dict()
-
         self.marketForSubstance = {}
         self.electricitySpotMarketForNationalGovernment = {}
         self.electricitySpotMarketForPowerPlant = {}
@@ -575,6 +576,12 @@ class Repository:
     def get_power_plant_by_name(self, name):
         try:
             return next(i for i in self.power_plants.values() if i.name == name)
+        except StopIteration:
+            return None
+
+    def get_power_plants_in_CM(self, tick):
+        try:
+            return next(i.plantsinCM for i in self.plantsinCM.values() if i.name == str(tick))
         except StopIteration:
             return None
 
