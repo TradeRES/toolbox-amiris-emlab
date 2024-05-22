@@ -939,7 +939,7 @@
         "AMIRIS DB": {
             "type": "Data Store",
             "description": "",
-            "x": -162.8191631193183,
+            "x": -160.59467656254643,
             "y": -483.75267981842717,
             "url": {
                 "dialect": "sqlite",
@@ -1026,6 +1026,10 @@
                 {
                     "type": "resource",
                     "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\hourly_generation_per_group.csv"
+                },
+                {
+                    "type": "literal",
+                    "arg": "C:\\toolbox-amiris-emlab\\amiris_workflow\\output\\capped_revenues_per_plant.csv"
                 }
             ],
             "kill_completed_processes": false,

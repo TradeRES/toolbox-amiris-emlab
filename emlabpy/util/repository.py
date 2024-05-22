@@ -99,7 +99,7 @@ class Repository:
         self.hours_in_year = 8760
         self.change_IRR = False
         self.factor_fromVOLL = 1
-        self.reliability_option_strike_price = None
+        self.reliability_option_strike_price = "NOTSET"
 
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()

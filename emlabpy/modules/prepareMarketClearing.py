@@ -20,7 +20,7 @@ class PrepareMarket(DefaultModule):
 
     def __init__(self, reps):
         super().__init__("Next year prices", reps)
-        self.tick = 0
+        self.simulation_tick = 0
         self.simulation_year = 0
         self.empty = None
         self.writer = None
@@ -66,7 +66,7 @@ class PrepareMarket(DefaultModule):
         self.power_plants_list.sort(key=lambda x: x.age)
 
     def setTimeHorizon(self):
-        self.tick = self.reps.current_tick
+        self.simulation_tick = self.reps.current_tick
         self.simulation_year = self.reps.current_year
 
     def setFuelPrices(self):
@@ -276,7 +276,7 @@ class PrepareMarket(DefaultModule):
         InstalledPowerInMW = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
         strike_price = []
-        plantsinCM = self.reps.get_power_plants_in_CM(self.tick)
+        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick)
         for pp in self.power_plants_list:
             if pp.technology.type == "ConventionalPlantOperator":
                 identifier.append(pp.id)
@@ -289,7 +289,7 @@ class PrepareMarket(DefaultModule):
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
 
-                if self.reps.reliability_option_strike_price != None and plantsinCM != None:
+                if self.reps.reliability_option_strike_price != "NOTSET" and plantsinCM != None:
                     if pp.name in plantsinCM:
                         strike_price.append(self.reps.reliability_option_strike_price)
                     else:
@@ -317,7 +317,7 @@ class PrepareMarket(DefaultModule):
         Lcoe = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
         strike_price_renewables = []
-        plantsinCM = self.reps.get_power_plants_in_CM(self.tick)
+        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick)
         for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] != "Biogas":
@@ -336,7 +336,7 @@ class PrepareMarket(DefaultModule):
 
 
 
-                if self.reps.reliability_option_strike_price != None and plantsinCM != None:
+                if self.reps.reliability_option_strike_price != "NOTSET" and plantsinCM != None:
                     if pp.name in plantsinCM:
                         strike_price_renewables.append(self.reps.reliability_option_strike_price)
                     else:

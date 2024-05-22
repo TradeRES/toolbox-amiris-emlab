@@ -173,7 +173,7 @@ class SpineDBReaderWriter:
             elif row['parameter_name'] == 'change_IRR':
                 reps.change_IRR= bool(row['parameter_value'])
             elif row['parameter_name'] == 'reliability_option_SP':
-                reps.reliability_option_SP = row['parameter_value']
+                reps.reliability_option_strike_price = row['parameter_value']
 
 
         # these are the years that need to be added to the power plants on the first simulation tick

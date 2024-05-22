@@ -254,7 +254,7 @@ class CreatingFinancialReports(DefaultModule):
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            avoided_costs_non_subscription =  consumer.WTP  *  average_LOLE_unsubscribed    # H * Eur/MWH = Eur/MW
+            avoided_costs_non_subscription =  consumer.WTP # *  average_LOLE_unsubscribed    # H * Eur/MWH = Eur/MW
             """
             estimating bids with intertia
             In the first year the bid is the avoided costs
@@ -268,6 +268,7 @@ class CreatingFinancialReports(DefaultModule):
             else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
                 bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
+
                 consumer.bid = bid
                 self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
                 """
@@ -282,7 +283,7 @@ class CreatingFinancialReports(DefaultModule):
                 elif capacity_market_price == 0 and bid !=0:
                     increase = 1
                 else:
-                    increase = (bid - capacity_market_price)/(capacity_market_price * 100)
+                    increase = (bid - capacity_market_price)/(capacity_market_price)
                 if pd.isna(increase):
                     raise Exception
                 print("increase" + str(increase) )
