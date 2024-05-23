@@ -78,7 +78,6 @@ class CreatingFinancialReports(DefaultModule):
             self.agent.CF_FIXEDOMCOST -= fixed_on_m_cost
 
             loans = powerplant.loan_payments_in_year + powerplant.downpayment_in_year
-            # todo: there are no downpayments because its only for operational plants
             # # attention: this is only to check
             # if powerplant.downpayment_in_year> 0:
             #     print("downpayment is paid during construction. why is it paid here")
@@ -254,7 +253,7 @@ class CreatingFinancialReports(DefaultModule):
         subscribed_percentage = []
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             print("--------------------------"+consumer.name)
-            avoided_costs_non_subscription =  consumer.WTP # *  average_LOLE_unsubscribed    # H * Eur/MWH = Eur/MW
+            avoided_costs_non_subscription =  consumer.WTP  *  average_LOLE_unsubscribed    # H * Eur/MWH = Eur/MW
             """
             estimating bids with intertia
             In the first year the bid is the avoided costs
@@ -267,8 +266,8 @@ class CreatingFinancialReports(DefaultModule):
 
             else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
-                bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
-
+                # bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
+                bid = avoided_costs_non_subscription
                 consumer.bid = bid
                 self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
                 """
