@@ -670,7 +670,7 @@ def plot_yearly_VRES_support(yearl_vres_support, path_to_plots):
 
 
 def plot_costs_to_society(average_electricity_price, costs_to_society, path_to_plots):
-    axs30 = average_electricity_price.plot.area()
+    axs30 = average_electricity_price.plot()
     axs30.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Total price', fontsize='medium')
@@ -682,7 +682,7 @@ def plot_costs_to_society(average_electricity_price, costs_to_society, path_to_p
     fig30 = axs30.get_figure()
     fig30.savefig(path_to_plots + '/' + 'average electrcity price.png', bbox_inches='tight', dpi=300)
 
-    axs31 = DispatchSystemCostInEUR.plot.area()
+    axs31 = DispatchSystemCostInEUR.plot()
     axs31.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Total price', fontsize='medium')
@@ -2057,9 +2057,6 @@ def prepare_subscribed_capacity():
     num_iterations = reps.current_tick
 
     for i in range(num_iterations):
-        print(i)
-        print(subscribed_sorted.iloc[i]* yearly_peak_demand.iloc[i] )
-        print( sorted_bids.iloc[i])
         axs40 = plt.plot( np.cumsum(subscribed_sorted.iloc[i]* yearly_peak_demand.iloc[i] ), \
                           sorted_bids.iloc[i], label = str(i),  color=plt.cm.inferno(i / num_iterations))
     plt.xlabel('Volume [MW]', fontsize='medium')
@@ -2434,7 +2431,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         LOLvoluntary_data = pd.read_excel(path_to_results, sheet_name='LOLvoluntary', index_col=0)
         LOL_data = pd.read_excel(path_to_results, sheet_name='LOL', index_col=0)
         ENS_data = pd.read_excel(path_to_results, sheet_name='ENS', index_col=0)
-        voluntaryENS_data = pd.read_excel(path_to_results, sheet_name='voluntaryENS', index_col=0)
         Inflexible_load = pd.read_excel(path_to_results, sheet_name='Inflexible_load', index_col=0)
         SupplyRatio_data = pd.read_excel(path_to_results, sheet_name='SupplyRatio', index_col=0)
         ElectricityPrices_data = pd.read_excel(path_to_results, sheet_name='ElectricityPrices', index_col=0)
@@ -2452,18 +2448,13 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         median_annual_production_data = pd.read_excel(path_to_results, sheet_name='median_annual_production',
                                                             index_col=0)
         NPVNewPlants_data = pd.read_excel(path_to_results, sheet_name='NPVNewPlants', index_col=0)
-        AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology',   index_col=0)
-        Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits', index_col=0)
         Overall_NPV_data = pd.read_excel(path_to_results, sheet_name='overallNPV', index_col=0)
         Overall_IRR_data = pd.read_excel(path_to_results, sheet_name='overallIRR', index_col=0)
-        IRRS_yearly_data = pd.read_excel(path_to_results, sheet_name='yearlyIRRs', index_col=0)
-        consumers_data =  pd.read_excel(path_to_results, sheet_name='consumers', header=[0,1], index_col=0)
         Installed_capacity_data = pd.read_excel(path_to_results, sheet_name='InstalledCapacity', index_col=0)
         Commissioned_capacity_data = pd.read_excel(path_to_results, sheet_name='Invested', index_col=0)
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
         Last_year_PDC_data = pd.read_excel(path_to_results, sheet_name='Last_year_pdc', index_col=0)
         costs_to_society_data = pd.read_excel(path_to_results, sheet_name='costs_to_society', index_col=0)
-
         total_subscribed_consumers = pd.read_excel(path_to_results, sheet_name='subscribedCons', index_col=0)
         total_subscribed_consumers[scenario_name]  = subscribed_sorted.sum(axis=1)
         costs_to_society_data[scenario_name]  = costs_to_society.sum(axis=1)
@@ -2473,41 +2464,34 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         df2 = pd.DataFrame(NPVNewPlants, columns=[scenario_name])
         NPVNewPlants_data = pd.concat([NPVNewPlants_data, df2], axis=1)
 
+        voluntaryENS_data = pd.read_excel(path_to_results, sheet_name='voluntaryENS', header=[0,1], index_col=0)
+        IRRS_yearly_data = pd.read_excel(path_to_results, sheet_name='yearlyIRRs', header=[0,1], index_col=0)
+        consumers_data =  pd.read_excel(path_to_results, sheet_name='consumers', header=[0,1], index_col=0)
+        AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology',   header=[0,1], index_col=0)
+        Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits',  header=[0,1], index_col=0)
+
         npvs_per_tech_per_MW = pd.DataFrame(npvs_per_tech_per_MW)
-        npvs_per_tech_per_MW.at["scenario_name", :] = scenario_name
-        last_row = npvs_per_tech_per_MW.iloc[-1]
-        df = npvs_per_tech_per_MW.iloc[:-1]
-        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
-        AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, df], axis=1)
+        multi_index = pd.MultiIndex.from_product([[scenario_name], npvs_per_tech_per_MW.columns], names=['scenario_name', "technology"])
+        npvs_per_tech_per_MW.columns = multi_index
+        AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, npvs_per_tech_per_MW],  axis=1)
 
         LS_pergroup= pd.DataFrame(load_shedded_per_group_MWh)
-        LS_pergroup.at["scenario_name", :] = scenario_name
-        last_row = LS_pergroup.iloc[-1]
-        df = LS_pergroup.iloc[:-1]
-        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
-        voluntaryENS_data = pd.concat([voluntaryENS_data, df], axis=1)
+        multi_index = pd.MultiIndex.from_product([[scenario_name], LS_pergroup.columns], names=['scenario_name', "technology"])
+        LS_pergroup.columns = multi_index
+        voluntaryENS_data = pd.concat([voluntaryENS_data, LS_pergroup],  axis=1)
 
-        irrs_per_tech_per_year.at["scenario_name", :] = scenario_name
-        last_row = irrs_per_tech_per_year.iloc[-1]
-        df = irrs_per_tech_per_year.iloc[:-1]
-        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
-        IRRS_yearly_data = pd.concat([IRRS_yearly_data, df], axis=1)
+        multi_index = pd.MultiIndex.from_product([[scenario_name], irrs_per_tech_per_year.columns], names=['scenario_name', "technology"])
+        irrs_per_tech_per_year.columns = multi_index
+        IRRS_yearly_data = pd.concat([IRRS_yearly_data, irrs_per_tech_per_year],  axis=1)
 
-        profits_with_loans_all.at["scenario_name", :] = scenario_name
-        last_row = profits_with_loans_all.iloc[-1]
-        df = profits_with_loans_all.iloc[:-1]
-        df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
-        Profits_with_loans_data = pd.concat([Profits_with_loans_data, df], axis=1)
-
+        multi_index = pd.MultiIndex.from_product([[scenario_name], profits_with_loans_all.columns], names=['scenario_name', "technology"])
+        profits_with_loans_all.columns = multi_index
+        Profits_with_loans_data = pd.concat([Profits_with_loans_data, profits_with_loans_all],  axis=1)
         #
-        # subscribed_sorted.at["scenario_name", :] = scenario_name
-        # last_row = subscribed_sorted.iloc[-1]
-        # df = subscribed_sorted.iloc[:-1]
-        # df = pd.concat([last_row.to_frame().T, df], ignore_index=True)
-        # consumers_data = pd.concat([consumers_data, df], axis=1)
-        multi_index = pd.MultiIndex.from_product([[scenario_name], subscribed_sorted.columns], names=['DataFrame', None])
-        subscribed_sorted.columns = multi_index
-        consumers_data = pd.concat([consumers_data, subscribed_sorted],  axis=1)
+        if subscribed_sorted.size>0:
+                multi_index = pd.MultiIndex.from_product([[scenario_name], subscribed_sorted.columns], names=['scenario_name', None])
+                subscribed_sorted.columns = multi_index
+                consumers_data = pd.concat([consumers_data, subscribed_sorted],  axis=1)
 
         if calculate_capacity_mechanisms == True:
             clearing_price_capacity_market_data = pd.read_excel(path_to_results, sheet_name='CM_clearing_price',
@@ -2934,18 +2918,16 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    # SCENARIOS = ["final-EOM", "final-SR143_15", "final-SR1390_15",  "final-SR1499_15"]
+    SCENARIOS = ["NL-SR_500_20y"]
     # SCENARIOS = ["final-EOM",  "final-CM_ES_VRES", "final-CM_ES", "final-CM"]
    # SCENARIOS = ["final-CS_newclearing"]
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["final-EOM",  "final-CM", "final-CS_fixprice_changeVol","final-SR143_15"]
-
-    SCENARIOS = ["final-EOM",  "final-CM", ]
-    results_excel = "test.xlsx"
+    results_excel = "comparisonSR4.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
