@@ -22,22 +22,37 @@ class StrategicReserveSubmitBids_ger(MarketModule):
 
     def act(self):
         # Retrieve every power plant in the active energy producer for the defined country
-        for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator .years_accepted_inSR_before_decommissioned ):
-            # Retrieve the active capacity market and power plant capacity
-            market = self.reps.get_capacity_market_for_plant(powerplant)
-            power_plant_capacity = powerplant.get_actual_nominal_capacity()
-            Bid  = self.reps.calculate_marginal_costs( powerplant, self.operator.forward_years_SR)
 
-            # Bid = powerplant.getActualFixedOperatingCost()
-            # if powerplant.age < powerplant.technology.expected_lifetime:
-            #     Bid += powerplant.getLoan().getAmountPerPayment()  # if power plant is reaches its lifetime it should not have anymore payments left
-            # Bid = Bid/powerplant.capacity
-            # variable_costs = powerplant.technology.get_variable_operating_by_time_series(powerplant.age + self.operator.forward_years_SR) # actually this could be raised to one year more
-            # Place bids on market only if plant is conventional (full capacity at cost price per MW)
-            if powerplant.technology.type == 'ConventionalPlantOperator':
-                self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
-                                                                           market, False, power_plant_capacity,
-                                                                           Bid, self.reps.current_tick)
+        for pp_id in self.reps.get_ids_of_future_installed_plants(self.operator.forward_years_SR + self.reps.current_tick):
+            powerplant = self.reps.get_power_plant_by_id(pp_id)
+
+
+            if self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.years_accepted_inSR_before_decommissioned, powerplant) == True:
+                # Retrieve the active capacity market and power plant capacity
+                if powerplant.id == 20400700026:
+                    print("here")
+                    print(powerplant.age)
+                    print(powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension)
+                    print(powerplant.age -self.operator.years_accepted_inSR_before_decommissioned)
+
+
+                market = self.reps.get_capacity_market_for_plant(powerplant)
+                power_plant_capacity = powerplant.get_actual_nominal_capacity()
+                Bid  = self.reps.calculate_marginal_costs( powerplant, self.operator.forward_years_SR)
+
+                # Bid = powerplant.getActualFixedOperatingCost()
+                # if powerplant.age < powerplant.technology.expected_lifetime:
+                #     Bid += powerplant.getLoan().getAmountPerPayment()  # if power plant is reaches its lifetime it should not have anymore payments left
+                # Bid = Bid/powerplant.capacity
+                # variable_costs = powerplant.technology.get_variable_operating_by_time_series(powerplant.age + self.operator.forward_years_SR) # actually this could be raised to one year more
+                # Place bids on market only if plant is conventional (full capacity at cost price per MW)
+                if powerplant.technology.type == 'ConventionalPlantOperator':
+                    self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent,
+                                                                               market, False, power_plant_capacity,
+                                                                               Bid, self.reps.current_tick)
+            else:
+                pass
+
 
 
 class StrategicReserveAssignment_ger(MarketModule):
@@ -88,6 +103,8 @@ class StrategicReserveAssignment_ger(MarketModule):
         for bid in sorted_ppdp:
             if self.reps.power_plants[bid.plant].status == globalNames.power_plant_status_strategic_reserve:
                 bid_in_sr.append(bid.price)
+            else:
+                print("not in reserve" + bid.name)
 
         if len(bid_in_sr)==0:
             similar_bids = sorted_ppdp # no filtering third order
