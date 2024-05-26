@@ -11,7 +11,7 @@ class StrategicReserveOperator(EMLabAgent):
         self.revenues_per_year = 0
         self.list_of_plants_inSR_in_current_year = []
         self.list_of_plants_all = dict()
-        self.forward_years_SR = 0
+        self.forward_years_SR = 1 # have to change the status logic to change the year
         self.revenues_per_year_all = dict()
         self.reserveVolume_all = dict()
         self.max_years_in_reserve = 0
@@ -27,8 +27,6 @@ class StrategicReserveOperator(EMLabAgent):
             self.reserveVolumePercentSR = parameter_value
         elif parameter_name == 'reservePriceSR':
             self.reservePriceSR = parameter_value
-        elif parameter_name == 'forward_years_SR':
-            self.forward_years_SR = int(parameter_value)
         elif parameter_name == 'list_of_plants' and   reps.runningModule != "plotting" and alternative == reps.current_tick:
             self.list_of_plants_inSR_in_current_year = parameter_value
         elif reps.runningModule == "plotting" and  parameter_name == 'list_of_plants':

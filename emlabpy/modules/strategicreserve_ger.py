@@ -69,6 +69,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Retrieve peak load volume of market
         # peak_load =self.reps.get_realized_peak_demand_by_year(self.reps.current_year) this was making volatile reserve
         SR_year = self.reps.current_year + self.operator.forward_years_SR
+        print("------------------------------SR_year" + str(SR_year))
         peak_load = self.reps.get_peak_future_demand_by_year(SR_year)
 
         # get peak load from weather
@@ -97,7 +98,7 @@ class StrategicReserveAssignment_ger(MarketModule):
             if self.reps.power_plants[bid.plant].status == globalNames.power_plant_status_strategic_reserve:
                 bid_in_sr.append(bid.price)
             else:
-                print("currently not in reserve" + bid.name)
+                pass
 
         if len(bid_in_sr)==0:
             similar_bids = sorted_ppdp # no filtering third order

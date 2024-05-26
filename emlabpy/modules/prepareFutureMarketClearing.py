@@ -136,16 +136,21 @@ class PrepareFutureMarketClearing(PrepareMarket):
                     decommissioned_list.append(powerplant.name)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
+
+            elif powerplant.status ==  globalNames.power_plant_status_strategic_reserve:
+                """
+               there should be same number of power plants in strategic reserve, so dont consider that these would be decommissioned!
+               we dont consider that these plants would be decommissioned, even if passed lifetime. Otherwise there will be plants considered
+               """
+                powerplant.technology.variable_operating_costs = SR_operator.reservePriceSR
+                self.power_plants_list.append(powerplant)
+
             elif fictional_age > powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension:
                 if self.reps.current_tick >= (self.reps.start_dismantling_tick - self.reps.lookAhead):
                     powerplant.fictional_status = globalNames.power_plant_status_decommissioned
                     decommissioned_list.append(powerplant.name)
                 else:
                     self.set_power_plant_as_operational_calculateEff_and_Var(powerplant, fictional_age)
-
-            elif powerplant.status ==  globalNames.power_plant_status_strategic_reserve:
-                powerplant.technology.variable_operating_costs = SR_operator.reservePriceSR
-                self.power_plants_list.append(powerplant)
 
             elif fictional_age >= powerplant.technology.expected_lifetime:
                 if self.reps.current_tick == 0 and self.reps.initialization_investment == True and self.reps.investmentIteration == -1:
