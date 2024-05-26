@@ -111,11 +111,11 @@ class Dismantle(DefaultModule):
                 if  self.reps.current_tick >= powerplant.endOfLife:
                     self.set_plant_dismantled(powerplant)
                     print(powerplant.name + "decommissioned from input")
-            elif  powerplant.status == globalNames.power_plant_status_decommissioned_from_SR:
-                self.set_plant_dismantled(powerplant)
-                print(powerplant.name + "decommission from strategic reserve")
-            elif  powerplant.status == globalNames.power_plant_status_strategic_reserve:
-                print(powerplant.name + " in strategic reserve")
+             # elif  powerplant.status == globalNames.power_plant_status_decommissioned_from_SR:
+            #     self.set_plant_dismantled(powerplant)
+            #     print(powerplant.name + "decommission from strategic reserve")
+            # elif  powerplant.status == globalNames.power_plant_status_strategic_reserve:
+            #     print(powerplant.name + " in strategic reserve")
             elif powerplant.age > technology.expected_lifetime + technology.maximumLifeExtension:
                 if self.reps.current_tick >= self.reps.start_dismantling_tick:
                     self.set_plant_dismantled(powerplant)

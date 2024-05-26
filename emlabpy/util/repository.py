@@ -795,18 +795,23 @@ class Repository:
         return [i for i in self.power_plants.values()
                 if i.owner.name == owner and i.status == globalNames.power_plant_status_to_be_decommissioned]
 
-    def get_plants_to_be_decommissioned_and_inSR(self, forward_years_SR, powerplant) -> List[PowerPlant]:
+    def get_plants_to_be_decommissioned_and_inSR(self, forward_years_SR) -> List[PowerPlant]:
         # operational power plants should not enter the SR because
         # then the lifetime of the power plant can be reduced, which is undesirable
         # unless they are about to be decommissioned
-        if powerplant.technology.intermittent == False and powerplant.technology.name not in globalNames.technologies_not_in_SR and \
-            ((powerplant.status == globalNames.power_plant_status_operational \
-                     and powerplant.age - powerplant.technology.expected_lifetime >= -forward_years_SR)
-             or powerplant.status in [globalNames.power_plant_status_to_be_decommissioned,
-                          globalNames.power_plant_status_strategic_reserve]):
-            return True
-        else:
-            return False
+
+        return [i for i in self.power_plants.values()
+                if
+                i.technology.name in globalNames.technologies_in_SR and
+                ((
+                         i.status == globalNames.power_plant_status_operational \
+                         and i.age - i.technology.expected_lifetime >= -forward_years_SR)
+                 or
+                 i.status in [globalNames.power_plant_status_to_be_decommissioned,
+                              globalNames.power_plant_status_strategic_reserve
+                              ])
+                and (i.age + forward_years_SR < i.technology.expected_lifetime + i.technology.maximumLifeExtension)]
+
 
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):
         res = 0
