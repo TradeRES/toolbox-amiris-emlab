@@ -809,8 +809,8 @@ class Repository:
                  or
                  i.status in [globalNames.power_plant_status_to_be_decommissioned,
                               globalNames.power_plant_status_strategic_reserve
-                              ])
-                and (i.age + forward_years_SR < i.technology.expected_lifetime + i.technology.maximumLifeExtension)]
+                              ])]
+#                and (i.age + forward_years_SR < i.technology.expected_lifetime + i.technology.maximumLifeExtension)]
 
 
     def get_power_plant_operational_profits_by_tick_and_market(self, time: int, market: Market):

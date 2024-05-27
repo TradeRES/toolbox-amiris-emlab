@@ -87,42 +87,36 @@ class StrategicReserveAssignment_ger(MarketModule):
         }
         sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
 
-        #Retrieve the bids on the capacity market, sorted in descending order on price
-        #sorted_ppdp = self.reps.get_descending_sorted_power_plant_dispatch_plans_by_SRmarket(market, self.reps.current_tick)
         bid_in_sr = []
-        similar_bids = []
         first_prio_bids = [] # similar bids new ones
         second_prio_bids = [] # similar bid old ones
-        third_prio_bids = [] # more expensive bids
-        for bid in sorted_ppdp:
+        for num, bid in enumerate(sorted_ppdp):
             if self.reps.power_plants[bid.plant].status == globalNames.power_plant_status_strategic_reserve:
-                bid_in_sr.append(bid.price)
+                power_plant = self.reps.get_power_plant_by_name(bid.plant)
+                if power_plant.age + self.operator.forward_years_SR >= power_plant.technology.expected_lifetime + power_plant.technology.maximumLifeExtension:
+                    power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                    self.reps.dbrw.stage_power_plant_status(power_plant)
+                    print("plant is very old, would be decommissioned"  +  power_plant.name)
+                    del sorted_ppdp[num]
+                else:
+                    bid_in_sr.append(bid.price)
             else:
                 pass
 
         if len(bid_in_sr)==0:
-            similar_bids = sorted_ppdp # no filtering third order
+            pass
         else:
             minimum_bid_of_plants_inSR = min(bid_in_sr)
             for ppdp in sorted_ppdp: # bids with very low marginal costs, chosen at the end.
                 if (minimum_bid_of_plants_inSR - ppdp.price) > 10: # bid maximum 10 less than the minimum bid in the current SR
-                    third_prio_bids.append(ppdp)
+                    second_prio_bids.append(ppdp)
                 else:
-                    similar_bids.append(ppdp)
-
-        for ppdp in similar_bids: # from similar bids give prio to plants that are not passed their max lifetime extension
-            power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
-            if (power_plant.technology.expected_lifetime + power_plant.technology.maximumLifeExtension - power_plant.age)<0:
-                second_prio_bids.append(ppdp)
-                print("plant is very old, second prio"  +  power_plant.name)
-            else:
-                first_prio_bids.append(ppdp)
-
+                    first_prio_bids.append(ppdp) # bids with similar price to the ones in SR
 
         list_of_plants = []
         # Contract plants to Strategic Reserve Operator
         contracted_strategic_reserve_capacity = 0
-        final_sorted_ppdp = first_prio_bids + second_prio_bids + third_prio_bids
+        final_sorted_ppdp = first_prio_bids + second_prio_bids
         for ppdp in final_sorted_ppdp:
             if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
                 self.reserveFull = True
@@ -142,7 +136,6 @@ class StrategicReserveAssignment_ger(MarketModule):
                         contracted_strategic_reserve_capacity += ppdp.amount
                         list_of_plants.append(ppdp.plant)
                         print(power_plant.name + "   years in reserve " + str(power_plant.years_in_SR))
-
 
                 else: # If strategic reserve is not filled yet contract additional new plants
                     ppdp.status = globalNames.power_plant_status_strategic_reserve
@@ -171,7 +164,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         for ppdp in sorted_ppdp:
             power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
             if ppdp.plant not in list_of_plants and power_plant.status == globalNames.power_plant_status_strategic_reserve:
-                print("power plant in SR, didnt enter the reserve this time")
+                print( ppdp.plant + "in SR, didnt enter the reserve this time")
                 power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
                 self.reps.dbrw.stage_power_plant_status(power_plant)
 
