@@ -88,8 +88,10 @@ class StrategicReserveAssignment_ger(MarketModule):
         sorted_ppdp = self.reps.get_descending_bids_and_first_in_SR(market,self.reps.current_tick, order_status)
 
         bid_in_sr = []
+        similar_bids = []
         first_prio_bids = [] # similar bids new ones
         second_prio_bids = [] # similar bid old ones
+        third_prio_bids = [] # more expensive bids
         for num, bid in enumerate(sorted_ppdp):
             if self.reps.power_plants[bid.plant].status == globalNames.power_plant_status_strategic_reserve:
                 power_plant = self.reps.get_power_plant_by_name(bid.plant)
@@ -104,19 +106,27 @@ class StrategicReserveAssignment_ger(MarketModule):
                 pass
 
         if len(bid_in_sr)==0:
-            pass
+            similar_bids = sorted_ppdp # no plants in SR, no filtering third order
         else:
             minimum_bid_of_plants_inSR = min(bid_in_sr)
             for ppdp in sorted_ppdp: # bids with very low marginal costs, chosen at the end.
                 if (minimum_bid_of_plants_inSR - ppdp.price) > 10: # bid maximum 10 less than the minimum bid in the current SR
-                    second_prio_bids.append(ppdp)
+                    third_prio_bids.append(ppdp)
                 else:
-                    first_prio_bids.append(ppdp) # bids with similar price to the ones in SR
+                    similar_bids.append(ppdp)
+
+        for ppdp in similar_bids: # from similar bids give prio to plants that are not passed their max lifetime extension
+            power_plant = self.reps.get_power_plant_by_name(ppdp.plant)
+            if (power_plant.age + self.operator.forward_years_SR) >=  power_plant.technology.expected_lifetime:
+                second_prio_bids.append(ppdp)
+                print("power_plant has passed lifetime, second prio"  +  power_plant.name)
+            else:
+                first_prio_bids.append(ppdp)
 
         list_of_plants = []
         # Contract plants to Strategic Reserve Operator
         contracted_strategic_reserve_capacity = 0
-        final_sorted_ppdp = first_prio_bids + second_prio_bids
+        final_sorted_ppdp = first_prio_bids + second_prio_bids + third_prio_bids
         for ppdp in final_sorted_ppdp:
             if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
                 self.reserveFull = True
