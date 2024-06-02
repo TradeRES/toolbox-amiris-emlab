@@ -669,7 +669,7 @@ def plot_yearly_VRES_support(yearl_vres_support, path_to_plots):
     plt.close('all')
 
 
-def plot_costs_to_society(average_electricity_price, costs_to_society, path_to_plots):
+def plot_costs_to_society(average_electricity_price, costs_to_society, social_welfare, path_to_plots):
     axs30 = average_electricity_price.plot()
     axs30.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -700,6 +700,16 @@ def plot_costs_to_society(average_electricity_price, costs_to_society, path_to_p
     axs1.set_title('Wholesale market costs to society')
     fig1 = axs1.get_figure()
     fig1.savefig(path_to_plots + '/' + 'Costs to society.png', bbox_inches='tight', dpi=300)
+
+    axs2 = social_welfare.plot()
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('social_welfare', fontsize='medium')
+    plt.grid()
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    axs2.set_title('social_welfare')
+    fig2= axs2.get_figure()
+    fig2.savefig(path_to_plots + '/' + 'social_welfare.png', bbox_inches='tight', dpi=300)
+
 
 def plot_average_and_weighted(total_electricity_price, simple_electricity_prices_average, path_to_plots):
     average_weighted = total_electricity_price["wholesale price"]
@@ -2135,6 +2145,25 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
             average_yearly_generation, cost_non_subcription, load_per_group)
 
 
+# def get_production_by_consumer(reps, total_load_shedded_per_year, years_to_generate):
+#     excel = os.path.join(os.path.dirname(os.getcwd()),'data' , reps.scenarioWeatheryearsExcel + '.xlsx')
+#     original_load = pd.read_excel(reps.scenarioWeatheryearsExcel, sheet_name="Load")
+#     reps.iteration_weather
+#     sequence_year = original_load.values[new_tick]
+#
+#     for lshedder_name in load_shedders_no_hydrogen:
+#         load_shedder = excel['Load'][sequence_year] * load_shedders.loc[lshedder_name, "percentage_load"]
+#     load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(
+#         load_shedders.loc[lshedder_name, "TimeSeriesFile"]))
+#     load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
+#     production_per_consumer = pd.DataFrame()
+#     for year in years_to_generate:
+#         for consumer in reps.cs_consumers.values():
+#             production_per_consumer[consumer.name] = consumer.production_yearly
+#     return production_per_consumer
+
+
+
 def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electricity_prices,
                                        yearly_load, LOLE_per_group):
     simple_electricity_prices_average = yearly_electricity_prices.sum(axis=0) / reps.hours_in_year
@@ -2291,13 +2320,14 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                            )
 
     # section ---------------------------------------------------------------Cash energy producer
-    cash_flows_energy_producer, cost_recovery, cumulative_cost_recovery, new_plants_loans , costs_to_society= prepare_cash_per_agent(reps,
+    cash_flows_energy_producer, cost_recovery, cumulative_cost_recovery, new_plants_loans , costs_to_society = prepare_cash_per_agent(reps,
                                                                                                                    ticks_to_generate)
 
     costs_to_society = costs_to_society.to_frame()
+    social_welfare = pd.DataFrame()
+    social_welfare["OPEX+CAPEX"] =  - costs_to_society[0]
     costs_to_society.index = years_to_generate
-    costs_to_society["shortages"] = total_load_shedded_per_year.loc[["1","2"]].sum(axis=0)*4000
-    plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots)
+    costs_to_society["shortages"] = total_load_shedded_per_year.loc[["1","2"]].sum(axis=0)*4000 +  total_load_shedded_per_year.loc[["3"]].sum(axis=0)*1500
     plot_cash_flows(cash_flows_energy_producer, new_plants_loans, calculate_capacity_mechanisms, path_to_plots)
 
     # #section -----------------------------------------------------------------------------------------------capacities installed
@@ -2411,7 +2441,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 revenues_SR = SR_operator_revenues[0] / annual_generation
                 average_electricity_price['SR_revenues'] = - revenues_SR.values
 
-    plot_costs_to_society(average_electricity_price, costs_to_society, path_to_plots)
+
 
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
@@ -2422,7 +2452,15 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_screening_curve(yearly_costs, marginal_costs_per_hour, path_to_plots, test_year)
     future_fuel_prices = prepare_future_fuel_prices(reps)
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
+    plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots)
+   # social_welfare["consumers"] =
+    social_welfare["hydrogen_and_heat"] = (production_not_shedded_MWh["hydrogen_produced"]* future_fuel_prices["hydrogen"][2050] \
+                                * reps.power_generating_technologies["electrolyzer"].efficiency +\
+                                #  not inclusing industrial load becuase the
+                                reps.calculate_marginal_costs_by_technology( "central gas boiler", 0 , ) * production_not_shedded_MWh["industrial_heat_demand"])
 
+    # get_production_by_consumer(reps, total_load_shedded_per_year, years_to_generate)
+    plot_costs_to_society(average_electricity_price, costs_to_society ,social_welfare, path_to_plots)
     extended_lifetime_tech = prepare_pp_lifetime_extension(reps)
     # section -----------------------------------------------------------------------------------------------Write Excel
     if save_excel == True:
@@ -2455,9 +2493,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         Dismantled_capacity_data = pd.read_excel(path_to_results, sheet_name='Dismantled', index_col=0)
         Last_year_PDC_data = pd.read_excel(path_to_results, sheet_name='Last_year_pdc', index_col=0)
         costs_to_society_data = pd.read_excel(path_to_results, sheet_name='costs_to_society', index_col=0)
+        social_welfare_data = pd.read_excel(path_to_results, sheet_name='social_welfare', index_col=0)
         total_subscribed_consumers = pd.read_excel(path_to_results, sheet_name='subscribedCons', index_col=0)
         total_subscribed_consumers[scenario_name]  = subscribed_sorted.sum(axis=1)
         costs_to_society_data[scenario_name]  = costs_to_society.sum(axis=1)
+        social_welfare_data[scenario_name]  = social_welfare.sum(axis=1)
         all_techs_capacity_peryear = all_techs_capacity.sum(axis=1)
         df1 = pd.DataFrame(all_techs_capacity_peryear, columns=[scenario_name])
         Installed_capacity_data = pd.concat([Installed_capacity_data, df1], axis=1)
@@ -2545,6 +2585,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                             engine="openpyxl",
                             if_sheet_exists="overlay") as writer:
             costs_to_society_data.to_excel(writer, sheet_name='costs_to_society')
+            social_welfare_data.to_excel(writer, sheet_name='social_welfare')
             Last_year_PDC_data.to_excel(writer, sheet_name="Last_year_pdc")
             Inflexible_load.to_excel(writer, sheet_name="Inflexible_load")
             CostRecovery_data.to_excel(writer, sheet_name='CostRecovery')
@@ -2799,7 +2840,7 @@ technology_names = {
 def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
 
     global save_excel
-    save_excel = False
+    save_excel = True
     global scenario_name
     global calculate_hourly_shedders_new
     global calculate_monthly_generation
@@ -2821,7 +2862,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = True
 
-    test_tick = 4
+    test_tick = 16
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -2918,16 +2959,23 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    SCENARIOS = ["NL-SR_500_20y"]
-    # SCENARIOS = ["final-EOM",  "final-CM_ES_VRES", "final-CM_ES", "final-CM"]
+
+    SCENARIOS = ["final-EOM", "final-CM", "final-CS_fixprice_changeVol", "final-SR143_15"]
    # SCENARIOS = ["final-CS_newclearing"]
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
-   #  SCENARIOS = ["final-EOM",  "final-CM", "final-CS_fixprice_changeVol","final-SR143_15"]
-    results_excel = "comparisonSR4.xlsx"
+
+    # SCENARIOS = ["final-LTCM"]
+    # results_excel = "comparison_CM_wlowervolume.xlsx"
+    # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
+    results_excel = "comparisonALL.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
-    existing_scenario = False
+    if isinstance(SCENARIOS, (list, tuple)):
+        pass
+    else:
+        raise Exception
+    existing_scenario = True
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
