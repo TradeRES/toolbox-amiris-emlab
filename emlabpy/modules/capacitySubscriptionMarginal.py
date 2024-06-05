@@ -43,9 +43,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-        bid_per_consumer_group = self.calculate_marginal_demand()
-        clearing_price, total_supply_volume = self.capacity_subscription_clearing(sorted_ppdp,
-                                                                                  bid_per_consumer_group)
+        clearing_price, total_supply_volume = self.capacity_subscription_clearing(sorted_ppdp)
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
         plantsinCM = []
@@ -59,7 +57,8 @@ class CapacitySubscriptionMarginal(MarketModule):
         self.reps.dbrw.stage_plants_in_CM(plantsinCM, self.reps.current_tick + capacity_market.forward_years_CM)
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
-    def calculate_marginal_demand(self):
+
+    def capacity_subscription_clearing(self, sorted_supply):
         if self.reps.runningModule =="run_CRM":
             year_excel = os.path.join(os.getcwd(),'amiris_workflow','output', (str(self.reps.current_year) + ".xlsx"))
             input_weather_years_excel = os.path.join(os.getcwd(), 'data', self.reps.scenarioWeatheryearsExcel)
@@ -94,16 +93,14 @@ class CapacitySubscriptionMarginal(MarketModule):
 
         # --------------------------------- marginal bids  -----------------------------------
         marginal_value_per_consumer_group = pd.DataFrame()
-        global marginal_volume
-        marginal_volume = 1000
 
         def calculate_marginal_value_per_consumer_group(hourly_shedded, WTP, consumer_name):
             df = pd.DataFrame()
             for column, value in hourly_shedded[hourly_shedded>0].iteritems():
                 # Determine the number of rows based on the value in the first row
-                quotient = value // marginal_volume
-                remainder = value % marginal_volume
-                column_data = [marginal_volume] * int(quotient) + [remainder]
+                quotient = value // self.reps.consumer_marginal_volume
+                remainder = value % self.reps.consumer_marginal_volume
+                column_data = [self.reps.consumer_marginal_volume] * int(quotient) + [remainder]
                 df =  pd.concat([df, pd.Series(column_data)], ignore_index=True, axis=1)
             prices = df.sum(axis=1)*WTP
 
@@ -118,13 +115,8 @@ class CapacitySubscriptionMarginal(MarketModule):
         bid_per_consumer_group.dropna(inplace=True)
         bid_per_consumer_group.drop(columns=["variable"], inplace=True)
         bid_per_consumer_group.rename(columns={"value": "bid","index": "name" }, inplace=True)
-        return bid_per_consumer_group
-    def capacity_subscription_clearing(self, sorted_supply, bid_per_consumer_group):
+        bid_per_consumer_group['volume'] = self.reps.consumer_marginal_volume # new MW
 
-        """
-        already subscribed consumers
-        """
-        bid_per_consumer_group['volume'] = marginal_volume # new MW
         largestbid = bid_per_consumer_group["bid"].max()
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
             new_row = {"name":consumer.name + "subscribed", 'volume': consumer.subscribed_yearly[self.reps.current_tick], "bid":largestbid }
@@ -191,21 +183,21 @@ class CapacitySubscriptionMarginal(MarketModule):
         supply_prices = []
         supply_quantities = []
         cummulative_quantity = 0
-
-        for bid in sorted_supply:
-            supply_prices.append(bid.price)
-            cummulative_quantity += bid.amount
-            supply_quantities.append(cummulative_quantity)
-        plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
-        plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
-        plt.grid(visible=None, which='major', axis='both', linestyle='--')
-        plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
-        plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
-        plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
-        plt.xlabel('Quantity')
-        plt.ylabel('Price')
-        # plt.ylim(0, 4000)
-        plt.legend()
-        plt.show()
+        if self.reps.runningModule =="run_CRM":
+            for bid in sorted_supply:
+                supply_prices.append(bid.price)
+                cummulative_quantity += bid.amount
+                supply_quantities.append(cummulative_quantity)
+            plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
+            plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
+            plt.grid(visible=None, which='major', axis='both', linestyle='--')
+            plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
+            plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
+            plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
+            plt.xlabel('Quantity')
+            plt.ylabel('Price')
+            # plt.ylim(0, 4000)
+            plt.legend()
+            plt.show()
 
         return clearing_price, total_supply_volume

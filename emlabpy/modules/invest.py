@@ -174,7 +174,10 @@ class Investmentdecision(DefaultModule):
             #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
             capacity_market_price = 0
             if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
-                capacity_market_price = self.calculate_capacity_subscription(long_term=False)
+                if self.reps.initialization_investment:
+                    capacity_market_price = 30000
+                else:
+                    capacity_market_price = self.calculate_capacity_subscription(long_term=False)
             elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
                 capacity_market_price = self.calculate_forward_capacity_market_price(long_term=True)
             elif self.reps.capacity_remuneration_mechanism == "capacity_market":
@@ -563,7 +566,7 @@ class Investmentdecision(DefaultModule):
         bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         clearing_price, total_supply_volume = CapacitySubscriptionMarginal.capacity_subscription_clearing(
-            self, sorted_supply, self.futureInvestmentyear)
+            self, sorted_supply)
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,

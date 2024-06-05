@@ -79,6 +79,7 @@ class Repository:
         self.iteration_weather = "NOTSET"
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
+        self.consumer_marginal_volume =1000
         # section --------------------------------------------------------------------------------------investments
         self.investmentIteration = 0
         self.targetinvestment_per_year = True
