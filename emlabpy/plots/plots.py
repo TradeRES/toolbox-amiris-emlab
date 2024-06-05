@@ -2840,7 +2840,7 @@ technology_names = {
 def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
 
     global save_excel
-    save_excel = True
+    save_excel = False
     global scenario_name
     global calculate_hourly_shedders_new
     global calculate_monthly_generation
@@ -2960,8 +2960,8 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
 
-    SCENARIOS = ["final-EOM", "final-CM", "final-CS_fixprice_changeVol", "final-SR143_15"]
-   # SCENARIOS = ["final-CS_newclearing"]
+
+    SCENARIOS = ["NL-CM_ES_VRES_ungrouped_distributedplants"]
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
 

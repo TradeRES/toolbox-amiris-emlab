@@ -7,7 +7,7 @@ import logging
 import math
 from modules.capacitymarket import CapacityMarketClearing, calculate_cone
 from modules.capacitySubscriptionlinear import *
-from modules.capacitySubscription import *
+from modules.capacitySubscriptionMarginal import *
 
 from datetime import datetime
 import shutil
@@ -562,7 +562,7 @@ class Investmentdecision(DefaultModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
         bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
-        clearing_price, total_supply_volume = CapacitySubscriptionClearing.capacity_subscription_clearing(
+        clearing_price, total_supply_volume = CapacitySubscriptionMarginal.capacity_subscription_clearing(
             self, sorted_supply, self.futureInvestmentyear)
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market

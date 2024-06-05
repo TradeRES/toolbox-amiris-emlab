@@ -1074,7 +1074,7 @@ def add_parameter_value_to_repository_based_on_object_class_name(reps, db_line):
         add_parameter_value_to_repository(reps, db_line, reps.plantsinCM, PlantsinCM)
     elif object_class_name == 'CandidatePlantsNPV' and reps.runningModule == "plotting":
         add_parameter_value_to_repository(reps, db_line, reps.candidatesNPV, CandidatesNPV)
-    elif object_class_name == 'weatherYears' and reps.runningModule == "plotting":
+    elif object_class_name == 'weatherYears' and reps.runningModule in ["plotting", "run_CRM", "run_investment_module"]:
         add_parameter_value_to_repository(reps, db_line, reps.weatherYears, WeatherYears) # this data is prepared in clock.py
     elif object_class_name == "Profits" and reps.runningModule == "plotting":
         # db investment with the object name "tick - iteration"
