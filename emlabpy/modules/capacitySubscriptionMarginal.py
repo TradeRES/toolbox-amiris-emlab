@@ -194,21 +194,21 @@ class CapacitySubscriptionMarginal(MarketModule):
         supply_prices = []
         supply_quantities = []
         cummulative_quantity = 0
-        if self.reps.runningModule =="run_CRM":
-            for bid in sorted_supply:
-                supply_prices.append(bid.price)
-                cummulative_quantity += bid.amount
-                supply_quantities.append(cummulative_quantity)
-            plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
-            plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
-            plt.grid(visible=None, which='major', axis='both', linestyle='--')
-            plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
-            plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
-            plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
-            plt.xlabel('Quantity')
-            plt.ylabel('Price')
-            # plt.ylim(0, 4000)
-            plt.legend()
-            plt.show()
+        # if self.reps.runningModule =="run_CRM":
+        #     for bid in sorted_supply:
+        #         supply_prices.append(bid.price)
+        #         cummulative_quantity += bid.amount
+        #         supply_quantities.append(cummulative_quantity)
+        #     plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
+        #     plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
+        #     plt.grid(visible=None, which='major', axis='both', linestyle='--')
+        #     plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
+        #     plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
+        #     plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
+        #     plt.xlabel('Quantity')
+        #     plt.ylabel('Price')
+        #     # plt.ylim(0, 4000)
+        #     plt.legend()
+        #     plt.show()
 
         return clearing_price, total_supply_volume
