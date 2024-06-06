@@ -146,25 +146,20 @@ class CapacitySubscriptionMarginal(MarketModule):
             supply_prices.append(supply_bid.price)
             demand_price , isnotlast = dc.get_demand_price_at_volume(cummulative_supply)
             last_demand_price , is_last_demand = dc.get_demand_price_at_volume( supply_volumes[num-1])
-
             if supply_bid.price <= demand_price: # not crossed line, price set by demand
                 total_supply_volume += supply_bid.amount
                 clearing_price =  demand_price
                 supply_bid.accepted_amount = supply_bid.amount
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
-
                 if is_last_demand == True and total_supply_volume > bid_per_consumer_group["cummulative_quantity"].iloc[-1]: # last demand, price set by supply
                     clearing_price = supply_bid.price
                     print("last demand and not crossed line, clearing price is last supply price")
                     break
-                # equilibriumprices.append(clearing_price) # todelete
-
             elif supply_bid.price < last_demand_price: # crossed line, price set by supply
                 clearing_price = supply_bid.price
                 total_supply_volume += supply_bid.amount
                 supply_bid.accepted_amount = supply_bid.amount
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_accepted
-                # equilibriumprices.append(clearing_price) # todelete
                 break
             else: # crossed line from the beginning, clearing price is zero
                 supply_bid.status = globalNames.power_plant_dispatch_plan_status_failed
@@ -173,11 +168,14 @@ class CapacitySubscriptionMarginal(MarketModule):
         print("clearing_price", clearing_price)
         print("total_supply_volume",total_supply_volume )
 
-        for i in range(len(bid_per_consumer_group)):
-            if bid_per_consumer_group.loc[i, 'cummulative_quantity'] <total_supply_volume:
+        cumsum = 0
+        for i, row in bid_per_consumer_group.iterrows():
+            cumsum+= row["volume"]
+            if cumsum < total_supply_volume:
                 bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume']
             else:
-                bid_per_consumer_group.loc[i, 'accepted_volume'] = total_supply_volume - bid_per_consumer_group.loc[i-1, 'cummulative_quantity']
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume'] - (cumsum - total_supply_volume)
+
         bid_per_consumer_group['accepted_volume'] = bid_per_consumer_group['accepted_volume'].apply(lambda x: 0 if x < 0 else x)
         grouped_accepted_bids = bid_per_consumer_group.groupby('consumer_name').agg({'accepted_volume': 'sum'}).reset_index()
 
@@ -194,21 +192,21 @@ class CapacitySubscriptionMarginal(MarketModule):
         supply_prices = []
         supply_quantities = []
         cummulative_quantity = 0
-        # if self.reps.runningModule =="run_CRM":
-        #     for bid in sorted_supply:
-        #         supply_prices.append(bid.price)
-        #         cummulative_quantity += bid.amount
-        #         supply_quantities.append(cummulative_quantity)
-        #     plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
-        #     plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
-        #     plt.grid(visible=None, which='major', axis='both', linestyle='--')
-        #     plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
-        #     plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
-        #     plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
-        #     plt.xlabel('Quantity')
-        #     plt.ylabel('Price')
-        #     # plt.ylim(0, 4000)
-        #     plt.legend()
-        #     plt.show()
+        if self.reps.runningModule =="run_CRM":
+            for bid in sorted_supply:
+                supply_prices.append(bid.price)
+                cummulative_quantity += bid.amount
+                supply_quantities.append(cummulative_quantity)
+            plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
+            plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
+            plt.grid(visible=None, which='major', axis='both', linestyle='--')
+            plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
+            plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
+            plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
+            plt.xlabel('Quantity')
+            plt.ylabel('Price')
+            # plt.ylim(0, 4000)
+            plt.legend()
+            plt.show()
 
         return clearing_price, total_supply_volume
