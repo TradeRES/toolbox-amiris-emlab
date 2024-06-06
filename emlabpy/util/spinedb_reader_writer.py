@@ -769,10 +769,17 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.consumer_classname, consumer,
                                            [("bid", Map([str(tick)], [bid]))], "0")
 
-    def stage_consumer_subscribed_yearly(self , consumer,subscribed_yearly ,  tick):
+    def stage_consumer_subscribed_yearly(self , consumer, subscribed_yearly ,  tick):
         self.stage_object(self.consumer_classname, consumer)
         self.stage_object_parameter_values(self.consumer_classname, consumer,
                                            [("subscribed_yearly", Map([str(tick)], [subscribed_yearly]))], "0")
+
+    def stage_subscribed_volume_yearly(self , consumer,subscribed_volume ,  tick):
+        self.stage_object(self.consumer_classname, consumer)
+        self.stage_object_parameter_values(self.consumer_classname, consumer,
+                                           [("subscribed_volume", Map([str(tick)], [subscribed_volume]))], "0")
+
+
 
     def stage_init_cash_agent(self):
         self.stage_object_class(self.energyProducer_classname)

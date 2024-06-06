@@ -8,6 +8,7 @@ class CapacitySubscriptionConsumer(EMLabAgent):
         self.WTP = None
         self.max_subscribed_percentage = None
         self.subscribed_yearly = None
+        self.subscribed_volume = None
         self.cummulative_quantity = 0
         self.bid = 0
 
@@ -24,14 +25,20 @@ class CapacitySubscriptionConsumer(EMLabAgent):
                 index = [int(i[0]) for i in array["data"]]
                 pd_series = pd.Series(values, index=index)
                 self.subscribed_yearly = pd_series
-        elif parameter_name == 'bid':
+        # elif parameter_name == 'bid':
+        #     array = parameter_value.to_dict()
+        #     values = [float(i[1]) for i in array["data"]]
+        #     index = [int(i[0]) for i in array["data"]]
+        #     pd_series = pd.Series(values, index=index)
+        #     if reps.runningModule == "plotting":
+        #         self.bid = pd_series
+        #     elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule in ["run_CRM", "run_investment_module"]:
+        #         self.bid = round(pd_series[reps.current_tick],3)
+        #     elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule == "run_financial_results" :
+        #         self.bid = pd_series
+        elif parameter_name == 'subscribed_volume':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             pd_series = pd.Series(values, index=index)
-            if reps.runningModule == "plotting":
-                self.bid = pd_series
-            elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule in ["run_CRM", "run_investment_module"]:
-                self.bid = round(pd_series[reps.current_tick],3)
-            elif reps.capacity_remuneration_mechanism == "capacity_subscription" and reps.runningModule == "run_financial_results" :
-                self.bid = pd_series
+            self.subscribed_volume = pd_series

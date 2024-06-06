@@ -43,7 +43,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-        clearing_price, total_supply_volume = self.capacity_subscription_clearing(sorted_ppdp)
+        clearing_price, total_supply_volume = self.capacity_subscription_clearing(sorted_ppdp, capacity_market)
         accepted_supply_bid = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         print("--------------------accepted_supply_bid-------------------")
         plantsinCM = []
@@ -58,13 +58,9 @@ class CapacitySubscriptionMarginal(MarketModule):
         print("Cleared market", capacity_market.name, "at ", str(clearing_price))
 
 
-    def capacity_subscription_clearing(self, sorted_supply):
-        if self.reps.runningModule =="run_CRM":
-            year_excel = os.path.join(os.getcwd(),'amiris_workflow','output', (str(self.reps.current_year) + ".xlsx"))
-            input_weather_years_excel = os.path.join(os.getcwd(), 'data', self.reps.scenarioWeatheryearsExcel)
-        else:
-            year_excel = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  (str(self.reps.current_year) + ".xlsx"))
-            input_weather_years_excel =  os.path.join(os.path.dirname(os.getcwd()), 'data', self.reps.scenarioWeatheryearsExcel)
+    def capacity_subscription_clearing(self, sorted_supply, capacity_market):
+        year_excel = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  (str(self.reps.current_year) + ".xlsx"))
+        input_weather_years_excel =  os.path.join(os.path.dirname(os.getcwd()), 'data', self.reps.scenarioWeatheryearsExcel)
         df = pd.read_excel(year_excel, sheet_name=["hourly_generation"])
         hourly_load_shedders = pd.DataFrame()
         for unit in df['hourly_generation'].columns.values:
@@ -78,7 +74,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         demand = demand_all["Load"][orginal_weather_year].reset_index(drop=True)
         consumer_possible_ENS = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
-            subscription_per_consumer = consumer.subscribed_yearly[self.reps.current_tick] # MW
+            subscription_per_consumer = consumer.subscribed_volume[self.reps.current_tick] # MW
             possibleENS = (demand - subscription_per_consumer)
             consumer_possible_ENS[consumer.name] = possibleENS.abs() # ignore negative values
 
@@ -103,7 +99,6 @@ class CapacitySubscriptionMarginal(MarketModule):
                 column_data = [self.reps.consumer_marginal_volume] * int(quotient) + [remainder]
                 df =  pd.concat([df, pd.Series(column_data)], ignore_index=True, axis=1)
             prices = df.sum(axis=1)*WTP
-
             marginal_value_per_consumer_group[consumer_name] = prices
 
         calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")
@@ -114,12 +109,15 @@ class CapacitySubscriptionMarginal(MarketModule):
         bid_per_consumer_group.reset_index(inplace=True)
         bid_per_consumer_group.dropna(inplace=True)
         bid_per_consumer_group.drop(columns=["variable"], inplace=True)
-        bid_per_consumer_group.rename(columns={"value": "bid","index": "name" }, inplace=True)
+        bid_per_consumer_group.rename(columns={"value": "bid","index": "consumer_name" }, inplace=True)
         bid_per_consumer_group['volume'] = self.reps.consumer_marginal_volume # new MW
 
         largestbid = bid_per_consumer_group["bid"].max()
+        if  pd.isna(largestbid): # there are no shortages, so taking the last bid
+            largestbid = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
+                                                                          self.reps.current_tick - 1 + capacity_market.forward_years_CM)
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
-            new_row = {"name":consumer.name + "subscribed", 'volume': consumer.subscribed_yearly[self.reps.current_tick], "bid":largestbid }
+            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":largestbid }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
 
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
@@ -173,7 +171,20 @@ class CapacitySubscriptionMarginal(MarketModule):
                 supply_bid.accepted_amount = 0
                 break
         print("clearing_price", clearing_price)
-        print("total_supply_volume", total_supply_volume)
+        print("total_supply_volume",total_supply_volume )
+
+        for i in range(len(bid_per_consumer_group)):
+            if bid_per_consumer_group.loc[i, 'cummulative_quantity'] <total_supply_volume:
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume']
+            else:
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = total_supply_volume - bid_per_consumer_group.loc[i-1, 'cummulative_quantity']
+        bid_per_consumer_group['accepted_volume'] = bid_per_consumer_group['accepted_volume'].apply(lambda x: 0 if x < 0 else x)
+        grouped_accepted_bids = bid_per_consumer_group.groupby('consumer_name').agg({'accepted_volume': 'sum'}).reset_index()
+
+        for i, consumer in grouped_accepted_bids.iterrows():
+            if consumer.consumer_name != "DSR":
+                self.reps.dbrw.stage_subscribed_volume_yearly(consumer.consumer_name, consumer.accepted_volume,  self.reps.current_tick + 1)
+
 
         total = 0
         for i, supply in enumerate(sorted_supply):

@@ -1300,6 +1300,26 @@
                         ]
                     }
                 }
+            ],
+            "CSvolume": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1430,7 +1450,8 @@
             "CS_subscribed": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "CSvolume": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1776,7 +1797,8 @@
             "CS_subscribed": {
                 "0": "string",
                 "1": "float",
-                "2": "string"
+                "2": "string",
+                "3": "string"
             }
         },
         "table_default_column_type": {},

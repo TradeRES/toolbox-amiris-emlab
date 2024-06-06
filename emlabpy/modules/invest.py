@@ -566,7 +566,7 @@ class Investmentdecision(DefaultModule):
         bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         clearing_price, total_supply_volume = CapacitySubscriptionMarginal.capacity_subscription_clearing(
-            self, sorted_supply)
+            self, sorted_supply, capacity_market )
 
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
@@ -644,11 +644,11 @@ class Investmentdecision(DefaultModule):
             if price_to_bid < capacity_market.PriceCap:
                 bids_lower_than_price_cap += capacity_to_bid
 
-            print(powerplant.technology.name +
-                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
-                operatingProfit) + ";" + str(
-                fixed_on_m_cost) + ";" + str(
-                pending_loan))
+            # print(powerplant.technology.name +
+            #       powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
+            #     operatingProfit) + ";" + str(
+            #     fixed_on_m_cost) + ";" + str(
+            #     pending_loan))
 
         return bids_lower_than_price_cap
 

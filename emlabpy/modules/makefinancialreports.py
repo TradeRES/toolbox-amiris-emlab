@@ -34,11 +34,11 @@ class CreatingFinancialReports(DefaultModule):
     def act(self):
 
         total_load_shedded = self.prepare_percentage_load_shedded()
-        if self.reps.capacity_remuneration_mechanism == globalNames.capacity_subscription :#and self.reps.current_tick >0:
-            self.assign_LOLE_by_subscription(total_load_shedded)
-        else:
-            # load percentage doesnt change
-            self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+        # if self.reps.capacity_remuneration_mechanism == globalNames.capacity_subscription :#and self.reps.current_tick >0:
+        #     self.assign_LOLE_by_subscription(total_load_shedded)
+        # else:
+        #     # load percentage doesnt change
+        self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         self.createFinancialReportsForPowerPlantsAndTick()
         # modifying the IRR by technology
         print("finished financial report")
@@ -256,7 +256,7 @@ class CreatingFinancialReports(DefaultModule):
             avoided_costs_non_subscription =  consumer.WTP  *  average_LOLE_unsubscribed    # H * Eur/MWH = Eur/MW
             """
             estimating bids with intertia
-            In the first year the bid is the avoided costs
+            In the first year the bid is the avoided costs, in the next years the bids are changed with inertia
             """
             if self.reps.current_tick == 0:
                 bid = avoided_costs_non_subscription # reducing to half bids because of initializing the last year bids were 0
@@ -266,8 +266,8 @@ class CreatingFinancialReports(DefaultModule):
 
             else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
-                # bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
-                bid = avoided_costs_non_subscription
+                bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
+                #bid = avoided_costs_non_subscription
                 consumer.bid = bid
                 self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
                 """
