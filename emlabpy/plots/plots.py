@@ -2049,13 +2049,27 @@ def prepareCONE():
     plt.close('all')
 
 
+def prepare_subscribed_capacity_new():
+
+    subscribed_yearly_volume = pd.DataFrame()
+    for consumer in reps.cs_consumers.values():
+        subscribed_yearly_volume[consumer.name] = consumer.subscribed_volume
+    subscribed_yearly_volume.sort_index(inplace=True)
+    fig3, axs3 = plt.subplots(2, 1)
+    fig3.tight_layout()
+    subscribed_yearly_volume.plot(ax=axs3[0], kind='bar', stacked=True, grid=True, legend=True,  cmap='viridis')
+    axs3[0].legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
+    axs3[0].set_ylabel('subscribed \n consumers', fontsize='large')
+    # axs3[0].set_xlabel('CS Bids', fontsize='large')
+    axs3[1].set_ylabel('CS bids \n [Eur/MW - y]', fontsize='large')
+    fig3.savefig(path_to_plots + '/' + 'subscribed_consumers.png', bbox_inches='tight', dpi=300)
+    return subscribed_yearly_volume
 def prepare_subscribed_capacity():
     subscribed_yearly = pd.DataFrame()
     bid_yearly = pd.DataFrame()
     for consumer in reps.cs_consumers.values():
         subscribed_yearly[consumer.name] = consumer.subscribed_yearly
         bid_yearly[consumer.name] = consumer.bid
-
     sorted_bids = bid_yearly.sort_values(by=bid_yearly.index[0], axis=1, ascending=False)
     column_order = sorted_bids.columns
     subscribed_sorted = subscribed_yearly[column_order]
@@ -2289,7 +2303,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
     subscribed_sorted = pd.DataFrame()
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
-        subscribed_sorted = prepare_subscribed_capacity()
+        subscribed_sorted = prepare_subscribed_capacity_new()
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
                       normalized_load_shedded)
@@ -2516,7 +2530,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, npvs_per_tech_per_MW],  axis=1)
 
         LS_pergroup= pd.DataFrame(load_shedded_per_group_MWh)
-        multi_index = pd.MultiIndex.from_product([[scenario_name], LS_pergroup.columns], names=['scenario_name', "technology"])
+        multi_index = pd.MultiIndex.from_product([[scenario_name], LS_pergroup.columns], names=['scenario_name', "load_type"])
         LS_pergroup.columns = multi_index
         voluntaryENS_data = pd.concat([voluntaryENS_data, LS_pergroup],  axis=1)
 
@@ -2959,16 +2973,14 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-
-
-    SCENARIOS = ["NL-CM_ES_VRES_ungrouped_distributedplants"]
+    SCENARIOS = ["NL-CS_marginal", "NL-CS_marginal_ungrouped"]
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
 
     # SCENARIOS = ["final-LTCM"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonALL.xlsx"
+    results_excel = "comparisonSR_CS_marginal.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
     if isinstance(SCENARIOS, (list, tuple)):
