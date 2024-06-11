@@ -6,7 +6,7 @@ Sanchez 31-05-2022
 """
 import json
 import logging
-
+import matplotlib.pyplot as plt
 from util import globalNames
 import numpy_financial as npf
 from modules.marketmodule import MarketModule
@@ -46,6 +46,7 @@ class CapacityMarketSubmitBids(MarketModule):
                 power_plants.append(powerplant)
 
         total_offered_capacity = 0
+
         for powerplant in power_plants:
             fixed_on_m_cost = powerplant.actualFixedOperatingCost
             capacity = powerplant.get_actual_nominal_capacity()
@@ -85,8 +86,7 @@ class CapacityMarketSubmitBids(MarketModule):
             if self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
                 if powerplant.status == globalNames.power_plant_status_inPipeline:
                     long_term_contract = True
-                else:
-                    price_to_bid = min(market.PriceCap / 2, price_to_bid)
+
             print(powerplant.technology.name +
                   powerplant.name + ";" + str(price_to_bid) + ";" + str(
                 capacity * powerplant.technology.deratingFactor) + ";" + str(profits) + ";" + str(
@@ -207,6 +207,36 @@ class CapacityMarketClearing(MarketModule):
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
         print("isMarketUndersuscribed ", isMarketUndersuscribed)
+
+
+
+        if self.reps.runningModule =="run_CRM":
+            total = 0
+            for i, supply in enumerate(sorted_supply):
+                total += supply.amount
+                supply.cummulative_quantity = total
+            x = [sdc.um_volume , sdc.lm_volume]
+            y = [0, sdc.price_cap]
+
+            supply_prices = []
+            supply_quantities = []
+            cummulative_quantity = 0
+
+            for bid in sorted_supply:
+                supply_prices.append(bid.price)
+                cummulative_quantity += bid.amount
+                supply_quantities.append(cummulative_quantity)
+            plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
+            plt.plot(x, y, marker='o')
+            plt.grid(visible=None, which='major', axis='both', linestyle='--')
+            plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
+            plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
+            plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
+            plt.xlabel('Quantity')
+            plt.ylabel('Price')
+            plt.legend()
+            plt.show()
+
         return clearing_price, total_supply_volume, isMarketUndersuscribed, sdc.um_volume
 
     def stageCapacityMechanismRevenues(self, market, clearing_price):
