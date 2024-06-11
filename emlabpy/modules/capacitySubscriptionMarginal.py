@@ -68,16 +68,20 @@ class CapacitySubscriptionMarginal(MarketModule):
                 hourly_load_shedders[int(int(unit[5:])/100000)] = df['hourly_generation'][unit]
         # ---------------------------------ENS calculation per consumer group  -----------------------------------
         realized_ENS_consumers = hourly_load_shedders[[1, 2]].sum(axis=1) # these is the load disptached at 4000
-
         demand_all = pd.read_excel(input_weather_years_excel, index_col=0, sheet_name=["Load"])
-        orginal_weather_year = self.reps.weatherYears["weatherYears"].sequence[self.reps.current_tick]
-        demand = demand_all["Load"][orginal_weather_year].reset_index(drop=True)
+        orginal_load = self.reps.weatherYears["weatherYears"].sequence[self.reps.current_tick]
+        demand = demand_all["Load"][orginal_load].reset_index(drop=True)
+
         consumer_possible_ENS = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             subscription_per_consumer = consumer.subscribed_volume[self.reps.current_tick] # MW
-            possibleENS = (demand - subscription_per_consumer)
-            consumer_possible_ENS[consumer.name] = possibleENS.abs() # ignore negative values
+            demand_per_consumer_group = demand* consumer.max_subscribed_percentage #
+            possibleENS = (demand_per_consumer_group- subscription_per_consumer)
+            possibleENS = possibleENS.apply(lambda x: 0 if x < 0 else x)
+            consumer_possible_ENS[consumer.name] = possibleENS # ignore negative values
 
+            # print(consumer.name)
+            # print(subscription_per_consumer)
         total_potential_ENS = consumer_possible_ENS.sum(axis=1)
         probability_curtailment = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
@@ -86,25 +90,34 @@ class CapacitySubscriptionMarginal(MarketModule):
         ENS_proportion = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             ENS_proportion[consumer.name] = realized_ENS_consumers*probability_curtailment[consumer.name]
-
+        # probability_curtailment.plot()
+        # plt.show()
         # --------------------------------- marginal bids  -----------------------------------
         marginal_value_per_consumer_group = pd.DataFrame()
-
+        subscribed_consumers = dict()
         def calculate_marginal_value_per_consumer_group(hourly_shedded, WTP, consumer_name):
             df = pd.DataFrame()
+            ENS_one_MW = 0
             for column, value in hourly_shedded[hourly_shedded>0].iteritems():
                 # Determine the number of rows based on the value in the first row
+                if value >= 1:
+                    ENS_one_MW += 1
                 quotient = value // self.reps.consumer_marginal_volume
                 remainder = value % self.reps.consumer_marginal_volume
                 column_data = [self.reps.consumer_marginal_volume] * int(quotient) + [remainder]
                 df =  pd.concat([df, pd.Series(column_data)], ignore_index=True, axis=1)
-            prices = df.sum(axis=1)*WTP
+            one_MW = ENS_one_MW*WTP
+            prices = df.sum(axis=1)*WTP/ self.reps.consumer_marginal_volume
             marginal_value_per_consumer_group[consumer_name] = prices
+            subscribed_consumers[consumer_name] = one_MW
+        # do for the first MW
 
         calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")
         for consumer_name, data in ENS_proportion.iteritems():
             calculate_marginal_value_per_consumer_group(data, self.reps.cs_consumers[consumer_name].WTP, consumer_name )
 
+        # ENS_proportion.plot()
+        # plt.show()
         bid_per_consumer_group = pd.melt(marginal_value_per_consumer_group.T, ignore_index=False)
         bid_per_consumer_group.reset_index(inplace=True)
         bid_per_consumer_group.dropna(inplace=True)
@@ -112,12 +125,14 @@ class CapacitySubscriptionMarginal(MarketModule):
         bid_per_consumer_group.rename(columns={"value": "bid","index": "consumer_name" }, inplace=True)
         bid_per_consumer_group['volume'] = self.reps.consumer_marginal_volume # new MW
 
-        largestbid = bid_per_consumer_group["bid"].max()
-        if  pd.isna(largestbid): # there are no shortages, so taking the last bid
-            largestbid = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
-                                                                          self.reps.current_tick - 1 + capacity_market.forward_years_CM)
+        # largestbid = bid_per_consumer_group["bid"].max()
+        # if  pd.isna(largestbid): # there are no shortages, so taking the last bid
+        #     largestbid = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
+        #                                                                   self.reps.current_tick - 1 + capacity_market.forward_years_CM)
+
+        calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
-            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":largestbid }
+            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":subscribed_consumers[consumer.name] }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
 
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
