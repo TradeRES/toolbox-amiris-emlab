@@ -101,7 +101,8 @@ class StrategicReserveAssignment_ger(MarketModule):
                     print("plant is very old, would be decommissioned"  +  power_plant.name)
                     del sorted_ppdp[num]
                 else:
-                    bid_in_sr.append(bid.price)
+                    pass
+
             else:
                 pass
 
@@ -128,7 +129,7 @@ class StrategicReserveAssignment_ger(MarketModule):
         # Contract plants to Strategic Reserve Operator
         contracted_strategic_reserve_capacity = 0
 
-        for ppdp in bid_in_sr:
+        for ppdp in sorted_ppdp:
             if (contracted_strategic_reserve_capacity) > strategic_reserve_capacity:
                 self.reserveFull = True
                 break
