@@ -140,8 +140,8 @@ class CapacityMarketClearing(MarketModule):
                                                          self.reps.current_tick + capacity_market.forward_years_CM)  # saved according to effective year
 
     def capacity_market_clearing(self, sorted_supply, capacity_market, capacity_market_year):
-        def check_if_market_under_subscribed(total_supply_volume, targetVolume):
-            if total_supply_volume > targetVolume:
+        def check_if_market_under_subscribed(total_supply_volume, volume):
+            if total_supply_volume > volume:
                 return False
             else:
                 return True
@@ -168,7 +168,7 @@ class CapacityMarketClearing(MarketModule):
         isMarketUndersuscribed = True
         for supply in sorted_supply:
             if isMarketUndersuscribed == True:
-                # As long as the market is not cleared
+                # As long as the supply are not above the upper margin, the supply is accepted
                 if supply.price <= sdc.get_price_at_volume(total_supply_volume + supply.amount):
                     total_supply_volume += supply.amount
                     clearing_price = sdc.get_price_at_volume(total_supply_volume)
@@ -197,18 +197,21 @@ class CapacityMarketClearing(MarketModule):
                     print(supply.plant, " last ACCEPTED ", total_supply_volume, "", clearing_price)
                     break
                 else:
+                    print("price higher than price cap")
                     supply.status = globalNames.power_plant_dispatch_plan_status_failed
                     break
             else:
+                print("market oversubscribed")
                 supply.status = globalNames.power_plant_dispatch_plan_status_failed
                 break
-            isMarketUndersuscribed = check_if_market_under_subscribed(total_supply_volume, targetVolume)
-        isMarketUndersuscribed = check_if_market_under_subscribed(total_supply_volume, targetVolume)
+            isMarketUndersuscribed = check_if_market_under_subscribed(total_supply_volume, sdc.um_volume)
+
+        # final check if the market is undersubscribed
+        isMarketUndersuscribed = check_if_market_under_subscribed(total_supply_volume, sdc.um_volume)
+
         print("clearing price ", clearing_price)
         print("total_supply", total_supply_volume)
         print("isMarketUndersuscribed ", isMarketUndersuscribed)
-
-
 
         if self.reps.runningModule =="run_CRM":
             total = 0
