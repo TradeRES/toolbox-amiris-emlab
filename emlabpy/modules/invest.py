@@ -175,7 +175,7 @@ class Investmentdecision(DefaultModule):
             capacity_market_price = 0
             if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
                 if self.reps.initialization_investment:
-                    capacity_market_price = 30000
+                    capacity_market_price = 0
                 else:
                     capacity_market_price = self.calculate_capacity_subscription(long_term=False)
             elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
