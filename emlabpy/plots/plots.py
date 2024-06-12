@@ -342,17 +342,17 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         fig29 = axs29.get_figure()
         fig29.savefig(path_to_plots + '/' + 'SR_operator_revenues.png', bbox_inches='tight', dpi=300)
 
-        cm_revenues_per_pp.replace(0, pd.NA, inplace=True)
-        cm_revenues_per_pp.dropna(how='all', axis=1, inplace=True)
-        axs28 = cm_revenues_per_pp.plot()
-        axs28.set_axisbelow(True)
-        plt.xlabel('tick', fontsize='medium')
-        plt.ylabel('Revenues SR', fontsize='medium')
-        plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
-        plt.grid()
-        axs28.set_title('SR_results_per_pp')
-        fig28 = axs28.get_figure()
-        fig28.savefig(path_to_plots + '/' + 'SR_results_per_pp.png', bbox_inches='tight', dpi=300)
+        # cm_revenues_per_pp.replace(0, pd.NA, inplace=True)
+        # cm_revenues_per_pp.dropna(how='all', axis=1, inplace=True)
+        # axs28 = cm_revenues_per_pp.plot()
+        # axs28.set_axisbelow(True)
+        # plt.xlabel('tick', fontsize='medium')
+        # plt.ylabel('Revenues SR', fontsize='medium')
+        # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+        # plt.grid()
+        # axs28.set_title('SR_results_per_pp')
+        # fig28 = axs28.get_figure()
+        # fig28.savefig(path_to_plots + '/' + 'SR_results_per_pp.png', bbox_inches='tight', dpi=300)
     else:
         axs27 = CM_clearing_volume.plot()
         capacity_market_future_volume.plot(ax=axs27,  marker='o', linestyle='--')
@@ -1091,6 +1091,33 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     # load_shedded_per_group_MWh = load_shedded_per_group_MWh[['low', 'mid', 'high', 'base']]
     # dropping hydrogen because it is too
     #load_shedded_per_group_MWh.drop('hydrogen', axis=1, inplace=True)
+
+    melted_dfs = []
+    if reps.capacity_remuneration_mechanism == "capacity_subscription":
+        for year, df in hourly_load_shedders_per_year.items():
+            df.drop(columns=[8888888], inplace=True)
+            df_positive = df[df > 0]
+            df_filtered = df_positive.dropna(how="all")
+            melted_df =  df_filtered.melt(var_name='Type', value_name='Value')
+            melted_df['year'] = year
+            melted_dfs.append(melted_df)
+
+            # Concatenate all melted DataFrames into one
+        result_df = pd.concat(melted_dfs, ignore_index=True)
+
+
+        load_mapping = {
+            100000: 'ENS',
+            200000: 'ENS',
+            300000: 'DSR',
+        }
+        df_replaced = result_df.replace(load_mapping)
+        axs1 = sns.catplot( data=df_replaced, x="year", y="Value",  kind="box", hue="Type")
+        plt.ylabel('ENS [MW]', fontsize='large')
+        plt.tight_layout()
+        plt.xticks(rotation=20, size = 15, ha="right")
+        axs1.savefig(path_to_plots + '/' + 'ENS.png', bbox_inches='tight', dpi=300)
+
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
     load_shedded_per_group_MWh.plot(ax=axs38[0], cmap = "viridis",  legend=False)
@@ -1102,6 +1129,7 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     axs38[1].set_ylabel('normalized ENS [%]', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig38.savefig(path_to_plots + '/' + 'Load_shedded.png', bbox_inches='tight', dpi=300)
+
     plt.close('all')
 def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_per_group):
     CM_subsription_cost = CM_clearing_price.values*load_per_group
@@ -1118,6 +1146,14 @@ def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_pe
     fig38.savefig(path_to_plots + '/' + 'Costsnonsubscription.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year):
+    load_mapping = {
+        '1': 'subscribed',
+        '2': 'unsubscribed',
+        '3': 'DSR',
+    }
+    LOLE_per_group.rename(index=load_mapping, inplace=True)
+    VOLL_per_year.rename(index=load_mapping, inplace=True)
+    max_ENS_in_a_row.rename(index=load_mapping, inplace=True)
     LOLE_per_group.drop(inplace=True, index='hydrogen')
     max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
     fig39, axs39 = plt.subplots(3, 1)
@@ -2852,7 +2888,6 @@ technology_names = {
 
 
 def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
-
     global save_excel
     save_excel = False
     global scenario_name
@@ -2876,7 +2911,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = True
 
-    test_tick = 16
+    test_tick = 0
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -2973,21 +3008,23 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    SCENARIOS = ["NL-CS_marginal", "NL-CS_marginal_ungrouped"]
+    # SCENARIOS = ["NL-CS_marginal", "NL-CS_marginal_ungrouped"]
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
 
-    # SCENARIOS = ["final-LTCM"]
+    SCENARIOS = ["NL-CS_marginal_7years"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonSR_CS_marginal.xlsx"
+    results_excel = "comparisonSR_5.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
+
+    existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
         raise Exception
-    existing_scenario = True
+
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario )
     print('===== End Generating Plots =====')
 
