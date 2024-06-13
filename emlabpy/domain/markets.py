@@ -152,8 +152,6 @@ class CapacityMarket(Market):
             self.years_long_term_market = int(parameter_value)
         elif parameter_name == 'allowed_technologies':
             self.allowed_technologies_capacity_market = parameter_value.split(",")
-        elif parameter_name == 'plantsinCM':
-            self.plantsinCM = parameter_value
         else:
             setattr(self, parameter_name, parameter_value)
 

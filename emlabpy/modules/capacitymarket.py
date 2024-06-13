@@ -6,6 +6,8 @@ Sanchez 31-05-2022
 """
 import json
 import logging
+import os
+from os.path import dirname, realpath
 import matplotlib.pyplot as plt
 from util import globalNames
 import numpy_financial as npf
@@ -229,6 +231,7 @@ class CapacityMarketClearing(MarketModule):
                 supply_prices.append(bid.price)
                 cummulative_quantity += bid.amount
                 supply_quantities.append(cummulative_quantity)
+            fig1 = plt.figure()
             plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
             plt.plot(x, y, marker='o')
             plt.grid(visible=None, which='major', axis='both', linestyle='--')
@@ -237,8 +240,8 @@ class CapacityMarketClearing(MarketModule):
             plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
             plt.xlabel('Quantity')
             plt.ylabel('Price')
-            plt.legend()
-            plt.show()
+            path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results')
+            plt.savefig(os.path.join( path , str(self.reps.current_year)+ '.png') ,bbox_inches='tight', dpi=300)
 
         return clearing_price, total_supply_volume, isMarketUndersuscribed, sdc.um_volume
 
@@ -246,11 +249,14 @@ class CapacityMarketClearing(MarketModule):
         print("staging capacity market")
         accepted_ppdp = self.reps.get_accepted_CM_bids(self.reps.current_tick)
         self.reps.dbrw.stage_init_years_in_long_term_capacity_market()
+        accepted_plant_names = []
         for accepted in accepted_ppdp:
+            accepted_plant_names.append(accepted.name)
             amount = accepted.accepted_amount * clearing_price
             ticks_awarded = list(range(self.reps.current_tick + market.forward_years_CM, \
                                        self.reps.current_tick + market.forward_years_CM + int(
                                            market.years_long_term_market)))
+
             if accepted.long_term_contract:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, ticks_awarded)
                 self.reps.dbrw.stage_power_plant_years_in_long_term_capacity_market(accepted.plant,
@@ -258,6 +264,10 @@ class CapacityMarketClearing(MarketModule):
             else:
                 self.reps.dbrw.stage_CM_revenues(accepted.plant, amount, [self.reps.current_tick + market.forward_years_CM])
 
+        if self.reps.reliability_option_strike_price == "NOTSET" or self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
+            pass
+        else:
+            self.reps.dbrw.stage_plants_in_CM(accepted_plant_names, self.reps.current_tick + market.forward_years_CM)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
     """CONE is calculated  for every technology and the minimum is chosen as the price cap"""
