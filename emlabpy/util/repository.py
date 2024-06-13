@@ -324,7 +324,7 @@ class Repository:
 
     def get_peak_future_demand_by_year(self, year):
         """
-        saved in future market preparation, exclude industrial load and electrolyzers (only static demand)
+        saved in future market preparation, exclude industrial load and electrolyzers (only static demand) it is the representative year
         """
         try:
             # the load was already updated in the clock step
