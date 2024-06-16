@@ -136,3 +136,5 @@ amiris_workflow/amiris-config/data/future_LS_two.csv
 *.csv
 data/Analysis/CS.xlsx
 data/Analysis/NPV.xlsx
+emlabpy/util/excels/
+

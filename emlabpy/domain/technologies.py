@@ -36,7 +36,6 @@ class PowerGeneratingTechnology(ImportObject):
         self.energyToPowerRatio = 0
         self.chargingEfficiency = 0
         self.dischargingEfficiency = 0
-
         self.selfDischargeRatePerHour = 0
         self.co2_capture_efficiency = 0
         self.techtype = ''
@@ -66,7 +65,14 @@ class PowerGeneratingTechnology(ImportObject):
             self.efficiency_time_series = reps.trends[self.name + "EfficiencyTimeSeries"] # geometric Trends
             self.efficiency_time_series.start = self.efficiency
         elif parameter_name == 'deratingFactor':
-            self.deratingFactor = float(parameter_value)
+            self.deratingFactor =float(parameter_value)
+            # if type(parameter_value) == float:
+            #     self.deratingFactor = float(parameter_value)
+            # else:
+            #     array = parameter_value.to_dict()
+            #     values = [float(i[1]) for i in array["data"]]
+            #     index = [int(i[0]) for i in array["data"]]
+            #     series = pd.Series(values, index=index)
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':

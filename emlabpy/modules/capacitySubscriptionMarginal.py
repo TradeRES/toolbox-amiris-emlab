@@ -68,14 +68,14 @@ class CapacitySubscriptionMarginal(MarketModule):
             bid_per_consumer_group = CapacitySubscriptionMarginal.preparing_demand_curve(self)
 
         bid_per_consumer_group["cummulative_quantity"] = bid_per_consumer_group["volume"].cumsum()
-        print(bid_per_consumer_group[["cummulative_quantity","bid"]])
+        # print(bid_per_consumer_group[["cummulative_quantity","bid"]])
         total_volume = 0
-        print("cummulativesupply;price")
+        # print("cummulativesupply;price")
 
         for i, supply in enumerate(sorted_supply):
             total_volume += supply.amount
             supply.cummulative_quantity = total_volume
-            print(str(total_volume) + ";" + str(supply.price))
+            # print(str(total_volume) + ";" + str(supply.price))
 
         clearing_price = 0
         total_supply_volume = 0
@@ -207,7 +207,7 @@ class CapacitySubscriptionMarginal(MarketModule):
             one_MW = ENS_one_MW*WTP
             prices = df.sum(axis=1)*WTP/ self.reps.consumer_marginal_volume
             marginal_value_per_consumer_group[consumer_name] = prices
-            subscribed_consumers[consumer_name] = one_MW
+            subscribed_consumers[consumer_name] = 50000
         # do for the first MW
 
         calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")

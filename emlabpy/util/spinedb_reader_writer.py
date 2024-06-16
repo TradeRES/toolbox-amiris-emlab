@@ -259,6 +259,17 @@ class SpineDBReaderWriter:
                                            [('plantsinCM', plantsinCM)], "0")
 
 
+    def stage_derating_factor(self, derating_factors, tick):
+        self.stage_object_class("Technologies")
+        for tech, df  in derating_factors.items():
+            if len(df) == 0 :
+                df = "-"
+            self.stage_object_parameter('Technologies', "deratingFactor")
+            self.stage_object('Technologies', tech)
+            self.stage_object_parameter_values('Technologies', tech,
+                                               [("deratingFactor", Map([str(tick)], [df]))], "0")
+
+
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)
         self.stage_object_parameter_values('EnergyProducers', power_plant.owner.name, [('cash', cash)], time)

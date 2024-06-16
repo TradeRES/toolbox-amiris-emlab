@@ -5,7 +5,7 @@ Jim Hommes - 25-3-2021
 Sanchez 31-05-2022
 """
 import json
-import logging
+import pandas as pd
 import os
 from os.path import dirname, realpath
 import matplotlib.pyplot as plt
@@ -14,7 +14,6 @@ import numpy_financial as npf
 from modules.marketmodule import MarketModule
 from util.repository import Repository
 from domain.markets import SlopingDemandCurve
-
 
 class CapacityMarketSubmitBids(MarketModule):
     """
@@ -121,6 +120,7 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         print("capacity market clearing")
+        # self.calculate_derating_factor()
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
@@ -269,6 +269,54 @@ class CapacityMarketClearing(MarketModule):
         else:
             self.reps.dbrw.stage_plants_in_CM(accepted_plant_names, self.reps.current_tick + market.forward_years_CM)
 
+    def calculate_derating_factor(self):
+        power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
+                                                                  globalNames.power_plant_status_to_be_decommissioned,
+                                                                  globalNames.power_plant_status_strategic_reserve,
+                                                                  ])
+        all_techs_capacity = {}
+        for pp in power_plants_list:
+            tech = pp.technology.name
+            capacity = pp.capacity
+            if tech in all_techs_capacity:
+                all_techs_capacity[tech] += capacity
+            else:
+                all_techs_capacity[tech] = capacity
+
+        hourly_generation_res = pd.DataFrame()
+        year_excel = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  (str(self.reps.current_year) + ".xlsx"))
+        df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "hourly_generation"])
+        hourly_load_shedders = pd.DataFrame()
+        for unit in df['hourly_generation'].columns.values:
+            if unit[0:4] == "unit"  and unit[5:] != "8888888": # excluding electrolyzers shedding
+                hourly_load_shedders[unit[5:]] = df['hourly_generation'][unit]
+            elif unit =="PV":
+                hourly_generation_res["Solar PV large"] = df['hourly_generation'][unit]
+            elif unit =="WindOff":
+                hourly_generation_res["Wind Offshore"] = df['hourly_generation'][unit]
+            elif unit =="WindOn":
+                hourly_generation_res["Wind Onshore"] = df['hourly_generation'][unit]
+            elif unit =="storages_discharging":
+                hourly_generation_res["Lithium ion battery 4"] = df['hourly_generation'][unit]
+            elif unit =="conventionals":
+                hourly_generation_res["hydrogen OCGT"] = df['hourly_generation'][unit]
+            else:
+                pass
+        total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
+        yearly_at_scarcity_hours = total_hourly_load_shedders[total_hourly_load_shedders > 0 ].index
+        derating_factors = pd.DataFrame()
+        # df['Sum'] = df['Lithium ion battery 4'] + df['Lithium ion battery']
+
+        for tech in all_techs_capacity:
+            if tech in all_techs_capacity and tech in hourly_generation_res.columns:
+                installed_capacity = all_techs_capacity[tech]
+                average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
+                derating_factors[tech] = average_generation / installed_capacity
+            else:
+                pass
+
+        self.reps.dbrw.stage_derating_factor(derating_factors, self.reps.current_tick)
+
 def calculate_cone(reps, capacity_market, candidatepowerplants):
     """CONE is calculated  for every technology and the minimum is chosen as the price cap"""
     cones = {}
@@ -331,3 +379,5 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             else:
                 capacity_market.PriceCap = price_cap
                 reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
+
+
