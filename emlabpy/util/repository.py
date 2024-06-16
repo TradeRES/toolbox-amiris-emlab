@@ -538,10 +538,10 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_technologies_except_marginals_for_CM(self, allowed_technologies_capacity_market):
+    def get_technologies_except_some(self, exception_techs):
         try:
             return [i.technology for name, i in self.candidatePowerPlants.items() if
-                    i.technology.name not in allowed_technologies_capacity_market]
+                        i.technology.name not in exception_techs]
         except StopIteration:
             return None
 
