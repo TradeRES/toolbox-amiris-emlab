@@ -125,7 +125,6 @@ class CapacityMarketClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
-
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         clearing_price, total_supply_volume, is_the_market_undersubscribed, upperVolume = self.capacity_market_clearing(
             sorted_supply,
@@ -220,8 +219,8 @@ class CapacityMarketClearing(MarketModule):
             for i, supply in enumerate(sorted_supply):
                 total += supply.amount
                 supply.cummulative_quantity = total
-            x = [sdc.um_volume , sdc.lm_volume]
-            y = [0, sdc.price_cap]
+            x = [sdc.um_volume , targetVolume, sdc.lm_volume]
+            y = [0, sdc.net_cone, sdc.price_cap]
 
             supply_prices = []
             supply_quantities = []
@@ -234,13 +233,13 @@ class CapacityMarketClearing(MarketModule):
             fig1 = plt.figure()
             plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
             plt.plot(x, y, marker='o')
-            plt.grid(visible=None, which='major', axis='both', linestyle='--')
+            plt.grid(visible=None, which='minor', axis='both', linestyle='--')
             plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
             plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
             plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
             plt.xlabel('Quantity')
             plt.ylabel('Price')
-            path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results')
+            path = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results')
             plt.savefig(os.path.join( path , str(self.reps.current_year)+ '.png') ,bbox_inches='tight', dpi=300)
 
         return clearing_price, total_supply_volume, isMarketUndersuscribed, sdc.um_volume
@@ -369,7 +368,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         netCONE = netcones[technology_highest_availability]
         cone = cones[technology_highest_availability]
        # according to the belgian authorities the price cap should range between 80000 and 100000
-        price_cap = max(int(netCONE * capacity_market.PriceCapTimesCONE),cone)
+        price_cap = max(int(netCONE * capacity_market.PriceCapTimesCONE), cone)
         print("price_cap")
         print(price_cap)
 
@@ -379,5 +378,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             else:
                 capacity_market.PriceCap = price_cap
                 reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
+                reps.dbrw.stage_net_cone(capacity_market.name, netCONE)
+
 
 

@@ -420,6 +420,15 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values(self.capacity_market_classname, capacity_market_name,
                                            [('PriceCap', price_cap)], "0")
 
+
+    def stage_net_cone(self, capacity_market_name, net_cone):
+        self.stage_object_class(self.capacity_market_classname)
+        self.stage_object_parameter(self.capacity_market_classname, "net_cone")
+        self.stage_object(self.capacity_market_classname, capacity_market_name)
+        self.stage_object_parameter_values(self.capacity_market_classname, capacity_market_name,
+                                           [('net_cone', net_cone)], "0")
+
+
     def stage_yearly_CONE(self, netcones, cones, current_tick):
         self.stage_object_class(self.cone_classname)
         for technology_name, cone in cones.items():

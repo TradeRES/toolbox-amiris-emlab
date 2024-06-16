@@ -143,6 +143,7 @@ class CapacityMarket(Market):
         self.long_term = False
         self.years_long_term_market = 15
         self.TargetCapacity = 0
+        self.net_cone = 0
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
@@ -158,7 +159,7 @@ class CapacityMarket(Market):
     def get_sloping_demand_curve(self, target_volume):
         return SlopingDemandCurve(self.InstalledReserveMargin,
                                   self.LowerMargin,
-                                  self.UpperMargin, target_volume, self.PriceCap)
+                                  self.UpperMargin, target_volume, self.net_cone, self.PriceCap)
 
 class PlantsinCM(Market):
     """"""
@@ -225,7 +226,7 @@ class SlopingDemandCurve:
     The SlopingDemandCurve as required in the CapacityMarket.
     """
 
-    def __init__(self, irm, lm, um, target_volume, price_cap):
+    def __init__(self, irm, lm, um, target_volume,net_cone,  price_cap ):
         self.irm = irm
         self.lm = lm
         self.lm_volume = target_volume * (1 + irm - lm)
@@ -234,14 +235,15 @@ class SlopingDemandCurve:
         self.target_volume = target_volume
         self.price_cap = price_cap
         self.m = (self.price_cap - self.price_cap/1.5) / (target_volume - self.lm_volume)
-
+        self.net_cone = net_cone
 
     def get_price_at_volume(self, volume):
-        m = self.price_cap / (self.um_volume - self.lm_volume)
         if volume < self.lm_volume:
             return self.price_cap
-        elif self.lm_volume <= volume: # inflexible demand after clearing point
-            return self.price_cap - m * (volume - self.lm_volume)
+        elif self.lm_volume <= volume < self.target_volume : # inflexible demand after clearing point
+            return self.price_cap - ((self.price_cap - self.net_cone ) / (self.target_volume -  self.lm_volume)) * (volume -  self.lm_volume)
+        elif self.target_volume <= volume < self.um_volume : # inflexible demand after clearing point
+            return self.net_cone - ((self.net_cone) / ( self.um_volume - self.target_volume)) * (volume -  self.target_volume)
         else:
             return 0
 
