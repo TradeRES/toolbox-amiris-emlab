@@ -7,7 +7,7 @@ Jim Hommes - 25-3-2021
 import logging
 from spinedb_api import Map, DatabaseMapping, export_object_parameter_values
 from twine.repository import Repository
-
+import math
 from domain.CapacitySubscriptionConsumer import CapacitySubscriptionConsumer
 from domain.financialReports import FinancialPowerPlantReport
 from domain.investments import CandidatesNPV, InvestmentDecisions, InstalledCapacity, InstalledFuturePowerPlants
@@ -174,6 +174,8 @@ class SpineDBReaderWriter:
                 reps.change_IRR= bool(row['parameter_value'])
             elif row['parameter_name'] == 'reliability_option_SP':
                 reps.reliability_option_strike_price = row['parameter_value']
+            elif row['parameter_name'] == 'dynamic_derating_factor':
+                reps.dynamic_derating_factor = bool(row['parameter_value'])
 
 
         # these are the years that need to be added to the power plants on the first simulation tick
@@ -261,13 +263,13 @@ class SpineDBReaderWriter:
 
     def stage_derating_factor(self, derating_factors, tick):
         self.stage_object_class("Technologies")
-        for tech, df  in derating_factors.items():
-            if len(df) == 0 :
-                df = "-"
-            self.stage_object_parameter('Technologies', "deratingFactor")
+        for tech, derating_factor  in derating_factors.items():
+            if len(derating_factor) == 0:
+                derating_factor = math.nan
+            self.stage_object_parameter('Technologies', "deratingFactor_yearly")
             self.stage_object('Technologies', tech)
             self.stage_object_parameter_values('Technologies', tech,
-                                               [("deratingFactor", Map([str(tick)], [df]))], "0")
+                                               [("deratingFactor_yearly", Map([str(tick)], [derating_factor]))], "0")
 
 
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):

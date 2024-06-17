@@ -47,6 +47,7 @@ class PowerGeneratingTechnology(ImportObject):
         self.maximum_installed_capacity_fraction_per_agent = 0
         self.base_segment_dependent_availability = 0
         self.deratingFactor = 0
+        self.deratingFactoryearly = None
         self.applicable_for_long_term_contract = False
 
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
@@ -68,11 +69,11 @@ class PowerGeneratingTechnology(ImportObject):
             self.deratingFactor =float(parameter_value)
             # if type(parameter_value) == float:
             #     self.deratingFactor = float(parameter_value)
-            # else:
-            #     array = parameter_value.to_dict()
-            #     values = [float(i[1]) for i in array["data"]]
-            #     index = [int(i[0]) for i in array["data"]]
-            #     series = pd.Series(values, index=index)
+        elif parameter_name == 'deratingFactor_yearly':
+                array = parameter_value.to_dict()
+                values = [float(i[1]) for i in array["data"]]
+                index = [int(i[0]) for i in array["data"]]
+                self.deratingFactoryearly = pd.Series(values, index=index)
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':

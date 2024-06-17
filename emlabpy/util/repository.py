@@ -80,6 +80,7 @@ class Repository:
         self.Power_plants_from_year = 2019
         self.install_at_look_ahead_year = True
         self.consumer_marginal_volume =1000
+        self.dynamic_derating_factor = False
         # section --------------------------------------------------------------------------------------investments
         self.investmentIteration = 0
         self.targetinvestment_per_year = True
@@ -552,6 +553,13 @@ class Repository:
             return None
 
     # ----------------------------------------------------------------------------section PowerPlants
+
+    def get_current_derating_factor(self, technology):
+        if self.current_tick <4:
+            return self.power_generating_technologies[technology].deratingFactor
+        else:
+            years = range(self.current_tick - 4, self.current_tick)
+            return  self.power_generating_technologies[technology].deratingFactor_yearly.loc[years].mean()
 
     def get_ids_of_future_installed_plants(self, futuretick) -> list:
         # the installed power plants include the ones invested in previous iterations

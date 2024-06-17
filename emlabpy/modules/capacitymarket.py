@@ -95,7 +95,10 @@ class CapacityMarketSubmitBids(MarketModule):
                 pending_loan))
 
             # all power plants place a bid pair of price and capacity on the market
-            capacity_to_bid = capacity * powerplant.technology.deratingFactor
+            if self.reps.dynamic_derating_factor == True and self.reps.capacity_remuneration_mechanism != "capacity_subscription":
+                capacity_to_bid = capacity * self.reps.get_current_derating_factor(powerplant.technology.name)
+            else:
+                capacity_to_bid = capacity * powerplant.technology.deratingFactor
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market,
                                                                        long_term_contract, capacity_to_bid, \
                                                                        price_to_bid, self.reps.current_tick)
@@ -120,7 +123,8 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         print("capacity market clearing")
-        # self.calculate_derating_factor()
+        if self.reps.current_tick >=4:
+            self.calculate_derating_factor()
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
