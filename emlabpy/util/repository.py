@@ -388,11 +388,21 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_allowed_technology_with_highest_availability(self, allowed_technologies):
-        max_number = max(self.candidatePowerPlants,
-                         key=lambda x: self.candidatePowerPlants[x].technology.deratingFactor
-                         if self.candidatePowerPlants[x].technology.name in allowed_technologies else 0)
-        return self.candidatePowerPlants[max_number].technology.name
+    # def get_allowed_technology_with_highest_availability(self, allowed_technologies):
+    #     max_number = max(self.candidatePowerPlants,
+    #                      key=lambda x: self.candidatePowerPlants[x].technology.deratingFactor
+    #                      if self.candidatePowerPlants[x].technology.name in allowed_technologies else 0)
+    #     return self.candidatePowerPlants[max_number].technology.name
+
+
+    def get_cheapest_cone(self, cones, allowed_technologies):
+        filtered_data = {k: v for k, v in cones.items() if not math.isinf(v) and k in allowed_technologies}
+        if filtered_data:
+            min_key = min(filtered_data, key=filtered_data.get)
+        else:
+            min_key = None
+        return min_key
+
 
     def get_unique_substances_names(self):
         try:

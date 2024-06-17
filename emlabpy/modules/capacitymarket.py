@@ -6,6 +6,7 @@ Sanchez 31-05-2022
 """
 import json
 import pandas as pd
+import numpy as np
 import os
 from os.path import dirname, realpath
 import matplotlib.pyplot as plt
@@ -366,26 +367,24 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             NETCONE = discountedprojectvalueNETCONE * factor/ technology.deratingFactor
             cones[technology.name] = CONE
             netcones[technology.name] = NETCONE
+
     if not cones:
         print("cones is empty")
     else:
         reps.dbrw.stage_yearly_CONE(netcones, cones, reps.current_tick)
-        technology_highest_availability = reps.get_allowed_technology_with_highest_availability(
-            capacity_market.allowed_technologies_capacity_market)
-        netCONE = netcones[technology_highest_availability]
-        cone = cones[technology_highest_availability]
+        chosen = reps.get_cheapest_cone(cones , capacity_market.allowed_technologies_capacity_market)
+        netCONE = netcones[chosen]
+        cone = cones[chosen]
        # according to the belgian authorities the price cap should range between 80000 and 100000
         price_cap = max(int(netCONE * capacity_market.PriceCapTimesCONE), cone)
         print("price_cap")
         print(price_cap)
-
-        if reps.current_tick == 0:
+        if reps.current_tick ==0:
+            print(cones)
+            print(netcones)
             if price_cap < 0:
                 raise ValueError("Price cap is negative")
             else:
                 capacity_market.PriceCap = price_cap
                 reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
                 reps.dbrw.stage_net_cone(capacity_market.name, netCONE)
-
-
-
