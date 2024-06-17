@@ -654,11 +654,11 @@ class Investmentdecision(DefaultModule):
 
     def group_power_plants(self):
         plants_to_delete = []
-        if self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription", "forward_capacity_market"]:
-            # capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=True) # same technologies in short and long term market, so can be either
-            technologies = self.reps.get_technologies_except_some(["hydrogen OCGT", "hydrogen CCGT"])
-        else:
-            technologies = self.reps.get_unique_candidate_technologies()
+        # if self.reps.capacity_remuneration_mechanism in ["capacity_market", "capacity_subscription", "forward_capacity_market"]:
+        #     # capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=True) # same technologies in short and long term market, so can be either
+        #     technologies = self.reps.get_technologies_except_some(["hydrogen OCGT", "hydrogen CCGT"])
+        # else:
+        technologies = self.reps.get_unique_candidate_technologies()
 
         for candidate_technology in technologies:
             commissionedYear = self.reps.current_year + self.look_ahead_years

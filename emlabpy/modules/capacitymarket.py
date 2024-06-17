@@ -94,14 +94,16 @@ class CapacityMarketSubmitBids(MarketModule):
                 fixed_on_m_cost) + ";" + str(
                 pending_loan))
 
-            # all power plants place a bid pair of price and capacity on the market
-            if self.reps.dynamic_derating_factor == True and self.reps.capacity_remuneration_mechanism != "capacity_subscription":
+            #all power plants place a bid pair of price and capacity on the market tech
+            if self.reps.dynamic_derating_factor == True and self.reps.capacity_remuneration_mechanism != "capacity_subscription" and \
+                powerplant.technology.name in globalNames.vres_and_batteries:
                 capacity_to_bid = capacity * self.reps.get_current_derating_factor(powerplant.technology.name)
             else:
                 capacity_to_bid = capacity * powerplant.technology.deratingFactor
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market,
                                                                        long_term_contract, capacity_to_bid, \
                                                                        price_to_bid, self.reps.current_tick)
+            capacity_to_bid = capacity * powerplant.technology.deratingFactor
             total_offered_capacity += capacity_to_bid
             # todo: delete this later
         # expected_capacity = self.reps.get_cleared_volume_for_market_and_time("capacity_market_future", self.reps.current_tick + market.forward_years_CM)
@@ -281,10 +283,11 @@ class CapacityMarketClearing(MarketModule):
         for pp in power_plants_list:
             tech = pp.technology.name
             capacity = pp.capacity
-            if tech in all_techs_capacity:
-                all_techs_capacity[tech] += capacity
-            else:
-                all_techs_capacity[tech] = capacity
+            if tech in globalNames.vres_and_batteries:
+                if tech in all_techs_capacity:
+                    all_techs_capacity[tech] += capacity
+                else:
+                    all_techs_capacity[tech] = capacity
 
         hourly_generation_res = pd.DataFrame()
         year_excel = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  (str(self.reps.current_year) + ".xlsx"))
@@ -301,8 +304,8 @@ class CapacityMarketClearing(MarketModule):
                 hourly_generation_res["Wind Onshore"] = df['hourly_generation'][unit]
             elif unit =="storages_discharging":
                 hourly_generation_res["Lithium ion battery 4"] = df['hourly_generation'][unit]
-            elif unit =="conventionals":
-                hourly_generation_res["hydrogen OCGT"] = df['hourly_generation'][unit]
+            # elif unit =="conventionals": # this has all the time 1 derating factor
+            #     hourly_generation_res["hydrogen OCGT"] = df['hourly_generation'][unit]
             else:
                 pass
         total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)

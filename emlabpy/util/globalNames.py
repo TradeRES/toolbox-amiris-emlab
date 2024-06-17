@@ -44,7 +44,7 @@ modules_need_bids = [ "run_financial_results", "run_create_results", "plotting",
 fuels_in_AMIRIS = ["NUCLEAR", "LIGNITE", "HARD_COAL", "NATURAL_GAS", "OIL", "OTHER", "HYDROGEN", "BIOMASS", "WASTE"]
 # source directory is toolbox-amiris-emlab  for example C:\Users\isanchezjimene\Documents\TraderesCode\toolbox-amiris-emlab
 technologies_in_SR =[ "hydrogen OCGT", "hydrogen OCGT", "Biofuel"]
-
+vres_and_batteries =[ "Solar PV large", "Wind Offshore", "Wind Onshore", "Lithium ion battery 4"]
 # yearspath = os.path.join(grandparentpath, globalNames.years_path)
 
 years_file = "years.txt"
