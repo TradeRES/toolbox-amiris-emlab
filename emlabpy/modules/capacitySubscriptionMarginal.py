@@ -4,6 +4,7 @@ import pandas as pd
 from util import globalNames
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 from os.path import dirname, realpath
 class DemandCurve:
     """
@@ -226,12 +227,14 @@ class CapacitySubscriptionMarginal(MarketModule):
         if  pd.isna(largestbid): # there are no shortages, so taking the last bid
             capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
             if self.reps.current_tick < 4:
-                ticks = range(0, self.reps.current_tick - 1)
+                ticks = range(0, self.reps.current_tick)
             else:
-                ticks = range(self.reps.current_tick - 3, self.reps.current_tick - 1)
+                ticks = range(self.reps.current_tick - 4, self.reps.current_tick)
+            lastCM = []
             for tick in ticks:
-                largestbid = self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
-                                                                              tick + capacity_market.forward_years_CM)
+                lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name,
+                                                                                            tick + capacity_market.forward_years_CM))
+            largestbid = np.mean(lastCM)
 
         calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
