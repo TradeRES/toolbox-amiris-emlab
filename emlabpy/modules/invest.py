@@ -175,7 +175,8 @@ class Investmentdecision(DefaultModule):
             capacity_market_price = 0
             if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
                 if self.reps.initialization_investment:
-                    capacity_market_price = 0
+                    capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
+                    capacity_market_price = capacity_market.InitialPrice
                 else:
                     capacity_market_price = self.calculate_capacity_subscription(long_term=False)
             elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
@@ -563,30 +564,34 @@ class Investmentdecision(DefaultModule):
 
     def calculate_capacity_subscription(self,long_term):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
-
-        if self.reps.current_tick < 3:
+        if self.reps.current_tick <= self.reps.CS_look_back_years:
             clearing_price = capacity_market.InitialPrice
         else:
-            ticks = range(self.reps.current_tick - 2, self.reps.current_tick + 1)
+            ticks = range(self.reps.current_tick - self.reps.CS_look_back_years - 1 , self.reps.current_tick)
             lastCM = []
             for tick in ticks:
-                lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name, tick))
+                lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name, tick + capacity_market.forward_years_CM))
             clearing_price = np.mean(lastCM)
         total_supply_volume = 0
-        # bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
+        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
         # sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         # clearing_price, total_supply_volume = CapacitySubscriptionMarginal.capacity_subscription_clearing(
         #     self, sorted_supply, capacity_market)
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.futureTick)
-        # if oversubscribed:
-        #     """
-        #     investors would not invest more than the subcribed capacity volume
-        #     """
-        #     clearing_price = 0
-        return clearing_price
+        capacity =0
 
+        for powerplant in self.reps.power_plants.values():
+            if powerplant.id in self.future_installed_plants_ids:
+                if powerplant.technology.deratingFactor >0:
+                    capacity += powerplant.capacity * powerplant.technology.deratingFactor
+
+        sdc = capacity_market.get_sloping_demand_curve(capacity_market.TargetCapacity)
+        if capacity > sdc.um_volume:
+            clearing_price = 0
+
+        return clearing_price
     def capacity_market_bids(self, capacity_market, long_term):
         print("technologyname;price_to_bid;capacityderated;opexprofits;fixed_on_m_cost;pending_loan")
         bids_lower_than_price_cap = 0
