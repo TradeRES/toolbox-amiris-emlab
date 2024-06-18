@@ -95,8 +95,7 @@ class LoadShedder(ImportObject):
             self.TimeSeriesFileFuture = str(parameter_value)
         elif parameter_name == 'VOLL':
             if self.name == "hydrogen":
-                self.VOLL = reps.substances[self.name].initialPrice.loc[
-                    2050]  # this is mainly for plotting, in prepare market real price is being read.
+                self.VOLL = reps.substances[self.name].initialPrice.loc[reps.start_simulation_year2050]  # this is mainly for plotting, in prepare market real price is being read.
             else:
                 self.VOLL = parameter_value
         elif parameter_name == 'ShedderCapacityMW':
@@ -144,6 +143,7 @@ class CapacityMarket(Market):
         self.years_long_term_market = 15
         self.TargetCapacity = 0
         self.net_cone = 0
+        self.InitialPrice = 0
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):

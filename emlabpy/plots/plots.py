@@ -644,7 +644,7 @@ def plot_shortages_and_ENS(shortages, load_shedded_per_group_MWh, path_to_plots)
     ENS_in_simulated_years_gwh = load_shedded_per_group_MWh.sum(axis =1) / 1000
     shortages.plot(ax=axs3[0], grid=True, legend=False)
     ENS_in_simulated_years_gwh.plot(ax=axs3[1], grid=True, legend=False)
-    axs3[0].set_ylabel('LOLE [h] (incl DSR)', fontsize='large')
+    axs3[0].set_ylabel('LOLE [h] ', fontsize='large')
     axs3[0].set_xlabel('Years', fontsize='large')
     axs3[1].set_ylabel('ENS \n [GWh]', fontsize='large')
 
@@ -1104,19 +1104,18 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
 
             # Concatenate all melted DataFrames into one
         result_df = pd.concat(melted_dfs, ignore_index=True)
-
-
         load_mapping = {
             100000: 'ENS',
             200000: 'ENS',
             300000: 'DSR',
         }
         df_replaced = result_df.replace(load_mapping)
-        axs1 = sns.catplot( data=df_replaced, x="year", y="Value",  kind="box", hue="Type")
-        plt.ylabel('ENS [MW]', fontsize='large')
-        plt.tight_layout()
-        plt.xticks(rotation=20, size = 15, ha="right")
-        axs1.savefig(path_to_plots + '/' + 'ENS.png', bbox_inches='tight', dpi=300)
+        if  df_replaced.empty == False:
+            axs1 = sns.catplot( data=df_replaced, x="year", y="Value",  kind="box", hue="Type")
+            plt.ylabel('ENS [MW]', fontsize='large')
+            plt.tight_layout()
+            plt.xticks(rotation=20, size = 15, ha="right")
+            axs1.savefig(path_to_plots + '/' + 'ENS.png', bbox_inches='tight', dpi=300)
 
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
@@ -1146,14 +1145,14 @@ def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_pe
     fig38.savefig(path_to_plots + '/' + 'Costsnonsubscription.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year):
-    load_mapping = {
-        '1': 'subscribed',
-        '2': 'unsubscribed',
-        '3': 'DSR',
-    }
-    LOLE_per_group.rename(index=load_mapping, inplace=True)
-    VOLL_per_year.rename(index=load_mapping, inplace=True)
-    max_ENS_in_a_row.rename(index=load_mapping, inplace=True)
+    # load_mapping = {
+    #     '1': 'subscribed',
+    #     '2': 'unsubscribed',
+    #     '3': 'DSR',
+    # }
+    # LOLE_per_group.rename(index=load_mapping, inplace=True)
+    # VOLL_per_year.rename(index=load_mapping, inplace=True)
+    # max_ENS_in_a_row.rename(index=load_mapping, inplace=True)
     LOLE_per_group.drop(inplace=True, index='hydrogen')
     max_ENS_in_a_row.drop(inplace=True, index='hydrogen')
     fig39, axs39 = plt.subplots(3, 1)
@@ -2220,7 +2219,7 @@ def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electrici
     # average electricity prices calculated in prepare capacpity and generation are the same
     shortage_hours = pd.DataFrame(index=years_to_generate)
     inflexible_shedding = hourly_load_shedded - reps.loadShedders["hydrogen"].ShedderCapacityMW
-    shortage_hours["all groups"] = LOLE_per_group.sum(axis = 0)
+    shortage_hours["all groups"] = LOLE_per_group.loc["1"] + LOLE_per_group.loc["2"]
 
     """
     supply ratio: hour when load is the highest 
@@ -2374,9 +2373,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                                                                                                    ticks_to_generate)
 
     costs_to_society = costs_to_society.to_frame()
+    costs_to_society.index = costs_to_society.index + reps.start_simulation_year
+    costs_to_society.sort_index(inplace=True)
     social_welfare = pd.DataFrame()
     social_welfare["OPEX+CAPEX"] =  - costs_to_society[0]
-    costs_to_society.index = years_to_generate
+
+    #costs_to_society.index = years_to_generate
     costs_to_society["shortages"] = total_load_shedded_per_year.loc[["1","2"]].sum(axis=0)*4000 +  total_load_shedded_per_year.loc[["3"]].sum(axis=0)*1500
     plot_cash_flows(cash_flows_energy_producer, new_plants_loans, calculate_capacity_mechanisms, path_to_plots)
 
@@ -2505,11 +2507,12 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots)
    # social_welfare["consumers"] =
     social_welfare["hydrogen_and_heat"] = (production_not_shedded_MWh["hydrogen_produced"]* future_fuel_prices["hydrogen"][2050] \
-                                * reps.power_generating_technologies["electrolyzer"].efficiency +\
-                                #  not inclusing industrial load becuase the
+                                * reps.power_generating_technologies["electrolyzer"].efficiency + \
+                                #  not inclusing industrial load becuase the demand is the same
                                 reps.calculate_marginal_costs_by_technology( "central gas boiler", 0 , ) * production_not_shedded_MWh["industrial_heat_demand"])
+    social_welfare["load"] = yearly_load.sum(axis = 0)*3750 - load_shedded_per_group_MWh[["1", "2"]].sum(axis=1)*4000 - load_shedded_per_group_MWh["3"]*1500
 
-    # get_production_by_consumer(reps, total_load_shedded_per_year, years_to_generate)
+# get_production_by_consumer(reps, total_load_shedded_per_year, years_to_generate)
     plot_costs_to_society(average_electricity_price, costs_to_society ,social_welfare, path_to_plots)
     extended_lifetime_tech = prepare_pp_lifetime_extension(reps)
     # section -----------------------------------------------------------------------------------------------Write Excel
@@ -3008,18 +3011,17 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    # SCENARIOS = ["NL-CS_marginal", "NL-CS_marginal_ungrouped"]
+    SCENARIOS = ["NL-CM_newcurve"] # NL-CS_marginal_2004
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
-
-    SCENARIOS = ["NL-CS_marginal_7years"]
+   #  SCENARIOS = ["NL-CS_marginal_7years"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonSR_5.xlsx"
+    results_excel = "comparisonCM2004.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
-    existing_scenario = False
+    existing_scenario = True
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:

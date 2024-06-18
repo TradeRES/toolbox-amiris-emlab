@@ -1346,7 +1346,10 @@
             "CS_subscribed"
         ],
         "table_options": {
-            "CapacityMarkets": {},
+            "CapacityMarkets": {
+                "read_until_row": true,
+                "read_until_col": true
+            },
             "ElectricitySpotMarkets": {
                 "read_until_col": true,
                 "read_until_row": true
@@ -1462,17 +1465,17 @@
                 "4": "float",
                 "5": "string",
                 "6": "string",
-                "7": "boolean",
-                "8": "string",
-                "9": "string",
-                "10": "string",
-                "11": "string"
+                "7": "string",
+                "8": "boolean",
+                "9": "float",
+                "10": "float",
+                "11": "float",
+                "12": "string"
             },
             "ElectricitySpotMarkets": {
                 "0": "string",
                 "1": "float",
-                "2": "string",
-                "3": "float"
+                "2": "string"
             },
             "EnergyConsumers": {
                 "0": "string",

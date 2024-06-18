@@ -561,23 +561,30 @@ class Investmentdecision(DefaultModule):
         #     print("peaksupply " + str(peaksupply) + "peakExpectedDemand " + str(peakExpectedDemand))
         return capacity_market_price
 
-    def calculate_capacity_subscription(self,long_term ):
+    def calculate_capacity_subscription(self,long_term):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
-        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
-        sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
-        clearing_price, total_supply_volume = CapacitySubscriptionMarginal.capacity_subscription_clearing(
-            self, sorted_supply, capacity_market )
 
+        if self.reps.current_tick < 3:
+            clearing_price = capacity_market.InitialPrice
+        else:
+            ticks = range(self.reps.current_tick - 2, self.reps.current_tick + 1)
+            lastCM = []
+            for tick in ticks:
+                lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name, tick))
+            clearing_price = np.mean(lastCM)
+        total_supply_volume = 0
+        # bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
+        # sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
+        # clearing_price, total_supply_volume = CapacitySubscriptionMarginal.capacity_subscription_clearing(
+        #     self, sorted_supply, capacity_market)
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.futureTick)
-        #
         # if oversubscribed:
         #     """
         #     investors would not invest more than the subcribed capacity volume
         #     """
         #     clearing_price = 0
-
         return clearing_price
 
     def capacity_market_bids(self, capacity_market, long_term):
