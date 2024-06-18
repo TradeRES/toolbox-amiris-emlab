@@ -729,6 +729,7 @@ def evaluate_dispatch_and_capped_revenues(
     demand_results: pd.DataFrame,
     renewables: pd.DataFrame,
     power_plants: pd.DataFrame,
+    storages: pd.DataFrame,
     generation_per_plant: pd.DataFrame,
     renewables_energy_carriers: pd.DataFrame = None,
     exchange_results: pd.DataFrame = None,
@@ -745,7 +746,7 @@ def evaluate_dispatch_and_capped_revenues(
     """
     final_storage_levels = pd.DataFrame()
     dispatch = pd.DataFrame()
-    agent_capped_revenue = pd.DataFrame()
+    agent_capped_revenue = pd.DataFrame(columns=["CAPPED_REVENUES"])
     power_prices = prepare_power_prices(exchange_results)
     warning_raised = False
     for key, val in operator_results.items():
@@ -757,7 +758,9 @@ def evaluate_dispatch_and_capped_revenues(
             for group in operator_results.groupby("AgentId"):
                 strike_price = extract_strike_price_for(group[0], renewables, warning_raised)
                 warning_raised = True
-                agent_capped_revenue[group[0]] = calc_capped_revenue(group[1], power_prices, strike_price)
+                agent_capped_revenue.at[group[0], "CAPPED_REVENUES"] = calc_capped_revenue(
+                    group[1], power_prices, strike_price
+                )
                 dispatch["res"] += group[1]["AwardedPowerInMWH"]
             if key == "VariableRenewableOperator":
                 dispatch = extract_generation_by_energy_carrier(operator_results, renewables_energy_carriers, dispatch)
@@ -780,6 +783,11 @@ def evaluate_dispatch_and_capped_revenues(
                 columns=["value"],
             )
             for group in storage_results.groupby("AgentId"):
+                strike_price = extract_strike_price_for(group[0], storages, warning_raised)
+                warning_raised = True
+                agent_capped_revenue.at[group[0], "CAPPED_REVENUES"] = calc_capped_revenue(
+                    group[1], power_prices, strike_price, col_name="AwardedDischargePowerInMWH"
+                )
                 dispatch["storages_discharging"] += group[1]["AwardedDischargePowerInMWH"]
                 dispatch["storages_charging"] += group[1]["AwardedChargePowerInMWH"]
                 dispatch["storages_aggregated_level"] += group[1]["StoredEnergyInMWH"]
@@ -811,7 +819,7 @@ def evaluate_dispatch_and_capped_revenues(
     for group in generation_per_plant.groupby("ID"):
         strike_price = extract_strike_price_for(group[0], power_plants, warning_raised)
         warning_raised = True
-        agent_capped_revenue[group[0]] = calc_capped_revenue(
+        agent_capped_revenue.at[group[0], "CAPPED_REVENUES"] = calc_capped_revenue(
             group[1], power_prices, strike_price, col_name="DispatchedPowerInMWHperPlant"
         )
 
@@ -830,7 +838,7 @@ def evaluate_dispatch_and_capped_revenues(
 
     return {
         "generation_per_group": dispatch,
-        "capped_revenues_per_plant": agent_capped_revenue.reset_index(drop=True),
+        "capped_revenues_per_plant": agent_capped_revenue,
         "final_storage_levels": final_storage_levels,
     }
 
@@ -895,10 +903,10 @@ def extract_strike_price_for(agent_id: int, data_set: pd.DataFrame, warning_rais
 
 def calc_capped_revenue(
     generation: pd.DataFrame, power_prices: pd.DataFrame, strike_price: float, col_name: str = "AwardedPowerInMWH"
-) -> pd.Series:
+) -> float:
     """Returns a series with the minimum of award * power_price and award * strike_price per hour"""
     price = np.where(power_prices > strike_price, strike_price, power_prices)
     if len(generation) < len(price):
         generation = generation.reindex(power_prices.index)
-        generation.loc[generation["DispatchedPowerInMWHperPlant"].isna(), "DispatchedPowerInMWHperPlant"] = 0
-    return generation[col_name] * price
+        generation.loc[generation[col_name].isna(), col_name] = 0
+    return (generation[col_name] * price).sum()

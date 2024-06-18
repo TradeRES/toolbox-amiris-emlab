@@ -221,6 +221,7 @@ workflow:
           - renewables_energy_carriers
           - renewables
           - powerPlants
+          - storages
         write_to_dmgr: all_outputs_per_agent
       args:
         write: True
@@ -229,4 +230,3 @@ workflow:
         file_name_res_infeed: hourly_res_infeed.csv
         file_name_generation: hourly_generation_per_group.csv
         file_name_final_storage_levels: final_storage_levels.csv
-        file_name_capped_revenues: capped_revenues_per_plant.csv

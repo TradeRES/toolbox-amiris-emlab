@@ -268,6 +268,7 @@ def aggregate_results(data_manager, config, params):
     renewables_energy_carriers = data_manager["renewables_energy_carriers"]
     renewables = data_manager["renewables"]
     power_plants = data_manager["powerPlants"]
+    storages = data_manager["storages"]
     files = get_all_csv_files_in_folder(folder=folder_name)
     biogas_results = pd.DataFrame()  # Safeguard if no biogas is in the system
     generation_per_plant = pd.DataFrame  # Safeguard if no conventionals are in the system
@@ -358,6 +359,7 @@ def aggregate_results(data_manager, config, params):
         residual_load_results[DEMAND[0]],
         renewables,
         power_plants,
+        storages,
         generation_per_plant,
         renewables_energy_carriers,
         exchange_results,
@@ -370,6 +372,11 @@ def aggregate_results(data_manager, config, params):
         to_concat.append(pd.concat(conventional_series, axis=1))
 
     all_outputs_per_agent = pd.concat(to_concat)
+    all_outputs_per_agent.index = all_outputs_per_agent.index.astype("str")
+    capped_revenues_per_plant.index = capped_revenues_per_plant.index.astype("str")
+    all_outputs_per_agent = pd.merge(
+        all_outputs_per_agent, capped_revenues_per_plant, left_index=True, right_index=True, how="outer"
+    )
     all_outputs_per_agent[AmirisOutputs.CONTRIBUTION_MARGIN_IN_EURO.name] = (
         all_outputs_per_agent[AmirisOutputs.REVENUES_IN_EURO.name]
         - all_outputs_per_agent[AmirisOutputs.VARIABLE_COSTS_IN_EURO.name]
@@ -395,9 +402,6 @@ def aggregate_results(data_manager, config, params):
                 config["user"]["global"]["output"]["pbOutputProcessed"]
                 + params["args"]["file_name_final_storage_levels"]
             )
-        capped_revenues_per_plant.to_csv(
-            config["user"]["global"]["output"]["pbOutputProcessed"] + params["args"]["file_name_capped_revenues"]
-        )
 
     with data_manager.overwrite:
         data_manager[params["data"]["write_to_dmgr"]] = all_outputs_per_agent
