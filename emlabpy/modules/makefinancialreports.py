@@ -262,14 +262,14 @@ class CreatingFinancialReports(DefaultModule):
                 bid = avoided_costs_non_subscription # reducing to half bids because of initializing the last year bids were 0
                 self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
                 self.reps.dbrw.stage_consumer_subscribed_yearly(consumer.name, consumer.subscribed_yearly[self.reps.current_tick] , self.reps.current_tick + 1)
-                self.reps.dbrw.stage_consumers_bids(consumer.name, bid, self.reps.current_tick)
+                #self.reps.dbrw.stage_consumers_bids(consumer.name, bid, self.reps.current_tick)
 
             else:
                 last_year_bid  =  self.reps.get_last_year_bid(consumer.name)
                 bid = last_year_bid + 0.2 * ( avoided_costs_non_subscription - last_year_bid)
                 #bid = avoided_costs_non_subscription
                 consumer.bid = bid
-                self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
+                #self.reps.dbrw.stage_consumers_bids(consumer.name, consumer.bid, self.reps.current_tick)
                 """
                 changing consumer subscription percentage 
                 for the first year there is no estimation of a change in next year subcription

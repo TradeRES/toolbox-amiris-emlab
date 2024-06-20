@@ -223,9 +223,9 @@ class CapacitySubscriptionMarginal(MarketModule):
         largestbid = bid_per_consumer_group["bid"].max()
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         if self.reps.current_tick <= self.reps.CS_look_back_years:
-            ticks = range(0, self.reps.current_tick)
+            ticks = range(capacity_market.forward_years_CM, self.reps.current_tick + capacity_market.forward_years_CM)
         else:
-            ticks = range(self.reps.current_tick - self.reps.CS_look_back_years - 1, self.reps.current_tick)
+            ticks = range(self.reps.current_tick - self.reps.CS_look_back_years, self.reps.current_tick)
 
         # lastCM = []
         # for tick in ticks:
@@ -246,48 +246,50 @@ class CapacitySubscriptionMarginal(MarketModule):
         path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', (str(self.reps.current_tick+ capacity_market.forward_years_CM) +"bid_per_consumer_group.csv"))
         bid_per_consumer_group.to_csv(path)
 
-        # bid_per_consumer_group = self.mean_demand_values(ticks, bid_per_consumer_group)
-        # if self.reps.CS_look_back_years>0:
-        #     bid_per_consumer_group = self.mean_demand_values(bid_per_consumer_group)
-        # else:
-        #     pass
+        if self.reps.CS_look_back_years>0:
+            bid_per_consumer_group = self.mean_demand_values(ticks, bid_per_consumer_group, self.reps.current_tick + capacity_market.forward_years_CM)
+            bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
+        else:
+            pass
 
         return bid_per_consumer_group
 
-    def mean_demand_values(self, ticks, bid_per_consumer_group):
+    def mean_demand_values(self, ticks, bid_per_consumer_group, CS_tick):
         past_consumer_bids = dict()
         for tick in ticks:
             path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', str(tick) +"bid_per_consumer_group.csv")
             if os.path.exists(path):
-                past_consumer_bids[tick] = pd.read_csv(path, delimiter=";" )
+                past_consumer_bids[tick] = pd.read_csv(path )
             else:
                 raise Exception("File not found")
         interpolated_bids = pd.DataFrame()
-        for consumer in self.reps.get_CS_consumer_descending_WTP():
+        consumers_names = self.reps.get_CS_consumer_names()
+        consumers_names.append("DSR")
+        for consumer in consumers_names:
             bids= pd.DataFrame()
             volumes= pd.DataFrame()
             y1_interp = pd.DataFrame()
 
-            current_year_df  = bid_per_consumer_group[bid_per_consumer_group["consumer_name"] == consumer.name]
+            current_year_df  = bid_per_consumer_group[bid_per_consumer_group["consumer_name"] == consumer]
             current_year_df.sort_values(by="bid", inplace=True, ascending=False)
             current_year_df['cumulative_vol'] = current_year_df['volume'].cumsum()
-            bids[self.reps.current_tick] = current_year_df["bid"].reset_index(drop=True)
-            volumes[self.reps.current_tick] = current_year_df["cumulative_vol"].reset_index(drop=True)
+            bids[CS_tick] = current_year_df["bid"].reset_index(drop=True)
+            volumes[CS_tick] = current_year_df["cumulative_vol"].reset_index(drop=True)
 
             for tick in ticks:
                 df_year = past_consumer_bids[tick]
-                df = df_year[df_year["consumer_name"] == consumer.name]
+                df = df_year[df_year["consumer_name"] == consumer]
                 df.sort_values(by="bid", inplace=True, ascending=False)
                 df['cumulative_vol'] = df['volume'].cumsum()
                 bids[tick] = df["bid"].reset_index(drop=True)
                 volumes[tick] = df["cumulative_vol"].reset_index(drop=True)
             unique_volume = pd.Series(volumes.values.flatten()).drop_duplicates()
             unique_volume_sorted = unique_volume.sort_values(ascending=True)
-
+            unique_volume_sorted.reset_index(drop=True, inplace=True)
             for tick in volumes.columns.values:
                 y1_interp[tick] = np.interp(unique_volume_sorted.values, volumes[tick]  ,  bids[tick], right=0)
                 # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post')
-                new_rows = {'consumer_name': [consumer.name]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
+                new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
                 new_df = pd.DataFrame(new_rows)
                 interpolated_bids =interpolated_bids.append(new_df, ignore_index=True)
             # plt.step(unique_volume_sorted.values, y1_interp.mean(axis=1), where='post', linestyle='--', label='Average Line')

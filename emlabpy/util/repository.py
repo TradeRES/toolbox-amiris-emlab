@@ -102,7 +102,7 @@ class Repository:
         self.change_IRR = False
         self.factor_fromVOLL = 1
         self.reliability_option_strike_price = "NOTSET"
-        self.CS_look_back_years = 0
+        self.CS_look_back_years = 1
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -937,7 +937,11 @@ class Repository:
         except StopIteration:
             return None
 
-
+    def get_CS_consumer_names(self):
+        try:
+            return [i.name for i in self.cs_consumers.values()]
+        except StopIteration:
+            return None
     def get_CS_subscribed_consumers_descending_bid(self):
         try:
             # subscribed = [i for i in self.cs_consumers.values() if i.subscribed_yearly > 0]
@@ -970,11 +974,11 @@ class Repository:
         except StopIteration:
             return None
 
-    def get_bid_for_plant_and_tick(self, power_plant_name, tick) -> Optional[CapacityMarket]:
-        try:
-            return next(i for i in self.bids.values() if
-                        i.tick == tick and i.plant == power_plant_name)
-        except StopIteration:
+    # def get_bid_for_plant_and_tick(self, power_plant_name, tick) -> Optional[CapacityMarket]:
+    #     try:
+    #         return next(i for i in self.bids.values() if
+    #                     i.tick == tick and i.plant == power_plant_name)
+    #     except StopIteration:
             return None
 
     def get_accepted_CM_bids(self, tick):
