@@ -102,7 +102,7 @@ class Repository:
         self.change_IRR = False
         self.factor_fromVOLL = 1
         self.reliability_option_strike_price = "NOTSET"
-        self.CS_look_back_years = 2
+        self.CS_look_back_years = 1
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()

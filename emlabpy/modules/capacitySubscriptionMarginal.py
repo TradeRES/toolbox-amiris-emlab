@@ -287,9 +287,12 @@ class CapacitySubscriptionMarginal(MarketModule):
             unique_volume_sorted = unique_volume.sort_values(ascending=True)
             unique_volume_sorted.reset_index(drop=True, inplace=True)
             for tick in volumes.columns.values:
-                y1_interp[tick] = np.interp(unique_volume_sorted.values, volumes[tick]  ,  bids[tick], right=0)
-                # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post')
-                new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
+                if  len(unique_volume_sorted) ==0:
+                    new_rows = {'consumer_name': [consumer], 'bid': 0, "volume":0}
+                else:
+                    y1_interp[tick] = np.interp(unique_volume_sorted.values, volumes[tick]  ,  bids[tick], right=0)
+                    # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post')
+                    new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
                 new_df = pd.DataFrame(new_rows)
                 interpolated_bids =interpolated_bids.append(new_df, ignore_index=True)
             # plt.step(unique_volume_sorted.values, y1_interp.mean(axis=1), where='post', linestyle='--', label='Average Line')
