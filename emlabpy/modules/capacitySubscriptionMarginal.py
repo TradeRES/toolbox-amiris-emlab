@@ -246,7 +246,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', (str(self.reps.current_tick+ capacity_market.forward_years_CM) +"bid_per_consumer_group.csv"))
         bid_per_consumer_group.to_csv(path)
 
-        if self.reps.CS_look_back_years>0:
+        if self.reps.CS_look_back_years>0 and self.reps.current_tick>=self.reps.CS_look_back_years:
             bid_per_consumer_group = self.mean_demand_values(ticks, bid_per_consumer_group, self.reps.current_tick + capacity_market.forward_years_CM)
             bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
         else:
