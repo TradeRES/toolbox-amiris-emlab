@@ -417,6 +417,12 @@ try:
             db_emlab.commit('Clock intialization')
             print('Done initializing clock (tick 0)')
 
+            destination_folder = os.path.join(grandparentpath, 'temporal_results')
+            for file_name in os.listdir(destination_folder):
+                file_path = os.path.join(destination_folder, file_name)
+                if os.path.isfile(file_path) and not file_name.endswith('.txt'):
+                    os.remove(file_path)
+
             if available_years_data == True:
                 prepare_AMIRIS_data(StartYear, 0, fix_demand_to_representative_year,
                                     fix_profiles_to_representative_year,
@@ -494,11 +500,6 @@ if start_plot == True:
     from_workflow = True
 
     destination_folder = os.path.join(grandparentpath, 'temporal_results')
-    for file_name in os.listdir(destination_folder):
-        file_path = os.path.join(destination_folder, file_name)
-        if os.path.isfile(file_path) and not file_name.endswith('.txt'):
-            os.remove(file_path)
-
     copy_files(os.path.join(grandparentpath, '.spinetoolbox\\items\\amiris_db'), destination_folder)
     copy_files(os.path.join(grandparentpath, 'amiris_workflow\\output'), destination_folder)
     copy_files(os.path.join(grandparentpath, '.spinetoolbox\\items\\emlabdb'), destination_folder)
