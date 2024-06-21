@@ -567,7 +567,7 @@ class Investmentdecision(DefaultModule):
         if self.reps.current_tick <= self.reps.CS_look_back_years:
             clearing_price = capacity_market.InitialPrice
         else:
-            ticks = range(self.reps.current_tick - self.reps.CS_look_back_years - 1 , self.reps.current_tick)
+            ticks = range(self.reps.current_tick - self.reps.CS_look_back_years, self.reps.current_tick + 1)
             lastCM = []
             for tick in ticks:
                 lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name, tick + capacity_market.forward_years_CM))
