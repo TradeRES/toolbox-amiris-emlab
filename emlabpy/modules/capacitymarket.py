@@ -89,11 +89,11 @@ class CapacityMarketSubmitBids(MarketModule):
                 if powerplant.status == globalNames.power_plant_status_inPipeline:
                     long_term_contract = True
 
-            print(powerplant.technology.name +
-                  powerplant.name + ";" + str(price_to_bid) + ";" + str(
-                capacity * powerplant.technology.deratingFactor) + ";" + str(profits) + ";" + str(
-                fixed_on_m_cost) + ";" + str(
-                pending_loan))
+            # print(powerplant.technology.name +
+            #       powerplant.name + ";" + str(price_to_bid) + ";" + str(
+            #     capacity * powerplant.technology.deratingFactor) + ";" + str(profits) + ";" + str(
+            #     fixed_on_m_cost) + ";" + str(
+            #     pending_loan))
 
             #all power plants place a bid pair of price and capacity on the market tech
             if self.reps.dynamic_derating_factor == True and self.reps.capacity_remuneration_mechanism != "capacity_subscription" and \

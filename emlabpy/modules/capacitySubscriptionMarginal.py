@@ -125,8 +125,10 @@ class CapacitySubscriptionMarginal(MarketModule):
         grouped_accepted_bids = bid_per_consumer_group.groupby('consumer_name').agg({'accepted_volume': 'sum'}).reset_index()
 
         for i, consumer in grouped_accepted_bids.iterrows():
-            if consumer.consumer_name != "DSR":
-                self.reps.dbrw.stage_subscribed_volume_yearly(consumer.consumer_name, consumer.accepted_volume,  self.reps.current_tick + 1)
+            # print(consumer.consumer_name)
+            # print(consumer.accepted_volume)
+            # if consumer.consumer_name != "DSR":
+            self.reps.dbrw.stage_subscribed_volume_yearly(consumer.consumer_name, consumer.accepted_volume,  self.reps.current_tick + capacity_market.forward_years_CM)
 
 
         total = 0
@@ -150,6 +152,7 @@ class CapacitySubscriptionMarginal(MarketModule):
             plt.title(self.reps.runningModule + " " + str(self.reps.current_year))
             plt.xlabel('Quantity')
             plt.ylabel('Price')
+            # plt.show()
             # plt.ylim(0, 4000)
             path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results')
             plt.savefig(os.path.join( path , str(self.reps.current_year)+ '.png') ,bbox_inches='tight', dpi=300)
@@ -281,8 +284,13 @@ class CapacitySubscriptionMarginal(MarketModule):
                 df = df_year[df_year["consumer_name"] == consumer]
                 df.sort_values(by="bid", inplace=True, ascending=False)
                 df['cumulative_vol'] = df['volume'].cumsum()
-                bids[tick] = df["bid"].reset_index(drop=True)
-                volumes[tick] = df["cumulative_vol"].reset_index(drop=True)
+                df["bid"].reset_index(drop=True, inplace=True)
+                df["cumulative_vol"].reset_index(drop=True, inplace=True)
+                bids = pd.concat([bids,df["bid"]],axis=1)
+                bids = bids.rename(columns={'bid': tick})
+                volumes =pd.concat([volumes,df["cumulative_vol"]],axis=1)
+                volumes = volumes.rename(columns={'cumulative_vol': tick})
+
             bids.fillna(0, inplace=True)
             volumes.fillna(0, inplace=True)
             unique_volume = pd.Series(volumes.values.flatten()).drop_duplicates()
