@@ -225,7 +225,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         if self.reps.current_tick <= self.reps.CS_look_back_years:
             ticks = range(capacity_market.forward_years_CM, self.reps.current_tick + capacity_market.forward_years_CM)
         else:
-            ticks = range(self.reps.current_tick - self.reps.CS_look_back_years, self.reps.current_tick)
+            ticks = range(self.reps.current_tick + capacity_market.forward_years_CM - self.reps.CS_look_back_years, self.reps.current_tick+ capacity_market.forward_years_CM)
 
         # lastCM = []
         # for tick in ticks:
@@ -240,7 +240,7 @@ class CapacitySubscriptionMarginal(MarketModule):
             #     bid = 0
             # else:
             #     bid = subscribed_consumers[consumer.name]
-            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":subscribed_consumers[consumer.name] }
+            new_row = {"consumer_name":consumer.name, 'volume': 1, "bid":subscribed_consumers[consumer.name] }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
         path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', (str(self.reps.current_tick+ capacity_market.forward_years_CM) +"bid_per_consumer_group.csv"))
@@ -283,6 +283,8 @@ class CapacitySubscriptionMarginal(MarketModule):
                 df['cumulative_vol'] = df['volume'].cumsum()
                 bids[tick] = df["bid"].reset_index(drop=True)
                 volumes[tick] = df["cumulative_vol"].reset_index(drop=True)
+            bids.fillna(0, inplace=True)
+            volumes.fillna(0, inplace=True)
             unique_volume = pd.Series(volumes.values.flatten()).drop_duplicates()
             unique_volume_sorted = unique_volume.sort_values(ascending=True)
             unique_volume_sorted.reset_index(drop=True, inplace=True)
@@ -291,13 +293,15 @@ class CapacitySubscriptionMarginal(MarketModule):
                     new_rows = {'consumer_name': [consumer], 'bid': 0, "volume":0}
                 else:
                     y1_interp[tick] = np.interp(unique_volume_sorted.values, volumes[tick]  ,  bids[tick], right=0)
-                    # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post')
-                    new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
-                new_df = pd.DataFrame(new_rows)
-                interpolated_bids =interpolated_bids.append(new_df, ignore_index=True)
+                    # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post',  label=tick)
+            new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
+            new_df = pd.DataFrame(new_rows)
+            interpolated_bids =interpolated_bids.append(new_df, ignore_index=True)
             # plt.step(unique_volume_sorted.values, y1_interp.mean(axis=1), where='post', linestyle='--', label='Average Line')
+            # plt.title(consumer)
+            # plt.legend()
             # plt.show()
-            # print("next consumer")
+            # print("next consumer" + consumer)
         return interpolated_bids
 
 
