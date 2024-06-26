@@ -267,7 +267,7 @@ class CapacitySubscriptionMarginal(MarketModule):
                 raise Exception("File not found")
         interpolated_bids = pd.DataFrame()
         consumers_names = self.reps.get_CS_consumer_names()
-        consumers_names.append("DSR")
+
         for consumer in consumers_names:
             bids= pd.DataFrame()
             volumes= pd.DataFrame()
@@ -304,7 +304,7 @@ class CapacitySubscriptionMarginal(MarketModule):
                     # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post',  label=tick)
             new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
             new_df = pd.DataFrame(new_rows)
-            interpolated_bids =interpolated_bids.append(new_df, ignore_index=True)
+            interpolated_bids = interpolated_bids.append(new_df, ignore_index=True)
             # plt.step(unique_volume_sorted.values, y1_interp.mean(axis=1), where='post', linestyle='--', label='Average Line')
             # plt.title(consumer)
             # plt.legend()
