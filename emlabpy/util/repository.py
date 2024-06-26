@@ -933,7 +933,8 @@ class Repository:
 
     def get_CS_consumer_descending_WTP(self):
         try:
-            return sorted(self.cs_consumers.values(), key=lambda x: x.WTP, reverse=True)
+            filtered = [consumer for consumer in self.cs_consumers.values() if consumer.name != "DSR"]
+            return sorted(filtered, key=lambda x: x.WTP , reverse=True )
         except StopIteration:
             return None
 
