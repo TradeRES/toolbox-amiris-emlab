@@ -236,14 +236,16 @@ class CapacitySubscriptionMarginal(MarketModule):
         #                                                                                 tick + capacity_market.forward_years_CM))
         # average_CS = np.mean(lastCM)
 
-        calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")
+        """
+        adding the marginal value (1 MW of more capacity) per consumer
+        """
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
             # if subscribed_consumers[consumer.name] ==0:
             #     # bid = average_CS
             #     bid = 0
             # else:
             #     bid = subscribed_consumers[consumer.name]
-            new_row = {"consumer_name":consumer.name, 'volume': 1, "bid":subscribed_consumers[consumer.name] }
+            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":subscribed_consumers[consumer.name] }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
         path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', (str(self.reps.current_tick+ capacity_market.forward_years_CM) +"bid_per_consumer_group.csv"))
