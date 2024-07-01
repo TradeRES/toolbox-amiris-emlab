@@ -254,7 +254,6 @@ class CapacitySubscriptionMarginal(MarketModule):
             bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
         else:
             pass
-
         return bid_per_consumer_group
 
     def mean_demand_values(self, ticks, bid_per_consumer_group, CS_tick):
@@ -302,14 +301,15 @@ class CapacitySubscriptionMarginal(MarketModule):
                 else:
                     y1_interp[tick] = np.interp(unique_volume_sorted.values, volumes[tick]  ,  bids[tick], right=0)
                     # plt.step(unique_volume_sorted.values, y1_interp[tick], where='post',  label=tick)
-            new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":unique_volume_sorted}
+            volume = np.diff(unique_volume_sorted, prepend=0)
+            new_rows = {'consumer_name': [consumer]*len(unique_volume_sorted), 'bid': y1_interp.mean(axis=1), "volume":volume}
             new_df = pd.DataFrame(new_rows)
             interpolated_bids = interpolated_bids.append(new_df, ignore_index=True)
             # plt.step(unique_volume_sorted.values, y1_interp.mean(axis=1), where='post', linestyle='--', label='Average Line')
             # plt.title(consumer)
             # plt.legend()
             # plt.show()
-            # print("next consumer" + consumer)
+            # print("next consumer " + consumer)
         return interpolated_bids
 
 
