@@ -238,8 +238,8 @@ class CapacitySubscriptionMarginal(MarketModule):
         """
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
             bid = subscribed_consumers[consumer.name]
-            if bid <10000:
-                bid = 10000
+            if bid <9000:
+                bid = 9000
             new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":bid }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)

@@ -565,11 +565,15 @@ class Investmentdecision(DefaultModule):
     def calculate_capacity_subscription(self,long_term):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
 
-        if self.reps.current_tick <= self.reps.CS_look_back_years:
+        lastCM = []
+        if self.reps.current_tick <capacity_market.forward_years_CM:
             clearing_price = capacity_market.InitialPrice
+        elif self.reps.current_tick <= self.reps.CS_look_back_years:
+            for tick in range(0, self.reps.current_tick):
+                lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name, tick + capacity_market.forward_years_CM))
+            clearing_price = np.mean(lastCM)
         else:
             ticks = range(self.reps.current_tick - self.reps.CS_look_back_years - 1 , self.reps.current_tick)
-            lastCM = []
             for tick in ticks:
                 lastCM.append(self.reps.get_market_clearing_point_price_for_market_and_time(capacity_market.name, tick + capacity_market.forward_years_CM))
             clearing_price = np.mean(lastCM)
