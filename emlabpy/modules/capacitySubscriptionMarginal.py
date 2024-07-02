@@ -125,9 +125,6 @@ class CapacitySubscriptionMarginal(MarketModule):
         grouped_accepted_bids = bid_per_consumer_group.groupby('consumer_name').agg({'accepted_volume': 'sum'}).reset_index()
 
         for i, consumer in grouped_accepted_bids.iterrows():
-            # print(consumer.consumer_name)
-            # print(consumer.accepted_volume)
-            # if consumer.consumer_name != "DSR":
             self.reps.dbrw.stage_subscribed_volume_yearly(consumer.consumer_name, consumer.accepted_volume,  self.reps.current_tick + capacity_market.forward_years_CM)
 
 
@@ -237,15 +234,13 @@ class CapacitySubscriptionMarginal(MarketModule):
         # average_CS = np.mean(lastCM)
 
         """
-        adding the marginal value (1 MW of more capacity) per consumer
+        adding the marginal value (1 MW of more capacity) per consumer to subscribed consumers, that conserve volume
         """
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
-            # if subscribed_consumers[consumer.name] ==0:
-            #     # bid = average_CS
-            #     bid = 0
-            # else:
-            #     bid = subscribed_consumers[consumer.name]
-            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":subscribed_consumers[consumer.name] }
+            bid = subscribed_consumers[consumer.name]
+            if bid <10000:
+                bid = 10000
+            new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":bid }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)
         path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', (str(self.reps.current_tick+ capacity_market.forward_years_CM) +"bid_per_consumer_group.csv"))
@@ -297,6 +292,9 @@ class CapacitySubscriptionMarginal(MarketModule):
             unique_volume = pd.Series(volumes.values.flatten()).drop_duplicates()
             unique_volume_sorted = unique_volume.sort_values(ascending=True)
             unique_volume_sorted.reset_index(drop=True, inplace=True)
+            # print("next consumer " + consumer)
+            # print(bids)
+            # print(volumes)
             for tick in volumes.columns.values:
                 if  len(unique_volume_sorted) ==0:
                     new_rows = {'consumer_name': [consumer], 'bid': 0, "volume":0}
@@ -311,7 +309,6 @@ class CapacitySubscriptionMarginal(MarketModule):
             # plt.title(consumer)
             # plt.legend()
             # plt.show()
-            # print("next consumer " + consumer)
         return interpolated_bids
 
 
