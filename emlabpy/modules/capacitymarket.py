@@ -286,20 +286,20 @@ class CapacityMarketClearing(MarketModule):
                     all_techs_capacity[tech] = capacity
 
         hourly_generation_res = pd.DataFrame()
-        year_excel = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  (str(self.reps.current_year) + ".xlsx"))
-        df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "hourly_generation"])
+        future_csv = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  "hourly_generation_per_group.csv")
+        df = pd.read_csv(future_csv, sep=",", index_col=0)
         hourly_load_shedders = pd.DataFrame()
-        for unit in df['hourly_generation'].columns.values:
+        for unit, series in df.items():
             if unit[0:4] == "unit"  and unit[5:] != "8888888": # excluding electrolyzers shedding
-                hourly_load_shedders[unit[5:]] = df['hourly_generation'][unit]
+                hourly_load_shedders[unit[5:]] = series
             elif unit =="PV":
-                hourly_generation_res["Solar PV large"] = df['hourly_generation'][unit]
+                hourly_generation_res["Solar PV large"] = series
             elif unit =="WindOff":
-                hourly_generation_res["Wind Offshore"] = df['hourly_generation'][unit]
+                hourly_generation_res["Wind Offshore"] = series
             elif unit =="WindOn":
-                hourly_generation_res["Wind Onshore"] = df['hourly_generation'][unit]
+                hourly_generation_res["Wind Onshore"] = series
             elif unit =="storages_discharging":
-                hourly_generation_res["Lithium ion battery 4"] = df['hourly_generation'][unit]
+                hourly_generation_res["Lithium ion battery 4"] = series
             # elif unit =="conventionals": # this has all the time 1 derating factor
             #     hourly_generation_res["hydrogen OCGT"] = df['hourly_generation'][unit]
             else:
@@ -316,7 +316,7 @@ class CapacityMarketClearing(MarketModule):
                 derating_factors[tech] = average_generation / installed_capacity
             else:
                 pass
-        # print(derating_factors)
+
         self.reps.dbrw.stage_derating_factor(derating_factors, self.reps.current_tick)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
