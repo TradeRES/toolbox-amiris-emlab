@@ -334,8 +334,6 @@ class PrepareMarket(DefaultModule):
                 Premium.append("-")
                 Lcoe.append("-")
 
-
-
                 if self.reps.reliability_option_strike_price != "NOTSET" and plantsinCM != None:
                     if pp.name in plantsinCM:
                         strike_price_renewables.append(self.reps.reliability_option_strike_price)
@@ -343,9 +341,6 @@ class PrepareMarket(DefaultModule):
                         strike_price_renewables.append(None)
                 else:
                     strike_price_renewables.append(None)
-
-
-
 
         d = {'identifier': identifier, 'InstalledPowerInMW': InstalledPowerInMW,
              'OpexVarInEURperMWH': OpexVarInEURperMWH,
@@ -398,6 +393,10 @@ class PrepareMarket(DefaultModule):
         InstalledPowerInMW = []
         StorageType = []
         Strategist= []
+
+        strike_price = []
+        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick)
+
         for pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":
                 identifier.append(pp.id)
@@ -408,11 +407,18 @@ class PrepareMarket(DefaultModule):
                 InstalledPowerInMW.append(pp.capacity)
                 Strategist.append("MULTI_AGENT_MEDIAN")
                 StorageType.append("STORAGE")
+                if self.reps.reliability_option_strike_price != "NOTSET" and plantsinCM != None:
+                    if pp.name in plantsinCM:
+                        strike_price.append(self.reps.reliability_option_strike_price)
+                    else:
+                        strike_price.append(None)
+                else:
+                    strike_price.append(None)
 
         d = {'identifier': identifier, 'StorageType': StorageType, 'EnergyToPowerRatio': EnergyToPowerRatio,
              'ChargingEfficiency': ChargingEfficiency,
              'DischargingEfficiency': DischargingEfficiency, 'InitialEnergyLevelInMWH': InitialEnergyLevelInMWH,
-             'InstalledPowerInMW': InstalledPowerInMW, "Strategist" : Strategist }
+             'InstalledPowerInMW': InstalledPowerInMW, "Strategist" : Strategist, "strike_price": strike_price }
         # @DLR: missing SelfDischargeRatePerHour in excel
 
         df = pd.DataFrame(data=d)
