@@ -122,8 +122,7 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         print("capacity market clearing")
-        if self.reps.current_tick >=4:
-            self.calculate_derating_factor()
+        self.calculate_derating_factor()
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
@@ -317,7 +316,7 @@ class CapacityMarketClearing(MarketModule):
                 derating_factors[tech] = average_generation / installed_capacity
             else:
                 pass
-
+        # print(derating_factors)
         self.reps.dbrw.stage_derating_factor(derating_factors, self.reps.current_tick)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):

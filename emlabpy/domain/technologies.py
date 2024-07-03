@@ -10,6 +10,7 @@ from domain.trends import *
 import logging
 import pandas as pd
 import sys
+from util import globalNames
 
 
 class PowerGeneratingTechnology(ImportObject):
@@ -67,13 +68,18 @@ class PowerGeneratingTechnology(ImportObject):
             self.efficiency_time_series.start = self.efficiency
         elif parameter_name == 'deratingFactor':
             self.deratingFactor =float(parameter_value)
-            # if type(parameter_value) == float:
-            #     self.deratingFactor = float(parameter_value)
         elif parameter_name == 'deratingFactor_yearly':
-                array = parameter_value.to_dict()
-                values = [float(i[1]) for i in array["data"]]
-                index = [int(i[0]) for i in array["data"]]
-                self.deratingFactoryearly = pd.Series(values, index=index)
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            series = pd.Series(values, index=index)
+            if reps.dynamic_derating_factor == True and reps.capacity_remuneration_mechanism == "capacity_market" and \
+                    self.name in globalNames.vres_and_batteries:
+                if reps.current_tick <5:
+                    return self.deratingFactor
+                else:
+                    years = range(reps.current_tick - 5, reps.current_tick)
+                    return  series.loc[years].mean()
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':

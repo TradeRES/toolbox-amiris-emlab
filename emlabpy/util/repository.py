@@ -563,14 +563,6 @@ class Repository:
             return None
 
     # ----------------------------------------------------------------------------section PowerPlants
-
-    def get_current_derating_factor(self, technology):
-        if self.current_tick <4:
-            return self.power_generating_technologies[technology].deratingFactor
-        else:
-            years = range(self.current_tick - 4, self.current_tick)
-            return  self.power_generating_technologies[technology].deratingFactor_yearly.loc[years].mean()
-
     def get_ids_of_future_installed_plants(self, futuretick) -> list:
         # the installed power plants include the ones invested in previous iterations
         return self.installedFuturePowerPlants["All"].installed_ids[futuretick]
