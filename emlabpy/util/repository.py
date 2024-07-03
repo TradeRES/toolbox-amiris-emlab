@@ -793,6 +793,48 @@ class Repository:
         except StopIteration:
             return None
 
+    def get_weighted_VOLL(self):
+        try:
+            share_wtp = []
+            for i in self.cs_consumers.values():
+                if i.name != "DSR":
+                    share_wtp.append(i.max_subscribed_percentage*i.WTP)
+            return sum(share_wtp)
+        except StopIteration:
+            return None
+
+    def get_weighted_VOLL_unsubscribed(self):
+        try:
+            share_wtp = pd.DataFrame()
+            peak_demand = self.get_realized_peak_demand()
+            total_unsubscribed_volume = 0
+            for i in self.cs_consumers.values():
+                if i.name != "DSR":
+                    max_subscribed_volume = i.max_subscribed_percentage*peak_demand
+                    max_subscribed_volume.reset_index(drop=True, inplace=True)
+                    unsubscribed_volume = max_subscribed_volume - i.subscribed_volume.sort_index()
+                    total_unsubscribed_volume += unsubscribed_volume
+                    share_wtp[i.name] = unsubscribed_volume*i.WTP #MW*EUR/MWh =
+            weighted = share_wtp.mean(axis=1)/total_unsubscribed_volume
+            return weighted
+        except StopIteration:
+            return None
+
+    def get_unsubscribed_volume(self):
+        try:
+            unsubscribed_volume = pd.DataFrame()
+            peak_demand = self.get_realized_peak_demand()
+            for i in self.cs_consumers.values():
+                if i.name != "DSR":
+                    max_subscribed_volume = i.max_subscribed_percentage*peak_demand
+                    subscribed_volume = i.subscribed_volume.sort_index()
+                    s_dropped = subscribed_volume.drop(subscribed_volume.index[-1])
+                    s_dropped.index = max_subscribed_volume.index
+                    unsubscribed_volume[i.name ] = max_subscribed_volume - s_dropped
+            return unsubscribed_volume.sum(axis=1)
+        except StopIteration:
+            return None
+
     def get_power_plants_invested_in_future_tick(self, futuretick) -> List[PowerPlant]:
         year = futuretick + self.start_simulation_year
         return [i for i in self.power_plants.values()
@@ -938,6 +980,16 @@ class Repository:
         except StopIteration:
             return None
 
+
+    def get_CS_consumer_descending_WTP_names(self):
+        try:
+            filtered = [consumer for consumer in self.cs_consumers.values() if consumer.name != "DSR"]
+            all = sorted(filtered, key=lambda x: x.WTP , reverse=True )
+            names  = [consumer.name for consumer in all]
+            return names
+        except StopIteration:
+            return None
+
     def get_CS_consumer_names(self):
         try:
             return [i.name for i in self.cs_consumers.values()]
@@ -975,12 +1027,6 @@ class Repository:
         except StopIteration:
             return None
 
-    # def get_bid_for_plant_and_tick(self, power_plant_name, tick) -> Optional[CapacityMarket]:
-    #     try:
-    #         return next(i for i in self.bids.values() if
-    #                     i.tick == tick and i.plant == power_plant_name)
-    #     except StopIteration:
-            return None
 
     def get_accepted_CM_bids(self, tick):
         return [i for i in self.bids.values() if i.tick == tick and

@@ -96,11 +96,7 @@ class CapacityMarketSubmitBids(MarketModule):
             #     pending_loan))
 
             #all power plants place a bid pair of price and capacity on the market tech
-            if self.reps.dynamic_derating_factor == True and self.reps.capacity_remuneration_mechanism != "capacity_subscription" and \
-                powerplant.technology.name in globalNames.vres_and_batteries:
-                capacity_to_bid = capacity * self.reps.get_current_derating_factor(powerplant.technology.name)
-            else:
-                capacity_to_bid = capacity * powerplant.technology.deratingFactor
+            capacity_to_bid = capacity * powerplant.technology.deratingFactor
             self.reps.create_or_update_power_plant_CapacityMarket_plan(powerplant, self.agent, market,
                                                                        long_term_contract, capacity_to_bid, \
                                                                        price_to_bid, self.reps.current_tick)
@@ -311,7 +307,7 @@ class CapacityMarketClearing(MarketModule):
                 pass
         total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
         yearly_at_scarcity_hours = total_hourly_load_shedders[total_hourly_load_shedders > 0 ].index
-        derating_factors = pd.DataFrame()
+        derating_factors = dict()
         # df['Sum'] = df['Lithium ion battery 4'] + df['Lithium ion battery']
 
         for tech in all_techs_capacity:

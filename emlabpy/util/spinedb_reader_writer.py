@@ -265,8 +265,8 @@ class SpineDBReaderWriter:
         self.stage_object_class("Technologies")
         self.stage_object_parameter('Technologies', "deratingFactor_yearly")
         for tech, derating_factor  in derating_factors.items():
-            if len(derating_factor) == 0:
-                derating_factor = math.nan
+            if derating_factor > 0:
+                derating_factor =  round(derating_factor, 3)
             self.stage_object('Technologies', tech)
             self.stage_object_parameter_values('Technologies', tech,
                                                [("deratingFactor_yearly", Map([str(tick)], [derating_factor]))], "0")

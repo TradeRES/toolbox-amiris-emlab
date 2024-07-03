@@ -487,7 +487,7 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, path_to_plots, color
 
 
 def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, years_to_generate_initialization,
-                            technology_colors
+                            technology_colors, ticks_to_generate
                             ):
     print('plotting installed Capacity per technology ')
     installed_capacity = all_techs_capacity.loc[years_to_generate]
@@ -499,11 +499,12 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     all_techs_capacity_nozeroes.rename(columns=technology_names, inplace=True)
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize=(5, 5))
     axs17.set_axisbelow(True)
-    # plt.xticks(all_techs_capacity_nozeroes.index, (SIMULATION_YEARS) )
+    plt.xticks(all_techs_capacity_nozeroes.index, (ticks_to_generate) )
     # plt.locator_params(nbins=4)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [GW]', fontsize='large')
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
+    # axs17.tick_params(which='major')
     # axs17.set_title(scenario_name + "\n Installed Capacity ")
     # plt.legend(fontsize='large')
     results_file = os.path.join(path_to_plots, 'capacities.csv')
@@ -1110,12 +1111,19 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
             300000: 'DSR',
         }
         df_replaced = result_df.replace(load_mapping)
+
         if  df_replaced.empty == False:
-            axs1 = sns.catplot( data=df_replaced, x="year", y="Value",  kind="box", hue="Type")
+            unsubscribed_volume = reps.get_unsubscribed_volume()
+            fig, ax = plt.subplots(figsize=(10, 6))
+            catplot = sns.catplot( data=df_replaced, x="year", y="Value",  kind="box", hue="Type", ax= ax)
+            ax = catplot.facet_axis(0, 0)
+            unsubscribed_volume.reset_index(drop=True, inplace=True)
+            unsubscribed_volume[:-1].plot(ax= ax, color = "red", linestyle='--', linewidth=3, label = "Unsubscribed volume")
             plt.ylabel('ENS [MW]', fontsize='large')
-            plt.tight_layout()
             plt.xticks(rotation=20, size = 15, ha="right")
-            axs1.savefig(path_to_plots + '/' + 'ENS.png', bbox_inches='tight', dpi=300)
+            plt.show()
+            fig = ax.get_figure()
+            fig.savefig(path_to_plots + '/' + 'ENS.png', bbox_inches='tight', dpi=300)
 
     fig38, axs38 = plt.subplots(2, 1)
     fig38.tight_layout()
@@ -1133,15 +1141,18 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
 def plot_non_subscription_costs(CM_clearing_price, cost_non_subcription, load_per_group):
     CM_subsription_cost = CM_clearing_price.values*load_per_group
     cost_non_subcription.plot()
-    fig38, axs38 = plt.subplots(2, 1)
+    fig38, axs38 = plt.subplots(3, 1)
     fig38.tight_layout()
     CM_subsription_cost.plot(ax=axs38[0], cmap = "viridis",  legend=True)
     axs38[0].set_title('Subscription costs', fontsize='medium')
     cost_non_subcription.plot(ax=axs38[1], cmap = "viridis", legend=False)
+    CM_subsription_cost.sum(axis=1).plot(ax=axs38[2], color = "black", label="subscription costs", legend=True)
+    cost_non_subcription.sum(axis=1).plot(ax=axs38[2], color = "red", label="non subscription costs", legend=True)
     axs38[1].set_title('Non subscription costs', fontsize='medium')
     axs38[0].set_ylabel('[Eur]', fontsize='medium')
-    axs38[1].set_xlabel('Years', fontsize='medium')
+    axs38[2].set_xlabel('Years', fontsize='medium')
     axs38[1].set_ylabel('[Eur]', fontsize='medium')
+    axs38[2].set_ylabel('[Eur]', fontsize='medium')
     fig38.savefig(path_to_plots + '/' + 'Costsnonsubscription.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_per_year):
@@ -2063,7 +2074,7 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     return  max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year, VOLL_per_year
 
 
-def prepareCONE():
+def prepareCONE_and_derating_factors():
     cones = pd.DataFrame()
     netcones = pd.DataFrame()
     for name, i in  reps.capacity_markets.items():
@@ -2077,27 +2088,60 @@ def prepareCONE():
     axs21.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel(' (€/MWh)', fontsize='medium')
-
     plt.grid()
     fig21 = axs21.get_figure()
     fig21.savefig(path_to_plots + '/' + 'CONEs.png', bbox_inches='tight', dpi=300)
-    plt.close('all')
+
+    # derating_factor = pd.DataFrame()
+    # for name, tech in  reps.power_generating_technologies.items():
+    #     if tech.name in unique_technologies:
+    #         derating_factor[tech.name] = tech.deratingFactoryearly
+    #     derating_factor.sort_index(inplace=True)
+    #     axs22 = derating_factor.plot() # color=colors_unique_techs
+    #     axs22.set_axisbelow(True)
+    #     plt.xlabel('Years', fontsize='medium')
+    #     plt.ylabel('DF [%]' , fontsize='medium')
+    #     plt.grid()
+    #     fig22 = axs22.get_figure()
+    #     fig22.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
+    # plt.close('all')
 
 
-def prepare_subscribed_capacity_new():
-
+def prepare_subscribed_capacity_new(ticks_to_generate):
     subscribed_yearly_volume = pd.DataFrame()
     for consumer in reps.cs_consumers.values():
         subscribed_yearly_volume[consumer.name] = consumer.subscribed_volume
     subscribed_yearly_volume.sort_index(inplace=True)
-    fig3, axs3 = plt.subplots(2, 1)
-    fig3.tight_layout()
-    subscribed_yearly_volume.plot(ax=axs3[0], kind='bar', stacked=True, grid=True, legend=True,  cmap='viridis')
-    axs3[0].legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
-    axs3[0].set_ylabel('subscribed \n consumers', fontsize='large')
+    # # fig3, axs3 = plt.subplots(1, 1)
+    # fig3.tight_layout()
+    names_ordered = reps.get_CS_consumer_descending_WTP_names()
+    names_ordered.append("DSR")
+    subscribed_yearly_volume = subscribed_yearly_volume[ names_ordered]
+    axs3 = subscribed_yearly_volume.plot( kind='bar', stacked=True, grid=True, legend=True ,  cmap='viridis')
+    axs3.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
+    axs3.set_ylabel('subscribed \n consumers vol. [MW]', fontsize='large')
     # axs3[0].set_xlabel('CS Bids', fontsize='large')
-    axs3[1].set_ylabel('CS bids \n [Eur/MW - y]', fontsize='large')
-    fig3.savefig(path_to_plots + '/' + 'subscribed_consumers.png', bbox_inches='tight', dpi=300)
+    # axs3[1].set_ylabel('CS bids \n [Eur/MW - y]', fontsize='large')
+    fig = axs3.get_figure()
+    fig.savefig(path_to_plots + '/' + 'subscribed_consumers.png', bbox_inches='tight', dpi=300)
+
+    # past_consumer_bids = dict()
+    # for tick in ticks_to_generate:
+    #     path  = os.path.join(folder_name +  str(tick) +"bid_per_consumer_group.csv")
+    #     if os.path.exists(path):
+    #         past_consumer_bids[tick] = pd.read_csv(path )
+    #     else:
+    #         print(path)
+    #         raise Exception("File not found")
+    # num_iterations  = len(past_consumer_bids)
+    # for key, consumers in past_consumer_bids.items():
+    #     cumsum = consumers.volume.cumsum()
+    #     color=plt.cm.inferno(key / num_iterations)
+    #     plt.step( cumsum, consumers.bid, where='post', label = key, color = color)
+    # plt.legend(ncol = 3)
+    # plt.ylabel('bids')
+    # plt.xlabel('volume')
+    # plt.savefig(path_to_plots + '/' + 'bids_consumers.png', bbox_inches='tight', dpi=300)
     return subscribed_yearly_volume
 def prepare_subscribed_capacity():
     subscribed_yearly = pd.DataFrame()
@@ -2146,9 +2190,13 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
     input_shifter_demand = reps.loadShifterDemand[
                                'Industrial_load_shifter'].averagemonthlyConsumptionMWh * 12
 
+    if reps.capacity_remuneration_mechanism == "capacity_subscription":
+        weighted_average_VOLL = reps.get_weighted_VOLL_unsubscribed()
+    else:
+        weighted_average_VOLL = reps.get_weighted_VOLL()
     total_load_shedded = pd.DataFrame()
     load_per_group =  pd.DataFrame()
-    for year in years_to_generate:
+    for tick, year in enumerate(years_to_generate):
         for name, LS in reps.loadShedders.items():
             selected_df = hourly_load_shedders_per_year[year]
             test_list = [int(i) for i in selected_df.columns.values]
@@ -2163,7 +2211,13 @@ def prepare_percentage_load_shedded(yearly_load, years_to_generate):
                 id_shedder = int(name)* 100000
                 total_load_shedded[name] = selected_df[(id_shedder)]
                 load_shedded_per_group_MWh.at[year, name] = selected_df[(id_shedder)].sum()
-                cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum()*LS.VOLL*reps.factor_fromVOLL
+                if LS.VOLL == 1500:
+                    cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum() * LS.VOLL
+                else:
+                    if reps.capacity_remuneration_mechanism == "capacity_subscription":
+                        cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum() * weighted_average_VOLL[tick]
+                    else:
+                        cost_non_subcription.at[year, name] = selected_df[(id_shedder)].sum() * weighted_average_VOLL
 
         if industrial_demand_as_flex_demand_with_cap == True:
             flexconsumer_MWh = hourly_industrial_heat[year].sum()
@@ -2338,7 +2392,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         prepare_percentage_load_shedded(yearly_load, years_to_generate)
     subscribed_sorted = pd.DataFrame()
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
-        subscribed_sorted = prepare_subscribed_capacity_new()
+        subscribed_sorted = prepare_subscribed_capacity_new(ticks_to_generate)
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
                       normalized_load_shedded)
@@ -2392,7 +2446,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
                          path_to_plots, colors_unique_techs)
     plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, years_to_generate_initialization,
-                            technology_colors)
+                            technology_colors, ticks_to_generate)
     plot_power_plants_status(capacity_per_status, path_to_plots)
     plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
     # section -----------------------------------------------------------------------------------------------NPV and investments per iteration
@@ -2465,7 +2519,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         else:
             plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
     if reps.capacity_remuneration_mechanism == "capacity_market":
-        prepareCONE()
+        prepareCONE_and_derating_factors()
+
 
 
     if calculate_vres_support == True:
@@ -2914,7 +2969,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = True
 
-    test_tick = 0
+    test_tick = 9
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -3011,13 +3066,14 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    SCENARIOS = ["NL-CM_newcurve"] # NL-CS_marginal_2004
+    SCENARIOS = ["NL-CM_deratingfactors" ] # NL-CS_3years_inertia
+   # SCENARIOS = ["NL-CS_no_inertia_highWtp"] # NL-CS_marginal_2004
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["NL-CS_marginal_7years"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonCM2004.xlsx"
+    results_excel = "comparisonALLIAEE.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
