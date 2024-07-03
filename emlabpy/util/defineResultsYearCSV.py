@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 import os
-import gc
+# import gc
 years_file = sys.argv[2]
 f = open(years_file, "r")
 years_str = f.read()
@@ -9,22 +9,22 @@ years = years_str.split("/")
 current_year = years[0]
 
 f.close()
-
-capped_revenues_per_plant_path = sys.argv[7]
-capped_revenues_per_plant = pd.read_csv( capped_revenues_per_plant_path, sep =",")
-capped_revenues_per_plant.drop("Unnamed: 0", axis=1, inplace=True)
-
-total_capped_revenues = capped_revenues_per_plant.sum().to_frame()
-total_capped_revenues.index = total_capped_revenues.index.astype('int64')
-total_capped_revenues.columns = ['capped_revenues']
 amiris_results_path = sys.argv[1]
 df = pd.read_csv( amiris_results_path)
-del capped_revenues_per_plant
-gc.collect()
+# capped_revenues_per_plant_path = sys.argv[7]
+# capped_revenues_per_plant = pd.read_csv( capped_revenues_per_plant_path, sep =",")
+# capped_revenues_per_plant.drop("Unnamed: 0", axis=1, inplace=True)
+# total_capped_revenues = capped_revenues_per_plant.sum().to_frame()
+# total_capped_revenues.index = total_capped_revenues.index.astype('int64')
+# total_capped_revenues.columns = ['capped_revenues']
+# del capped_revenues_per_plant
+# gc.collect()
+# df_combined = df.merge(total_capped_revenues, left_on='identifier', right_index=True, how='left')
+# df_combined['year'] = current_year
+# df_combined.to_csv(amiris_results_path, index=False)
 
-df_combined = df.merge(total_capped_revenues, left_on='identifier', right_index=True, how='left')
-df_combined['year'] = current_year
-df_combined.to_csv(amiris_results_path, index=False)
+df['year'] = current_year
+df.to_csv(amiris_results_path, index=False)
 
 amiris_energy_exchange_path = sys.argv[3]
 df_exchange = pd.read_csv( amiris_energy_exchange_path, sep =";")
