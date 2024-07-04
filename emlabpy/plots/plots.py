@@ -1052,8 +1052,7 @@ def plot_initial_power_plants(path_to_plots, sheetname):
 
 def plot_grouped_monthly_production_per_type(average_yearly_generation):
     new_columns = {
-        'res': 'Renewable (wind + solar)',
-        'conventionals': 'H2 turbine + Nuclear',
+        'conventionals': 'H2 turbine + Nuclear + Biofuel',
         'electrolysis_power_consumption': 'Industrial heat production'
     }
     average_yearly_generation = average_yearly_generation.rename(columns=new_columns)
@@ -1121,7 +1120,6 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
             unsubscribed_volume[:-1].plot(ax= ax, color = "red", linestyle='--', linewidth=3, label = "Unsubscribed volume")
             plt.ylabel('ENS [MW]', fontsize='large')
             plt.xticks(rotation=20, size = 15, ha="right")
-            plt.show()
             fig = ax.get_figure()
             fig.savefig(path_to_plots + '/' + 'ENS.png', bbox_inches='tight', dpi=300)
 
@@ -1571,7 +1569,10 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     cash_per_agent["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     cash_per_agent["Downpayments"] = all_info.CF_DOWNPAYMENT
     cash_per_agent["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
-
+    if all_info.RETURN_CONSUMERS.any() < - 10:
+        print(all_info.RETURN_CONSUMER[all_info.RETURN_CONSUMER<0])
+        raise Exception("consumers payback is too low")
+    cash_per_agent["Consumers payback"] = abs(all_info.RETURN_CONSUMERS)
     new_plants_loans["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
     new_plants_loans["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     cost_recovery_in_eur = cash_per_agent.sum(axis=1)
@@ -1952,6 +1953,9 @@ def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenar
     global hourly_load_shedders_per_year
     hourly_load_shedders_per_year = dict()
 
+    global production_in_scarcity
+    production_in_scarcity = dict()
+
     dfs = {}
     for year in years_to_generate:
         if existing_scenario == True:
@@ -1962,7 +1966,6 @@ def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenar
         df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load", "hourly_generation"])
         yearly_electricity_prices.at[:, year] = df['energy_exchange']["ElectricityPriceInEURperMWH"]
         TotalAwardedPowerInMW.at[:, year] = df['energy_exchange'].TotalAwardedPowerInMW
-
         DispatchSystemCostInEUR.at[year, 0] = df['energy_exchange'].DispatchSystemCostInEUR.sum()
 
         if "residual_load_actual_infeed" in df['residual_load'].columns:
@@ -1983,10 +1986,16 @@ def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenar
         if calculate_monthly_generation == True:
             name = "yearly_generation" + str(year)
             dfs[name] = df['hourly_generation'][
-                ["res", "storages_charging", "storages_discharging", "conventionals", "electrolysis_power_consumption"]]
+                ["PV", "WindOff", "WindOn", "storages_discharging",
+                 "conventionals", "electrolysis_power_consumption"]]
+
+            LS = hourly_load_shedders.drop(columns=["8888888"]).sum(axis =1)
+            scarcity_hours = LS[LS > 0].index
+            if len(scarcity_hours)>0:
+                production_in_scarcity[year]  = dfs[name].loc[scarcity_hours].mean(axis=0)
 
     if calculate_monthly_generation == True:
-        total_sum = pd.DataFrame(0, index=range(reps.hours_in_year), columns=["res", "storages_charging", "storages_discharging",
+        total_sum = pd.DataFrame(0, index=range(reps.hours_in_year), columns=["PV", "WindOff", "WindOn", "storages_discharging",
                                                                 "conventionals", "electrolysis_power_consumption"])
         for df in dfs.values():
             total_sum = total_sum + df
@@ -2074,37 +2083,56 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
     return  max_ENS_in_a_row, LOLE_per_group, total_load_shedded_per_year, VOLL_per_year
 
 
-def prepareCONE_and_derating_factors():
-    cones = pd.DataFrame()
-    netcones = pd.DataFrame()
-    for name, i in  reps.capacity_markets.items():
-        if i.name in unique_technologies:
-            cones[i.name] = i.cone
-            netcones[i.name] = i.netcone
-    cones.sort_index(inplace=True)
-    netcones.sort_index(inplace=True)
-    axs21 = cones.plot() # color=colors_unique_techs
-    netcones.plot(ax= axs21, linestyle='dashed')
-    axs21.set_axisbelow(True)
-    plt.xlabel('Years', fontsize='medium')
-    plt.ylabel(' (€/MWh)', fontsize='medium')
-    plt.grid()
-    fig21 = axs21.get_figure()
-    fig21.savefig(path_to_plots + '/' + 'CONEs.png', bbox_inches='tight', dpi=300)
+def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
+    if reps.capacity_remuneration_mechanism == "capacity_market":
+        cones = pd.DataFrame()
+        netcones = pd.DataFrame()
+        for name, i in  reps.capacity_markets.items():
+            if i.name in unique_technologies:
+                cones[i.name] = i.cone
+                netcones[i.name] = i.netcone
+        cones.sort_index(inplace=True)
+        netcones.sort_index(inplace=True)
+        axs21 = cones.plot() # color=colors_unique_techs
+        netcones.plot(ax= axs21, linestyle='dashed')
+        axs21.set_axisbelow(True)
+        plt.xlabel('Years', fontsize='medium')
+        plt.ylabel(' (€/MWh)', fontsize='medium')
+        plt.grid()
+        fig21 = axs21.get_figure()
+        fig21.savefig(path_to_plots + '/' + 'CONEs.png', bbox_inches='tight', dpi=300)
 
-    # derating_factor = pd.DataFrame()
-    # for name, tech in  reps.power_generating_technologies.items():
-    #     if tech.name in unique_technologies:
-    #         derating_factor[tech.name] = tech.deratingFactoryearly
-    #     derating_factor.sort_index(inplace=True)
-    #     axs22 = derating_factor.plot() # color=colors_unique_techs
-    #     axs22.set_axisbelow(True)
-    #     plt.xlabel('Years', fontsize='medium')
-    #     plt.ylabel('DF [%]' , fontsize='medium')
-    #     plt.grid()
-    #     fig22 = axs22.get_figure()
-    #     fig22.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
-    # plt.close('all')
+
+    dict = {
+        "PV": "Solar PV large", "WindOff": "Wind Offshore", "WindOn": "Wind Onshore", "storages_discharging":"Lithium ion battery 4",
+    } #"conventionals", "electrolysis_power_consumption"
+    real_derating_factors = pd.DataFrame()
+    for year in years_to_generate:
+        if year in production_in_scarcity:
+            production = production_in_scarcity[year]
+            for tech, energy in production.items():
+                if  tech in dict:
+                    if dict[tech] in all_techs_capacity.columns:
+                        real_derating_factors.loc[ year, dict[tech]] = energy / all_techs_capacity.loc[ year, dict[tech]]
+    axs22 = real_derating_factors.plot( marker='o', linestyle='dashed') # color=colors_unique_techs
+
+    """
+    These are the expected derating factors based on future for representative year
+    """
+    if reps.dynamic_derating_factor == True:
+        derating_factor = pd.DataFrame()
+        for name, tech in  reps.power_generating_technologies.items():
+            if name in unique_technologies:
+                derating_factor[tech.name] = tech.deratingFactoryearly
+        derating_factor.sort_index(inplace=True)
+        derating_factor.plot(ax = axs22) # color=colors_unique_techs
+    axs22.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('DF [%]' , fontsize='medium')
+    plt.grid()
+    fig22 = axs22.get_figure()
+    fig22.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 
 def prepare_subscribed_capacity_new(ticks_to_generate):
@@ -2115,7 +2143,8 @@ def prepare_subscribed_capacity_new(ticks_to_generate):
     # # fig3, axs3 = plt.subplots(1, 1)
     # fig3.tight_layout()
     names_ordered = reps.get_CS_consumer_descending_WTP_names()
-    names_ordered.append("DSR")
+    if "DSR" in subscribed_yearly_volume.columns:
+        names_ordered.append("DSR")
     subscribed_yearly_volume = subscribed_yearly_volume[ names_ordered]
     axs3 = subscribed_yearly_volume.plot( kind='bar', stacked=True, grid=True, legend=True ,  cmap='viridis')
     axs3.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
@@ -2518,9 +2547,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
         else:
             plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
-    if reps.capacity_remuneration_mechanism == "capacity_market":
-        prepareCONE_and_derating_factors()
 
+
+    prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity)
 
 
     if calculate_vres_support == True:
@@ -2736,7 +2765,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     # # # #check extension of power plants.
 
     print('Showing plots...')
-    # plt.show()
     plt.close('all')
 
 
@@ -2969,7 +2997,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = True
 
-    test_tick = 9
+    test_tick = 0
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -3066,7 +3094,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    SCENARIOS = ["NL-CM_deratingfactors" ] # NL-CS_3years_inertia
+    SCENARIOS = ["NL-test" ] # NL-CS_3years_inertia
    # SCENARIOS = ["NL-CS_no_inertia_highWtp"] # NL-CS_marginal_2004
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
@@ -3077,7 +3105,7 @@ if __name__ == '__main__':
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
-    existing_scenario = True
+    existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
