@@ -36,10 +36,16 @@ class CapacityMarketSubmitBids(MarketModule):
         print(
             "technologyname;price_to_bid;capacity;profits;fixed_on_m_cost;pending_loan")
         power_plants = []
-
+        global all_techs_capacity
+        all_techs_capacity = {}
         # the installed power plants are filtered in the prepare futur market clearing file
         for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
             powerplant = self.reps.get_power_plant_by_id(pp_id)
+            if powerplant.technology.name in all_techs_capacity:
+                all_techs_capacity[powerplant.technology.name] += powerplant.capacity
+            else:
+                all_techs_capacity[powerplant.technology.name] = powerplant.capacity
+
             if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
                 pass
             elif powerplant.technology.deratingFactor ==0:
@@ -127,6 +133,7 @@ class CapacityMarketClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
+
         capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         clearing_price, total_supply_volume, is_the_market_undersubscribed, upperVolume = self.capacity_market_clearing(
             sorted_supply,
@@ -271,20 +278,20 @@ class CapacityMarketClearing(MarketModule):
             self.reps.dbrw.stage_plants_in_CM(accepted_plant_names, self.reps.current_tick + market.forward_years_CM)
 
     def calculate_derating_factor(self):
-        power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
-                                                                  globalNames.power_plant_status_to_be_decommissioned,
-                                                                  globalNames.power_plant_status_strategic_reserve,
-                                                                  ])
-        all_techs_capacity = {}
-        for pp in power_plants_list:
-            tech = pp.technology.name
-            capacity = pp.capacity
-            if tech in globalNames.vres_and_batteries:
-                if tech in all_techs_capacity:
-                    all_techs_capacity[tech] += capacity
-                else:
-                    all_techs_capacity[tech] = capacity
-
+        # power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
+        #                                                           globalNames.power_plant_status_to_be_decommissioned,
+        #                                                           globalNames.power_plant_status_strategic_reserve,
+        #                                                           ])
+        # all_techs_capacity = {}
+        # for pp in power_plants_list:
+        #     tech = pp.technology.name
+        #     capacity = pp.capacity
+        #     if tech in globalNames.vres_and_batteries:
+        #         if tech in all_techs_capacity:
+        #             all_techs_capacity[tech] += capacity
+        #         else:
+        #             all_techs_capacity[tech] = capacity
+        
         hourly_generation_res = pd.DataFrame()
         future_csv = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  "hourly_generation_per_group.csv")
         df = pd.read_csv(future_csv, sep=",", index_col=0)
@@ -314,6 +321,8 @@ class CapacityMarketClearing(MarketModule):
                 installed_capacity = all_techs_capacity[tech]
                 average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
                 derating_factors[tech] = average_generation / installed_capacity
+                if derating_factors[tech] > 1:
+                    raise ValueError("Derating factor is more than 1")
             else:
                 pass
 
@@ -374,7 +383,7 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         price_cap = max(int(netCONE * capacity_market.PriceCapTimesCONE), cone)
         print("price_cap")
         print(price_cap)
-        if reps.current_tick ==0:
+        if reps.current_tick == 0:
             print(cones)
             print(netcones)
             if price_cap < 0:
@@ -383,3 +392,14 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
                 capacity_market.PriceCap = price_cap
                 reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
                 reps.dbrw.stage_net_cone(capacity_market.name, netCONE)
+
+
+# def calculate_target_capacity(expectedInstalledCapacityPerTechnology, reps):
+#     capacity_market = reps.get_capacity_market_in_country("NL", False)
+#     reduced_capacity = 0
+#     for tech, capacity in  expectedInstalledCapacityPerTechnology.items():
+#         if tech in globalNames.vres_and_batteries:
+#             reduced_capacity += capacity*reps.power_generating_technologies[tech].deratingFactor
+#     new_target_capacity = capacity_market.TargetCapacity - reduced_capacity
+#     reps.dbrw.stage_target_capacity(capacity_market.name, new_target_capacity)
+
