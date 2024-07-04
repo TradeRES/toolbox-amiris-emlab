@@ -288,7 +288,6 @@ class PrepareMarket(DefaultModule):
                 Efficiency.append(pp.actualEfficiency)
                 BlockSizeInMW.append(pp.capacity)
                 InstalledPowerInMW.append(pp.capacity)
-
                 if self.reps.reliability_option_strike_price != "NOTSET" and plantsinCM != None:
                     if pp.name in plantsinCM:
                         strike_price.append(self.reps.reliability_option_strike_price)
@@ -317,7 +316,7 @@ class PrepareMarket(DefaultModule):
         Lcoe = []
         operator = self.reps.get_strategic_reserve_operator(self.reps.country)
         strike_price_renewables = []
-        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick)
+        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick) #res
         for pp in self.power_plants_list:
             if pp.technology.type == "VariableRenewableOperator" and self.reps.dictionaryTechSet[
                 pp.technology.name] != "Biogas":
@@ -395,7 +394,7 @@ class PrepareMarket(DefaultModule):
         Strategist= []
 
         strike_price = []
-        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick)
+        plantsinCM = self.reps.get_power_plants_in_CM(self.simulation_tick) #storage
 
         for pp in self.power_plants_list:
             if pp.technology.type == "StorageTrader":

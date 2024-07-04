@@ -73,13 +73,15 @@ class PowerGeneratingTechnology(ImportObject):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             series = pd.Series(values, index=index)
+            if reps.runningModule == "plotting":
+                self.deratingFactoryearly = series
             if reps.dynamic_derating_factor == True and reps.capacity_remuneration_mechanism == "capacity_market" and \
                     self.name in globalNames.vres_and_batteries:
                 if reps.current_tick <5:
-                    return self.deratingFactor
+                    self.deratingFactor =  self.deratingFactor
                 else:
                     years = range(reps.current_tick - 5, reps.current_tick)
-                    return  series.loc[years].mean()
+                    self.deratingFactor =  series.loc[years].mean()
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)
         elif parameter_name == 'type':

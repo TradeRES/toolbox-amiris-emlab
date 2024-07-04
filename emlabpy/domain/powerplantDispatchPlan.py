@@ -16,7 +16,7 @@ class PowerPlantDispatchPlan(ImportObject):
         self.plant = None
         self.tick = 0
         self.status = 'Awaiting confirmation'
-
+        self.capped_revenues = 0
     def add_parameter_value(self, reps, parameter_name, parameter_value, alternative):
         self.tick = reps.current_year # alternative
         # the power plant dispatch plan name correspond to the id of the power plant
@@ -30,6 +30,8 @@ class PowerPlantDispatchPlan(ImportObject):
         if parameter_name == 'CONSUMPTION_IN_MWH':
             self.consumed_amount = float(parameter_value)
             self.power_plant_id = self.name
+        elif  parameter_name == 'CAPPED_REVENUES':
+            self.capped_revenues = float(parameter_value)
         # the CONTRIBUTION_MARGIN_IN_EURO is equal to revenues - variable costs in euro
 
 

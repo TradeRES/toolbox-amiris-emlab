@@ -45,6 +45,7 @@ class CreatingFinancialReports(DefaultModule):
 
     def createFinancialReportsForPowerPlantsAndTick(self):
         financialPowerPlantReports = []
+        plantsinCM = self.reps.get_power_plants_in_CM(self.reps.current_tick)
         # for non decommissioned power plants
         for powerplant in self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
                                                                 globalNames.power_plant_status_to_be_decommissioned,
@@ -62,6 +63,7 @@ class CreatingFinancialReports(DefaultModule):
                 dispatch.variable_costs = 0
                 dispatch.accepted_amount = 0
                 dispatch.revenues = 0
+                dispatch.capped_revenues = 0
 
             financialPowerPlantReport.setTime(self.reps.current_tick)
             financialPowerPlantReport.setPowerPlant(powerplant.name)  # this can be ignored, its already in the name
@@ -88,11 +90,18 @@ class CreatingFinancialReports(DefaultModule):
             financialPowerPlantReport.totalCosts = fixed_and_variable_costs  # saved as totalCosts
             financialPowerPlantReport.setProduction(dispatch.accepted_amount)
 
-            financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
-            self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
+            if plantsinCM is not None:
+                if powerplant.name in plantsinCM and self.reps.reliability_option_strike_price != "NOTSET":
+                    financialPowerPlantReport.setSpotMarketRevenue(dispatch.capped_revenues)
+                    self.agent.CF_ELECTRICITY_SPOT += dispatch.capped_revenues
+                    self.agent.RETURN_CONSUMERS += dispatch.revenues - dispatch.capped_revenues
+                else:
+                    financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+                    self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
+            else:
+                financialPowerPlantReport.setSpotMarketRevenue(dispatch.revenues)
+                self.agent.CF_ELECTRICITY_SPOT += dispatch.revenues
 
-            financialPowerPlantReport.setOverallRevenue(  # saved as overallRevenue
-                financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues)
             # total profits are used to decide for decommissioning saved as totalProfits
 
             if powerplant.status == globalNames.power_plant_status_strategic_reserve:  # power plants in reserve dont get the dispatch revenues
@@ -102,6 +111,14 @@ class CreatingFinancialReports(DefaultModule):
                     print("WRONG CRM ")
                     print(operational_profit_with_loans)
                     raise Exception
+
+            elif plantsinCM is not None:
+                if powerplant.name in plantsinCM and self.reps.reliability_option_strike_price != "NOTSET":
+                    operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.capped_revenues + fixed_and_variable_costs
+                    operational_profit_with_loans = operational_profit - loans
+                else:
+                    operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + fixed_and_variable_costs
+                    operational_profit_with_loans = operational_profit - loans
             else:
                 operational_profit = financialPowerPlantReport.capacityMarketRevenues_in_year + dispatch.revenues + fixed_and_variable_costs
                 operational_profit_with_loans = operational_profit - loans

@@ -609,7 +609,6 @@ class SpineDBReaderWriter:
         for i, pp_name in enumerate(pp_dispatched_names):
             pp = reps.power_plants[pp_name]
             pp_profit = pp_total_profits.loc[0,pp.id]
-
             self.stage_object(self.powerplant_installed_classname, str(pp_name))
             self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp_name),
                                                [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
@@ -621,7 +620,6 @@ class SpineDBReaderWriter:
                     pp = reps.get_power_plant_by_id(pp_id)
                     print(pp.name + "was tested but not used - > no operational profits")
                     pp_profit = 0
-
                     self.stage_object(self.powerplant_installed_classname, str(pp.name))
                     self.stage_object_parameter_values(self.powerplant_installed_classname, str(pp.name),
                                                        [(parametername, Map([str(tick)], [float(pp_profit)]))], "0")
@@ -814,6 +812,7 @@ class SpineDBReaderWriter:
                                                                      'CF_STRRESPAYMENT',
                                                                      'CF_CAPMARKETPAYMENT',
                                                                      'CF_FIXEDOMCOST',
+                                                                     'RETURN_CONSUMERS',
                                                                      'CF_COMMODITY'])
 
     def stage_cash_agent(self, agent, current_tick):
@@ -829,6 +828,12 @@ class SpineDBReaderWriter:
                                                (
                                                    'CF_DOWNPAYMENT',
                                                    Map([str(current_tick)], [float(agent.CF_DOWNPAYMENT)])),
+
+                                               (
+                                                   'RETURN_CONSUMERS',
+                                                   Map([str(current_tick)], [float(agent.RETURN_CONSUMERS)])),
+
+
                                                (
                                                    'CF_DOWNPAYMENT_NEW_PLANTS',
                                                    Map([str(current_tick)], [float(agent.CF_DOWNPAYMENT_NEW_PLANTS)])),
