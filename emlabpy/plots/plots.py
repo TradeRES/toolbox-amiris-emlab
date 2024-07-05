@@ -1569,9 +1569,10 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     cash_per_agent["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     cash_per_agent["Downpayments"] = all_info.CF_DOWNPAYMENT
     cash_per_agent["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
-    if all_info.RETURN_CONSUMERS.any() < - 10:
-        print(all_info.RETURN_CONSUMER[all_info.RETURN_CONSUMER<0])
-        raise Exception("consumers payback is too low")
+    if not isinstance(all_info.RETURN_CONSUMERS, int):
+        if all_info.RETURN_CONSUMERS.any() < - 10:
+            print(all_info.RETURN_CONSUMER[all_info.RETURN_CONSUMER<0])
+            raise Exception("consumers payback is too low")
     cash_per_agent["Consumers payback"] = abs(all_info.RETURN_CONSUMERS)
     new_plants_loans["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
     new_plants_loans["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
@@ -2140,7 +2141,7 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
                 derating_factor[tech.name] = tech.deratingFactoryearly
         derating_factor.sort_index(inplace=True)
         derating_factor.dropna(axis=1, how='all', inplace=True)
-        derating_factor.index = years_to_generate[:-1]
+        derating_factor.index = years_to_generate
         derating_factor_mean = derating_factor.rolling(window=5, min_periods=1).mean()
         colors = [technology_colors[tech] for tech in derating_factor_mean.columns.values]
         derating_factor_mean.plot(marker='*', ax = axs22, color = colors) # color=colors_unique_techs
@@ -3116,13 +3117,14 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
     # SCENARIOS = ["final2_EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW" ] # NL-CS_3years_inertia
-    SCENARIOS = ["NL-CM_endogenous_unitl86"] # NL-CS_marginal_2004
+    # SCENARIOS = ["final2-EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW"]
+    SCENARIOS = ["final2-EOM","NL-CS_3iner_highWTP","NL-CS_3iner_lowWTP",  "NL-CS_3iner_lowWTP_9000", "NL-CS_3iner_lowWTP_9000_noDSR"]
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["NL-CS_marginal_7years"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonALLIAEE.xlsx"
+    results_excel = "comparisonCS5.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
