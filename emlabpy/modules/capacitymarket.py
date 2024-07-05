@@ -245,7 +245,7 @@ class CapacityMarketClearing(MarketModule):
             plt.grid(visible=None, which='minor', axis='both', linestyle='--')
             plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
             plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
-            plt.title(self.reps.runningModule + " " + str(self.reps.investmentIteration))
+            plt.title(self.reps.current_tick )
             plt.xlabel('Quantity')
             plt.ylabel('Price')
             path = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results')

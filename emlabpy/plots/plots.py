@@ -2098,23 +2098,37 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
         axs21.set_axisbelow(True)
         plt.xlabel('Years', fontsize='medium')
         plt.ylabel(' (€/MWh)', fontsize='medium')
+        plt.title("net cone = CONE - market profits ")
         plt.grid()
         fig21 = axs21.get_figure()
         fig21.savefig(path_to_plots + '/' + 'CONEs.png', bbox_inches='tight', dpi=300)
 
-
+    """
+    These are the realized derating factors based on realized weather
+    """
     dict = {
         "PV": "Solar PV large", "WindOff": "Wind Offshore", "WindOn": "Wind Onshore", "storages_discharging":"Lithium ion battery 4",
     } #"conventionals", "electrolysis_power_consumption"
-    real_derating_factors = pd.DataFrame()
+    realized_derating_factors = pd.DataFrame()
     for year in years_to_generate:
         if year in production_in_scarcity:
             production = production_in_scarcity[year]
             for tech, energy in production.items():
                 if  tech in dict:
                     if dict[tech] in all_techs_capacity.columns:
-                        real_derating_factors.loc[ year, dict[tech]] = energy / all_techs_capacity.loc[ year, dict[tech]]
-    axs22 = real_derating_factors.plot( marker='o', linestyle='dashed') # color=colors_unique_techs
+                        realized_derating_factors.loc[ year, dict[tech]] = energy / all_techs_capacity.loc[ year, dict[tech]]
+
+    initial_derating_factor = pd.DataFrame()
+    for name, tech in  reps.power_generating_technologies.items():
+        if tech.name in realized_derating_factors.columns:
+            initial_derating_factor.loc[2050, tech.name] = tech.deratingFactor
+
+    initial_derating_factor.dropna(axis=1, how='all', inplace=True)
+    fig3, axs22 = plt.subplots(1, 1)
+    colors = [technology_colors[tech] for tech in realized_derating_factors.columns.values]
+    realized_derating_factors.plot( marker='o', linestyle='dashed', ax = axs22, color = colors) # color=colors_unique_techs
+    colors = [technology_colors[tech] for tech in initial_derating_factor.columns.values]
+    initial_derating_factor.plot( marker='D', ax = axs22, color = colors)
 
     """
     These are the expected derating factors based on future for representative year
@@ -2125,11 +2139,18 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
             if name in unique_technologies:
                 derating_factor[tech.name] = tech.deratingFactoryearly
         derating_factor.sort_index(inplace=True)
-        derating_factor.plot(ax = axs22) # color=colors_unique_techs
+        derating_factor.dropna(axis=1, how='all', inplace=True)
+        derating_factor.index = years_to_generate[:-1]
+        derating_factor_mean = derating_factor.rolling(window=5, min_periods=1).mean()
+        colors = [technology_colors[tech] for tech in derating_factor_mean.columns.values]
+        derating_factor_mean.plot(marker='*', ax = axs22, color = colors) # color=colors_unique_techs
+
     axs22.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('DF [%]' , fontsize='medium')
+    plt.title(" D = initial , o = realized weather" + "\n  *  = representative year (expected)"  )
     plt.grid()
+    axs22.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
     fig22 = axs22.get_figure()
     fig22.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -3094,8 +3115,8 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
 if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
-    SCENARIOS = ["NL-test" ] # NL-CS_3years_inertia
-   # SCENARIOS = ["NL-CS_no_inertia_highWtp"] # NL-CS_marginal_2004
+    # SCENARIOS = ["final2_EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW" ] # NL-CS_3years_inertia
+    SCENARIOS = ["NL-CM_endogenous_unitl86"] # NL-CS_marginal_2004
    #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["NL-CS_marginal_7years"]
@@ -3105,7 +3126,7 @@ if __name__ == '__main__':
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
-    existing_scenario = False
+    existing_scenario = True
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:

@@ -218,7 +218,11 @@ class MarketClearingPoint(ImportObject):
         if parameter_name == 'Tick':
             self.tick = int(parameter_value)
         if parameter_name == 'Volume':
-            self.volume = int(parameter_value)
+
+            if pd.isna(parameter_value):
+                self.volume = 0
+            else:
+                self.volume = int(parameter_value)
 
 
 class SlopingDemandCurve:
