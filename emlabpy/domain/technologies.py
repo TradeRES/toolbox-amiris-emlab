@@ -82,7 +82,7 @@ class PowerGeneratingTechnology(ImportObject):
                         years = range(0, reps.current_tick)
                         repeated_array = [self.deratingFactor]* (reps.dynamic_derating_factor_window - reps.current_tick)
                         new_series = repeated_array + series.loc[years].values.tolist()
-                        self.deratingFactor =  np.mean(new_series)
+                        self.deratingFactor =  np.nanmean(new_series)
                     else:
                         years = range(reps.current_tick - reps.dynamic_derating_factor_window, reps.current_tick)
                         self.deratingFactor =  series.loc[years].mean()
