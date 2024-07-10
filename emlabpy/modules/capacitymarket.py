@@ -291,7 +291,10 @@ class CapacityMarketClearing(MarketModule):
         #             all_techs_capacity[tech] += capacity
         #         else:
         #             all_techs_capacity[tech] = capacity
-        
+        """
+        The derating factor is calculated by the  generation per technology in the median weather year divided by the installed capacity
+        :return:
+        """
         hourly_generation_res = pd.DataFrame()
         future_csv = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow','output',  "hourly_generation_per_group.csv")
         df = pd.read_csv(future_csv, sep=",", index_col=0)
@@ -326,7 +329,7 @@ class CapacityMarketClearing(MarketModule):
             else:
                 pass
 
-        self.reps.dbrw.stage_derating_factor(derating_factors, self.reps.current_tick)
+        self.reps.dbrw.stage_derating_factor_yearly(derating_factors, self.reps.current_tick)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
     """CONE is calculated  for every technology and the minimum is chosen as the price cap"""

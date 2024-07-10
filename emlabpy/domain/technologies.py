@@ -78,10 +78,13 @@ class PowerGeneratingTechnology(ImportObject):
             else:
                 if reps.dynamic_derating_factor == True and reps.capacity_remuneration_mechanism == "capacity_market" and \
                         self.name in globalNames.vres_and_batteries:
-                    if reps.current_tick <5:
-                        self.deratingFactor =  self.deratingFactor
+                    if reps.current_tick < reps.dynamic_derating_factor_window:
+                        years = range(0, reps.current_tick)
+                        repeated_array = [self.deratingFactor]* (reps.dynamic_derating_factor_window - reps.current_tick)
+                        new_series = repeated_array + series.loc[years].values.tolist()
+                        self.deratingFactor =  np.mean(new_series)
                     else:
-                        years = range(reps.current_tick - 5, reps.current_tick)
+                        years = range(reps.current_tick - reps.dynamic_derating_factor_window, reps.current_tick)
                         self.deratingFactor =  series.loc[years].mean()
 
         elif parameter_name == 'ApplicableForLongTermContract':

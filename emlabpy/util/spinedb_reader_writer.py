@@ -261,7 +261,7 @@ class SpineDBReaderWriter:
                                            [('plantsinCM', plantsinCM)], "0")
 
 
-    def stage_derating_factor(self, derating_factors, tick):
+    def stage_derating_factor_yearly(self, derating_factors, tick):
         self.stage_object_class("Technologies")
         self.stage_object_parameter('Technologies', "deratingFactor_yearly")
         for tech, derating_factor  in derating_factors.items():

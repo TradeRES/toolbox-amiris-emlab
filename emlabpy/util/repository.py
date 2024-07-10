@@ -81,6 +81,7 @@ class Repository:
         self.install_at_look_ahead_year = True
         self.consumer_marginal_volume =1000
         self.dynamic_derating_factor = False
+        self.dynamic_derating_factor_window = 7
         # section --------------------------------------------------------------------------------------investments
         self.investmentIteration = 0
         self.targetinvestment_per_year = True
