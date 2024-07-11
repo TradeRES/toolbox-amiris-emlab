@@ -128,9 +128,11 @@ class CapacityMarketClearing(MarketModule):
 
     def act(self):
         print("capacity market clearing")
+        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
+        # self.calculate_target_capacity(capacity_market)
         self.calculate_derating_factor()
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
-        capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
+
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
 
@@ -277,6 +279,15 @@ class CapacityMarketClearing(MarketModule):
         else:
             self.reps.dbrw.stage_plants_in_CM(accepted_plant_names, self.reps.current_tick + market.forward_years_CM)
 
+    # def calculate_target_capacity(self, capacity_market):
+    #     reduced_capacity = 0
+    #     for tech in all_techs_capacity:
+    #         if tech in globalNames.vres_and_batteries:
+    #             reduced_capacity +=  all_techs_capacity[tech]*self.reps.power_generating_technologies[tech].deratingFactor
+    #     new_target_capacity = capacity_market.TargetCapacity - reduced_capacity
+    #     # todo make derating factor zero for the vres and batteries
+    #         # reps.dbrw.stage_target_capacity(capacity_market.name, new_target_capacity)
+
     def calculate_derating_factor(self):
         # power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
         #                                                           globalNames.power_plant_status_to_be_decommissioned,
@@ -317,11 +328,15 @@ class CapacityMarketClearing(MarketModule):
         total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
         yearly_at_scarcity_hours = total_hourly_load_shedders[total_hourly_load_shedders > 0 ].index
         derating_factors = dict()
+
         # df['Sum'] = df['Lithium ion battery 4'] + df['Lithium ion battery']
 
         for tech in all_techs_capacity:
-            if tech in all_techs_capacity and tech in hourly_generation_res.columns:
-                installed_capacity = all_techs_capacity[tech]
+            if tech in hourly_generation_res.columns:
+                if tech == "Lithium ion battery 4":
+                    installed_capacity = all_techs_capacity[tech] + all_techs_capacity["Lithium ion battery"]
+                else:
+                    installed_capacity = all_techs_capacity[tech]
                 average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
                 derating_factors[tech] = average_generation / installed_capacity
                 if derating_factors[tech] > 1:
@@ -397,12 +412,5 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
                 reps.dbrw.stage_net_cone(capacity_market.name, netCONE)
 
 
-# def calculate_target_capacity(expectedInstalledCapacityPerTechnology, reps):
-#     capacity_market = reps.get_capacity_market_in_country("NL", False)
-#     reduced_capacity = 0
-#     for tech, capacity in  expectedInstalledCapacityPerTechnology.items():
-#         if tech in globalNames.vres_and_batteries:
-#             reduced_capacity += capacity*reps.power_generating_technologies[tech].deratingFactor
-#     new_target_capacity = capacity_market.TargetCapacity - reduced_capacity
-#     reps.dbrw.stage_target_capacity(capacity_market.name, new_target_capacity)
+
 
