@@ -513,6 +513,7 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     fig17 = axs17.get_figure()
     fig17.savefig(path_to_plots + '/' + 'Annual installed Capacity per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
+    return all_techs_capacity_nozeroes
 
 
 def plot_total_demand(reps):
@@ -698,7 +699,7 @@ def plot_costs_to_society(average_electricity_price, costs_to_society, social_we
     plt.ylabel('costs_to_society', fontsize='medium')
     plt.grid()
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    axs1.set_title('Wholesale market costs to society')
+    axs1.set_title('Costs to society')
     fig1 = axs1.get_figure()
     fig1.savefig(path_to_plots + '/' + 'Costs to society.png', bbox_inches='tight', dpi=300)
 
@@ -2142,14 +2143,15 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
         derating_factor.sort_index(inplace=True)
         derating_factor.dropna(axis=1, how='all', inplace=True)
         derating_factor.index = years_to_generate
-        derating_factor_mean = derating_factor.rolling(window=5, min_periods=1).mean()
+       # todo: change to reps.dynamic_derating_factor_window
+        derating_factor_mean = derating_factor.rolling(window= 7, min_periods=1).mean()
         colors = [technology_colors[tech] for tech in derating_factor_mean.columns.values]
         derating_factor_mean.plot(marker='*', ax = axs22, color = colors) # color=colors_unique_techs
 
     axs22.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('DF [%]' , fontsize='medium')
-    plt.title(" D = initial , o = realized weather" + "\n  *  = representative year (expected)"  )
+    plt.title(" D = initial , o- = realized weather" + "\n  *  = representative year (expected)"  )
     plt.grid()
     axs22.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
     fig22 = axs22.get_figure()
@@ -2477,11 +2479,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     cash_flows_energy_producer, cost_recovery, cumulative_cost_recovery, new_plants_loans , costs_to_society = prepare_cash_per_agent(reps,
                                                                                                                    ticks_to_generate)
 
-    costs_to_society = costs_to_society.to_frame()
+    costs_to_society = costs_to_society.to_frame() # capacity market + capeex + opex
     costs_to_society.index = costs_to_society.index + reps.start_simulation_year
     costs_to_society.sort_index(inplace=True)
     social_welfare = pd.DataFrame()
-    social_welfare["OPEX+CAPEX"] =  - costs_to_society[0]
+    social_welfare["OPEX+CAPEX+CM"] =  - costs_to_society[0]
 
     #costs_to_society.index = years_to_generate
     costs_to_society["shortages"] = total_load_shedded_per_year.loc[["1","2"]].sum(axis=0)*4000 +  total_load_shedded_per_year.loc[["3"]].sum(axis=0)*1500
@@ -2496,7 +2498,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     if calculate_investments != False:
         plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
                          path_to_plots, colors_unique_techs)
-    plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, years_to_generate_initialization,
+    all_techs_capacity_nozeroes = plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, years_to_generate_initialization,
                             technology_colors, ticks_to_generate)
     plot_power_plants_status(capacity_per_status, path_to_plots)
     plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
@@ -2668,11 +2670,15 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
         consumers_data =  pd.read_excel(path_to_results, sheet_name='consumers', header=[0,1], index_col=0)
         AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology',   header=[0,1], index_col=0)
         Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits',  header=[0,1], index_col=0)
-
+        capacities_data = pd.read_excel(path_to_results, sheet_name='capacities',  header=[0,1], index_col=0)
         npvs_per_tech_per_MW = pd.DataFrame(npvs_per_tech_per_MW)
         multi_index = pd.MultiIndex.from_product([[scenario_name], npvs_per_tech_per_MW.columns], names=['scenario_name', "technology"])
         npvs_per_tech_per_MW.columns = multi_index
         AverageNPVpertechnology_data = pd.concat([AverageNPVpertechnology_data, npvs_per_tech_per_MW],  axis=1)
+
+        multi_index = pd.MultiIndex.from_product([[scenario_name], all_techs_capacity_nozeroes.columns], names=['scenario_name', "technology"])
+        all_techs_capacity_nozeroes.columns = multi_index
+        capacities_data = pd.concat([capacities_data, all_techs_capacity_nozeroes],  axis=1)
 
         LS_pergroup= pd.DataFrame(load_shedded_per_group_MWh)
         multi_index = pd.MultiIndex.from_product([[scenario_name], LS_pergroup.columns], names=['scenario_name', "load_type"])
@@ -2753,6 +2759,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             ENS_data.to_excel(writer, sheet_name='ENS')
             voluntaryENS_data.to_excel(writer, sheet_name='voluntaryENS')
             SupplyRatio_data.to_excel(writer, sheet_name='SupplyRatio')
+            capacities_data.to_excel(writer, sheet_name='capacities')
             ElectricityPrices_data.to_excel(writer, sheet_name='ElectricityPrices')
             TotalSystemCosts_data.to_excel(writer, sheet_name='TotalSystemCosts')
             Monthly_electricity_data.to_excel(writer, sheet_name='MonthlyElectricityPrices')
@@ -3118,13 +3125,15 @@ if __name__ == '__main__':
     # SCENARIOS = ["final-EOM", "final-CM", "final-CMnoVRES" "final-LTCM", "final-CS_fix", "final-CS" , "final-SR4000_20" ]
     # SCENARIOS = ["final2_EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW" ] # NL-CS_3years_inertia
     # SCENARIOS = ["final2-EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW"]
-    SCENARIOS = ["final2-EOM","NL-CS_3iner_highWTP","NL-CS_3iner_lowWTP",  "NL-CS_3iner_lowWTP_9000", "NL-CS_3iner_lowWTP_9000_noDSR"]
-   #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
+    # SCENARIOS = ["final2-EOM","NL-CS_3iner_highWTP","NL-CS_3iner_lowWTP",  "NL-CS_3iner_lowWTP_9000", "NL-CS_3iner_lowWTP_9000_noDSR"]
+    # SCENARIOS =  [ "final2-EOM", "final2-CM", "final2-CS","final2-SR_4000_15"]
+    SCENARIOS =  [ "final2-EOM","final2-SR_4000_15", "final2-SR_noDSR"]
+                  #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["NL-CS_marginal_7years"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonCS5.xlsx"
+    results_excel = "comparisonSR_noDSR.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
@@ -3134,7 +3143,7 @@ if __name__ == '__main__':
     else:
         raise Exception
 
-    plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario )
+    plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario)
     print('===== End Generating Plots =====')
 
 # write the name of the existing scenario or the new scenario
