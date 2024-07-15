@@ -209,7 +209,8 @@ class CapacitySubscriptionMarginal(MarketModule):
             marginal_value_per_consumer_group[consumer_name] = prices
             subscribed_consumers[consumer_name] = one_MW
         # do for the first MW
-        calculate_marginal_value_per_consumer_group(hourly_load_shedders[3], self.reps.loadShedders['3'].VOLL, "DSR")
+
+        calculate_marginal_value_per_consumer_group(hourly_load_shedders[2], self.reps.loadShedders['2'].VOLL, "DSR")
         for consumer_name, data in ENS_proportion.iteritems():
             calculate_marginal_value_per_consumer_group(data, self.reps.cs_consumers[consumer_name].WTP, consumer_name )
 

@@ -2146,7 +2146,8 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
        # todo: change to reps.dynamic_derating_factor_window
         derating_factor_mean = derating_factor.rolling(window= 7, min_periods=1).mean()
         colors = [technology_colors[tech] for tech in derating_factor_mean.columns.values]
-        derating_factor_mean.plot(marker='*', ax = axs22, color = colors) # color=colors_unique_techs
+        if derating_factor_mean.size != 0:
+            derating_factor_mean.plot(marker='*', ax = axs22, color = colors) # color=colors_unique_techs
 
     axs22.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -2486,7 +2487,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     social_welfare["OPEX+CAPEX+CM"] =  - costs_to_society[0]
 
     #costs_to_society.index = years_to_generate
-    costs_to_society["shortages"] = total_load_shedded_per_year.loc[["1","2"]].sum(axis=0)*4000 +  total_load_shedded_per_year.loc[["3"]].sum(axis=0)*1500
+    costs_to_society["shortages"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)*4000 + \
+                                    total_load_shedded_per_year.loc[["2"]].sum(axis=0)*1500
     plot_cash_flows(cash_flows_energy_producer, new_plants_loans, calculate_capacity_mechanisms, path_to_plots)
 
     # #section -----------------------------------------------------------------------------------------------capacities installed
@@ -2601,8 +2603,6 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                 revenues_SR = SR_operator_revenues[0] / annual_generation
                 average_electricity_price['SR_revenues'] = - revenues_SR.values
 
-
-
     # #  section ---------------------------------------------------------------------------------------revenues per iteration
 
     yearly_costs, marginal_costs_per_hour = prepare_screening_curves(reps, test_year)
@@ -2618,7 +2618,9 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
                                 * reps.power_generating_technologies["electrolyzer"].efficiency + \
                                 #  not inclusing industrial load becuase the demand is the same
                                 reps.calculate_marginal_costs_by_technology( "central gas boiler", 0 , ) * production_not_shedded_MWh["industrial_heat_demand"])
-    social_welfare["load"] = yearly_load.sum(axis = 0)*3750 - load_shedded_per_group_MWh[["1", "2"]].sum(axis=1)*4000 - load_shedded_per_group_MWh["3"]*1500
+    social_welfare["load"] = (yearly_load.sum(axis = 0)*3750 -
+                              load_shedded_per_group_MWh[["1"]].sum(axis=1)*4000 -
+                              load_shedded_per_group_MWh["2"]*1500)
 
 # get_production_by_consumer(reps, total_load_shedded_per_year, years_to_generate)
     plot_costs_to_society(average_electricity_price, costs_to_society ,social_welfare, path_to_plots)
@@ -2714,8 +2716,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
             lifeextension_data[scenario_name]  = extended_lifetime_tech["Extension"]
         Last_year_PDC_data[scenario_name] = electricity_prices[years_to_generate[-1]]
         CostRecovery_data[scenario_name] = cost_recovery
-        LOL_data[scenario_name] = LOLE_per_group.T[["1", "2"]].sum(axis =1) # involutary shedding comparison
-        LOLvoluntary_data[scenario_name] = LOLE_per_group.T["3"] # volutary shedding comparison
+        LOL_data[scenario_name] = LOLE_per_group.T[["1"]].sum(axis =1) # involutary shedding comparison
+        LOLvoluntary_data[scenario_name] = LOLE_per_group.T["2"] # volutary shedding comparison
         SupplyRatio_data[scenario_name] = supply_ratio
         Monthly_electricity_data[scenario_name] = monthly_electricity_price_grouped
         H2_production_data[scenario_name] = production_not_shedded_MWh["hydrogen_produced"]
@@ -3127,7 +3129,7 @@ if __name__ == '__main__':
     # SCENARIOS = ["final2-EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW"]
     # SCENARIOS = ["final2-EOM","NL-CS_3iner_highWTP","NL-CS_3iner_lowWTP",  "NL-CS_3iner_lowWTP_9000", "NL-CS_3iner_lowWTP_9000_noDSR"]
     # SCENARIOS =  [ "final2-EOM", "final2-CM", "final2-CS","final2-SR_4000_15"]
-    SCENARIOS =  [ "final2-EOM","final2-SR_4000_15", "final2-SR_noDSR"]
+    SCENARIOS =  [ "final2-tesr"]
                   #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["NL-CS_marginal_7years"]
@@ -3137,7 +3139,7 @@ if __name__ == '__main__':
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 
-    existing_scenario = True
+    existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
