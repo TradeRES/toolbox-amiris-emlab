@@ -131,8 +131,7 @@ class PowerGeneratingTechnology(ImportObject):
             self.yearlyPotential = pd.Series(values, index=index)
         elif parameter_name == 'EnergyToPowerRatio':
             self.energyToPowerRatio = float(parameter_value)
-        elif parameter_name == 'SelfDischargeRatePerHour':
-            self.selfDischargeRatePerHour = float(parameter_value)
+
         elif parameter_name == 'ChargingEfficiency':
             self.chargingEfficiency = float(parameter_value)
         elif parameter_name == 'DischargingEfficiency':

@@ -1107,8 +1107,7 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
         result_df = pd.concat(melted_dfs, ignore_index=True)
         load_mapping = {
             100000: 'ENS',
-            200000: 'ENS',
-            300000: 'DSR',
+            200000: 'DSR',
         }
         df_replaced = result_df.replace(load_mapping)
 
@@ -3129,13 +3128,13 @@ if __name__ == '__main__':
     # SCENARIOS = ["final2-EOM","NL-CM_20GW","NL-CM_VRES_27GW",  "NL-CM_VRES_25GW", "NL-CM_VRES_25GW_RO","NL-CM_VRES_20GW"]
     # SCENARIOS = ["final2-EOM","NL-CS_3iner_highWTP","NL-CS_3iner_lowWTP",  "NL-CS_3iner_lowWTP_9000", "NL-CS_3iner_lowWTP_9000_noDSR"]
     # SCENARIOS =  [ "final2-EOM", "final2-CM", "final2-CS","final2-SR_4000_15"]
-    SCENARIOS =  [ "final2-tesr"]
+    SCENARIOS =  [ "final3-test"]
                   #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
    #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
    #  SCENARIOS = ["NL-CS_marginal_7years"]
     # results_excel = "comparison_CM_wlowervolume.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5"]
-    results_excel = "comparisonSR_noDSR.xlsx"
+    results_excel = "comparisonCM7.xlsx"
     # SCENARIOS = ["NL-CS_avoided_costs_withDSR_5" ]
     # results_excel = "Comparisontest.xlsx"
 

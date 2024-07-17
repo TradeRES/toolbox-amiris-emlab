@@ -165,7 +165,7 @@ class CapacitySubscriptionMarginal(MarketModule):
             if unit[0:4] == "unit" and unit[5:] != str(8888888): # the 8888888 unit corresponed to the electrolyzer
                 hourly_load_shedders[int(int(unit[5:])/100000)] = df['hourly_generation'][unit]
         # ---------------------------------ENS calculation per consumer group  -----------------------------------
-        realized_ENS_consumers = hourly_load_shedders[[1, 2]].sum(axis=1) # these is the load disptached at 4000
+        realized_ENS_consumers = hourly_load_shedders[[1]].sum(axis=1) # these is the load disptached at 4000
         demand_all = pd.read_excel(input_weather_years_excel, index_col=0, sheet_name=["Load"])
         orginal_load = self.reps.weatherYears["weatherYears"].sequence[self.reps.current_tick]
         demand = demand_all["Load"][orginal_load].reset_index(drop=True)

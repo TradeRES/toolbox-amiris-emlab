@@ -333,7 +333,7 @@ class CapacityMarketClearing(MarketModule):
 
         for tech in all_techs_capacity:
             if tech in hourly_generation_res.columns:
-                if tech == "Lithium ion battery 4":
+                if tech == "Lithium ion battery 4" and "Lithium ion battery" in all_techs_capacity:
                     installed_capacity = all_techs_capacity[tech] + all_techs_capacity["Lithium ion battery"]
                 else:
                     installed_capacity = all_techs_capacity[tech]
