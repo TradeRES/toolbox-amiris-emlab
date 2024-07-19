@@ -113,20 +113,31 @@ class CapacitySubscriptionMarginal(MarketModule):
         print("clearing_price", clearing_price)
         print("total_supply_volume",total_supply_volume )
 
+
+        # for i, row in bid_per_consumer_group.iterrows():
+        #     cumsum+= row["volume"]
+        #     if cumsum < total_supply_volume:
+        #         bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume']
+        #     else:
+        #         bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume'] - (cumsum - total_supply_volume)
+        """
+        subscribed consumers are those who are willing to pay less than the clearing price
+        """
         cumsum = 0
         for i, row in bid_per_consumer_group.iterrows():
-            cumsum+= row["volume"]
-            if cumsum < total_supply_volume:
-                bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume']
+            cumsum+=  row.volume
+            if row.bid > clearing_price:
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = row.volume
+            elif row.bid == clearing_price:
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = row.volume - (cumsum - total_supply_volume)
             else:
-                bid_per_consumer_group.loc[i, 'accepted_volume'] = bid_per_consumer_group.loc[i, 'volume'] - (cumsum - total_supply_volume)
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = 0
 
         bid_per_consumer_group['accepted_volume'] = bid_per_consumer_group['accepted_volume'].apply(lambda x: 0 if x < 0 else x)
         grouped_accepted_bids = bid_per_consumer_group.groupby('consumer_name').agg({'accepted_volume': 'sum'}).reset_index()
 
         for i, consumer in grouped_accepted_bids.iterrows():
             self.reps.dbrw.stage_subscribed_volume_yearly(consumer.consumer_name, consumer.accepted_volume,  self.reps.current_tick + capacity_market.forward_years_CM)
-
 
         total = 0
         for i, supply in enumerate(sorted_supply):
