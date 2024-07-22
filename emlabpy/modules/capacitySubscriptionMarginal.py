@@ -128,8 +128,11 @@ class CapacitySubscriptionMarginal(MarketModule):
             cumsum+=  row.volume
             if row.bid > clearing_price:
                 bid_per_consumer_group.loc[i, 'accepted_volume'] = row.volume
-            elif row.bid == clearing_price:
+            elif row.bid == clearing_price and cumsum < total_supply_volume:
+                bid_per_consumer_group.loc[i, 'accepted_volume'] = row.volume
+            elif row.bid == clearing_price and cumsum >= total_supply_volume:
                 bid_per_consumer_group.loc[i, 'accepted_volume'] = row.volume - (cumsum - total_supply_volume)
+                break
             else:
                 bid_per_consumer_group.loc[i, 'accepted_volume'] = 0
 
@@ -232,7 +235,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         bid_per_consumer_group.rename(columns={"value": "bid","index": "consumer_name" }, inplace=True)
         bid_per_consumer_group['volume'] = self.reps.consumer_marginal_volume # new MW
 
-        largestbid = bid_per_consumer_group["bid"].max()
+        # largestbid = bid_per_consumer_group["bid"].max()
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
         if self.reps.current_tick <= self.reps.CS_look_back_years:
             ticks = range(capacity_market.forward_years_CM, self.reps.current_tick + capacity_market.forward_years_CM)
