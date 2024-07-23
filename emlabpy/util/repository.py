@@ -346,9 +346,6 @@ class Repository:
         except StopIteration:
             return None
 
-
-
-
     def get_peak_future_demand(self):
         try:
             # the load was already updated in the clock step
@@ -790,8 +787,10 @@ class Repository:
         try:
             share_wtp = []
             for i in self.cs_consumers.values():
-                if i.name != "DSR":
-                    share_wtp.append(i.max_subscribed_percentage*i.WTP)
+                if i.name == "DSR":
+                    i.max_subscribed_percentage = 0.11
+                    i.WTP = self.get_sorted_load_shedders_by_name("2").VOLL
+                share_wtp.append(i.max_subscribed_percentage*i.WTP)
             return sum(share_wtp)
         except StopIteration:
             return None
@@ -802,13 +801,18 @@ class Repository:
             peak_demand = self.get_realized_peak_demand()
             total_unsubscribed_volume = 0
             for i in self.cs_consumers.values():
-                if i.name != "DSR":
-                    max_subscribed_volume = i.max_subscribed_percentage*peak_demand
-                    max_subscribed_volume.reset_index(drop=True, inplace=True)
-                    unsubscribed_volume = max_subscribed_volume - i.subscribed_volume.sort_index()
-                    total_unsubscribed_volume += unsubscribed_volume
-                    share_wtp[i.name] = unsubscribed_volume*i.WTP #MW*EUR/MWh =
-            weighted = share_wtp.mean(axis=1)/total_unsubscribed_volume
+                print(i.name)
+                if i.name == "DSR":
+                    i.max_subscribed_percentage = 0.11
+                    i.WTP = self.get_sorted_load_shedders_by_name("2").VOLL
+                max_subscribed_volume = i.max_subscribed_percentage*peak_demand
+                max_subscribed_volume.reset_index(drop=True, inplace=True)
+                unsubscribed_volume = max_subscribed_volume - i.subscribed_volume.sort_index()
+                total_unsubscribed_volume += unsubscribed_volume
+                share_wtp[i.name] = unsubscribed_volume*i.WTP #MW*EUR/MWh =
+                if unsubscribed_volume.any() < 0:
+                    raise  Exception("Unsubscribed volume is negative")
+            weighted = share_wtp.sum(axis=1)/total_unsubscribed_volume
             return weighted
         except StopIteration:
             return None
@@ -818,12 +822,17 @@ class Repository:
             unsubscribed_volume = pd.DataFrame()
             peak_demand = self.get_realized_peak_demand()
             for i in self.cs_consumers.values():
-                if i.name != "DSR":
-                    max_subscribed_volume = i.max_subscribed_percentage*peak_demand
-                    subscribed_volume = i.subscribed_volume.sort_index()
-                    s_dropped = subscribed_volume.drop(subscribed_volume.index[-1])
-                    s_dropped.index = max_subscribed_volume.index
-                    unsubscribed_volume[i.name ] = max_subscribed_volume - s_dropped
+                if i.name == "DSR":
+                    i.max_subscribed_percentage = 0.11
+                max_subscribed_volume = i.max_subscribed_percentage*peak_demand
+                subscribed_volume = i.subscribed_volume.sort_index()
+                s_dropped = subscribed_volume.drop(subscribed_volume.index[-1])
+                s_dropped.index = max_subscribed_volume.index
+                unsubscribed_volume[i.name ] = max_subscribed_volume - s_dropped
+            if (unsubscribed_volume.values < 0).any():
+                print("h")
+                raise  Exception("Unsubscribed volume is negative")
+
             return unsubscribed_volume.sum(axis=1)
         except StopIteration:
             return None
