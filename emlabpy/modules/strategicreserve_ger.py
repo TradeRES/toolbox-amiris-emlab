@@ -24,16 +24,9 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.years_accepted_inSR_before_decommissioned):
             # Retrieve the active capacity market and power plant capacity
-
-            # if powerplant.id == 20400700026:
-            #     print("here")
-            #     print(powerplant.age)
-            #     print(powerplant.technology.expected_lifetime + powerplant.technology.maximumLifeExtension)
-            #     print(powerplant.age -self.operator.years_accepted_inSR_before_decommissioned)
             market = self.reps.get_capacity_market_for_plant(powerplant)
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
             Bid  = self.reps.calculate_marginal_costs( powerplant, self.operator.forward_years_SR)
-
             # Bid = powerplant.getActualFixedOperatingCost()
             # if powerplant.age < powerplant.technology.expected_lifetime:
             #     Bid += powerplant.getLoan().getAmountPerPayment()  # if power plant is reaches its lifetime it should not have anymore payments left
