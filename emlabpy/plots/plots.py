@@ -1569,7 +1569,7 @@ def prepare_cash_per_agent(reps, simulation_ticks):
         if all_info.RETURN_CONSUMERS.any() < - 10:
             print(all_info.RETURN_CONSUMER[all_info.RETURN_CONSUMER<0])
             raise Exception("consumers payback is too low")
-    cash_per_agent["Consumers payback"] = abs(all_info.RETURN_CONSUMERS)
+    cash_per_agent["Clawback"] = abs(all_info.RETURN_CONSUMERS)
     new_plants_loans["Downpayments new plants"] = all_info.CF_DOWNPAYMENT_NEW_PLANTS
     new_plants_loans["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     cost_recovery_in_eur = cash_per_agent.sum(axis=1)
@@ -1584,13 +1584,10 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     cost_recovery.index = cost_recovery.index + reps.start_simulation_year
     cost_recovery_in_eur.index = cost_recovery_in_eur.index + reps.start_simulation_year
     cost_recovery.sort_index(inplace=True)
-
     cumulative_cost_recovery = cost_recovery_in_eur.cumsum()
-    costs_to_society["CM"] =+ all_info.CF_CAPMARKETPAYMENT
     costs_to_society["OPEX + CAPEX"] =  - all_info.CF_COMMODITY - \
     all_info.CF_LOAN - all_info.CF_FIXEDOMCOST - all_info.CF_DOWNPAYMENT - \
     all_info.CF_DOWNPAYMENT_NEW_PLANTS - all_info.CF_LOAN_NEW_PLANTS
-
     return cash_per_agent, cost_recovery * 100, cumulative_cost_recovery, new_plants_loans, costs_to_society
 
 
@@ -2129,6 +2126,14 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
     colors = [technology_colors[tech] for tech in initial_derating_factor.columns.values]
     initial_derating_factor.plot( marker='D', ax = ax1, color = colors)
 
+    n = len(initial_derating_factor)
+    handles, labels = ax1.get_legend_handles_labels()
+    a = ["realized", "initial"]
+    new_labels = [element for element in a for _ in range(n)]
+    new_handles = [handle for handle, label in zip(handles, new_labels) if label]
+    ax1.legend(new_handles, [label for label in new_labels if label], fontsize='small', loc='upper right', bbox_to_anchor=(1, 1))
+    ax1.set_ylabel('realized market', fontsize='medium')
+    ax1.grid(True)
     """
     These are the expected derating factors based on future for representative year
     """
@@ -2145,15 +2150,15 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
         if derating_factor_mean.size != 0:
             derating_factor_mean.plot(marker='*', ax = ax2, color = colors, label='applied') # color=colors_unique_techs
             derating_factor.plot(marker='s', ax = ax2, color = colors, label='future')
-
-    ax2.set_xlabel('Years', fontsize='medium')
-    ax1.set_ylabel('realized market', fontsize='medium')
-    ax2.set_ylabel('future market', fontsize='medium')
+            a = ["mean", "yearly"]
+            handles, labels = ax1.get_legend_handles_labels()
+            new_labels = [element for element in a for _ in range(n)]
+            new_handles = [handle for handle, label in zip(handles, new_labels) if label]
+            ax2.legend(new_handles, [label for label in new_labels if label], fontsize='small', loc='upper right', bbox_to_anchor=(1, 1))
+            ax2.set_xlabel('Years', fontsize='medium')
+            ax2.grid(True)
+            ax2.set_ylabel('future market', fontsize='medium')
     #plt.title(" D = initial , o- = realized weather" + "\n  *  = representative year (expected)"  )
-    ax1.grid(True)
-    ax2.grid(True)
-    ax1.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
-    ax2.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.5, 1))
     fig.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
@@ -2436,13 +2441,13 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
         weighted_average_VOLL = reps.get_weighted_VOLL_unsubscribed()
-        weighted_average_VOLL.index = years_to_generate
     else:
         weighted_average_VOLL = reps.get_weighted_VOLL()
 
     (normalized_load_shedded, production_not_shedded_MWh, load_shedded_per_group_MWh, average_yearly_generation,
      cost_non_subcription, load_per_group) =\
         prepare_percentage_load_shedded(yearly_load, weighted_average_VOLL, years_to_generate)
+
     subscribed_sorted = pd.DataFrame()
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
         subscribed_sorted = prepare_subscribed_capacity_new(ticks_to_generate)
@@ -2481,9 +2486,13 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
     costs_to_society.sort_index(inplace=True)
     social_welfare = pd.DataFrame()
     costs_to_society.index = years_to_generate
+    if reps.capacity_remuneration_mechanism == "capacity_subscription":
+        "changing index to multiply with load shedded"
+        weighted_average_VOLL= weighted_average_VOLL[:-1]
+        weighted_average_VOLL.index = years_to_generate
     costs_to_society["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* weighted_average_VOLL + \
                                     total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL
-    social_welfare["OPEX+CAPEX+CM+ENS"] =  - costs_to_society.sum(axis=1)
+    social_welfare["OPEX+CAPEX+ENS"] =  - costs_to_society.sum(axis=1)
     plot_cash_flows(cash_flows_energy_producer, new_plants_loans, calculate_capacity_mechanisms, path_to_plots)
 
     # #section -----------------------------------------------------------------------------------------------capacities installed
@@ -2554,6 +2563,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, residual_load, Total
 
     # # #  ---------------------------------------------------------------------- section Capacity Mechanisms
     if calculate_capacity_mechanisms == True:
+
+        """
+        The total CM costs already have reduced revenues due to the clawback mechanism
+        """
         CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech, CM_clearing_price, \
             capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume, total_costs_CM, \
             SR_operator_revenues, cm_revenues_per_pp, price_cap = \
@@ -3118,14 +3131,15 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
+    SCENARIOS =  [ "final3-CS"]
+    # SCENARIOS =  ["final3-EOM", "final3-CS", "final3-CS_noMinPrice"]
+    # SCENARIOS =  ["final3-EOM", "final3-SR", "final3-SR_noDSR"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_VRES_BESS","final3-CM_endogen"]
-    SCENARIOS =  ["final3-EOM"]
-                  #  SCENARIOS = [ "final-EOM", "final-CS_fixprice_changeVol", "final-CS_fixprice_changeVol_linear",
-   #                "final-CS_changeprice_nochangeVol", "final-CS_changeprice_changeVol", "final-CS_no_inertia"]
+    # SCENARIOS =  ["final3-testRO"]
 
-    results_excel = "comparisonSR8.xlsx"
+    results_excel = "comparisonCS9.xlsx"
 
-    existing_scenario = False
+    existing_scenario = True
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
