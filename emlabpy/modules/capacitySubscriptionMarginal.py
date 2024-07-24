@@ -191,21 +191,19 @@ class CapacitySubscriptionMarginal(MarketModule):
         consumer_possible_ENS = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
             subscription_per_consumer = consumer.subscribed_volume[self.reps.current_tick] # MW
-            demand_per_consumer_group = demand* consumer.max_subscribed_percentage #
+            demand_per_consumer_group = demand * consumer.max_subscribed_percentage #
             possibleENS = (demand_per_consumer_group- subscription_per_consumer)
             possibleENS = possibleENS.apply(lambda x: 0 if x < 0 else x)
             consumer_possible_ENS[consumer.name] = possibleENS # ignore negative values
-            # print(consumer.name)
-            # print(subscription_per_consumer)
 
         total_potential_ENS = consumer_possible_ENS.sum(axis=1)
         probability_curtailment = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
-            probability_curtailment[consumer.name] = consumer_possible_ENS[consumer.name] / total_potential_ENS
+            probability_curtailment[consumer.name] = consumer_possible_ENS[consumer.name] / total_potential_ENS # probabilty of being limited
 
         ENS_proportion = pd.DataFrame()
         for consumer in self.reps.get_CS_consumer_descending_WTP():
-            ENS_proportion[consumer.name] = realized_ENS_consumers*probability_curtailment[consumer.name]
+            ENS_proportion[consumer.name] = realized_ENS_consumers*probability_curtailment[consumer.name] # probable ENS per consumer group
         # probability_curtailment.plot()
         # plt.show()
         # --------------------------------- marginal bids  -----------------------------------
@@ -223,11 +221,16 @@ class CapacitySubscriptionMarginal(MarketModule):
                 column_data = [self.reps.consumer_marginal_volume] * int(quotient) + [remainder]
                 df =  pd.concat([df, pd.Series(column_data)], ignore_index=True, axis=1)
             one_MW = ENS_one_MW*WTP
-            prices = df.sum(axis=1)*WTP/ self.reps.consumer_marginal_volume
+            prices = df.sum(axis=1)*WTP/ self.reps.consumer_marginal_volume # MWH * Euro/MWh / 1000MW = Eur/MW
             marginal_value_per_consumer_group[consumer_name] = prices
+            """ 
+            subscribed consumers get the marginal value
+            """
             subscribed_consumers[consumer_name] = one_MW
         # do for the first MW
-
+        """
+        due to the high volume of the marginal MW, there can be a slight oversubscription
+        """
         calculate_marginal_value_per_consumer_group(hourly_load_shedders[2], self.reps.loadShedders['2'].VOLL, "DSR")
         for consumer_name, data in ENS_proportion.iteritems():
             calculate_marginal_value_per_consumer_group(data, self.reps.cs_consumers[consumer_name].WTP, consumer_name )
@@ -277,7 +280,7 @@ class CapacitySubscriptionMarginal(MarketModule):
         for tick in ticks:
             path  = os.path.join(dirname(realpath(os.getcwd())), 'temporal_results', str(tick) +"bid_per_consumer_group.csv")
             if os.path.exists(path):
-                past_consumer_bids[tick] = pd.read_csv(path )
+                past_consumer_bids[tick] = pd.read_csv(path)
             else:
                 raise Exception("File not found")
         interpolated_bids = pd.DataFrame()
