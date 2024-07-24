@@ -498,8 +498,8 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     all_techs_capacity_nozeroes = all_techs_capacity_nozeroes / 1000
     all_techs_capacity_nozeroes.rename(columns=technology_names, inplace=True)
     # all_techs_capacity_nozeroes.index = all_techs_capacity_nozeroes.index - 2050
-    plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize=(5, 5))
+    plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
     axs17.set_axisbelow(True)
     plt.xlabel('Years', fontsize='large')
     plt.ylabel('Installed Capacity [GW]', fontsize='large')
@@ -528,7 +528,9 @@ def plot_total_demand(reps):
 def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_techs_full_load_hours, path_to_plots,
                                              colors_unique_techs):
     all_techs_capacity_factornonzero = all_techs_capacity_factor[all_techs_capacity_factor > 0]
-    axs23 = all_techs_capacity_factornonzero.plot(color=colors_unique_techs)
+    all_techs_capacity_factornonzero.dropna(axis=1, how='all', inplace=True)
+    colors = [technology_colors[tech] for tech in all_techs_capacity_factornonzero.columns.values]
+    axs23 = all_techs_capacity_factornonzero.plot(color=colors)
     axs23.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Capacity factor [%]', fontsize='medium')
@@ -539,7 +541,7 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
     fig23 = axs23.get_figure()
     fig23.savefig(path_to_plots + '/' + 'Capacity factor.png', bbox_inches='tight', dpi=300)
 
-    axs24 = all_techs_full_load_hours.plot(color=colors_unique_techs)
+    axs24 = all_techs_full_load_hours.plot(color=colors)
     axs24.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Hours', fontsize='medium')
@@ -583,7 +585,6 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
 
     results_file = os.path.join(path_to_plots, 'annualGenerationRES.csv')
     all_techs_generation_nozeroes.to_csv(results_file, header=True, sep=';', index=True)
-
     axs19 = all_techs_consumption_nozeroes.plot.area(color=colors)
     axs19.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
@@ -1108,12 +1109,12 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
         df_replaced = result_df.replace(load_mapping)
 
         if  df_replaced.empty == False:
-            unsubscribed_volume = reps.get_unsubscribed_volume()
+            # unsubscribed_volume = reps.get_unsubscribed_volume()
             fig, ax = plt.subplots(figsize=(10, 6))
             catplot = sns.catplot( data=df_replaced, x="year", y="Value",  kind="box", hue="Type", ax= ax)
             ax = catplot.facet_axis(0, 0)
-            unsubscribed_volume.reset_index(drop=True, inplace=True)
-            unsubscribed_volume[:-1].plot(ax= ax, color = "red", linestyle='--', linewidth=3, label = "Unsubscribed volume")
+            # unsubscribed_volume.reset_index(drop=True, inplace=True)
+            # unsubscribed_volume[:-1].plot(ax= ax, color = "red", linestyle='--', linewidth=3, label = "Unsubscribed volume")
             plt.ylabel('ENS [MW]', fontsize='large')
             plt.xticks(rotation=20, size = 15, ha="right")
             fig = ax.get_figure()
@@ -1869,8 +1870,12 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                 else:
                     if id == str(99999999999) and electrolyzer_read == True:
                         if technology_name == "electrolyzer":
+                            technology_name = "industry"
+                            """
+                            in reality we model the load shifter as the electrolyzer
+                            """
                             consumption_per_tech = pp_consumption_in_MWh
-                            electrolyzers_capacity = reps.loadShedders["hydrogen"].ShedderCapacityMW
+                            electrolyzers_capacity = reps.loadShifterDemand['Industrial_load_shifter'].peakConsumptionInMW
                             capacity_factor_per_tech.append(pp_consumption_in_MWh / (electrolyzers_capacity * reps.hours_in_year))
                             if pp_consumption_in_MWh > 0:
                                 market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_consumption_in_MWh)
@@ -2987,6 +2992,7 @@ technology_colors = {
     "CCGT_CHP_backpressure_PH": "orange",
     "CCS": "orange",
     "fuel_cell": "gold",
+    "industry": "black",
     "electrolyzer": "gray",
     "hydrogen turbine": "darkred",
     "hydrogen CCGT": "darkred",
@@ -3013,7 +3019,7 @@ technology_names = {
 
 def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
     global save_excel
-    save_excel = False
+    save_excel = True
     global scenario_name
     global calculate_hourly_shedders_new
     global calculate_monthly_generation
@@ -3131,8 +3137,8 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS =  [ "final3-CS"]
-    # SCENARIOS =  ["final3-EOM", "final3-CS", "final3-CS_noMinPrice"]
+    # SCENARIOS =  [ "final3-CS"]
+    SCENARIOS =  ["final3-CS",  "final3-CS_RO","final3-CS_noMinPrice"]
     # SCENARIOS =  ["final3-EOM", "final3-SR", "final3-SR_noDSR"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_VRES_BESS","final3-CM_endogen"]
     # SCENARIOS =  ["final3-testRO"]

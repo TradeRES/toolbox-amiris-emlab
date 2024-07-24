@@ -113,6 +113,10 @@ class CapacitySubscriptionMarginal(MarketModule):
         print("clearing_price", clearing_price)
         print("total_supply_volume",total_supply_volume )
 
+        colorplot = 'g'
+        if clearing_price <= self.reps.CS_minimum_price:
+            clearing_price = self.reps.CS_minimum_price
+            colorplot = 'k'
 
         # for i, row in bid_per_consumer_group.iterrows():
         #     cumsum+= row["volume"]
@@ -158,7 +162,7 @@ class CapacitySubscriptionMarginal(MarketModule):
             plt.step(supply_quantities, supply_prices, 'o-', label='supply', color='b')
             plt.step(bid_per_consumer_group["cummulative_quantity"].to_list(), bid_per_consumer_group["bid"].to_list(), 'o-', label='demand', color='r')
             plt.grid(visible=None, which='major', axis='both', linestyle='--')
-            plt.axhline(y=clearing_price, color='g', linestyle='--', label='P ' + str(clearing_price))
+            plt.axhline(y=clearing_price, color=colorplot, linestyle='--', label='P ' + str(clearing_price))
             plt.axvline(x=total_supply_volume, color='g', linestyle='--', label='Q ' + str(total_supply_volume))
             plt.title(self.reps.runningModule + " " + str(self.reps.current_year))
             plt.xlabel('Quantity')
@@ -253,8 +257,8 @@ class CapacitySubscriptionMarginal(MarketModule):
         """
         for i, consumer in enumerate(self.reps.get_CS_consumer_descending_WTP()):
             bid = subscribed_consumers[consumer.name]
-            if bid <9000:
-                bid = 9000
+            if bid <= self.reps.CS_minimum_price:
+                bid = self.reps.CS_minimum_price
             new_row = {"consumer_name":consumer.name, 'volume': consumer.subscribed_volume[self.reps.current_tick], "bid":bid }
             bid_per_consumer_group = bid_per_consumer_group.append(new_row, ignore_index=True)
         bid_per_consumer_group.sort_values("bid", inplace=True, ascending=False)

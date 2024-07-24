@@ -104,6 +104,7 @@ class Repository:
         self.factor_fromVOLL = 1
         self.reliability_option_strike_price = "NOTSET"
         self.CS_look_back_years = 3
+        self.CS_minimum_price = 9000
         # section --------------------------------------------------------------------------------------configuration
         self.dictionaryFuelNames = dict()
         self.dictionaryFuelNumbers = dict()
@@ -830,7 +831,7 @@ class Repository:
                 s_dropped.index = max_subscribed_volume.index
                 unsubscribed_volume[i.name ] = max_subscribed_volume - s_dropped
             if (unsubscribed_volume.values < 0).any():
-                print("h")
+                print(unsubscribed_volume)
                 raise  Exception("Unsubscribed volume is negative")
 
             return unsubscribed_volume.sum(axis=1)

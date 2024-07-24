@@ -33,7 +33,7 @@ class CreatingFinancialReports(DefaultModule):
 
     def act(self):
 
-        total_load_shedded = self.prepare_percentage_load_shedded()
+        # total_load_shedded = self.prepare_percentage_load_shedded()
         # if self.reps.capacity_remuneration_mechanism == globalNames.capacity_subscription :#and self.reps.current_tick >0:
         #     self.assign_LOLE_by_subscription(total_load_shedded)
         # else:
@@ -217,31 +217,30 @@ class CreatingFinancialReports(DefaultModule):
         else:
             return round(IRR, 4), npv
 
-    def prepare_percentage_load_shedded(self):
-        """
-        calculate LOLE by load shedder.
-        """
-        df = pd.read_csv(globalNames.hourly_generation_per_group_path)
-        hourly_load_shedders = pd.DataFrame()
-        for unit in df.columns.values:
-            if unit[0:4] == "unit":
-                hourly_load_shedders[unit[5:]] = df[unit]
-
-        total_load_shedded = pd.DataFrame()
-        for name, values in self.reps.loadShedders.items():
-            test_list = [int(i) for i in hourly_load_shedders.columns.values]
-            hourly_load_shedders.columns = test_list
-            if name == "hydrogen":  # hydrogen is the lowest load shedder
-                pass
-            else:
-                id_shedder = int(name) * 100000
-                total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
-
-        realized_LOLE = total_load_shedded.where(total_load_shedded > 0).sum()
-        print(realized_LOLE)
-        self.reps.dbrw.stage_load_shedders_realized_lole(realized_LOLE, self.reps.current_tick)
-
-        return total_load_shedded
+    # def prepare_percentage_load_shedded(self):
+    #     """
+    #     calculate LOLE by load shedder.
+    #     """
+    #     df = pd.read_csv(globalNames.hourly_generation_per_group_path)
+    #     hourly_load_shedders = pd.DataFrame()
+    #     for unit in df.columns.values:
+    #         if unit[0:4] == "unit":
+    #             hourly_load_shedders[unit[5:]] = df[unit]
+    #
+    #     total_load_shedded = pd.DataFrame()
+    #     for name, values in self.reps.loadShedders.items():
+    #         test_list = [int(i) for i in hourly_load_shedders.columns.values]
+    #         hourly_load_shedders.columns = test_list
+    #         if name == "hydrogen":  # hydrogen is the lowest load shedder
+    #             pass
+    #         else:
+    #             id_shedder = int(name) * 100000
+    #             total_load_shedded[name] = hourly_load_shedders[(id_shedder)]
+    #
+    #     realized_LOLE = total_load_shedded.where(total_load_shedded > 0).sum()
+    #     print(realized_LOLE)
+    #     self.reps.dbrw.stage_load_shedders_realized_lole(realized_LOLE, self.reps.current_tick)
+    #     return total_load_shedded
 
     # def assign_LOLE_by_subscription(self, total_load_shedded):
     #     """
