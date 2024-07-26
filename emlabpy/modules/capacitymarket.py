@@ -303,7 +303,7 @@ class CapacityMarketClearing(MarketModule):
         #         else:
         #             all_techs_capacity[tech] = capacity
         """
-        The derating factor is calculated by the  generation per technology in the median weather year divided by the installed capacity
+        The derating factor is calculated by the  generation per technology in the future  median weather year divided by the installed capacity
         :return:
         """
         hourly_generation_res = pd.DataFrame()
@@ -339,7 +339,9 @@ class CapacityMarketClearing(MarketModule):
                     installed_capacity = all_techs_capacity[tech]
                 average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
                 derating_factors[tech] = average_generation / installed_capacity
-                if derating_factors[tech] > 1:
+                if   pd.isna(derating_factors[tech]):
+                    derating_factors[tech] = 0
+                elif derating_factors[tech] > 1:
                     raise ValueError("Derating factor is more than 1")
             else:
                 pass
