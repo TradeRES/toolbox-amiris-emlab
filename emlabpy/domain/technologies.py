@@ -86,6 +86,10 @@ class PowerGeneratingTechnology(ImportObject):
                     else:
                         years = range(reps.current_tick - reps.dynamic_derating_factor_window, reps.current_tick)
                         self.deratingFactor = np.nanmean(series.loc[years])
+                        # if all(element in years for element in series.index):
+                        #     self.deratingFactor = np.nanmean(series.loc[years])
+                        # else:
+                        #     self.deratingFactor = series[series.index.max()]
 
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)

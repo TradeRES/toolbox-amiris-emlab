@@ -339,13 +339,12 @@ class CapacityMarketClearing(MarketModule):
                     installed_capacity = all_techs_capacity[tech]
                 average_generation = hourly_generation_res.loc[yearly_at_scarcity_hours, tech].mean()
                 derating_factors[tech] = average_generation / installed_capacity
-                if   pd.isna(derating_factors[tech]):
-                    derating_factors[tech] = 0
-                elif derating_factors[tech] > 1:
+
+                if derating_factors[tech] > 1:
                     raise ValueError("Derating factor is more than 1")
             else:
                 pass
-
+        print(derating_factors)
         self.reps.dbrw.stage_derating_factor_yearly(derating_factors, self.reps.current_tick)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
