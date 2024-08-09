@@ -138,3 +138,5 @@ data/Analysis/CS.xlsx
 data/Analysis/NPV.xlsx
 emlabpy/util/excels/
 
+
+data/Analysis/*
