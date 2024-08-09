@@ -26,7 +26,7 @@ import os
 import pandas as pd
 from os.path import dirname, realpath
 import spinedb_api.import_functions as im
-import socket
+import numpy as np
 import shutil
 
 from spinedb_api import DatabaseMapping, from_database, Map, to_database
@@ -129,9 +129,11 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
         if modality == "initialize":
             global peak_load
             peak_load = max(excel['Load'][representative_year_investment])
+
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
             print("--------load and profiles should be related")
             raise Exception
+
         elif fix_demand_to_representative_year == True and fix_profiles_to_representative_year == True:
             # future profiles are upated for representative year
             print("--------fix demand and profiles")
@@ -219,7 +221,7 @@ def prepare_initialization_load_for_future_year(excel, representative_year_inves
 
 
 def prepare_hydrogen_initilization_future(excel):
-    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMW"]] * hours_in_year,
+    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWCurrent"]] * hours_in_year,
                                    index=excel['Load'].index)
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath(
         load_shedders.loc["hydrogen", "TimeSeriesFileFuture"]))
@@ -228,7 +230,7 @@ def prepare_hydrogen_initilization_future(excel):
 
 def prepare_hydrogen_initilization(excel):
     # TODO: make hydrogen dynamic
-    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMW"]] * hours_in_year,
+    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWFuture"]] * hours_in_year,
                                    index=excel['Load'].index)
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path,
                                                    os.path.normpath(load_shedders.loc["hydrogen", "TimeSeriesFile"]))
@@ -294,6 +296,37 @@ def read_load_shedders(updated_year):
         index = [int(i[0]) for i in array["data"]]
         pd_series = pd.Series(values, index=index)
         load_shedders.at[load_shedder, "percentage_load"] = pd_series[updated_year]
+    """
+    Reading yearly hydrogen demand
+    """
+    yearly_hydrogen_map = next(i['parameter_value'] for i in
+         db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+             "LoadShedders", "hydrogen") if i['parameter_name'] == "ShedderCapacityMWyearly")
+
+    if yearly_hydrogen_map is not None:
+        array = yearly_hydrogen_map.to_dict()
+        values = [float(i[1]) for i in array["data"]]
+        index = [int(i[0]) for i in array["data"]]
+        pd_series = pd.Series(values, index=index)
+        if updated_year in pd_series.index:
+            load_shedders.at["hydrogen", "ShedderCapacityMWCurrent"] = pd_series[updated_year]
+        else:
+            pd_series[updated_year] = np.nan
+            pd_series = pd_series.sort_index()
+            interpolated_data = pd_series.interpolate(method='index')
+            load_shedders.at["hydrogen", "ShedderCapacityMWCurrent"] = interpolated_data[updated_year]
+
+        future_year = lookAhead + updated_year
+        if future_year in pd_series.index:
+            load_shedders.at["hydrogen", "ShedderCapacityMWFuture"] = pd_series[future_year]
+        else:
+            pd_series[future_year] = np.nan
+            pd_series = pd_series.sort_index()
+            interpolated_data = pd_series.interpolate(method='index')
+            load_shedders.at["hydrogen", "ShedderCapacityMWFuture"] = interpolated_data[future_year]
+
+    print(load_shedders.at["hydrogen", "ShedderCapacityMWFuture"] )
+
 def prepare_AMIRIS_data_for_one_year():
     print("preparing data when there are no more years data available")
     load_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')

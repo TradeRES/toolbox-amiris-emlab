@@ -100,6 +100,11 @@ class LoadShedder(ImportObject):
                 self.VOLL = parameter_value
         elif parameter_name == 'ShedderCapacityMW':
             self.ShedderCapacityMW = parameter_value
+        elif parameter_name == 'ShedderCapacityMWyearly' and reps.runningModule == "plotting":
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.ShedderCapacityMW = pd.Series(values, index=index)
         elif parameter_name == 'percentage_load':
             if self.name == "hydrogen":
                 pass

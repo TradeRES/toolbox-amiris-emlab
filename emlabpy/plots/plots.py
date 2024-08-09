@@ -22,7 +22,7 @@ from util.spinedb import SpineDB
 from copy import deepcopy
 from matplotlib.offsetbox import AnchoredText
 import numpy as np
-
+from scipy.interpolate import interp1d
 logging.basicConfig(level=logging.ERROR)
 
 plt.rcParams.update({'font.size': 14})
@@ -2287,13 +2287,22 @@ def prepare_percentage_load_shedded(yearly_load, weighted_average_VOLL, years_to
     load_shedded_per_group_MWh = pd.DataFrame()
     cost_non_subcription = pd.DataFrame()
     total_yearly_electrolysis_consumption = pd.DataFrame()
-    total_yearly_hydrogen_input_demand = reps.loadShedders["hydrogen"].ShedderCapacityMW * reps.hours_in_year
-    hydrogen_input_demand = [reps.loadShedders["hydrogen"].ShedderCapacityMW] * reps.hours_in_year
+    if  isinstance(reps.loadShedders["hydrogen"].ShedderCapacityMW, pd.Series):
+        interpolation_function = interp1d(reps.loadShedders["hydrogen"].ShedderCapacityMW.index,
+                                          reps.loadShedders["hydrogen"].ShedderCapacityMW.values, kind='linear', fill_value="extrapolate")
+        indexes_to_interpolate = years_to_generate
+        interpolated_values = interpolation_function(indexes_to_interpolate)
+    else:
+        total_yearly_hydrogen_input_demand = reps.loadShedders["hydrogen"].ShedderCapacityMW * reps.hours_in_year
+        hydrogen_input_demand = [reps.loadShedders["hydrogen"].ShedderCapacityMW] * reps.hours_in_year
     input_shifter_demand = reps.loadShifterDemand[
                                'Industrial_load_shifter'].averagemonthlyConsumptionMWh * 12
     total_load_shedded = pd.DataFrame()
     load_per_group =  pd.DataFrame()
     for tick, year in enumerate(years_to_generate):
+        if  isinstance(reps.loadShedders["hydrogen"].ShedderCapacityMW, pd.Series):
+            total_yearly_hydrogen_input_demand = interpolated_values[tick]* reps.hours_in_year
+            hydrogen_input_demand = [interpolated_values[tick]] * reps.hours_in_year
         for name, LS in reps.loadShedders.items():
             selected_df = hourly_load_shedders_per_year[year]
             test_list = [int(i) for i in selected_df.columns.values]
