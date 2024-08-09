@@ -497,7 +497,7 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
     all_techs_capacity_nozeroes = all_techs_capacity_nozeroes / 1000
     all_techs_capacity_nozeroes.rename(columns=technology_names, inplace=True)
-    all_techs_capacity_nozeroes.index = all_techs_capacity_nozeroes.index - 2050
+    # all_techs_capacity_nozeroes.index = all_techs_capacity_nozeroes.index - 2050
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize=(5, 5))
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
     axs17.set_axisbelow(True)
@@ -776,13 +776,14 @@ def plot_yearly_average_electricity_prices_and_RES_share(electricity_price, shar
     axs22.set_title('Weighted-average yearly electricity prices')
     fig22 = axs22.get_figure()
     fig22.savefig(path_to_plots + '/' + 'Electricity prices.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
     axs21 = share_RES.plot()
     axs21.set_axisbelow(True)
     plt.xlabel('Years', fontsize='medium')
     plt.ylabel('Share RES [%]', fontsize='medium')
     plt.grid()
-    axs21.get_legend().remove()
+    # axs21.get_legend().remove()
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     axs21.set_title('Share RES( RES generation/total demand)')
     fig21 = axs21.get_figure()
@@ -1926,8 +1927,8 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
             #     all_techs_generation.loc["Lithium_ion_battery_charge", year] = generation_per_tech_charge
         if totalproduction != 0:
             average_electricity_price.loc[year, "wholesale price"] = totalrevenues / totalproduction
-        total_demand = yearly_load[year].sum()
-        share_RES.loc[year, 0] = 100 * (sum(all_techs_generation.loc[renewable_technologies, year]) / total_demand)
+
+    share_RES= 100 * all_techs_generation.loc[renewable_technologies].sum(axis=0) / all_techs_generation.sum()
     #   production_per_year.loc[year, 1] = totalproduction
     return all_techs_generation, all_techs_consumption, all_techs_market_value.replace(np.nan, 0), \
         all_techs_capacity_factor.replace(np.nan, 0), average_electricity_price, all_techs_full_load_hours, share_RES
@@ -2534,7 +2535,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         weighted_average_VOLL= weighted_average_VOLL[:-1]
         weighted_average_VOLL.index = years_to_generate
     costs_to_society["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* weighted_average_VOLL + \
-                                    total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL
+                                    total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL # load shedders 2 is the DSR
     costs_to_society4000 = costs_to_society.copy(deep=True)
     costs_to_society4000["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* 4000 + \
                               total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL
@@ -3027,6 +3028,7 @@ technology_colors = {
     'CCGT': "indianred",
     "CCS gas": "indianred",
     'OCGT': "gray",
+    'Gas': "gray",
     'PV_utility_systems': "gold",
     "Solar PV large": "gold",
     "Solar CSP": "gold",
@@ -3192,18 +3194,20 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
             print("finished emlab")
 
 if __name__ == '__main__':
-    SCENARIOS =   ["final3-EOM","final3-CS", "final3-CS_RO", "final3-CS_noMinPrice","final3-CS_noMemory"]
+    # SCENARIOS =   ["final3-EOM",'final3-EOM_inflexibleelectrolyzer',"final3-EOM_halfelectrolyzers","final3-EOM_halfFlexIndustry"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_VRES_BESS", "final3-CM_VRES_BESS_lowTV","final3-CM_endogen_lowTV"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CS","final3-SR"]
-    results_excel = "comparisonCS9.xlsx"
+    # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_RO", "final3-CM_VRES_BESS", "final3-CM_endogen"]
+    SCENARIOS =  ["test-test"]
+    results_excel = "comparisonCM_ROandhighTV.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
         raise Exception
 
-    plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2],existing_scenario)
+    plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2], existing_scenario)
     print('===== End Generating Plots =====')
 
 # write the name of the existing scenario or the new scenario
