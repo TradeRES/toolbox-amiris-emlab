@@ -18,10 +18,14 @@ first = type + folder
 emlab_sql = "\\EmlabDB.sqlite"
 amiris_sql = "\\AMIRIS db.sqlite"
 energy_exchange_url_sql = "\\energy exchange.sqlite"
-scenario_name = "NL-EOM_nolifetimeextension"
+
 #scenario_name = "NL-EOM_fix_powerplants"
 # scenario_name = "final-CM_ES_VRES"
-scenario_name = "NL-CSmarginal_2004"
+# scenario_name = "NL-EOM_nolifetimeextension"
+# scenario_name = "NL-CSmarginal_2004"
+#  scenario_name = "NL-CM_target20GW"
+
+scenario_name = "NL-EOM_newcapacities"
 
 emlab_url = first + scenario_name + emlab_sql
 amiris_url = first + scenario_name + emlab_sql
@@ -79,7 +83,9 @@ for year in years_to_generate:
 
     total_hourly_load_shedders = hourly_load_shedders.sum(axis=1)
     yearly_at_scarcity_hours =  total_hourly_load_shedders[total_hourly_load_shedders > 0 ].index
-
+    """
+    this include the near scarcity hours.
+    """
     demand_at_scarcity.at["prices", year] = df["energy_exchange"]["ElectricityPriceInEURperMWH"].loc[yearly_at_scarcity_hours].mean()
     demand_at_scarcity.at["awarded_power", year] = df["energy_exchange"]["TotalAwardedPowerInMW"].loc[yearly_at_scarcity_hours].mean()
 
@@ -102,17 +108,23 @@ demand_LOLE = pd.DataFrame()
 demand_LOLE["shortages"] = shedded.stack().reset_index(drop=True)
 demand_LOLE["load"] = original_demand.stack().reset_index(drop=True)
 sorted_demand_LOLE = demand_LOLE.sort_values(by='shortages', ascending=False, ignore_index=True)
+
 """
 filtering the load when there were the top 4 years of shortages. 
 and then taking the average of those years.
 """
-
+scenarios_numer = len(years_to_generate)
 sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].plot()
 plt.show()
 sorted_demand_LOLE.to_csv("sorted_demand_LOLE.csv")
-selected_rows = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].head(LOLE*len(years_to_generate))
-selected_rows_1_5 = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].head(int(LOLE*len(years_to_generate)*1.5))
+
+selected_rows = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].iloc[LOLE: LOLE + scenarios_numer] # 40
+loles = int(LOLE*1.5)
+selected_rows_1_5 = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].iloc[loles : (loles  + scenarios_numer)]
 selected_rows_all = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].mean()
+# selected_rows = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].head(LOLE*scenarios_numer) # 40
+# selected_rows_1_5 = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].head(int(LOLE*scenarios_numer*1.5))
+# selected_rows_all = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].mean()
 demand_near_scarcity = pd.DataFrame({LOLE: [selected_rows["load"].mean()],
                                      LOLE*1.5: [selected_rows_1_5["load"].mean()],
                                      "ALL": [selected_rows_all["load"]]
