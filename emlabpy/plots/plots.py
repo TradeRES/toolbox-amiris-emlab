@@ -411,7 +411,7 @@ def plot_irrs_and_npv_per_tech_per_year(irrs_per_tech_per_year, npvs_per_tech_pe
     plt.ylabel('mill. €', fontsize='medium')
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
     plt.grid()
-    axs27.set_title('Average NPVs per MW (discount rate=0%)' + '\n ignoring nan, ')
+    axs27.set_title('Average NPVs per MW (calculated in financial reports)' + '\n ignoring nan, ')
     fig27 = axs27.get_figure()
     fig27.savefig(path_to_plots + '/' + 'NPVs per capacity per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
@@ -864,7 +864,7 @@ def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
 
 
 def plot_cash_flows(cash_flows_with_zeroes, new_plants_loans, calculate_capacity_mechanisms, ticks_to_generate, path_to_plots):
-    if calculate_capacity_mechanisms == False:
+    if calculate_capacity_mechanisms == False and "Capacity Mechanism" in cash_flows_with_zeroes.columns:
         cash_flows_with_zeroes.drop(["Capacity Mechanism"], axis=1, inplace=True)
     cash_flows = cash_flows_with_zeroes[cash_flows_with_zeroes != 0]
     cash_flows.dropna(how='all', axis=1, inplace=True)
@@ -1331,10 +1331,10 @@ def prepare_pp_lifetime_extension(reps):
 
 def prepare_pp_status(years_to_generate,unique_technologies,  reps):
     if reps.decommission_from_input == True:  # the initial power plants have negative age to avoid all to be commmissioned in one year
-        if reps.current_year + 1 + reps.lookAhead > 2050:
+        if reps.current_year + 1 + reps.lookAhead > reps.start_simulation_year:
             until = reps.current_year + 1 + reps.lookAhead
         else:
-            until = 2050
+            until = reps.start_simulation_year
         years_to_generate_and_build = list(range(reps.start_simulation_year - reps.lookAhead, until))
     else:
         years_to_generate_and_build = list(
@@ -1614,7 +1614,7 @@ def prepare_cash_per_agent(reps, simulation_ticks):
     cash_per_agent["Wholesale market"] = all_info.CF_ELECTRICITY_SPOT
     cash_per_agent["Variable costs"] = all_info.CF_COMMODITY
     cash_per_agent["Fixed costs"] = all_info.CF_FIXEDOMCOST
-    cash_per_agent["Capacity Mechanism"] = all_info.CF_CAPMARKETPAYMENT
+    cash_per_agent["CRM payment"] = all_info.CF_CAPMARKETPAYMENT
     cash_per_agent["Loans"] = all_info.CF_LOAN
     cash_per_agent["Loans new plants"] = all_info.CF_LOAN_NEW_PLANTS
     cash_per_agent["Downpayments"] = all_info.CF_DOWNPAYMENT
@@ -2717,7 +2717,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
     plot_future_fuel_prices(future_fuel_prices, path_to_plots)
     plot_cost_recovery(cost_recovery, cumulative_cost_recovery, path_to_plots)
    # social_welfare["consumers"] =
-    social_welfare["hydrogen_and_heat"] = (production_not_shedded_MWh["hydrogen_produced"]* future_fuel_prices["hydrogen"][2050] \
+    social_welfare["hydrogen_and_heat"] = (production_not_shedded_MWh["hydrogen_produced"]* future_fuel_prices["hydrogen"][reps.start_simulation_year] \
                                 * reps.power_generating_technologies["electrolyzer"].efficiency + \
                                 #  not inclusing industrial load becuase the demand is the same
                                 reps.calculate_marginal_costs_by_technology( "central gas boiler", 0 , ) * production_not_shedded_MWh["industrial_heat_demand"])
@@ -3069,7 +3069,7 @@ technology_colors = {
     'Hard Coal': "black",
     "Oil": "gray",
     'Lignite': "darkgoldenrod",
-    'CCGT': "indianred",
+    'CCGT': "silver",
     "CCS gas": "indianred",
     'OCGT': "gray",
     'Gas': "gray",
@@ -3093,7 +3093,7 @@ technology_colors = {
     "CCGT_CHP_backpressure_PH": "orange",
     "CCS": "orange",
     "fuel_cell": "gold",
-    "industry": "black",
+    "industry": "darkviolet",
     "electrolyzer": "gray",
     "hydrogen turbine": "darkred",
     "hydrogen CCGT": "darkred",

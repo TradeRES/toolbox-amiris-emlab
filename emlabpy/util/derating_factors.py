@@ -25,8 +25,7 @@ energy_exchange_url_sql = "\\energy exchange.sqlite"
 # scenario_name = "NL-CSmarginal_2004"
 #  scenario_name = "NL-CM_target20GW"
 
-scenario_name = "NL-EOM_newcapacities"
-
+scenario_name = "finalHH-EOM"
 emlab_url = first + scenario_name + emlab_sql
 amiris_url = first + scenario_name + emlab_sql
 spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
@@ -37,7 +36,7 @@ years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1
 LOLE = 4
 global unique_technologies
 unique_technologies = reps.get_unique_candidate_technologies_names()
-unique_technologies.append("Nuclear")
+
 annual_decommissioned_capacity, annual_in_pipeline_capacity, annual_commissioned, \
     all_techs_capacity, last_year_in_pipeline, last_year_decommissioned, \
     last_year_operational_capacity, last_year_to_be_decommissioned_capacity, \
@@ -77,7 +76,7 @@ for year in years_to_generate:
         elif unit =="storages_discharging":
             hourly_generation_res["Lithium ion battery"] = df['hourly_generation'][unit]
         elif unit =="conventionals":
-            hourly_generation_res["hydrogen OCGT"] = df['hourly_generation'][unit]
+            hourly_generation_res["conventionals"] = df['hourly_generation'][unit]
         else:
             pass
 
@@ -93,6 +92,8 @@ for year in years_to_generate:
     original_demand[year] = demand["Load"][year - 2050 + 1980]
 
     all_techs_capacity.rename(columns={"Lithium ion battery 4": "Lithium ion battery"}, inplace=True)
+    # all_techs_capacity['conventionals'] = all_techs_capacity[['hydrogen OCGT', 'hydrogen CCGT', 'Nuclear', "Biofuel"]].sum(axis=1)
+    # all_techs_capacity = all_techs_capacity.drop(columns=['hydrogen OCGT', 'hydrogen CCGT', 'Nuclear', "Biofuel"])
     for tech in all_techs_capacity:
         if tech in all_techs_capacity.loc[year] and tech in hourly_generation_res.columns:
             if tech =="Lithium ion battery": # there are 2 types of batteries

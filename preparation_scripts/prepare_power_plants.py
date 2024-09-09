@@ -114,9 +114,6 @@ dataframe.drop(dataframe[(dataframe['Capacity'] == row.Capacity) & (dataframe['D
 
 # summing up negative values
 
-
-
-
 # Group the filtered DataFrame by columns
 # group all power plants of same age and technology together
 df = dataframe.groupby(["Technology", 'Age' ], as_index=False).agg(
@@ -128,9 +125,12 @@ df = dataframe.groupby(["Technology", 'Age' ], as_index=False).agg(
         "DecommissionInYear", weighted_decommission_year)
 
 )
-# drop all power plants after year
-# attention!  comment this line if plan power plants are not wanted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# df = df[df["Age"]>=0]
+"""
+drop all power plants after year
+attention!  comment this line if planned power plants are not wanted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+df = df[df["Age"]>=0]
+"""
+
 
 # grouping power plants with negative capacity installed before year!
 for t in techs:
@@ -149,10 +149,11 @@ for t in techs:
 def weighted_avg(values, weights):
     return np.average(values, weights=weights)
 
-
-# Group power plants by age and efficiency.
-# Plants smaller than 50 MW are grouped with the power plants of the nearest age, Efficiency are weighted averaged, capacity is summed.
-# If there are only small capacities power plants, then the efficiency and the age are weighted averaged
+"""
+Group power plants by age and efficiency.
+Plants smaller than 50 MW are grouped with the power plants of the nearest age, Efficiency are weighted averaged, capacity is summed.
+If there are only small capacities power plants, then the efficiency and the age are weighted averaged
+"""
 
 alltechs = []
 for t in techs:
