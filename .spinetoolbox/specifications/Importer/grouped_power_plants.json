@@ -238,44 +238,6 @@
                     }
                 }
             ],
-            "superGroupedNL": [
-                {
-                    "Mapping 1": {
-                        "mapping": [
-                            {
-                                "map_type": "ObjectClass",
-                                "position": "hidden",
-                                "value": "PowerPlantsInstalled"
-                            },
-                            {
-                                "map_type": "Object",
-                                "position": 0
-                            },
-                            {
-                                "map_type": "ObjectMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterDefinition",
-                                "position": -1
-                            },
-                            {
-                                "map_type": "Alternative",
-                                "position": "hidden",
-                                "value": "0"
-                            },
-                            {
-                                "map_type": "ParameterValueMetadata",
-                                "position": "hidden"
-                            },
-                            {
-                                "map_type": "ParameterValue",
-                                "position": "hidden"
-                            }
-                        ]
-                    }
-                }
-            ],
             "groupedNLGAS": [
                 {
                     "Mapping 1": {
@@ -1003,10 +965,106 @@
                         ]
                     }
                 }
+            ],
+            "superGroupedNL(distH2)": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "NL2030": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "extendedNL (July2024)": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "groupedDecarbonizedNLCRMs"
+            "extendedNL (July2024)"
         ],
         "table_options": {
             "germany2019": {
@@ -1023,10 +1081,6 @@
             "dutchGermanPlants2015_from_emla": {},
             "powerplants_grouped_DE": {},
             "groupedNL": {
-                "read_until_col": true,
-                "read_until_row": true
-            },
-            "superGroupedNL": {
                 "read_until_col": true,
                 "read_until_row": true
             },
@@ -1090,7 +1144,16 @@
             "groupedDecarbonizedNLCRMs ( (3)": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "superGroupedNL(distH2)": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "extendedNL (July2024)": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "NL2030": {}
         },
         "table_types": {
             "germany2019": {
@@ -1176,16 +1239,6 @@
                 "6": "string",
                 "7": "string",
                 "8": "string"
-            },
-            "superGroupedNL": {
-                "0": "string",
-                "1": "float",
-                "2": "float",
-                "3": "float",
-                "4": "float",
-                "5": "float",
-                "6": "float",
-                "7": "float"
             },
             "groupedNLGAS": {
                 "0": "string",
@@ -1419,6 +1472,36 @@
                 "4": "float",
                 "5": "float",
                 "6": "float"
+            },
+            "superGroupedNL(distH2)": {
+                "0": "string",
+                "1": "string",
+                "2": "float",
+                "3": "float",
+                "4": "string",
+                "5": "string",
+                "6": "float",
+                "7": "float"
+            },
+            "extendedNL (July2024)": {
+                "0": "string",
+                "1": "float",
+                "2": "float",
+                "3": "float",
+                "4": "float",
+                "5": "float",
+                "6": "float",
+                "7": "float",
+                "8": "float",
+                "9": "float"
+            },
+            "NL2030": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string"
             }
         },
         "table_default_column_type": {},

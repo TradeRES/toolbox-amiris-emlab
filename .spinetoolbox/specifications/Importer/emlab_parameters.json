@@ -1352,6 +1352,78 @@
                         ]
                     }
                 }
+            ],
+            "yearlyLoadShifterCap": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "LoadShifterCap"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden",
+                                "value": "Industrial_load_shifter"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "Sheet1": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1376,7 +1448,8 @@
             "LSyearly",
             "CapacitySubscriptionConsumer",
             "CS_subscribed",
-            "yearlyHydrogen"
+            "yearlyHydrogen",
+            "yearlyLoadShifterCap"
         ],
         "table_options": {
             "CapacityMarkets": {
@@ -1490,7 +1563,12 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "VOLLs": {}
+            "VOLLs": {},
+            "yearlyLoadShifterCap": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "Sheet1": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1840,8 +1918,7 @@
             },
             "yearlyHydrogen": {
                 "0": "string",
-                "1": "float",
-                "2": "string"
+                "1": "float"
             },
             "VOLLs": {
                 "0": "string",
@@ -1874,6 +1951,22 @@
                 "27": "string",
                 "28": "string",
                 "29": "string"
+            },
+            "yearlyLoadShifterCap": {
+                "0": "string",
+                "1": "float",
+                "2": "float"
+            },
+            "Sheet1": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string"
             }
         },
         "table_default_column_type": {},

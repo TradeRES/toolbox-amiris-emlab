@@ -56,7 +56,6 @@ class PowerPlant(EMLabAgent):
         self.ReceivedMoneyinEUR = 0
         self.operationalProfit = 0
         self.initialEnergyLevelInMWH = 0
-        self.DecommissionInYear = 0
         self.cash = 0
         self.last_year_in_capacity_market = 0 # should be initiated with a value higher than the last tick
 

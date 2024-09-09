@@ -126,10 +126,9 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
         global hours_in_year
         hours_in_year = len(next(iter(excel.values())).index)
 
-        if modality == "initialize":
-            global peak_load
-            peak_load = max(excel['Load'][representative_year_investment])
-
+        # if modality == "initialize":
+        #     global peak_load
+        #     peak_load = max(excel['Load'][representative_year_investment])
         if fix_demand_to_representative_year == False and fix_profiles_to_representative_year == True:
             print("--------load and profiles should be related")
             raise Exception
@@ -141,9 +140,8 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 update_profiles_current_year(excel, representative_year_investment)
                 prepare_initialization_load_for_future_year(excel, representative_year_investment)
                 update_load_shedders_current_year(excel, representative_year_investment)
-                prepare_hydrogen_initilization_future(excel)  # todo make this changing for future
-                prepare_hydrogen_initilization(excel)
-
+                prepare_hydrogen_initilization_future(excel["Load"].index)
+                prepare_hydrogen_initilization(excel["Load"].index)
 
         elif fix_demand_to_representative_year == False and fix_profiles_to_representative_year == False:
             print("---------update demand and update profiles")
@@ -159,8 +157,10 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
             weatherYears = pd.DataFrame(weatherYears_data.values, index=weatherYears_data.indexes)
             sequence_year = weatherYears.values[new_tick]
             print("preparing year profiles to RANDOM year " + str(sequence_year))
-            update_load_current_year_by_sequence_year(excel, sequence_year)  # uplad Load
-
+            #---------------------------------------------------------------------------------------hydrogen update
+            prepare_hydrogen_initilization_future(excel["Load"].index)
+            prepare_hydrogen_initilization(excel["Load"].index)
+            #---------------------------------------------------------------------------------------weather profiles update
             if modality == "initialize":
                 """"
                 The investments are done for the same future "representative" year.
@@ -169,11 +169,8 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 """
                 print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(
                     representative_year_investment))
-                prepare_initialization_load_for_future_year(excel, representative_year_investment)
-                prepare_hydrogen_initilization_future(excel)
-                prepare_hydrogen_initilization(excel)
-                prepare_initialization_profiles_for_future_year(excel)  # future profiles
-                update_profiles_first_year(excel, sequence_year)
+                prepare_initialization_profiles_for_future_year(excel)  # profiles for future year dont change
+                update_profiles_first_year(excel, sequence_year)  # to rewrite
             else:
                 # current year profile change, but future profiles remain
                 wind_onshore = excel['Wind Onshore profiles'][sequence_year]
@@ -182,6 +179,19 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 wind_offshore.to_csv(windoff_file_for_amiris, header=False, sep=';', index=True)
                 pv = excel['Sun PV profiles'][sequence_year]
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
+            #------------------------------------------------------------------------------------------------load update
+            update_load_current_year_by_sequence_year(excel, sequence_year)  # load current year
+            if increasingLoad_representativeYear_Excel != None:
+                print("increasing hydrogen demand and updating load for representative future year")
+                """"
+                The load and the profiles increase yearly and also change according to weather years. 
+                """
+                excel_name_for_future_years_complete = os.path.join(grandparentpath, 'data', increasingLoad_representativeYear_Excel)
+                excel_for_future_years = pd.read_excel(excel_name_for_future_years_complete, index_col=0,
+                                                       sheet_name=["Load"])
+                prepare_initialization_load_for_future_year_load_increase(excel_for_future_years) # load future year
+            else:
+                prepare_initialization_load_for_future_year(excel, representative_year_investment) # load for future year
         else:
             raise Exception
 
@@ -219,22 +229,30 @@ def prepare_initialization_load_for_future_year(excel, representative_year_inves
             lshedder_name, "percentage_load"]
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
+def prepare_initialization_load_for_future_year_load_increase(excel_for_future_years):
+    # writing FUTURE load shedders
+    for lshedder_name in load_shedders_no_hydrogen:
+        load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config", "data",
+                                                    "originalFuture" + lshedder_name + ".csv")
+        load_shedder = excel_for_future_years['Load'][future_year] * load_shedders.loc[
+            lshedder_name, "percentage_load"]
+        load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
 
-def prepare_hydrogen_initilization_future(excel):
-    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWCurrent"]] * hours_in_year,
-                                   index=excel['Load'].index)
+
+def prepare_hydrogen_initilization_future(index):
+    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWFuture"]] * hours_in_year,
+                                   index=index)
     hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path, os.path.normpath(
         load_shedders.loc["hydrogen", "TimeSeriesFileFuture"]))
     hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
 
 
-def prepare_hydrogen_initilization(excel):
-    # TODO: make hydrogen dynamic
-    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWFuture"]] * hours_in_year,
-                                   index=excel['Load'].index)
-    hydrogen_file_for_amiris_future = os.path.join(amiris_worfklow_path,
+def prepare_hydrogen_initilization(index):
+    hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWCurrent"]] * hours_in_year,
+                                   index=index)
+    hydrogen_file_for_amiris = os.path.join(amiris_worfklow_path,
                                                    os.path.normpath(load_shedders.loc["hydrogen", "TimeSeriesFile"]))
-    hydrogen_series.to_csv(hydrogen_file_for_amiris_future, header=False, sep=';', index=True)
+    hydrogen_series.to_csv(hydrogen_file_for_amiris, header=False, sep=';', index=True)
     # hydrogen demand keeps constant
 
 
@@ -246,6 +264,13 @@ def prepare_initialization_profiles_for_future_year(excel):
     future_pv = excel['Sun PV profiles'][representative_year_investment]
     future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
 
+# def prepare_initialization_profiles_for_future_year_load_increase(excel):
+#     future_wind_offshore = excel['Wind Offshore profiles'][future_year]
+#     future_wind_offshore.to_csv(future_windoff_file_for_amiris, header=False, sep=';', index=True)
+#     future_wind_onshore = excel['Wind Onshore profiles'][future_year]
+#     future_wind_onshore.to_csv(future_windon_file_for_amiris, header=False, sep=';', index=True)
+#     future_pv = excel['Sun PV profiles'][future_year]
+#     future_pv.to_csv(future_pv_file_for_amiris, header=False, sep=';', index=True)
 
 def update_profiles_first_year(excel, current_year):
     wind_onshore = excel['Wind Onshore profiles'][current_year]
@@ -265,6 +290,7 @@ def update_profiles_current_year(excel, current_year):
     pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
 
 def read_load_shedders(updated_year):
+    global future_year
     global load_shedders
     load_shedders_parameters = ["TimeSeriesFile", "TimeSeriesFileFuture", "ShedderCapacityMW"]
     load_shedders = pd.DataFrame(columns=load_shedders_parameters)
@@ -295,7 +321,14 @@ def read_load_shedders(updated_year):
         values = [float(i[1]) for i in array["data"]]
         index = [int(i[0]) for i in array["data"]]
         pd_series = pd.Series(values, index=index)
-        load_shedders.at[load_shedder, "percentage_load"] = pd_series[updated_year]
+        if updated_year in pd_series.index:
+            load_shedders.at[load_shedder, "percentage_load"] = pd_series[updated_year]
+        else:
+            pd_series[updated_year] = np.nan
+            pd_series = pd_series.sort_index()
+            interpolated_data = pd_series.interpolate(method='index')
+            load_shedders.at[load_shedder, "percentage_load"] = interpolated_data[updated_year]
+
     """
     Reading yearly hydrogen demand
     """
@@ -314,7 +347,7 @@ def read_load_shedders(updated_year):
             pd_series[updated_year] = np.nan
             pd_series = pd_series.sort_index()
             interpolated_data = pd_series.interpolate(method='index')
-            load_shedders.at["hydrogen", "ShedderCapacityMWCurrent"] = interpolated_data[updated_year]
+            load_shedders.at["hydrogen", "ShedderCapacityMWCurrent"] = int(interpolated_data[updated_year])
 
         future_year = lookAhead + updated_year
         if future_year in pd_series.index:
@@ -323,10 +356,11 @@ def read_load_shedders(updated_year):
             pd_series[future_year] = np.nan
             pd_series = pd_series.sort_index()
             interpolated_data = pd_series.interpolate(method='index')
-            load_shedders.at["hydrogen", "ShedderCapacityMWFuture"] = interpolated_data[future_year]
-
+            load_shedders.at["hydrogen", "ShedderCapacityMWFuture"] = int(interpolated_data[future_year])
+    print("FUTURE ELECTROLYZER CAPACITY")
     print(load_shedders.at["hydrogen", "ShedderCapacityMWFuture"] )
-
+    print("CURRENT ELECTROLYZER CAPACITY")
+    print(load_shedders.at["hydrogen", "ShedderCapacityMWCurrent"] )
 def prepare_AMIRIS_data_for_one_year():
     print("preparing data when there are no more years data available")
     load_path_DE = os.path.join(grandparentpath, 'amiris_workflow\\amiris-config\\data\\load_DE.csv')
@@ -347,7 +381,7 @@ try:
     class_name = "Configuration"
     object_name = 'SimulationYears'
     object_parameter_value_name = 'SimulationTick'
-    peak_load = 0
+    # peak_load = 0
     # print(os.getcwd())
     if len(sys.argv) >= 3:
         lookAhead = next(int(i['parameter_value']) for i
@@ -400,6 +434,13 @@ try:
                                                    db_emlab.query_object_parameter_values_by_object_class_and_object_name(
                                                        class_name, object_name) \
                                                    if i['parameter_name'] == 'fix_profiles_to_representative_year')
+        global increasingLoad_representativeYear_Excel
+        increasingLoad_representativeYear_Excel = None
+        increasingLoad_representativeYear_Excel = next(i['parameter_value'] for i in
+                                                         db_emlab.query_object_parameter_values_by_object_class_and_object_name(
+                                                     class_name, object_name) \
+                                                         if i['parameter_name'] == 'increasingLoad_representativeYear_Excel')
+
         available_years_data = False
         available_years_data = next(i['parameter_value'] for i in
                                     db_emlab.query_object_parameter_values_by_object_class_and_object_name(
@@ -485,13 +526,7 @@ try:
                                 if i['parameter_name'] == 'CurrentYear')
 
             updated_year = step + Current_year
-
-            if capacity_remuneration_mechanism == globalNames.capacity_subscription:
-                print("capacity subscription!!!")
-                read_load_shedders(updated_year)
-            else:
-                read_load_shedders(StartYear)
-
+            read_load_shedders(updated_year)
 
             if updated_year > final_year:
                 print("final year achieved " + str(final_year))
@@ -553,26 +588,26 @@ if sys.argv[2] == 'increment_clock':
     finally:
         db_map.connection.close()
 
-elif sys.argv[2] == 'initialize_clock':
-    db_map = DatabaseMapping(db_url)
-    print('updating peak load')
-    try:
-        class_name = "ElectricitySpotMarkets"
-        object_name = "ElectricitySpotMarket" + Country
-        parameter_name = "peakLoadFixed"
-        alternative_name = str(0)
-        peak_load_Map = Map([2020.0, StartYear], [20000, peak_load])
-        im.import_object_classes(db_map, [class_name])
-        im.import_objects(db_map, [(class_name, object_name)])
-        im.import_object_parameters(db_map, [(class_name, parameter_name)])
-        im.import_alternatives(db_map, [alternative_name])
-        im.import_object_parameter_values(
-            db_map,
-            [(class_name, object_name, parameter_name, peak_load_Map, alternative_name)],
-        )
-        db_map.commit_session("Add initial data.")
-    finally:
-        db_map.connection.close()
+# elif sys.argv[2] == 'initialize_clock':
+#     db_map = DatabaseMapping(db_url)
+#     print('updating peak load')
+#     try:
+        # class_name = "ElectricitySpotMarkets"
+        # object_name = "ElectricitySpotMarket" + Country
+        # parameter_name = "peakLoadFixed"
+        # alternative_name = str(0)
+        # peak_load_Map = Map([2020.0, StartYear], [20000, peak_load])
+        # im.import_object_classes(db_map, [class_name])
+        # im.import_objects(db_map, [(class_name, object_name)])
+        # im.import_object_parameters(db_map, [(class_name, parameter_name)])
+        # im.import_alternatives(db_map, [alternative_name])
+        # im.import_object_parameter_values(
+        #     db_map,
+        #     [(class_name, object_name, parameter_name, peak_load_Map, alternative_name)],
+        # )
+    #     db_map.commit_session("Add initial data.")
+    # finally:
+    #     db_map.connection.close()
 
 # print('removing awaiting bids...')
 # db_map = DatabaseMapping(db_url)
