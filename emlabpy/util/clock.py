@@ -181,7 +181,7 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
             #------------------------------------------------------------------------------------------------load update
             update_load_current_year_by_sequence_year(excel, sequence_year)  # load current year
-            if increasingLoad_representativeYear_Excel != None:
+            if increasingLoad_representativeYear_Excel != "None":
                 print("increasing hydrogen demand and updating load for representative future year")
                 """"
                 The load and the profiles increase yearly and also change according to weather years. 
@@ -435,7 +435,7 @@ try:
                                                        class_name, object_name) \
                                                    if i['parameter_name'] == 'fix_profiles_to_representative_year')
         global increasingLoad_representativeYear_Excel
-        increasingLoad_representativeYear_Excel = None
+        increasingLoad_representativeYear_Excel = "None"
         increasingLoad_representativeYear_Excel = next(i['parameter_value'] for i in
                                                          db_emlab.query_object_parameter_values_by_object_class_and_object_name(
                                                      class_name, object_name) \

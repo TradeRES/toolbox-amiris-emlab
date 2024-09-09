@@ -79,6 +79,26 @@
                         ]
                     }
                 }
+            ],
+            "optionsConfig": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -93,7 +113,8 @@
             "Import Priorities": {
                 "read_until_col": true,
                 "read_until_row": true
-            }
+            },
+            "optionsConfig": {}
         },
         "table_types": {
             "Coupling Parameters": {
