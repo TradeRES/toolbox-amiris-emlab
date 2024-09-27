@@ -516,8 +516,9 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     ax1.set_xlabel('Years')
     ax1.set_ylabel('Installed Capacity [MW]')
     all_techs_generation_nozeroes_copy = deepcopy(all_techs_generation_nozeroes)
+    colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
     all_techs_generation_nozeroes_copy.index = all_techs_generation_nozeroes_copy.index - reps.start_simulation_year
-    all_techs_generation_nozeroes_copy.plot.area(ax = ax2, color=colors )
+    all_techs_generation_nozeroes_copy.plot.area(ax = ax2, color=colors)
     # axs18.set_axisbelow(True)
     fig.tight_layout(w_pad=2)
     plt.legend( loc='upper left', bbox_to_anchor=(1, 1))
