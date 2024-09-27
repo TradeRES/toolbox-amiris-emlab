@@ -486,7 +486,7 @@ def plot_profits_for_tech_per_year(new_pp_profits_for_tech, path_to_plots, color
     plt.close('all')
 
 
-def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, years_to_generate_initialization,
+def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate,  all_techs_generation_nozeroes,
                             technology_colors, ticks_to_generate
                             ):
     print('plotting installed Capacity per technology ')
@@ -497,7 +497,6 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     colors = [technology_colors[tech] for tech in all_techs_capacity_nozeroes.columns.values]
     all_techs_capacity_nozeroes = all_techs_capacity_nozeroes / 1000
     all_techs_capacity_nozeroes.rename(columns=technology_names, inplace=True)
-    #all_techs_capacity_nozeroes.index = all_techs_capacity_nozeroes.index - 2050
     axs17 = all_techs_capacity_nozeroes.plot.area(color=colors, legend=None, figsize=(5, 5))
     plt.legend(fontsize='large', loc='upper left', bbox_to_anchor=(1, 1))
     axs17.set_axisbelow(True)
@@ -509,6 +508,22 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
     fig17 = axs17.get_figure()
     fig17.savefig(path_to_plots + '/' + 'Annual installed Capacity per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
+
+    fig, (ax1, ax2) = plt.subplots(1, 2,  figsize=(8, 5))
+    all_techs_capacity_nozeroes_copy = deepcopy(all_techs_capacity_nozeroes)
+    all_techs_capacity_nozeroes_copy.index = all_techs_capacity_nozeroes_copy.index - reps.start_simulation_year
+    all_techs_capacity_nozeroes_copy.plot.area(ax = ax1, color=colors, legend=None, )
+    ax1.set_xlabel('Years')
+    ax1.set_ylabel('Installed Capacity [MW]')
+    all_techs_generation_nozeroes_copy = deepcopy(all_techs_generation_nozeroes)
+    all_techs_generation_nozeroes_copy.index = all_techs_generation_nozeroes_copy.index - reps.start_simulation_year
+    all_techs_generation_nozeroes_copy.plot.area(ax = ax2, color=colors )
+    # axs18.set_axisbelow(True)
+    fig.tight_layout(w_pad=2)
+    plt.legend( loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xlabel('Years')
+    plt.ylabel('Annual Generation [TWh]')
+    fig.savefig(path_to_plots + '/' + 'Capacity and Generation.png', bbox_inches='tight', dpi=300)
     return all_techs_capacity_nozeroes
 
 
@@ -2096,6 +2111,11 @@ def reading_original_load(years_to_generate, list_ticks ):
     print("finish reading  excel")
     return yearly_load
 
+def get_yearly_load_shedded(year, pd_series, years_to_generate):
+    interpolating_function = interp1d(pd_series.index, pd_series.values, kind='linear', fill_value="extrapolate")
+    interpolated_values = interpolating_function(years_to_generate)
+    percentageLoad = pd.Series(interpolated_values, index=years_to_generate)
+
 def prepare_percentage_load_shedded_new(reps, years_to_generate):
     total_load_shedded = pd.DataFrame()
     total_load_shedded_per_year = pd.DataFrame()
@@ -2113,10 +2133,8 @@ def prepare_percentage_load_shedded_new(reps, years_to_generate):
                 id_shedder = int(name) * 100000
                 if id_shedder in selected_df.columns:
                     total_load_shedded[name] = selected_df[(id_shedder)]
-                    if reps.capacity_remuneration_mechanism == "capacity_subscription":
-                        VOLL_per_year.at[name, year] = values.percentageLoad[year]
-                    else:
-                        VOLL_per_year.at[name, year]  = values.percentageLoad[reps.start_simulation_year]
+                    #if reps.capacity_remuneration_mechanism == "capacity_subscription":
+                    VOLL_per_year.at[name, year] = values.percentageLoad[year]
                 else:
                     print("---------" + str(year) )
                     print(id_shedder)
@@ -2372,12 +2390,12 @@ def prepare_percentage_load_shedded(yearly_load, weighted_average_VOLL, years_to
     for year in years_to_generate:
         for lshedder in reps.loadShedders.values():
             if lshedder.name != "hydrogen":
-                if reps.capacity_remuneration_mechanism == "capacity_subscription":
-                    percentage_load = lshedder.percentageLoad[year]
-                    sheddable_load = yearly_load[year].sum() * percentage_load
-                else:
-                    percentage_load = lshedder.percentageLoad[reps.start_simulation_year]
-                    sheddable_load = yearly_load[year].sum() * percentage_load
+                # if reps.capacity_remuneration_mechanism == "capacity_subscription":
+                percentage_load = lshedder.percentageLoad[year]
+                sheddable_load = yearly_load[year].sum() * percentage_load
+                # else:
+                #     percentage_load = lshedder.percentageLoad[reps.start_simulation_year]
+                #     sheddable_load = yearly_load[year].sum() * percentage_load
                 load_shedded = load_shedded_per_group_MWh.loc[year, lshedder.name]
                 normalized_load_shedded.at[year, lshedder.name] = load_shedded / sheddable_load
 
@@ -2594,7 +2612,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
     if calculate_investments != False:
         plot_investments(annual_in_pipeline_capacity, annual_commissioned, annual_decommissioned_capacity,
                          path_to_plots, colors_unique_techs)
-    all_techs_capacity_nozeroes = plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, years_to_generate_initialization,
+    all_techs_capacity_nozeroes = plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate, all_techs_generation_nozeroes,
                             technology_colors, ticks_to_generate)
     plot_power_plants_status(capacity_per_status, path_to_plots)
     plot_power_plants_last_year_status(number_per_status_last_year, path_to_plots, last_year)
@@ -3070,7 +3088,7 @@ technology_colors = {
     "Oil": "gray",
     'Lignite': "darkgoldenrod",
     'CCGT': "silver",
-    "CCS gas": "indianred",
+    "CCS gas": "lightgray",
     'OCGT': "gray",
     'Gas': "gray",
     'PV_utility_systems': "gold",
@@ -3242,10 +3260,10 @@ if __name__ == '__main__':
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_VRES_BESS", "final3-CM_VRES_BESS_lowTV","final3-CM_endogen_lowTV"]
     # SCENARIOS =  ["final3-EOM_LH", "finalHH-EOM_HH","final3-CM_LH", "finalHH-CM_HH","final3-SR_LH","finalHH-SR_HH","final3-CS_LH", "finalHH-CS_HH"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_RO", "final3-CM_VRES_BESS", "final3-CM_endogen"]
-    SCENARIOS = ["transition"]
+    SCENARIOS = ["tn-test"]
 
     # SCENARIOS =  [ "finalHH-EOM_HH", "finalHH-CM_HH","finalHH-SR_HH", "finalHH-CS_HH"]
-    results_excel = "finalHH.xlsx"
+    results_excel = "transition.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
     existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):

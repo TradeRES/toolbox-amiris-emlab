@@ -156,7 +156,6 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
 
             weatherYears = pd.DataFrame(weatherYears_data.values, index=weatherYears_data.indexes)
             sequence_year = weatherYears.values[new_tick]
-            print("preparing year profiles to RANDOM year " + str(sequence_year))
             #---------------------------------------------------------------------------------------hydrogen update
             prepare_hydrogen_initilization_future(excel["Load"].index)
             prepare_hydrogen_initilization(excel["Load"].index)
@@ -167,9 +166,9 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 All initialization loop investments are made according to representative year.
                 Profiles are prepared for first year, so that these are overwritten in the 
                 """
-                print("Initializing first year:" + str(sequence_year) + " and future profiles based on " + str(
-                    representative_year_investment))
+                print("Future VRES files based on :" + str(representative_year_investment))
                 prepare_initialization_profiles_for_future_year(excel)  # profiles for future year dont change
+                print("first year VRES files based on :" + str(sequence_year))
                 update_profiles_first_year(excel, sequence_year)  # to rewrite
             else:
                 # current year profile change, but future profiles remain
@@ -180,18 +179,23 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
                 pv = excel['Sun PV profiles'][sequence_year]
                 pv.to_csv(pv_file_for_amiris, header=False, sep=';', index=True)
             #------------------------------------------------------------------------------------------------load update
+            print("_"*100)
             update_load_current_year_by_sequence_year(excel, sequence_year)  # load current year
             if increasingLoad_representativeYear_Excel != "None":
-                print("increasing hydrogen demand and updating load for representative future year")
+                print("updating load for representative future year by excel file")
+                print(increasingLoad_representativeYear_Excel)
                 """"
-                The load and the profiles increase yearly and also change according to weather years. 
+                The load increase yearly and according to weather years, so the load is updated to a representative year 
                 """
                 excel_name_for_future_years_complete = os.path.join(grandparentpath, 'data', increasingLoad_representativeYear_Excel)
                 excel_for_future_years = pd.read_excel(excel_name_for_future_years_complete, index_col=0,
                                                        sheet_name=["Load"])
+
                 prepare_initialization_load_for_future_year_load_increase(excel_for_future_years) # load future year
             else:
-                prepare_initialization_load_for_future_year(excel, representative_year_investment) # load for future year
+                raise Exception
+                # print("no increase of load by excel file")
+                # prepare_initialization_load_for_future_year(excel, representative_year_investment) # load for future year
         else:
             raise Exception
 
@@ -202,7 +206,9 @@ def prepare_AMIRIS_data(year, new_tick, fix_demand_to_representative_year, fix_p
 
 
 def update_load_shedders_current_year(excel, current_year):
+    print("updating load shedders for current year" + str(current_year))
     for lshedder_name in load_shedders_no_hydrogen:
+        print("load shedder "+ lshedder_name + "   "+  str(load_shedders.loc[lshedder_name, "percentage_load"]))
         load_shedder = excel['Load'][current_year] *  load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config", "data",
                                                     ("LS_" + lshedder_name + ".csv"))
@@ -213,7 +219,9 @@ def update_load_current_year_by_sequence_year(excel, sequence_year):
     """
     Demand is not increasing but the load is changing in every weather year due to heat demand
     """
+    print("current year load based on " + str(sequence_year))
     for lshedder_name in load_shedders_no_hydrogen:
+        print("load shedder "+ lshedder_name + "   "+  str(load_shedders.loc[lshedder_name, "percentage_load"]))
         load_shedder = excel['Load'][sequence_year] * load_shedders.loc[lshedder_name, "percentage_load"]
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, os.path.normpath(
             load_shedders.loc[lshedder_name, "TimeSeriesFile"]))
@@ -223,6 +231,8 @@ def update_load_current_year_by_sequence_year(excel, sequence_year):
 def prepare_initialization_load_for_future_year(excel, representative_year_investment):
     # writing FUTURE load shedders
     for lshedder_name in load_shedders_no_hydrogen:
+        print("future load shedder "+ lshedder_name + "   "+  str(load_shedders.loc[
+                                      lshedder_name, "percentage_load"]) + " " + str(representative_year_investment) )
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config", "data",
                                                     "originalFuture" + lshedder_name + ".csv")
         load_shedder = excel['Load'][representative_year_investment] * load_shedders.loc[
@@ -231,13 +241,15 @@ def prepare_initialization_load_for_future_year(excel, representative_year_inves
 
 def prepare_initialization_load_for_future_year_load_increase(excel_for_future_years):
     # writing FUTURE load shedders
+    print("originalFuture load based on " + str(future_year))
     for lshedder_name in load_shedders_no_hydrogen:
         load_shedder_file_for_amiris = os.path.join(amiris_worfklow_path, "amiris-config", "data",
                                                     "originalFuture" + lshedder_name + ".csv")
         load_shedder = excel_for_future_years['Load'][future_year] * load_shedders.loc[
-            lshedder_name, "percentage_load"]
+            lshedder_name, "percentage_load_future"]
         load_shedder.to_csv(load_shedder_file_for_amiris, header=False, sep=';', index=True)
-
+        print("future load shedder "+ lshedder_name + "   "+  str(load_shedders.loc[
+                                                                      lshedder_name, "percentage_load_future"]) )
 
 def prepare_hydrogen_initilization_future(index):
     hydrogen_series = pd.DataFrame([load_shedders.loc["hydrogen", "ShedderCapacityMWFuture"]] * hours_in_year,
@@ -328,6 +340,17 @@ def read_load_shedders(updated_year):
             pd_series = pd_series.sort_index()
             interpolated_data = pd_series.interpolate(method='index')
             load_shedders.at[load_shedder, "percentage_load"] = interpolated_data[updated_year]
+
+        future_updated_year = updated_year + lookAhead
+        if future_updated_year in pd_series.index:
+            load_shedders.at[load_shedder, "percentage_load_future"] = pd_series[future_updated_year]
+        else:
+            pd_series[future_updated_year] = np.nan
+            pd_series = pd_series.sort_index()
+            interpolated_data = pd_series.interpolate(method='index')
+            load_shedders.at[load_shedder, "percentage_load_future"] = interpolated_data[future_updated_year]
+
+
 
     """
     Reading yearly hydrogen demand

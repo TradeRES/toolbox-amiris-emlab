@@ -7,6 +7,7 @@ from domain.actors import EMLabAgent
 from domain.import_object import *
 import numpy as np
 import pandas as pd
+from scipy.interpolate import interp1d
 from util import globalNames
 
 
@@ -113,12 +114,24 @@ class LoadShedder(ImportObject):
                 values = [float(i[1]) for i in array["data"]]
                 index = [int(i[0]) for i in array["data"]]
                 pd_series = pd.Series(values, index=index)
-                if reps.runningModule == "plotting":
-                    self.percentageLoad = pd_series
-                elif reps.capacity_remuneration_mechanism == globalNames.capacity_subscription:
-                    self.percentageLoad = round(pd_series[reps.current_year],3)
+                if reps.current_year in pd_series.index:
+                    self.percentageLoad = pd_series[reps.current_year]
                 else:
-                    self.percentageLoad = round(pd_series[reps.start_simulation_year],3)
+                    pd_series[reps.current_year] = np.nan
+                    pd_series = pd_series.sort_index()
+                    interpolated_data = pd_series.interpolate(method='index')
+                    self.percentageLoad = interpolated_data[reps.current_year]
+
+                if reps.runningModule == "plotting":
+                    interpolating_function = interp1d(pd_series.index, pd_series.values, kind='linear', fill_value="extrapolate")
+                    years_to_generate = list(range(reps.start_simulation_year,reps.end_simulation_year+1))
+                    interpolated_values = interpolating_function(years_to_generate)
+                    self.percentageLoad = pd.Series(interpolated_values, index=years_to_generate)
+                # else:
+                # elif reps.capacity_remuneration_mechanism == globalNames.capacity_subscription:
+                #     self.percentageLoad = round(pd_series[reps.current_year],3)
+                # else:
+                #     self.percentageLoad = round(pd_series[reps.start_simulation_year],3)
         # elif parameter_name == 'reliability_standard':
         #     self.reliability_standard = parameter_value
         elif parameter_name == 'realized_LOLE':

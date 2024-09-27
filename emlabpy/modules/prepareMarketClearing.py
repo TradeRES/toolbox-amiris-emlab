@@ -105,13 +105,16 @@ class PrepareMarket(DefaultModule):
                     load_folder = os.path.join(os.path.dirname(os.getcwd()) , 'amiris_workflow' )
 
                     if self.reps.investmentIteration <= 0 or self.reps.round_for_capacity_market_y_1 == True:
+                        """
+                        for the first iteration 
+                        """
                         for load_shedder_name , load_shedder in self.reps.loadShedders.items():
                             if load_shedder_name == "hydrogen":
                                 pass
                             else:
                                 if calculatedprices == "next_year_price":
-                                    print("changing original load times to next year " + str(fuel_price))
-                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, "originalFuture" + load_shedder_name + ".csv"  )
+                                    print("changing current load times to next year " + str(fuel_price))
+                                    load_shedder_file_for_amiris = os.path.join(globalNames.amiris_config_data, "LS_" + load_shedder_name + ".csv"  )
                                     originalload =   pd.read_csv(load_shedder_file_for_amiris, delimiter=";", header=None)
                                     originalload[1] = (originalload[1] * fuel_price)
                                     peakdemand += originalload[1]
@@ -150,9 +153,9 @@ class PrepareMarket(DefaultModule):
                                 if self.reps.investmentIteration <= 0:
                                     # only update data in first iteration of each year
                                     # ================================================== Updating profiles for investment
-                                    print("copy profiles prepared in clock from future")
-                                    shutil.copy(globalNames.future_windoff_file_for_amiris,
-                                                globalNames.windoff_file_for_amiris)
+                                    print("copy VRES profiles prepared in clock from future")
+                                    shutil.copy(globalNames.future_windoff_file_for_amiris, # future windoff
+                                                globalNames.windoff_file_for_amiris) # windoff
                                     shutil.copy(globalNames.future_windon_file_for_amiris,
                                                 globalNames.windon_file_for_amiris)
                                     shutil.copy(globalNames.future_pv_file_for_amiris,

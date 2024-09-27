@@ -38,7 +38,7 @@ class CreatingFinancialReports(DefaultModule):
         #     self.assign_LOLE_by_subscription(total_load_shedded)
         # else:
         #     # load percentage doesnt change
-        self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
+        # self.reps.dbrw.stage_load_shedders_voll_not_hydrogen(self.reps.loadShedders, self.reps.current_year + 1)
         self.createFinancialReportsForPowerPlantsAndTick()
         # modifying the IRR by technology
         print("finished financial report")
