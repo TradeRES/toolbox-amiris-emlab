@@ -18,31 +18,39 @@ class LoadShifterwCap(ImportObject):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             pd_series = pd.Series(values, index=index)
-            if reps.current_year not in pd_series.index:
-                pd_series[reps.current_year] = np.nan
-                pd_series = pd_series.sort_index()
-                interpolated_data = pd_series.interpolate(method='index')
-                self.peakConsumptionInMW  = int(interpolated_data[reps.current_year])
-            else:
-                self.peakConsumptionInMW = pd_series[reps.current_year]
+            self.peakConsumptionInMW = pd_series
 
         elif parameter_name == 'averagemonthlyConsumptionMWhyearly':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             pd_series = pd.Series(values, index=index)
-            if reps.runningModule == "plotting":
-                self.averagemonthlyConsumptionMWh = pd_series
+            self.averagemonthlyConsumptionMWh = pd_series
+
+
+    def get_average_monthly_consumption(self, year):
+        if isinstance(self.averagemonthlyConsumptionMWh, int):
+            return self.averagemonthlyConsumptionMWh
+        else:
+            if year not in self.averagemonthlyConsumptionMWh.index:
+                self.averagemonthlyConsumptionMWh[year] = np.nan
+                pd_series = self.averagemonthlyConsumptionMWh.sort_index()
+                interpolated_data = pd_series.interpolate( method="index")
+                averagemonthlyConsumptionMWh = int(interpolated_data[year])
             else:
-                if reps.current_year not in pd_series.index:
-                    pd_series[reps.current_year] = np.nan
-                    pd_series = pd_series.sort_index()
-                    interpolated_data = pd_series.interpolate( method="index")
-                    self.averagemonthlyConsumptionMWh = int(interpolated_data[reps.current_year])
-                else:
-                    self.averagemonthlyConsumptionMWh =  pd_series[reps.current_year]
+                averagemonthlyConsumptionMWh =  self.averagemonthlyConsumptionMWh[year]
+            return averagemonthlyConsumptionMWh
 
 
-
-
-
+    def get_yearly_peak_consumption(self, year):
+        if isinstance( self.peakConsumptionInMW, int):
+            return  self.peakConsumptionInMW
+        else:
+            if year not in  self.peakConsumptionInMW.index:
+                self.peakConsumptionInMW[year] = np.nan
+                pd_series =  self.peakConsumptionInMW.sort_index()
+                interpolated_data = pd_series.interpolate( method="index")
+                averagemonthlyConsumptionMWh = int(interpolated_data[year])
+            else:
+                averagemonthlyConsumptionMWh =   self.peakConsumptionInMW[year]
+            return averagemonthlyConsumptionMWh

@@ -137,9 +137,8 @@ class Investmentdecision(DefaultModule):
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
                 newplant.setOwner(self.agent)
-                self.reps.dbrw.stage_new_power_plant(newplant)
-                self.reps.dbrw.stage_loans(newplant)
-                self.reps.dbrw.stage_downpayments(newplant)
+                newplant.specifyPowerPlantforInvest(self.reps, self.look_ahead_years)
+                self.reps.dbrw.stage_new_power_plant(newplant) # by target
             self.reps.dbrw.stage_target_investments_done(True)
             self.continue_iteration()
             self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
@@ -167,8 +166,6 @@ class Investmentdecision(DefaultModule):
                     candidatepowerplant.specifyCandidatePPCapacityLocationOwner(self.reps, self.agent)
 
             self.investable_candidate_plants = self.reps.get_investable_candidate_power_plants()
-
-
 
             # if self.reps.test_first_intermittent_technologies == True and self.reps.testing_intermittent_technologies == True:
             #     # filter out intermittent technologies
@@ -228,7 +225,7 @@ class Investmentdecision(DefaultModule):
                 # investing in best candidate power plant as it passed the checks.
                 print("Investing in " + highestNPVCandidatePP.technology.name)
                 newplant = self.invest(highestNPVCandidatePP, False)
-                self.reps.dbrw.stage_new_power_plant(newplant)
+                self.reps.dbrw.stage_new_power_plant(newplant) #normal invest
                 self.reps.dbrw.stage_iteration(self.reps.investmentIteration + 1)
                 self.continue_iteration()
             else:
