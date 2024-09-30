@@ -39,12 +39,26 @@ class CapacityMarketSubmitBids(MarketModule):
         global all_techs_capacity
         all_techs_capacity = {}
         # the installed power plants are filtered in the prepare futur market clearing file
+        CM_year = self.reps.current_year + market.forward_years_CM
+        if CM_year not in market.CO2_emission_intensity_limit.index:
+            market.CO2_emission_intensity_limit[CM_year] = np.nan
+            market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
+            interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index')
+            CO2_emission_limit = interpolated_data[CM_year]
+        else:
+            CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
+
         for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
             powerplant = self.reps.get_power_plant_by_id(pp_id)
             if powerplant.technology.name in all_techs_capacity:
                 all_techs_capacity[powerplant.technology.name] += powerplant.capacity
             else:
                 all_techs_capacity[powerplant.technology.name] = powerplant.capacity
+            # limit on tech CO2 intensity:
+            if powerplant.technology.type == 'ConventionalPlantOperator':
+                if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
+                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high")
+                    continue
 
             if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
                 pass
@@ -131,6 +145,7 @@ class CapacityMarketClearing(MarketModule):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
         # self.calculate_target_capacity(capacity_market)
         self.calculate_derating_factor()
+
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
 
         # Retrieve the bids on the capacity market, sorted in ascending order on price

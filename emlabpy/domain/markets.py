@@ -162,6 +162,7 @@ class CapacityMarket(Market):
         self.TargetCapacity = 0
         self.net_cone = 0
         self.InitialPrice = 0
+        self.CO2_emission_intensity_limit = 0
 
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
@@ -171,6 +172,11 @@ class CapacityMarket(Market):
             self.years_long_term_market = int(parameter_value)
         elif parameter_name == 'allowed_technologies':
             self.allowed_technologies_capacity_market = parameter_value.split(",")
+        elif parameter_name == 'CO2_emission_intensity_limit':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.CO2_emission_intensity_limit = pd.Series(values, index=index) # CO2 kg per kwh
         else:
             setattr(self, parameter_name, parameter_value)
 

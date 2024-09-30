@@ -136,6 +136,7 @@ class Investmentdecision(DefaultModule):
             print("Investing according to TARGETS")
             new_target_power_plants = self.investbyTargets()
             for newplant in new_target_power_plants:
+                newplant.setOwner(self.agent)
                 self.reps.dbrw.stage_new_power_plant(newplant)
                 self.reps.dbrw.stage_loans(newplant)
                 self.reps.dbrw.stage_downpayments(newplant)

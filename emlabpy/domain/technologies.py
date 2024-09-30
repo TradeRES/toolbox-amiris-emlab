@@ -122,8 +122,8 @@ class PowerGeneratingTechnology(ImportObject):
             self.investment_cost_eur_MW.sort_index(ascending=True, inplace=True)
             self.investment_cost_time_series = reps.trends[self.name + "InvestmentCostTimeSeries"] # geometric Trends
             self.investment_cost_time_series.start = self.investment_cost_eur_MW.iloc[0]
-        elif parameter_name == 'co2CaptureEfficiency':
-            self.co2_capture_efficiency = float(parameter_value)
+        # elif parameter_name == 'co2CaptureEfficiency':
+        #     self.co2_capture_efficiency = float(parameter_value)
         elif parameter_name == 'traderesfuels':
             self.fuel = reps.substances[parameter_value]
         elif parameter_name == 'totalPotential':

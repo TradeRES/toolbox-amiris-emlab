@@ -5,6 +5,7 @@ The file simulates the German strategic reserve operations.
 from util import globalNames
 from modules.marketmodule import MarketModule
 from util.repository import Repository
+import numpy as np
 from domain.StrategicReserveOperator import StrategicReserveOperator
 
 
@@ -25,6 +26,19 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.years_accepted_inSR_before_decommissioned):
             # Retrieve the active capacity market and power plant capacity
             market = self.reps.get_capacity_market_for_plant(powerplant)
+
+            CM_year = self.reps.current_year + market.forward_years_CM
+            if CM_year not in market.CO2_emission_intensity_limit.index:
+                market.CO2_emission_intensity_limit[CM_year] = np.nan
+                market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
+                interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index')
+                CO2_emission_limit = interpolated_data[CM_year]
+            else:
+                CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
+            if powerplant.technology.type == 'ConventionalPlantOperator':
+                if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
+                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high")
+                    continue
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
             Bid  = self.reps.calculate_marginal_costs( powerplant, self.operator.forward_years_SR)
             # Bid = powerplant.getActualFixedOperatingCost()

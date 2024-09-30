@@ -477,6 +477,7 @@
             "fuelprices",
             "techspecs",
             "yearlyCO2",
+            "YearlyTargets",
             "NL"
         ],
         "table_options": {

@@ -529,6 +529,9 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
 
 
 def plot_total_demand(reps):
+    """
+    the future demand is saved for the expected year
+    """
     future_demand = reps.get_peak_future_demand()
     realized_demand = reps.get_realized_peak_demand()
     fig21, axs21 = plt.subplots()
