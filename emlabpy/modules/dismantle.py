@@ -111,6 +111,8 @@ class Dismantle(DefaultModule):
                 if  self.reps.current_tick >= powerplant.endOfLife:
                     self.set_plant_dismantled(powerplant)
                     print(powerplant.name + "decommissioned from input")
+                else:
+                    powerplant.status = globalNames.power_plant_status_operational
             elif  powerplant.status == globalNames.power_plant_status_decommissioned_from_SR:
                 self.set_plant_dismantled(powerplant)
                 print(powerplant.name + "decommission from strategic reserve") # dont change status (set in SR algorithm) otherwise the status changes to operational

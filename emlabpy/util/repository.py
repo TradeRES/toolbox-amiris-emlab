@@ -662,13 +662,13 @@ class Repository:
                            powerplant.age + year_ahead))
         return variable_costs + commodities
 
-    def calculate_marginal_costs_by_technology(self, technology_name, year_ahead):
+    def calculate_marginal_costs_by_technology(self, technology_name, simulation_year):
         if self.runningModule == "run_future_market":
             run_future_market = True
         else:
             run_future_market = False
         technology = self.power_generating_technologies[technology_name]
-        simulation_year = year_ahead + self.current_year
+        year_ahead = simulation_year - self.current_year
         fuel = technology.fuel
         variable_costs = technology.get_variable_operating_by_time_series(year_ahead)
         fuel_price = self.substances[technology.fuel.name].get_price_for_tick(self, simulation_year, run_future_market)

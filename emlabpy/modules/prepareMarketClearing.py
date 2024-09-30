@@ -209,7 +209,7 @@ class PrepareMarket(DefaultModule):
         """
 
         if self.reps.load_shifter == "Industrial_load_shifter":
-            price_limit = self.reps.calculate_marginal_costs_by_technology( "central gas boiler", 0 , )
+            price_limit = self.reps.calculate_marginal_costs_by_technology( "central gas boiler", self.simulation_year)
             monthly_target = self.reps.loadShifterDemand['Industrial_load_shifter'].get_average_monthly_consumption(self.simulation_year)
             peak_consumption = self.reps.loadShifterDemand['Industrial_load_shifter'].get_yearly_peak_consumption(self.simulation_year)
         else:
