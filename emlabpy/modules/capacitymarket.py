@@ -40,6 +40,7 @@ class CapacityMarketSubmitBids(MarketModule):
         all_techs_capacity = {}
         # the installed power plants are filtered in the prepare futur market clearing file
         CM_year = self.reps.current_year + market.forward_years_CM
+
         if CM_year not in market.CO2_emission_intensity_limit.index:
             market.CO2_emission_intensity_limit[CM_year] = np.nan
             market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()

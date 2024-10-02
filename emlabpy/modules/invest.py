@@ -599,16 +599,30 @@ class Investmentdecision(DefaultModule):
         print("technologyname;price_to_bid;capacityderated;opexprofits;fixed_on_m_cost;pending_loan")
         bids_lower_than_price_cap = 0
         candidates_and_existing = []
+        CM_year = self.reps.current_year + capacity_market.forward_years_CM
+        if CM_year not in capacity_market.CO2_emission_intensity_limit.index:
+            capacity_market.CO2_emission_intensity_limit[CM_year] = np.nan
+            capacity_market.CO2_emission_intensity_limit = capacity_market.CO2_emission_intensity_limit.sort_index()
+            interpolated_data = capacity_market.CO2_emission_intensity_limit.interpolate(method='index')
+            CO2_emission_limit = interpolated_data[CM_year]
+        else:
+            CO2_emission_limit = capacity_market.CO2_emission_intensity_limit[CM_year]
+
         for powerplant in self.reps.power_plants.values():
-            """
-            power plants that get a long term revenues should not participate in the capacity market
-            unless they are finished with their long term contract
-            """
-            if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
-                if powerplant.technology.deratingFactor >0:
-                    candidates_and_existing.append(powerplant)
+            if powerplant.technology.type == 'ConventionalPlantOperator':
+                if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
+                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
+                    continue
             else:
-                pass
+                """
+                power plants that get a long term revenues should not participate in the capacity market
+                unless they are finished with their long term contract
+                """
+                if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
+                    if powerplant.technology.deratingFactor >0:
+                        candidates_and_existing.append(powerplant)
+                else:
+                    pass
                 # print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
 
 
