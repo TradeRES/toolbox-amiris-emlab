@@ -164,6 +164,8 @@ class SpineDBReaderWriter:
                 reps.groups_plants_per_installed_year = bool(row['parameter_value'])
             elif row['parameter_name'] == 'scenarioWeatheryearsExcel':
                 reps.scenarioWeatheryearsExcel = str(row['parameter_value'])
+            elif row['parameter_name'] == 'increasingLoad_representativeYear_Excel':
+                reps.increasingLoad_representativeYear_Excel = str(row['parameter_value'])
             elif row['parameter_name'] == 'capacity_remuneration_mechanism':
                 reps.capacity_remuneration_mechanism = (row['parameter_value'])
             elif row['parameter_name'] == 'maximum_installed_share_initialization':
@@ -271,6 +273,12 @@ class SpineDBReaderWriter:
             self.stage_object_parameter_values('Technologies', tech,
                                                [("deratingFactor_yearly", Map([str(tick)], [derating_factor]))], "0")
 
+    def stage_target_capacity(self, target_volume, cm_name ,  year):
+        self.stage_object_class("CapacityMarkets")
+        self.stage_object_parameter('CapacityMarkets', "yearlyTargetCapacity")
+        self.stage_object('CapacityMarkets', cm_name)
+        self.stage_object_parameter_values('CapacityMarkets', cm_name,
+                                           [("yearlyTargetCapacity", Map([str(year)], [target_volume]))], "0")
 
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)

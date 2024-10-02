@@ -143,15 +143,15 @@ class CapacityMarketClearing(MarketModule):
     def act(self):
         print("capacity market clearing")
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, self.long_term)
+        capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         # self.calculate_target_capacity(capacity_market)
-        self.calculate_derating_factor()
+        self.calculate_derating_factor(capacity_market)
 
         # Retireve variables: active capacity market, peak load volume and expected demand factor in defined year
 
         # Retrieve the bids on the capacity market, sorted in ascending order on price
         sorted_supply = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.reps.current_tick)
 
-        capacity_market_year = self.reps.current_year + capacity_market.forward_years_CM
         clearing_price, total_supply_volume, is_the_market_undersubscribed, upperVolume = self.capacity_market_clearing(
             sorted_supply,
             capacity_market,
@@ -183,7 +183,12 @@ class CapacityMarketClearing(MarketModule):
         # peakExpectedDemand = peak_load * (expectedDemandFactor)
         effective_capacity_long_term_CM = self.reps.get_capacity_under_long_term_contract(
             capacity_market.forward_years_CM)
-        targetVolume = capacity_market.TargetCapacity
+
+        if self.reps.current_tick == 0:
+            targetVolume = capacity_market.TargetCapacity
+        else:
+            targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
+
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
         # uppertargetVolume -= effective_capacity_long_term_CM
@@ -303,7 +308,7 @@ class CapacityMarketClearing(MarketModule):
     #     # todo make derating factor zero for the vres and batteries
     #         # reps.dbrw.stage_target_capacity(capacity_market.name, new_target_capacity)
 
-    def calculate_derating_factor(self):
+    def calculate_derating_factor(self, capacity_market):
         # power_plants_list = self.reps.get_power_plants_by_status([globalNames.power_plant_status_operational,
         #                                                           globalNames.power_plant_status_to_be_decommissioned,
         #                                                           globalNames.power_plant_status_strategic_reserve,
@@ -362,6 +367,23 @@ class CapacityMarketClearing(MarketModule):
         print(derating_factors)
         self.reps.dbrw.stage_derating_factor_yearly(derating_factors, self.reps.current_tick)
 
+        path_original_demand = os.path.join(os.path.dirname(os.getcwd()), "data", self.reps.increasingLoad_representativeYear_Excel)
+        original_demand = pd.read_excel(path_original_demand, index_col=0, sheet_name=["Load"])
+        demand_LOLE = pd.DataFrame()
+        demand_LOLE["shortages"] = total_hourly_load_shedders.reset_index(drop=True)
+        demand_LOLE["load"] = original_demand["Load"][capacity_market.forward_years_CM + self.reps.current_year].reset_index(drop=True)
+        sorted_demand_LOLE = demand_LOLE.sort_values(by='shortages', ascending=False, ignore_index=True)
+        selected_rows = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].mean()
+        target_capacity = selected_rows["load"]
+        if  target_capacity < 0:
+            raise ValueError("target volume is negative")
+        elif pd.isna(target_capacity):
+            if self.reps.current_year > 0:  #if there are no shortages, then take the target capacity of the previous year
+                target_capacity = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
+            else:
+                target_capacity = capacity_market.TargetCapacity
+        self.reps.dbrw.stage_target_capacity(target_capacity, capacity_market.name , capacity_market.forward_years_CM + self.reps.current_year)
+
 def calculate_cone(reps, capacity_market, candidatepowerplants):
     """CONE is calculated  for every technology and the minimum is chosen as the price cap"""
     cones = {}
@@ -415,8 +437,10 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
         cone = cones[chosen]
        # according to the belgian authorities the price cap should range between 80000 and 100000
         price_cap = max(int(netCONE * capacity_market.PriceCapTimesCONE), cone)
-        print("price_cap")
+        print( "                                         price_cap")
         print(price_cap)
+        print("                                          netCONE")
+        print(netCONE)
         if reps.current_tick == 0:
             print(cones)
             print(netcones)

@@ -64,6 +64,7 @@ class Repository:
         self.last_investable_technology = False
         self.groups_plants_per_installed_year = True
         self.scenarioWeatheryearsExcel = ""
+        self.increasingLoad_representativeYear_Excel = ""
         self.last_years_IRR_or_NPV = 0
         self.investment_initialization_years = 0  # testing the future market from the next year during initialization investment_initialization_years
         self.typeofProfitforPastHorizon = ""

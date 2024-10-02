@@ -160,6 +160,7 @@ class CapacityMarket(Market):
         self.long_term = False
         self.years_long_term_market = 15
         self.TargetCapacity = 0
+        self.yearlyTargetCapacity = 0
         self.net_cone = 0
         self.InitialPrice = 0
         self.CO2_emission_intensity_limit = 0
@@ -172,6 +173,13 @@ class CapacityMarket(Market):
             self.years_long_term_market = int(parameter_value)
         elif parameter_name == 'allowed_technologies':
             self.allowed_technologies_capacity_market = parameter_value.split(",")
+
+        elif parameter_name == 'yearlyTargetCapacity':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.yearlyTargetCapacity = pd.Series(values, index=index) # calculated in capacity market
+
         elif parameter_name == 'CO2_emission_intensity_limit':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]
