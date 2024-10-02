@@ -47,7 +47,8 @@ class CapacityMarketSubmitBids(MarketModule):
             CO2_emission_limit = interpolated_data[CM_year]
         else:
             CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
-
+            print("CO2 limit is")
+            print(CO2_emission_limit)
         for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
             powerplant = self.reps.get_power_plant_by_id(pp_id)
             if powerplant.technology.name in all_techs_capacity:
@@ -55,9 +56,10 @@ class CapacityMarketSubmitBids(MarketModule):
             else:
                 all_techs_capacity[powerplant.technology.name] = powerplant.capacity
             # limit on tech CO2 intensity:
+
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
-                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high")
+                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
                     continue
 
             if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
