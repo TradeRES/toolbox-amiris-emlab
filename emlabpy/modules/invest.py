@@ -609,20 +609,21 @@ class Investmentdecision(DefaultModule):
             CO2_emission_limit = capacity_market.CO2_emission_intensity_limit[CM_year]
 
         for powerplant in self.reps.power_plants.values():
+
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
                     print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
                     continue
-            else:
-                """
-                power plants that get a long term revenues should not participate in the capacity market
-                unless they are finished with their long term contract
-                """
-                if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
-                    if powerplant.technology.deratingFactor >0:
-                        candidates_and_existing.append(powerplant)
                 else:
-                    pass
+                    """
+                    power plants that get a long term revenues should not participate in the capacity market
+                    unless they are finished with their long term contract
+                    """
+                    if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
+                        if powerplant.technology.deratingFactor >0:
+                            candidates_and_existing.append(powerplant)
+                    else:
+                        pass
                 # print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
 
 
