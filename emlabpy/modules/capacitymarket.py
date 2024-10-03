@@ -186,12 +186,12 @@ class CapacityMarketClearing(MarketModule):
         # peakExpectedDemand = peak_load * (expectedDemandFactor)
         effective_capacity_long_term_CM = self.reps.get_capacity_under_long_term_contract(
             capacity_market.forward_years_CM)
-
-        if self.reps.current_tick == 0:
-            targetVolume = capacity_market.TargetCapacity
-        else:
-            targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
-
+        #
+        # if self.reps.current_tick == 0:
+        #     targetVolume = capacity_market.TargetCapacity
+        # else:
+        #     targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
+        targetVolume = capacity_market.TargetCapacity
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
         # uppertargetVolume -= effective_capacity_long_term_CM
