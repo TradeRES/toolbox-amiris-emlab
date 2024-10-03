@@ -381,7 +381,7 @@ class CapacityMarketClearing(MarketModule):
         if  target_capacity < 0:
             raise ValueError("target volume is negative")
         elif pd.isna(target_capacity):
-            if self.reps.current_year > 0:  #if there are no shortages, then take the target capacity of the previous year
+            if self.reps.current_year > self.reps.start_simulation_year:  #if there are no shortages, then take the target capacity of the previous year
                 target_capacity = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
             else:
                 target_capacity = capacity_market.TargetCapacity
