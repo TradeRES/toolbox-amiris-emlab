@@ -44,7 +44,7 @@ class CapacityMarketSubmitBids(MarketModule):
         if CM_year not in market.CO2_emission_intensity_limit.index:
             market.CO2_emission_intensity_limit[CM_year] = np.nan
             market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
-            interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index')
+            interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index', limit_area=None)
             CO2_emission_limit = interpolated_data[CM_year]
         else:
             CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]

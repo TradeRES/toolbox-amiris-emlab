@@ -603,7 +603,7 @@ class Investmentdecision(DefaultModule):
         if CM_year not in capacity_market.CO2_emission_intensity_limit.index:
             capacity_market.CO2_emission_intensity_limit[CM_year] = np.nan
             capacity_market.CO2_emission_intensity_limit = capacity_market.CO2_emission_intensity_limit.sort_index()
-            interpolated_data = capacity_market.CO2_emission_intensity_limit.interpolate(method='index')
+            interpolated_data = capacity_market.CO2_emission_intensity_limit.interpolate(method='index', limit_area=None)
             CO2_emission_limit = interpolated_data[CM_year]
         else:
             CO2_emission_limit = capacity_market.CO2_emission_intensity_limit[CM_year]

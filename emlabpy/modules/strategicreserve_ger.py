@@ -22,19 +22,20 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
     def act(self):
+        # establish the CO2 emission intensity limit
+        market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
+        CM_year = self.reps.current_year + market.forward_years_CM
+        if CM_year not in market.CO2_emission_intensity_limit.index:
+            market.CO2_emission_intensity_limit[CM_year] = np.nan
+            market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
+            interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index', limit_area=None)
+            CO2_emission_limit = interpolated_data[CM_year]
+        else:
+            CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
+
         # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.years_accepted_inSR_before_decommissioned):
             # Retrieve the active capacity market and power plant capacity
-            market = self.reps.get_capacity_market_for_plant(powerplant)
-
-            CM_year = self.reps.current_year + market.forward_years_CM
-            if CM_year not in market.CO2_emission_intensity_limit.index:
-                market.CO2_emission_intensity_limit[CM_year] = np.nan
-                market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
-                interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index')
-                CO2_emission_limit = interpolated_data[CM_year]
-            else:
-                CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
                     print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high")
