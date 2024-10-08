@@ -950,7 +950,16 @@ class Repository:
             return None
 
         # ----------------------------------------------------------------------------section Capacity Mechanisms
-
+    def get_CO2_emission_limit(self, market, CM_year):
+        if CM_year not in market.CO2_emission_intensity_limit.index:
+            CO2_emissions =  market.CO2_emission_intensity_limit.copy(deep=True)
+            CO2_emissions[CM_year] = np.nan
+            CO2_emissions.sort_index(inplace=True)
+            interpolated_data = CO2_emissions.interpolate(method='index', limit_area=None)
+            CO2_emission_limit = interpolated_data[CM_year]
+        else:
+            CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
+        return CO2_emission_limit
     def get_load_shedders_not_hydrogen(self):
         return [i for i in self.loadShedders.values() if i.name != "hydrogen"]
 

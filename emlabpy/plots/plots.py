@@ -1246,10 +1246,18 @@ def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_pe
     fig39.savefig(path_to_plots + '/' + 'Load_shedded_hours.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 def plot_capacity_market_dynamic_target_demand(reps):
+
+    """
+    theoretical target demand not considering non participating techs
+    :param reps:
+    :return:
+    """
     capacity_market = reps.get_capacity_market_in_country(reps.country, False)
-    fig39 = capacity_market.yearlyTargetCapacity.plot()
+    ax1 = capacity_market.yearlyTargetCapacity.plot()
+    plt.xlabel('year', fontsize='medium')
+    plt.ylabel('Target demand [MW]', fontsize='medium')
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
-    fig1 = fig39.get_figure()
+    fig1 = ax1.get_figure()
     fig1.savefig(path_to_plots + '/' + 'target_capacity_yearly.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
