@@ -172,17 +172,17 @@ class Investmentdecision(DefaultModule):
             #     self.investable_candidate_plants = self.reps.filter_intermittent_candidate_power_plants(self.investable_candidate_plants)
             capacity_market_price = 0
             if self.reps.capacity_remuneration_mechanism == "capacity_subscription":
+                capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
                 if self.reps.initialization_investment:
-                    capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, False)
                     capacity_market_price = capacity_market.InitialPrice
                 else:
                     capacity_market_price = self.calculate_capacity_subscription(long_term=False)
             elif self.reps.capacity_remuneration_mechanism == "forward_capacity_market":
-                capacity_market_price = self.calculate_forward_capacity_market_price(long_term=True)
+                capacity_market_price, capacity_market = self.calculate_forward_capacity_market_price(long_term=True)
             elif self.reps.capacity_remuneration_mechanism == "capacity_market":
-                capacity_market_price = self.calculate_forward_capacity_market_price(long_term=False)
-
-            print("capacity_market_price " + str(capacity_market_price))
+                capacity_market_price, capacity_market  = self.calculate_forward_capacity_market_price(long_term=False)
+                print("capacity_market_price " + str(capacity_market_price))
+            CO2_emission_limit = self.reps.get_CO2_emission_limit( capacity_market, self.reps.current_year + capacity_market.forward_years_CM)
             for candidatepowerplant in self.investable_candidate_plants:
                 # print("..............." + candidatepowerplant.technology.name)
                 cp_numbers.append(candidatepowerplant.name)
@@ -190,10 +190,15 @@ class Investmentdecision(DefaultModule):
                 # calculate which is the power plant (technology) with the highest NPV
 
                 operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
+
                 if self.reps.capacity_remuneration_mechanism == "none":
                     pass
                 else:
-                    operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
+                    if candidatepowerplant.technology.type == 'ConventionalPlantOperator':
+                        if candidatepowerplant.technology.fuel.co2_density/candidatepowerplant.technology.efficiency*1000 > CO2_emission_limit:
+                            pass
+                    else:
+                        operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
 
                 cashflow = self.getProjectCashFlow(candidatepowerplant, self.agent, operatingProfit)
                 projectvalue = self.npv(candidatepowerplant.technology, cashflow)
@@ -536,10 +541,10 @@ class Investmentdecision(DefaultModule):
             else:
                 pass
 
-        bids_lower_than_price_cap = self.capacity_market_bids(capacity_market, long_term)
+        bids_lower_than_price_cap  = self.capacity_market_bids(capacity_market, long_term)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isMarketUndersuscribed, upperVolume = CapacityMarketClearing.capacity_market_clearing(
-            self, sorted_ppdp, capacity_market, self.futureInvestmentyear)
+            self, sorted_ppdp, capacity_market, non_eligible_capacity)
         # todo: change back total_offered_capacity to total_supply_volume
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_supply_volume,
@@ -558,7 +563,7 @@ class Investmentdecision(DefaultModule):
         # peakExpectedDemand = self.peak_demand * expectedDemandFactor
         # if peaksupply > peakExpectedDemand:
         #     print("peaksupply " + str(peaksupply) + "peakExpectedDemand " + str(peakExpectedDemand))
-        return capacity_market_price
+        return capacity_market_price, capacity_market
 
     def calculate_capacity_subscription(self,long_term):
         capacity_market = self.reps.get_capacity_market_in_country(self.reps.country, long_term)
@@ -599,20 +604,15 @@ class Investmentdecision(DefaultModule):
         print("technologyname;price_to_bid;capacityderated;opexprofits;fixed_on_m_cost;pending_loan")
         bids_lower_than_price_cap = 0
         candidates_and_existing = []
-        CM_year = self.reps.current_year + capacity_market.forward_years_CM
-        if CM_year not in capacity_market.CO2_emission_intensity_limit.index:
-            capacity_market.CO2_emission_intensity_limit[CM_year] = np.nan
-            capacity_market.CO2_emission_intensity_limit = capacity_market.CO2_emission_intensity_limit.sort_index()
-            interpolated_data = capacity_market.CO2_emission_intensity_limit.interpolate(method='index', limit_area=None)
-            CO2_emission_limit = interpolated_data[CM_year]
-        else:
-            CO2_emission_limit = capacity_market.CO2_emission_intensity_limit[CM_year]
+        CO2_emission_limit =self.reps.get_CO2_emission_limit(capacity_market ,  self.reps.current_year + capacity_market.forward_years_CM )
+        global non_eligible_capacity
+        non_eligible_capacity = 0
 
         for powerplant in self.reps.power_plants.values():
-
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
                     print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
+                    non_eligible_capacity = non_eligible_capacity + powerplant.capacity
                     continue
                 else:
                     """

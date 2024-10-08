@@ -40,16 +40,9 @@ class CapacityMarketSubmitBids(MarketModule):
         all_techs_capacity = {}
         # the installed power plants are filtered in the prepare futur market clearing file
         CM_year = self.reps.current_year + market.forward_years_CM
-
-        if CM_year not in market.CO2_emission_intensity_limit.index:
-            market.CO2_emission_intensity_limit[CM_year] = np.nan
-            market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
-            interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index', limit_area=None)
-            CO2_emission_limit = interpolated_data[CM_year]
-        else:
-            CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
-            print("CO2 limit is")
-            print(CO2_emission_limit)
+        CO2_emission_limit = self.reps.get_CO2_emission_limit(market, CM_year)
+        global non_eligible_capacity
+        non_eligible_capacity = 0
         for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
             powerplant = self.reps.get_power_plant_by_id(pp_id)
             if powerplant.technology.name in all_techs_capacity:
@@ -61,6 +54,7 @@ class CapacityMarketSubmitBids(MarketModule):
             if powerplant.technology.type == 'ConventionalPlantOperator':
                 if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
                     print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
+                    non_eligible_capacity = non_eligible_capacity + powerplant.capacity
                     continue
 
             if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
@@ -158,7 +152,7 @@ class CapacityMarketClearing(MarketModule):
         clearing_price, total_supply_volume, is_the_market_undersubscribed, upperVolume = self.capacity_market_clearing(
             sorted_supply,
             capacity_market,
-            capacity_market_year)
+            non_eligible_capacity)
 
         if clearing_price <0:
             raise ValueError("Clearing price is negative")
@@ -169,7 +163,7 @@ class CapacityMarketClearing(MarketModule):
         self.reps.create_or_update_market_clearing_point(capacity_market, clearing_price, total_supply_volume,
                                                          self.reps.current_tick + capacity_market.forward_years_CM)  # saved according to effective year
 
-    def capacity_market_clearing(self, sorted_supply, capacity_market, capacity_market_year):
+    def capacity_market_clearing(self, sorted_supply, capacity_market, non_eligible_capacity):
         def check_if_market_under_subscribed(total_supply_volume, volume):
             if total_supply_volume > volume:
                 return False
@@ -191,7 +185,7 @@ class CapacityMarketClearing(MarketModule):
         #     targetVolume = capacity_market.TargetCapacity
         # else:
         #     targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
-        targetVolume = capacity_market.TargetCapacity
+        targetVolume = capacity_market.TargetCapacity - non_eligible_capacity
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
         # uppertargetVolume -= effective_capacity_long_term_CM

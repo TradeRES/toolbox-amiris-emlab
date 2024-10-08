@@ -1245,6 +1245,13 @@ def plot_lole_per_group(path_to_plots, max_ENS_in_a_row, LOLE_per_group, VOLL_pe
     plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
     fig39.savefig(path_to_plots + '/' + 'Load_shedded_hours.png', bbox_inches='tight', dpi=300)
     plt.close('all')
+def plot_capacity_market_dynamic_target_demand(reps):
+    capacity_market = reps.get_capacity_market_in_country(reps.country, False)
+    fig39 = capacity_market.yearlyTargetCapacity.plot()
+    # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
+    fig1 = fig39.get_figure()
+    fig1.savefig(path_to_plots + '/' + 'target_capacity_yearly.png', bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 # section -----------------------------------------------------------------------------------------------data preparation
 def prepare_pp_decommissioned(reps):
@@ -2428,6 +2435,8 @@ def prepare_percentage_load_shedded(yearly_load, weighted_average_VOLL, years_to
 
 
 
+
+
 def get_shortage_hours_and_power_ratio(reps, years_to_generate, yearly_electricity_prices,
                                        yearly_load, LOLE_per_group):
     simple_electricity_prices_average = yearly_electricity_prices.sum(axis=0) / reps.hours_in_year
@@ -2684,6 +2693,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
             SR_operator_revenues, cm_revenues_per_pp, price_cap = \
             prepare_accepted_CapacityMechanism(
             reps, ticks_to_generate)
+
+
         plot_CM_revenues(CM_costs_per_technology, accepted_pp_per_technology, capacity_mechanisms_per_tech,
                          CM_clearing_price,capacity_market_future_price, CM_clearing_volume,capacity_market_future_volume ,
                          total_costs_CM, SR_operator_revenues, cm_revenues_per_pp, price_cap , path_to_plots,
@@ -2693,7 +2704,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
             plot_strategic_reserve_plants(npvs_per_year_perMW_strategic_reseve, npvs_per_tech_per_MW, path_to_plots)
         else:
             plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
-
+        if reps.capacity_remuneration_mechanism == "capacity_market":
+            plot_capacity_market_dynamic_target_demand(reps)
     else:
         capacity_market_future_price = pd.DataFrame()
     prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity)
@@ -3264,8 +3276,8 @@ if __name__ == '__main__':
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_VRES_BESS", "final3-CM_VRES_BESS_lowTV","final3-CM_endogen_lowTV"]
     # SCENARIOS =  ["final3-EOM_LH", "finalHH-EOM_HH","final3-CM_LH", "finalHH-CM_HH","final3-SR_LH","finalHH-SR_HH","final3-CS_LH", "finalHH-CS_HH"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_RO", "final3-CM_VRES_BESS", "final3-CM_endogen"]
-    SCENARIOS = ["tn-test"]
-
+    # SCENARIOS = ["transition-EOM_until27", "transition-SR_until27", "transition-CS_until27"]
+    SCENARIOS = ["transition-CM" ]
     # SCENARIOS =  [ "finalHH-EOM_HH", "finalHH-CM_HH","finalHH-SR_HH", "finalHH-CS_HH"]
     results_excel = "transition.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
