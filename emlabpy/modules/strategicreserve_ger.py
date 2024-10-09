@@ -137,6 +137,11 @@ class StrategicReserveAssignment_ger(MarketModule):
                         power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
                         self.reps.dbrw.stage_power_plant_status(power_plant)
                         print("to be decommissioned because of >" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
+                    elif power_plant.technology.type == 'ConventionalPlantOperator' and \
+                            power_plant.technology.fuel.co2_density/power_plant.technology.efficiency*1000 > CO2_emission_limit:
+                        power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
+                        self.reps.dbrw.stage_power_plant_status(power_plant)
+                        print("in reserve but too much CO2 emissions" +  power_plant.name)
                     else:  # Has been less than 4 years. Keep contracting
                         ppdp.status = globalNames.power_plant_status_strategic_reserve
                         ppdp.accepted_amount = ppdp.amount
@@ -146,7 +151,6 @@ class StrategicReserveAssignment_ger(MarketModule):
                         print(power_plant.name + "   years in reserve " + str(power_plant.years_in_SR))
                 elif power_plant.technology.type == 'ConventionalPlantOperator' and\
                         power_plant.technology.fuel.co2_density/power_plant.technology.efficiency*1000 > CO2_emission_limit:
-                    print(power_plant.name + "  " + power_plant.technology.name  + "  Co2 intensity is too high")
                     continue
 
                 else: # If strategic reserve is not filled yet contract additional new plants

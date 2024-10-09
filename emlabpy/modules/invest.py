@@ -182,7 +182,9 @@ class Investmentdecision(DefaultModule):
             elif self.reps.capacity_remuneration_mechanism == "capacity_market":
                 capacity_market_price, capacity_market  = self.calculate_forward_capacity_market_price(long_term=False)
                 print("capacity_market_price " + str(capacity_market_price))
-            CO2_emission_limit = self.reps.get_CO2_emission_limit( capacity_market, self.reps.current_year + capacity_market.forward_years_CM)
+            if self.reps.capacity_remuneration_mechanism in ["capacity_market" ,  "forward_capacity_market", "capacity_subscription"] :
+                CO2_emission_limit = self.reps.get_CO2_emission_limit( capacity_market, self.reps.current_year + capacity_market.forward_years_CM)
+
             for candidatepowerplant in self.investable_candidate_plants:
                 # print("..............." + candidatepowerplant.technology.name)
                 cp_numbers.append(candidatepowerplant.name)
@@ -191,9 +193,7 @@ class Investmentdecision(DefaultModule):
 
                 operatingProfit = candidatepowerplant.get_Profit()  # per installed capacity
 
-                if self.reps.capacity_remuneration_mechanism == "none":
-                    pass
-                else:
+                if self.reps.capacity_remuneration_mechanism in ["capacity_market" ,  "forward_capacity_market", "capacity_subscription"]:
                     if candidatepowerplant.technology.type == 'ConventionalPlantOperator':
                         if candidatepowerplant.technology.fuel.co2_density/candidatepowerplant.technology.efficiency*1000 > CO2_emission_limit:
                             pass
