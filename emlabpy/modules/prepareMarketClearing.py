@@ -167,7 +167,13 @@ class PrepareMarket(DefaultModule):
                             pass
             # ----------------------------------------------------------------------------preparing CO2 price
             elif substance.name == "CO2":
-                Co2Prices = fuel_price
+                """
+                Only for the transition the CO2 prices are estimated to be higher, so investors see 10 years ahead
+                """
+                if calculatedprices == "futurePrice" and self.reps.round_for_capacity_market_y_1 == False:  # choose the prices depending if nexy year or future year is calculated
+                    Co2Prices = self.reps.substances["CO2"].get_price_for_tick(self.reps, self.simulation_year + 10, True)
+                else:
+                    Co2Prices = fuel_price
             # ----------------------------------------------------------------------------preparing  other fuel prices
             else:
                 try:
