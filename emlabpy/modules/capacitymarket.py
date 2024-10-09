@@ -182,11 +182,11 @@ class CapacityMarketClearing(MarketModule):
         effective_capacity_long_term_CM = self.reps.get_capacity_under_long_term_contract(
             capacity_market.forward_years_CM)
         #
-        # if self.reps.current_tick == 0:
-        #     targetVolume = capacity_market.TargetCapacity
-        # else:
-        #     targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
-        targetVolume = capacity_market.TargetCapacity - non_eligible_capacity
+        if self.reps.current_tick == 0:
+            targetVolume = capacity_market.TargetCapacity
+        else:
+            targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
+        targetVolume = targetVolume - non_eligible_capacity
 
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
@@ -374,13 +374,13 @@ class CapacityMarketClearing(MarketModule):
         sorted_demand_LOLE = demand_LOLE.sort_values(by='shortages', ascending=False, ignore_index=True)
         selected_rows = sorted_demand_LOLE[sorted_demand_LOLE['shortages'] > 0].mean()
         target_capacity = selected_rows["load"]
-        # if  target_capacity < 0:
-        #     raise ValueError("target volume is negative")
-        # elif pd.isna(target_capacity):
-        #     if self.reps.current_year > self.reps.start_simulation_year:  #if there are no shortages, then take the target capacity of the previous year
-        #         target_capacity = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
-        #     else:
-        #         target_capacity = capacity_market.TargetCapacity
+        if  target_capacity < 0:
+            raise ValueError("target volume is negative")
+        elif pd.isna(target_capacity):
+            if self.reps.current_year > self.reps.start_simulation_year:  #if there are no shortages, then take the target capacity of the previous year
+                target_capacity = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
+            else:
+                target_capacity = capacity_market.TargetCapacity
         self.reps.dbrw.stage_target_capacity(target_capacity, capacity_market.name , capacity_market.forward_years_CM + self.reps.current_year)
 
 def calculate_cone(reps, capacity_market, candidatepowerplants):
