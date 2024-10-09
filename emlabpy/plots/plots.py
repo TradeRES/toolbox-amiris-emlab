@@ -1137,7 +1137,7 @@ def plot_grouped_monthly_production_per_type(average_yearly_generation):
 
 
 def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                      normalized_load_shedded):
+                      normalized_load_shedded, yearly_load):
     fig37, axs37 = plt.subplots(2, 1)
     fig37.tight_layout()
     production_not_shedded_TWh = production_not_shedded_MWh[["hydrogen_produced", "industrial_heat_demand"]] / 1000000
@@ -1153,6 +1153,15 @@ def plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_pe
     axs37[0].legend(['Electrolyzer', 'Industrial heat'])
     fig37.savefig(path_to_plots + '/' + 'Hydrogen_produced.png', bbox_inches='tight', dpi=300)
     plt.close('all')
+
+    non_shedded_inflexible_load = yearly_load.sum(axis=0) - load_shedded_per_group_MWh.sum(axis=1)
+    non_shedded_inflexible_load.rename("inflexible_load", inplace=True)
+    result = pd.concat([production_not_shedded_MWh[["hydrogen_produced", "industrial_heat_demand"]], non_shedded_inflexible_load], axis=1)
+    fig, ax = plt.subplots()
+    result.plot.area(ax = ax, stacked=True)
+    TotalAwardedPowerInMWh.plot(ax = ax, color="red", linestyle='--', linewidth=3)
+    plt.show()
+    fig.savefig(path_to_plots + '/' + 'Generation_type.png', bbox_inches='tight', dpi=300)
 
     # reorganize columns as specified
     # percentage_load_shedded = percentage_load_shedded[['low', 'mid', 'high', 'base']]
@@ -2024,7 +2033,8 @@ def calculating_RES_support(reps, years_to_generate):
 def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenario):
     years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))
     yearly_electricity_prices = pd.DataFrame()
-    TotalAwardedPowerInMW = pd.DataFrame()
+    global TotalAwardedPowerInMWh
+    TotalAwardedPowerInMWh = pd.DataFrame()
     curtailed_res = pd.DataFrame()
 
     global DispatchSystemCostInEUR
@@ -2054,7 +2064,7 @@ def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenar
 
         df = pd.read_excel(year_excel, sheet_name=["energy_exchange", "residual_load", "hourly_generation"])
         yearly_electricity_prices.at[:, year] = df['energy_exchange']["ElectricityPriceInEURperMWH"]
-        TotalAwardedPowerInMW.at[:, year] = df['energy_exchange'].TotalAwardedPowerInMW
+        TotalAwardedPowerInMWh.at[year, 0]= df['energy_exchange'].TotalAwardedPowerInMW.sum()
         DispatchSystemCostInEUR.at[year, 0] = df['energy_exchange'].DispatchSystemCostInEUR.sum()
         #
         # if "residual_load_actual_infeed" in df['residual_load'].columns:
@@ -2092,7 +2102,7 @@ def reading_electricity_prices(reps, folder_name, scenario_name, existing_scenar
             total_sum = total_sum + df
         average_yearly_generation = total_sum / len(years_to_generate)
 
-    return yearly_electricity_prices, curtailed_res, TotalAwardedPowerInMW
+    return yearly_electricity_prices, curtailed_res, TotalAwardedPowerInMWh
 
 
 def reading_original_load(years_to_generate, list_ticks ):
@@ -2111,6 +2121,15 @@ def reading_original_load(years_to_generate, list_ticks ):
 
     elif reps.country == "NL" and reps.fix_demand_to_representative_year == True:
         input_yearly_profiles_demand = os.path.join(os.path.dirname(os.getcwd()) , 'data', reps.scenarioWeatheryearsExcel)
+        all_years = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
+        load_representative_year = pd.DataFrame(all_years[reps.representative_year])
+        # repeat load for all generation years
+        number_years = len(years_to_generate)
+        yearly_load = pd.concat([load_representative_year] * number_years, axis=1)
+        yearly_load.columns = years_to_generate
+
+    elif reps.country == "NL" and reps.increasingLoad_representativeYear_Excel != "None":
+        input_yearly_profiles_demand = os.path.join(os.path.dirname(os.getcwd()) , 'data', reps.increasingLoad_representativeYear_Excel)
         all_years = pd.read_excel(input_yearly_profiles_demand, index_col=None, sheet_name="Load")
         load_representative_year = pd.DataFrame(all_years[reps.representative_year])
         # repeat load for all generation years
@@ -2579,7 +2598,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         subscribed_sorted = prepare_subscribed_capacity_new(ticks_to_generate)
 
     plot_load_shedded(path_to_plots, production_not_shedded_MWh, load_shedded_per_group_MWh,
-                      normalized_load_shedded)
+                      normalized_load_shedded, yearly_load)
 
 
     if calculate_monthly_generation == True and calculate_hourly_shedders_new == True:
@@ -3285,7 +3304,7 @@ if __name__ == '__main__':
     # SCENARIOS =  ["final3-EOM_LH", "finalHH-EOM_HH","final3-CM_LH", "finalHH-CM_HH","final3-SR_LH","finalHH-SR_HH","final3-CS_LH", "finalHH-CS_HH"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_RO", "final3-CM_VRES_BESS", "final3-CM_endogen"]
     # SCENARIOS = ["transition-EOM_until27", "transition-SR_until27", "transition-CS_until27"]
-    SCENARIOS = ["transition-CM" ]
+    SCENARIOS = ["transition-EOM_newpps" ]
     # SCENARIOS =  [ "finalHH-EOM_HH", "finalHH-CM_HH","finalHH-SR_HH", "finalHH-CS_HH"]
     results_excel = "transition.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
