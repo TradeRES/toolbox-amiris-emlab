@@ -187,8 +187,6 @@ class CapacityMarketClearing(MarketModule):
         # else:
         #     targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
         targetVolume = capacity_market.TargetCapacity - non_eligible_capacity
-        if targetVolume < 0:
-            targetVolume  = 0
 
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
