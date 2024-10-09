@@ -25,21 +25,9 @@ class StrategicReserveSubmitBids_ger(MarketModule):
         # establish the CO2 emission intensity limit
         market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
         CM_year = self.reps.current_year + market.forward_years_CM
-        if CM_year not in market.CO2_emission_intensity_limit.index:
-            market.CO2_emission_intensity_limit[CM_year] = np.nan
-            market.CO2_emission_intensity_limit = market.CO2_emission_intensity_limit.sort_index()
-            interpolated_data = market.CO2_emission_intensity_limit.interpolate(method='index', limit_area=None)
-            CO2_emission_limit = interpolated_data[CM_year]
-        else:
-            CO2_emission_limit = market.CO2_emission_intensity_limit[CM_year]
-
         # Retrieve every power plant in the active energy producer for the defined country
         for powerplant in self.reps.get_plants_to_be_decommissioned_and_inSR(self.operator.years_accepted_inSR_before_decommissioned):
             # Retrieve the active capacity market and power plant capacity
-            if powerplant.technology.type == 'ConventionalPlantOperator':
-                if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
-                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high")
-                    continue
             power_plant_capacity = powerplant.get_actual_nominal_capacity()
             Bid  = self.reps.calculate_marginal_costs( powerplant, self.operator.forward_years_SR)
             # Bid = powerplant.getActualFixedOperatingCost()
@@ -71,6 +59,7 @@ class StrategicReserveAssignment_ger(MarketModule):
     def act(self):
         # Retrieve the active capacity market just for clearing functionality
         market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
+        CO2_emission_limit = self.reps.get_CO2_emission_limit(market,  self.reps.current_year + market.forward_years_CM)
         # Retrieve the active strategic reserve operator in the country
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 
@@ -148,7 +137,6 @@ class StrategicReserveAssignment_ger(MarketModule):
                         power_plant.status = globalNames.power_plant_status_decommissioned_from_SR
                         self.reps.dbrw.stage_power_plant_status(power_plant)
                         print("to be decommissioned because of >" + str(self.operator.max_years_in_reserve) + " years in SR "  +  power_plant.name)
-
                     else:  # Has been less than 4 years. Keep contracting
                         ppdp.status = globalNames.power_plant_status_strategic_reserve
                         ppdp.accepted_amount = ppdp.amount
@@ -156,6 +144,10 @@ class StrategicReserveAssignment_ger(MarketModule):
                         contracted_strategic_reserve_capacity += ppdp.amount
                         list_of_plants.append(ppdp.plant)
                         print(power_plant.name + "   years in reserve " + str(power_plant.years_in_SR))
+                elif power_plant.technology.type == 'ConventionalPlantOperator' and\
+                        power_plant.technology.fuel.co2_density/power_plant.technology.efficiency*1000 > CO2_emission_limit:
+                    print(power_plant.name + "  " + power_plant.technology.name  + "  Co2 intensity is too high")
+                    continue
 
                 else: # If strategic reserve is not filled yet contract additional new plants
                     ppdp.status = globalNames.power_plant_status_strategic_reserve
