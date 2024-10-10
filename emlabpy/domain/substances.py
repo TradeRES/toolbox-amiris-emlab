@@ -127,7 +127,7 @@ class Substance(ImportObject):
         if year not in self.initialPrice.index:
             self.initialPrice[year] = np.nan
             self.initialPrice.sort_index(inplace=True)
-            interpolated_data = self.initialPrice.interpolate(method='index', limit_area=None)
+            interpolated_data = self.initialPrice.interpolate(method='index', limit_area=None, limit_direction='both')
             interpolated_price = interpolated_data[year]
         else:
             interpolated_price = self.initialPrice[year]
