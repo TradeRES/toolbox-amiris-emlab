@@ -59,7 +59,7 @@ class StrategicReserveAssignment_ger(MarketModule):
     def act(self):
         # Retrieve the active capacity market just for clearing functionality
         market = self.reps.get_capacity_market_in_country(self.reps.country, long_term=False)
-        CO2_emission_limit = self.reps.get_CO2_emission_limit(market,  self.reps.current_year + market.forward_years_CM)
+        CO2_emission_limit = self.reps.get_CO2_emission_limit(market,  self.reps.current_year)
         # Retrieve the active strategic reserve operator in the country
         self.operator = self.reps.get_strategic_reserve_operator(self.reps.country)
 

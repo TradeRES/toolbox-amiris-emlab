@@ -117,21 +117,21 @@ class Substance(ImportObject):
         return self.newPrice
 
     def interpolate_year(self, year):
-        # if year < self.initialPrice.index.min() and self.name == "CO2":
-        #     interpolated_price = self.initialPrice.values.min()
-        # else:
-        #     c = np.polyfit(self.initialPrice.index, self.initialPrice.values, 2)
-        #     f = np.poly1d(c)
-        #     interpolated_price = f(year)
-        # return interpolated_price
-        if year not in self.initialPrice.index:
-            self.initialPrice[year] = np.nan
-            self.initialPrice.sort_index(inplace=True)
-            interpolated_data = self.initialPrice.interpolate(method='index', limit_area=None, limit_direction='both')
-            interpolated_price = interpolated_data[year]
+        if year < self.initialPrice.index.min() and self.name == "CO2":
+            interpolated_price = self.initialPrice.values.min()
         else:
-            interpolated_price = self.initialPrice[year]
+            c = np.polyfit(self.initialPrice.index, self.initialPrice.values, 1)
+            f = np.poly1d(c)
+            interpolated_price = f(year)
         return interpolated_price
+        # if year not in self.initialPrice.index:
+        #     self.initialPrice[year] = np.nan
+        #     self.initialPrice.sort_index(inplace=True)
+        #     interpolated_data = self.initialPrice.interpolate(method='index', limit_area=None, limit_direction='both')
+        #     interpolated_price = interpolated_data[year]
+        # else:
+        #     interpolated_price = self.initialPrice[year]
+        # return interpolated_price
 
 
     def initializeGeometricTrendRegression(self, reps, calculatedPrices):

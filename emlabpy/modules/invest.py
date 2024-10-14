@@ -183,8 +183,11 @@ class Investmentdecision(DefaultModule):
                 capacity_market_price, capacity_market  = self.calculate_forward_capacity_market_price(long_term=False)
                 print("capacity_market_price " + str(capacity_market_price))
             if self.reps.capacity_remuneration_mechanism in ["capacity_market" ,  "forward_capacity_market", "capacity_subscription"] :
-                CO2_emission_limit = self.reps.get_CO2_emission_limit( capacity_market, self.reps.current_year + capacity_market.forward_years_CM)
-
+                """
+                strategic reserve might also have a limit on CO2 emissions but volume that is in reserve is expected to be constant
+                """
+                CO2_emission_limit = self.reps.get_CO2_emission_limit( capacity_market, self.reps.current_year)
+                print("CO2_emission_limit" + str(CO2_emission_limit))
             for candidatepowerplant in self.investable_candidate_plants:
                 # print("..............." + candidatepowerplant.technology.name)
                 cp_numbers.append(candidatepowerplant.name)
@@ -604,7 +607,7 @@ class Investmentdecision(DefaultModule):
         print("technologyname;price_to_bid;capacityderated;opexprofits;fixed_on_m_cost;pending_loan")
         bids_lower_than_price_cap = 0
         candidates_and_existing = []
-        CO2_emission_limit =self.reps.get_CO2_emission_limit(capacity_market ,  self.reps.current_year + capacity_market.forward_years_CM )
+        CO2_emission_limit =self.reps.get_CO2_emission_limit(capacity_market ,  self.reps.current_year)
         global non_eligible_capacity
         non_eligible_capacity = 0
 

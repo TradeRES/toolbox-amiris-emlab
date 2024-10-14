@@ -39,9 +39,9 @@ class CapacityMarketSubmitBids(MarketModule):
         global all_techs_capacity
         all_techs_capacity = {}
         # the installed power plants are filtered in the prepare futur market clearing file
-        CM_year = self.reps.current_year + market.forward_years_CM
-        CO2_emission_limit = self.reps.get_CO2_emission_limit(market, CM_year)
-        print(CO2_emission_limit)
+
+        CO2_emission_limit = self.reps.get_CO2_emission_limit(market,  self.reps.current_year )
+        print("CO2_emission_limit" + str(CO2_emission_limit))
         global non_eligible_capacity
         non_eligible_capacity = 0
         for pp_id in self.reps.get_ids_of_future_installed_plants(market.forward_years_CM + self.reps.current_tick):
@@ -185,7 +185,12 @@ class CapacityMarketClearing(MarketModule):
         if self.reps.current_tick == 0:
             targetVolume = capacity_market.TargetCapacity
         else:
+            print("target volume")
+            print(capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1])
             targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
+
+        print("non_eligible_capacity")
+        print(non_eligible_capacity)
         targetVolume = targetVolume - non_eligible_capacity
 
         targetVolume -= effective_capacity_long_term_CM

@@ -1,6 +1,6 @@
 from domain.CandidatePowerPlant import *
 from modules.prepareMarketClearing import PrepareMarket
-# import shutil
+import shutil
 
 class PrepareFutureMarketClearing(PrepareMarket):
     """
@@ -106,7 +106,7 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.write_load_shifter_with_price_cap()
         self.write_times()
         self.writer.close()
-        # if self.reps.current_year == 2020:
+        # if self.reps.current_year == 2022:
         #     shutil.copy(self.path, globalNames.amiris_data_path_2020)
 
     def filter_power_plants_to_be_operational(self):
