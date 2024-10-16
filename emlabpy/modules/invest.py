@@ -612,23 +612,23 @@ class Investmentdecision(DefaultModule):
         non_eligible_capacity = 0
 
         for powerplant in self.reps.power_plants.values():
-            if powerplant.technology.type == 'ConventionalPlantOperator':
-                if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
-                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
-                    non_eligible_capacity = non_eligible_capacity + powerplant.capacity
-                    continue
-                else:
-                    """
-                    power plants that get a long term revenues should not participate in the capacity market
-                    unless they are finished with their long term contract
-                    """
-                    if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
-                        if powerplant.technology.deratingFactor >0:
-                            candidates_and_existing.append(powerplant)
+            """
+            power plants that get a long term revenues should not participate in the capacity market
+            unless they are finished with their long term contract
+            """
+            if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
+                if powerplant.technology.deratingFactor >0:
+                    if powerplant.technology.type == 'ConventionalPlantOperator' and powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
+                        print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
+                        non_eligible_capacity = non_eligible_capacity + powerplant.capacity
                     else:
-                        pass
+                        candidates_and_existing.append(powerplant)
+                else:
+                    # print(powerplant.name + "  " + powerplant.technology.name  + "  derating factor is 0")
+                    pass
+            else:
                 # print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
-
+                pass
 
         candidates_and_existing = candidates_and_existing + self.investable_candidate_plants
         candidates_ids = self.reps.get_ids_of_plants(self.investable_candidate_plants)
