@@ -451,9 +451,12 @@ def calculate_cone(reps, capacity_market, candidatepowerplants):
             if price_cap < 0:
                 raise ValueError("Price cap is negative")
             else:
-                capacity_market.PriceCap = price_cap
-                reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
-                reps.dbrw.stage_net_cone(capacity_market.name, netCONE)
+                pass
+            if netCONE < 0.5*price_cap:
+                netCONE = 0.75*price_cap
+            capacity_market.PriceCap = price_cap
+            reps.dbrw.stage_price_cap(capacity_market.name, price_cap)
+            reps.dbrw.stage_net_cone(capacity_market.name, netCONE)
 
 
 
