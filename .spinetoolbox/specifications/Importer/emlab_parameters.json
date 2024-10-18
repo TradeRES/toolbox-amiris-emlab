@@ -1476,6 +1476,60 @@
                         ]
                     }
                 }
+            ],
+            "dynamicDF": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "Technologies",
+                                "read_start_row": 1
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": "hidden",
+                                "value": "deratingFactor_yearly"
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueType",
+                                "position": "hidden",
+                                "value": "map"
+                            },
+                            {
+                                "map_type": "IndexName",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValueIndex",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ExpandedValue",
+                                "position": 1
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
@@ -1502,7 +1556,8 @@
             "CS_subscribed",
             "yearlyHydrogen",
             "yearlyLoadShifterCap",
-            "CapacityMarketCO2Limit"
+            "CapacityMarketCO2Limit",
+            "dynamicDF"
         ],
         "table_options": {
             "CapacityMarkets": {
@@ -1622,7 +1677,8 @@
                 "read_until_row": true
             },
             "Sheet1": {},
-            "CapacityMarketCO2Limit": {}
+            "CapacityMarketCO2Limit": {},
+            "dynamicDF": {}
         },
         "table_types": {
             "CapacityMarkets": {
@@ -1688,8 +1744,7 @@
                 "5": "float",
                 "6": "float",
                 "7": "float",
-                "8": "float",
-                "9": "float"
+                "8": "float"
             },
             "Fuels": {
                 "0": "string",
@@ -2025,6 +2080,10 @@
             "CapacityMarketCO2Limit": {
                 "0": "string",
                 "1": "string"
+            },
+            "dynamicDF": {
+                "0": "string",
+                "1": "float"
             }
         },
         "table_default_column_type": {},

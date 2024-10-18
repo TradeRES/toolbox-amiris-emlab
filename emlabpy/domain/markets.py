@@ -171,9 +171,8 @@ class CapacityMarket(Market):
             self.forward_years_CM = int(parameter_value)
         elif parameter_name == 'years_long_term_market':
             self.years_long_term_market = int(parameter_value)
-        elif parameter_name == 'allowed_technologies':
+        elif parameter_name == 'allowed_technologies_for_cone':
             self.allowed_technologies_capacity_market = parameter_value.split(",")
-
         elif parameter_name == 'yearlyTargetCapacity':
             array = parameter_value.to_dict()
             values = [float(i[1]) for i in array["data"]]

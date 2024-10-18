@@ -73,23 +73,16 @@ class PowerGeneratingTechnology(ImportObject):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             series = pd.Series(values, index=index)
-            if reps.runningModule == "plotting":
-                self.deratingFactoryearly = series
+            self.deratingFactoryearly = series
+            if self.name in globalNames.VRES_and_batteries:
+                if reps.accept_VRES_BESS == True:
+                    if reps.dynamic_derating_factor == True:
+                        # overrating DF endogenous DF
+                        self.deratingFactor = self.get_CM_derating_factor(reps)
+                else:
+                    self.deratingFactor = 0
             else:
-                if reps.dynamic_derating_factor == True and reps.capacity_remuneration_mechanism == "capacity_market" and \
-                        self.name in globalNames.vres_and_batteries:
-                    if reps.current_tick < reps.dynamic_derating_factor_window:
-                        years = range(0, reps.current_tick)
-                        repeated_array = [self.deratingFactor]* (reps.dynamic_derating_factor_window - reps.current_tick)
-                        new_series = repeated_array + series.loc[years].values.tolist()
-                        self.deratingFactor =  np.nanmean(new_series)
-                    else:
-                        years = range(reps.current_tick - reps.dynamic_derating_factor_window, reps.current_tick)
-                        self.deratingFactor = np.nanmean(series.loc[years])
-                        # if all(element in years for element in series.index):
-                        #     self.deratingFactor = np.nanmean(series.loc[years])
-                        # else:
-                        #     self.deratingFactor = series[series.index.max()]
+                pass # already set conventional technology
 
         elif parameter_name == 'ApplicableForLongTermContract':
             self.applicable_for_long_term_contract = bool(parameter_value)
@@ -140,6 +133,23 @@ class PowerGeneratingTechnology(ImportObject):
             self.chargingEfficiency = float(parameter_value)
         elif parameter_name == 'DischargingEfficiency':
             self.dischargingEfficiency = float(parameter_value)
+
+    def get_CM_derating_factor(self, reps):
+        """
+        for the initilaization there are no DF, so taking input
+        Later on, take the evolving DF
+        """
+        if reps.initialization_investment ==True:
+            deratingFactor = self.deratingFactoryearly.loc[0]
+        elif (reps.current_tick < reps.dynamic_derating_factor_window):
+            years = range(0, reps.current_tick)
+            repeated_array = [self.deratingFactor]* (reps.dynamic_derating_factor_window - reps.current_tick)
+            new_series = repeated_array + self.deratingFactoryearly.loc[years].values.tolist()
+            deratingFactor =  np.nanmean(new_series)
+        else:
+            years = range(reps.current_tick - reps.dynamic_derating_factor_window, reps.current_tick)
+            deratingFactor = np.nanmean(self.deratingFactoryearly.loc[years])
+        return deratingFactor
 
     def getMaximumCapacityinCountry(self, futureInvestmentyear):
         if self.totalPotential != None:

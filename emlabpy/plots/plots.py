@@ -361,7 +361,7 @@ def plot_CM_revenues(CM_revenues_per_technology, accepted_pp_per_technology, cap
         plt.ylabel('CM clearing volume [MW]  \n in effective year ', fontsize='medium')
         plt.legend(["realized", "estimated"],fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid()
-        axs27.set_title(reps.capacity_remuneration_mechanism + '\n clearing volume')
+        axs27.set_title(reps.capacity_remuneration_mechanism + '\n clearing volume. not valid for endogenous DF')
         fig27 = axs27.get_figure()
         fig27.savefig(path_to_plots + '/' + 'Capacity Mechanism clearing volume.png', bbox_inches='tight', dpi=300)
         axs28 = CM_clearing_price.plot()
@@ -572,7 +572,7 @@ def plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor, all_tech
     plt.close('all')
 
 
-def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_plots, technology_colors
+def plot_annual_generation(all_techs_generation, all_techs_consumption, total_emissions, path_to_plots, technology_colors
                            ):
     """
     ALl technologies after the current simulation year can be wrongly displayed (capacity limits can be passed)
@@ -582,6 +582,8 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     all_techs_generation_nozeroes.dropna(how='all', axis=1, inplace=True)
     all_techs_consumption_nozeroes = all_techs_consumption[all_techs_consumption > 0]
     all_techs_consumption_nozeroes.dropna(how='all', axis=1, inplace=True)
+    total_emissions_nozeroes = total_emissions[total_emissions > 0]
+    total_emissions_nozeroes.dropna(how='all', axis=1, inplace=True)
     all_techs_generation_nozeroes = all_techs_generation_nozeroes / 1000000
     all_techs_consumption_nozeroes = all_techs_consumption_nozeroes / 1000000
     colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
@@ -614,7 +616,19 @@ def plot_annual_generation(all_techs_generation, all_techs_consumption, path_to_
     fig19 = axs19.get_figure()
     fig19.savefig(path_to_plots + '/' + 'Annual Consumption per technology.png', bbox_inches='tight', dpi=300)
     plt.close('all')
-    return all_techs_generation_nozeroes
+
+    colors = [technology_colors[tech] for tech in total_emissions_nozeroes.columns.values]
+    axs19 = total_emissions_nozeroes.plot.area(color=colors)
+    axs19.set_axisbelow(True)
+    plt.xlabel('Years', fontsize='medium')
+    plt.ylabel('Annual Emissions per tech [tons]', fontsize='medium')
+    plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1))
+    plt.grid()
+    axs19.set_title(scenario_name + ' \n Annual Emissions')
+    fig19 = axs19.get_figure()
+    fig19.savefig(path_to_plots + '/' + 'Annual Emissions.png', bbox_inches='tight', dpi=300)
+
+    return all_techs_generation_nozeroes, total_emissions_nozeroes
 
 
 def plot_supply_ratio(supply_ratio, curtailed_res, yearly_load, path_to_plots):
@@ -1894,8 +1908,9 @@ def prepare_accepted_CapacityMechanism(reps, ticks_to_generate):
             temporal[pp.name] = CMrevenues
             if isinstance(CMrevenues, pd.Series):
                 df_whereCMawarded = CMrevenues
-                df_whereCMawarded[
-                    df_whereCMawarded > 0] = pp.capacity * pp.technology.deratingFactor
+                df_whereCMawarded[df_whereCMawarded > 0] = pp.capacity * pp.technology.deratingFactor
+                # elif hasattr(pp.technology, 'deratingFactoryearly'):
+                #     df_whereCMawarded[df_whereCMawarded > 0] = pp.capacity * pp.technology.deratingFactoryearly
                 capacity_awarded[pp.name] = df_whereCMawarded
             else:
                 pass
@@ -1935,6 +1950,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
     all_techs_capacity_factor = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     average_electricity_price = pd.DataFrame(index=years_to_generate, columns=["wholesale price"]).fillna(0)
     share_RES = pd.DataFrame(index=years_to_generate).fillna(0)
+    emissions_per_tech = pd.DataFrame(index=unique_technologies, columns=years_to_generate).fillna(0)
     #  production_per_year = pd.DataFrame(index=years_to_generate).fillna(0)
     for year in years_to_generate:
         dispatch_per_year = reps.get_all_power_plant_dispatch_plans_by_tick(year)
@@ -1955,6 +1971,8 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
                         full_load_hours.append(pp_production_in_MWh / (power_plant.capacity))
                         totalproduction += pp_production_in_MWh
                         totalrevenues += dispatch_per_year.revenues[id]
+                        if hasattr(power_plant.technology.fuel, 'co2_density'):
+                            emissions_per_tech.loc[technology_name, year] += pp_production_in_MWh * power_plant.technology.fuel.co2_density
                         if pp_production_in_MWh > 0:
                             market_value_per_plant.append(dispatch_per_year.revenues[id] / pp_production_in_MWh)
                         else:
@@ -1991,7 +2009,7 @@ def prepare_capacity_and_generation_per_technology(reps, renewable_technologies,
     share_RES= 100 * all_techs_generation.loc[renewable_technologies].sum(axis=0) / all_techs_generation.sum()
     #   production_per_year.loc[year, 1] = totalproduction
     return all_techs_generation, all_techs_consumption, all_techs_market_value.replace(np.nan, 0), \
-        all_techs_capacity_factor.replace(np.nan, 0), average_electricity_price, all_techs_full_load_hours, share_RES
+        all_techs_capacity_factor.replace(np.nan, 0), average_electricity_price, all_techs_full_load_hours, share_RES, emissions_per_tech
 
 
 def calculating_RES_support(reps, years_to_generate):
@@ -2209,6 +2227,7 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
         axs21 = cones.plot() # color=colors_unique_techs
         netcones.plot(ax= axs21, linestyle='dashed')
         axs21.set_axisbelow(True)
+        axs21.legend(fontsize='small', loc='upper right', bbox_to_anchor=(1.1, 1))
         plt.xlabel('Years', fontsize='medium')
         plt.ylabel(' (€/MW)', fontsize='medium')
         plt.title("net cone(----) = CONE - market profits ")
@@ -2238,20 +2257,20 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
 
     initial_derating_factor.dropna(axis=1, how='all', inplace=True)
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharey=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharey=True, tight_layout=True)
     if len(realized_derating_factors)>0:
         colors = [technology_colors[tech] for tech in realized_derating_factors.columns.values]
-        realized_derating_factors.plot( marker='o', linestyle='dashed', ax = ax1, color = colors) # color=colors_unique_techs
+        realized_derating_factors.plot( marker='o', linestyle='dashed', ax = ax1, color = colors, legend = False) # color=colors_unique_techs
     colors = [technology_colors[tech] for tech in initial_derating_factor.columns.values]
-    initial_derating_factor.plot( marker='D', ax = ax1, color = colors)
+    initial_derating_factor.plot( marker='D', ax = ax1, color = colors, legend=False)
 
     n = len(initial_derating_factor.columns)
-    handles, labels = ax1.get_legend_handles_labels()
-    a = ["realized", "initial"]
-    new_labels = [element for element in a for _ in range(n)]
-    new_handles = [handle for handle, label in zip(handles, new_labels) if label]
-    ax1.legend(new_handles, [label for label in new_labels if label], fontsize='small', loc='upper right', bbox_to_anchor=(1, 1))
-    ax1.set_ylabel('realized market', fontsize='medium')
+    # handles, labels = ax1.get_legend_handles_labels()
+    # a = ["realized", "initial"]
+    # new_labels = [element for element in a for _ in range(n)]
+    # new_handles = [handle for handle, label in zip(handles, new_labels) if label]
+    # ax1.legend(new_handles, [label for label in new_labels if label], fontsize='small', loc='upper right', bbox_to_anchor=(1, 1))
+    ax1.set_ylabel('realized DF', fontsize='medium')
     ax1.grid(True)
     """
     These are the expected derating factors based on future for representative year
@@ -2267,17 +2286,18 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
         derating_factor_mean = derating_factor.rolling(window= reps.dynamic_derating_factor_window, min_periods=1).mean()
         colors = [technology_colors[tech] for tech in derating_factor_mean.columns.values]
         if derating_factor_mean.size != 0:
-            derating_factor_mean.plot(marker='*', ax = ax2, color = colors, label='applied') # color=colors_unique_techs
-            derating_factor.plot(marker='s', ax = ax2, color = colors, label='future')
-            a = ["mean", "yearly"]
-            handles, labels = ax1.get_legend_handles_labels()
-            new_labels = [element for element in a for _ in range(n)]
-            new_handles = [handle for handle, label in zip(handles, new_labels) if label]
-            ax2.legend(new_handles, [label for label in new_labels if label], fontsize='small', loc='upper right', bbox_to_anchor=(1, 1))
+            derating_factor_mean.plot(marker='*', ax = ax2, color = colors, label='applied', legend=False) # color=colors_unique_techs
+            derating_factor.plot(marker='s', ax = ax2, color = colors, label='future', legend=False)
+            # a = ["mean", "yearly"]
+            # handles, labels = ax1.get_legend_handles_labels()
+            # new_labels = [element for element in a for _ in range(n)]
+            # new_handles = [handle for handle, label in zip(handles, new_labels) if label]
+            # ax2.legend(new_handles, [label for label in new_labels if label], fontsize='small', loc='upper right', bbox_to_anchor=(1, 1))
             ax2.set_xlabel('Years', fontsize='medium')
             ax2.grid(True)
-            ax2.set_ylabel('future market', fontsize='medium')
-    #plt.title(" D = initial , o- = realized weather" + "\n  *  = representative year (expected)"  )
+            ax2.set_ylabel('Expected DF', fontsize='medium')
+    ax1.set_title(" D = initial , 0 = realized weather years"  )
+    ax2.set_title(" S = expected , * = mean" + "\n  *  = mean DF "  )
     fig.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
@@ -2610,19 +2630,17 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
     # # section -----------------------------------------------------------------------------------------------capacities
     prepare_pp_decommissioned(reps)
     all_techs_generation, all_techs_consumption, all_techs_market_value, all_techs_capacity_factor, \
-        average_electricity_price, all_techs_full_load_hours, share_RES = prepare_capacity_and_generation_per_technology(
+        average_electricity_price, all_techs_full_load_hours, share_RES, emissions_per_tech = prepare_capacity_and_generation_per_technology(
         reps, renewable_technologies, yearly_load,
         years_to_generate)
 
     plot_total_demand(reps)
-
     plot_capacity_factor_and_full_load_hours(all_techs_capacity_factor.T, all_techs_full_load_hours.T, path_to_plots,
                                              colors_unique_techs)
     plot_market_values_generation(all_techs_market_value.T, path_to_plots, colors_unique_techs)
     plot_full_load_hours_values(all_techs_full_load_hours.T, path_to_plots, renewable_technologies, colors_unique_techs)
     plot_yearly_average_electricity_prices_and_RES_share(average_electricity_price, share_RES, path_to_plots)
-    all_techs_generation_nozeroes = plot_annual_generation(all_techs_generation.T, all_techs_consumption.T, path_to_plots, technology_colors,
-                           )
+    all_techs_generation_nozeroes , total_emissions_nozeroes = plot_annual_generation(all_techs_generation.T, all_techs_consumption.T,emissions_per_tech.T, path_to_plots, technology_colors)
 
     # section ---------------------------------------------------------------Cash energy producer
     cash_flows_energy_producer, cost_recovery, cumulative_cost_recovery, new_plants_loans , costs_to_society = prepare_cash_per_agent(reps,
@@ -2843,6 +2861,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         AverageNPVpertechnology_data = pd.read_excel(path_to_results, sheet_name='AverageNPVpertechnology',   header=[0,1], index_col=0)
         Profits_with_loans_data = pd.read_excel(path_to_results, sheet_name='Profits',  header=[0,1], index_col=0)
         capacities_data = pd.read_excel(path_to_results, sheet_name='capacities',  header=[0,1], index_col=0)
+        emissions_data = pd.read_excel(path_to_results, sheet_name='emissions',  header=[0,1], index_col=0)
         npvs_per_tech_per_MW = pd.DataFrame(npvs_per_tech_per_MW)
         multi_index = pd.MultiIndex.from_product([[scenario_name], npvs_per_tech_per_MW.columns], names=['scenario_name', "technology"])
         npvs_per_tech_per_MW.columns = multi_index
@@ -2851,6 +2870,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         multi_index = pd.MultiIndex.from_product([[scenario_name], all_techs_capacity_nozeroes.columns], names=['scenario_name', "technology"])
         all_techs_capacity_nozeroes.columns = multi_index
         capacities_data = pd.concat([capacities_data, all_techs_capacity_nozeroes],  axis=1)
+
+        multi_index = pd.MultiIndex.from_product([[scenario_name], total_emissions_nozeroes.columns], names=['scenario_name', "technology"])
+        total_emissions_nozeroes.columns = multi_index
+        emissions_data = pd.concat([emissions_data, total_emissions_nozeroes],  axis=1)
 
         LS_pergroup= pd.DataFrame(load_shedded_per_group_MWh)
         multi_index = pd.MultiIndex.from_product([[scenario_name], LS_pergroup.columns], names=['scenario_name', "load_type"])
@@ -2931,6 +2954,7 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
             LOL_data.to_excel(writer, sheet_name='LOL')
             LOLvoluntary_data.to_excel(writer, sheet_name='LOLvoluntary')
             ENS_data.to_excel(writer, sheet_name='ENS')
+            emissions_data.to_excel(writer, sheet_name='emissions')
             voluntaryENS_data.to_excel(writer, sheet_name='voluntaryENS')
             SupplyRatio_data.to_excel(writer, sheet_name='SupplyRatio')
             capacities_data.to_excel(writer, sheet_name='capacities')
@@ -3203,7 +3227,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = False
 
-    test_tick = 0
+    test_tick = 5
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -3304,11 +3328,15 @@ if __name__ == '__main__':
     # SCENARIOS =  ["final3-EOM_LH", "finalHH-EOM_HH","final3-CM_LH", "finalHH-CM_HH","final3-SR_LH","finalHH-SR_HH","final3-CS_LH", "finalHH-CS_HH"]
     # SCENARIOS =  ["final3-EOM", "final3-CM", "final3-CM_RO", "final3-CM_VRES_BESS", "final3-CM_endogen"]
     # SCENARIOS = ["transition-EOM_until27", "transition-SR_until27", "transition-CS_until27"]
-    SCENARIOS = ["transition-EOM_newpps" ]
+    # SCENARIOS = ["transition-EOM_newpps", "transition-dynamicvolCM", "transition-fixvolCM", "transition-SR_emissionlimit_plantsinSR", "transition-CS" ]
     # SCENARIOS =  [ "finalHH-EOM_HH", "finalHH-CM_HH","finalHH-SR_HH", "finalHH-CS_HH"]
-    results_excel = "transition.xlsx"
+    # SCENARIOS =  [ "transitionCO2_300-EOM", "transitionCO2_300-CS", "transitionCO2_300-CM"]
+    SCENARIOS = [ "transition3-CM_noCO2limit_highpricecap" ]
+    # ,"transition3-SR_fix", "transition3-SR_decreasing", "transition3-CM_endogenous_fix",
+    # SCENARIOS = [ "transition3-test"]
+    results_excel = "transition3.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:

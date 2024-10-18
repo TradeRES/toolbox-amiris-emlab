@@ -547,7 +547,7 @@ class Investmentdecision(DefaultModule):
         bids_lower_than_price_cap  = self.capacity_market_bids(capacity_market, long_term)
         sorted_ppdp = self.reps.get_sorted_bids_by_market_and_time(capacity_market, self.futureTick)
         capacity_market_price, total_supply_volume, isMarketUndersuscribed, upperVolume = CapacityMarketClearing.capacity_market_clearing(
-            self, sorted_ppdp, capacity_market, non_eligible_capacity)
+            self, sorted_ppdp, capacity_market, non_eligible_capacity, non_participating_capacity )
         # todo: change back total_offered_capacity to total_supply_volume
         capacity_market.name = "capacity_market_future"  # changing name of market to not confuse it with realized market
         self.reps.create_or_update_market_clearing_point(capacity_market, capacity_market_price, total_supply_volume,
@@ -610,22 +610,22 @@ class Investmentdecision(DefaultModule):
         CO2_emission_limit =self.reps.get_CO2_emission_limit(capacity_market ,  self.reps.current_year)
         global non_eligible_capacity
         non_eligible_capacity = 0
-
+        global non_participating_capacity
+        non_participating_capacity = 0
         for powerplant in self.reps.power_plants.values():
             """
             power plants that get a long term revenues should not participate in the capacity market
             unless they are finished with their long term contract
             """
             if powerplant.id in self.future_installed_plants_ids and not self.reps.power_plant_still_in_reserve(powerplant, capacity_market.forward_years_CM):
-                if powerplant.technology.deratingFactor >0:
-                    if powerplant.technology.type == 'ConventionalPlantOperator' and powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
-                        print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
-                        non_eligible_capacity = non_eligible_capacity + powerplant.capacity
+                if powerplant.technology.type == 'ConventionalPlantOperator' and powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
+                    print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
+                    non_eligible_capacity = non_eligible_capacity + powerplant.capacity
+                else:
+                    if self.reps.accept_VRES_BESS == False and powerplant.technology.type != 'ConventionalPlantOperator':
+                        non_participating_capacity += powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)
                     else:
                         candidates_and_existing.append(powerplant)
-                else:
-                    # print(powerplant.name + "  " + powerplant.technology.name  + "  derating factor is 0")
-                    pass
             else:
                 # print(str(powerplant.id) + "not in capacity market pp age: " + str(powerplant.age))
                 pass
@@ -677,12 +677,12 @@ class Investmentdecision(DefaultModule):
             if price_to_bid < capacity_market.PriceCap:
                 bids_lower_than_price_cap += capacity_to_bid
 
-            # print(powerplant.technology.name +
-            #       powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
-            #     operatingProfit) + ";" + str(
-            #     fixed_on_m_cost) + ";" + str(
-            #     pending_loan))
-
+        #     print(powerplant.technology.name +
+        #           powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
+        #         operatingProfit) + ";" + str(
+        #         fixed_on_m_cost) + ";" + str(
+        #         pending_loan))
+        # print(non_participating_capacity)
         return bids_lower_than_price_cap
 
     def group_power_plants(self):

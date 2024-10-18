@@ -178,6 +178,8 @@ class SpineDBReaderWriter:
                 reps.reliability_option_strike_price = row['parameter_value']
             elif row['parameter_name'] == 'dynamic_derating_factor':
                 reps.dynamic_derating_factor = bool(row['parameter_value'])
+            elif row['parameter_name'] == 'accept_VRES_BESS':
+                reps.accept_VRES_BESS = bool(row['parameter_value'])
 
 
         # these are the years that need to be added to the power plants on the first simulation tick
