@@ -74,7 +74,9 @@ class PowerGeneratingTechnology(ImportObject):
             index = [int(i[0]) for i in array["data"]]
             series = pd.Series(values, index=index)
             self.deratingFactoryearly = series
-            if self.name in globalNames.VRES_and_batteries:
+            if reps.runningModule =="plotting":
+                pass
+            elif self.name in globalNames.VRES_and_batteries:
                 if reps.accept_VRES_BESS == True:
                     if reps.dynamic_derating_factor == True:
                         # overrating DF endogenous DF

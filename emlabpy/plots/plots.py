@@ -2275,11 +2275,15 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
     """
     These are the expected derating factors based on future for representative year
     """
+
     if reps.dynamic_derating_factor == True:
         derating_factor = pd.DataFrame()
+        names = []
         for name, tech in  reps.power_generating_technologies.items():
-            if name in unique_technologies:
-                derating_factor[tech.name] = tech.deratingFactoryearly
+            if name in globalNames.VRES_and_batteries :
+                names.append(name)
+                derating_factor = pd.concat([derating_factor, tech.deratingFactoryearly], ignore_index=False, axis=1)
+        derating_factor.columns =names
         derating_factor.sort_index(inplace=True)
         derating_factor.dropna(axis=1, how='all', inplace=True)
         derating_factor.index = derating_factor.index + reps.start_simulation_year
@@ -2297,7 +2301,7 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
             ax2.grid(True)
             ax2.set_ylabel('Expected DF', fontsize='medium')
     ax1.set_title(" D = initial , 0 = realized weather years"  )
-    ax2.set_title(" S = expected , * = mean" + "\n  *  = mean DF "  )
+    ax2.set_title(" S = expected , * = mean" )
     fig.savefig(path_to_plots + '/' + 'Derating factor.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
@@ -3331,7 +3335,7 @@ if __name__ == '__main__':
     # SCENARIOS = ["transition-EOM_newpps", "transition-dynamicvolCM", "transition-fixvolCM", "transition-SR_emissionlimit_plantsinSR", "transition-CS" ]
     # SCENARIOS =  [ "finalHH-EOM_HH", "finalHH-CM_HH","finalHH-SR_HH", "finalHH-CS_HH"]
     # SCENARIOS =  [ "transitionCO2_300-EOM", "transitionCO2_300-CS", "transitionCO2_300-CM"]
-    SCENARIOS = [ "transition3-CM_noCO2limit_highpricecap" ]
+    SCENARIOS = [ "test-CM" ]
     # ,"transition3-SR_fix", "transition3-SR_decreasing", "transition3-CM_endogenous_fix",
     # SCENARIOS = [ "transition3-test"]
     results_excel = "transition3.xlsx"
