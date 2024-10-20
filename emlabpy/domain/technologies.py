@@ -139,7 +139,7 @@ class PowerGeneratingTechnology(ImportObject):
         for the initilaization there are no DF, so taking input
         Later on, take the evolving DF
         """
-        if reps.initialization_investment ==True:
+        if reps.initialization_investment ==True or self.name in ["Lithium ion battery","Solar PV rooftop"]: # quick fix becuase cannot differentiate between battery of 4 hours and 2 hours
             deratingFactor = self.deratingFactoryearly.loc[0]
         elif (reps.current_tick < reps.dynamic_derating_factor_window):
             years = range(0, reps.current_tick)

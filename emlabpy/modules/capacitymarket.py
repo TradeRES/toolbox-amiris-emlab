@@ -56,23 +56,20 @@ class CapacityMarketSubmitBids(MarketModule):
                 all_techs_capacity[powerplant.technology.name] = powerplant.capacity
             # limit on tech CO2 intensity:
 
-            if powerplant.technology.type == 'ConventionalPlantOperator':
-                if powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
+            if powerplant.technology.type == 'ConventionalPlantOperator' and powerplant.technology.fuel.co2_density/powerplant.technology.efficiency*1000 > CO2_emission_limit:
                     print(powerplant.name + "  " + powerplant.technology.name  + "  Co2 intensity is too high" )
                     non_eligible_capacity = non_eligible_capacity + powerplant.capacity
                     continue
             else:
-                #vres or batteries
-                if powerplant.technology.name not in market.allowed_technologies_capacity_market:
+                if self.reps.accept_VRES_BESS == False and powerplant.technology.type != 'ConventionalPlantOperator':
                     non_participating_capacity += powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)
-                    continue
+                else:
+                    power_plants.append(powerplant)
 
-            if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
-                pass
-            elif powerplant.technology.deratingFactor ==0:
-                pass
-            else:
-                power_plants.append(powerplant)
+            # if self.long_term == True and self.reps.power_plant_still_in_reserve(powerplant, market.forward_years_CM):
+            #     pass
+            # else:
+            #     power_plants.append(powerplant)
 
         total_offered_capacity = 0
 

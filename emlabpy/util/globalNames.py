@@ -54,7 +54,7 @@ parentpath =  os.path.join(os.path.dirname(os.getcwd()) )
 
 #amiris_data_path =  os.path.join(parentpath, 'amiris_data_structure.xlsx')
 amiris_data_path =  os.path.join(  os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris_data_structure.xlsx' )
-amiris_data_path_2020 =  os.path.join(  os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris_data_structure_future_test.xlsx' )
+amiris_data_path_test =  os.path.join(  os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris_data_structure_future_test.xlsx' )
 load_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\load.csv')
 future_load_file_for_amiris = os.path.join(os.path.dirname(os.getcwd()), 'amiris_workflow\\amiris-config\\data\\future_load.csv' )
 
