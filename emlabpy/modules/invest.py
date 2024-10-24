@@ -676,13 +676,13 @@ class Investmentdecision(DefaultModule):
 
             if price_to_bid < capacity_market.PriceCap:
                 bids_lower_than_price_cap += capacity_to_bid
-            #
-            # print(powerplant.technology.name +
-            #       powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
-            #     operatingProfit) + ";" + str(
-            #     fixed_on_m_cost) + ";" + str(
-            #     pending_loan))
-        # print(non_participating_capacity)
+
+            print(powerplant.technology.name +
+                  powerplant.name + ";" + str(price_to_bid) + ";" + str(capacity_to_bid) + ";" + str(
+                operatingProfit) + ";" + str(
+                fixed_on_m_cost) + ";" + str(
+                pending_loan))
+        print(non_participating_capacity)
         return bids_lower_than_price_cap
 
     def group_power_plants(self):
