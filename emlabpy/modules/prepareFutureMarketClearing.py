@@ -89,7 +89,6 @@ class PrepareFutureMarketClearing(PrepareMarket):
 
     def act(self):
         print("investment iteration " + str(self.reps.investmentIteration))
-
         self.setTimeHorizon()
         self.setFuelPrices()
         self.filter_power_plants_to_be_operational()
@@ -106,9 +105,10 @@ class PrepareFutureMarketClearing(PrepareMarket):
         self.write_load_shifter_with_price_cap()
         self.write_times()
         self.writer.close()
-        # if self.reps.current_year == 2025:
-        #     if self.reps.initialization_investment==0 and self.reps.round_for_capacity_market_y_1 == False:
-        #         shutil.copy(self.path, globalNames.amiris_data_path_test)
+        if self.reps.current_year == 2027:
+            # if self.reps.initialization_investment==0 and self.reps.round_for_capacity_market_y_1 == False:
+            if self.reps.runningModule ==   "run_prepare_next_year_market_clearing":
+                shutil.copy(self.path, globalNames.amiris_data_path_test)
 
     def filter_power_plants_to_be_operational(self):
         """
