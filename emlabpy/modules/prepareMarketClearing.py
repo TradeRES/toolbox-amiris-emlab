@@ -293,10 +293,10 @@ class PrepareMarket(DefaultModule):
                 if pp.status == globalNames.power_plant_status_strategic_reserve:
                     if calculatedprices == "next_year_price":  # choose the prices depending if nexy year or future year is calculated
                         OpexVarInEURperMWH.append(operator.reservePriceSR - (pp.technology.fuel.co2_density * self.reps.substances["CO2"].simulatedPrice_inYear
-                                                  - pp.technology.fuel.simulatedPrice_inYear)/pp.actualEfficiency - pp.actualVariableCost)
+                                                  + pp.technology.fuel.simulatedPrice_inYear)/pp.actualEfficiency - pp.actualVariableCost)
                     else:
                         OpexVarInEURperMWH.append(operator.reservePriceSR - (pp.technology.fuel.co2_density * self.reps.substances["CO2"].futurePrice_inYear
-                                                  - pp.technology.fuel.futurePrice_inYear)/pp.actualEfficiency - pp.actualVariableCost)
+                                                  + pp.technology.fuel.futurePrice_inYear)/pp.actualEfficiency - pp.actualVariableCost)
                 else:
                     OpexVarInEURperMWH.append(pp.actualVariableCost)
                 Efficiency.append(pp.actualEfficiency)
