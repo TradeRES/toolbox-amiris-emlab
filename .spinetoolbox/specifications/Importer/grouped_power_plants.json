@@ -1061,10 +1061,68 @@
                         ]
                     }
                 }
+            ],
+            "Sheet2": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "extendedNL (lowH2)": [
+                {
+                    "Mapping 1": {
+                        "mapping": [
+                            {
+                                "map_type": "ObjectClass",
+                                "position": "hidden",
+                                "value": "PowerPlantsInstalled"
+                            },
+                            {
+                                "map_type": "Object",
+                                "position": 0
+                            },
+                            {
+                                "map_type": "ObjectMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterDefinition",
+                                "position": -1
+                            },
+                            {
+                                "map_type": "Alternative",
+                                "position": "hidden",
+                                "value": "0"
+                            },
+                            {
+                                "map_type": "ParameterValueMetadata",
+                                "position": "hidden"
+                            },
+                            {
+                                "map_type": "ParameterValue",
+                                "position": "hidden"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         "selected_tables": [
-            "extendedNL (July2024)"
+            "extendedNL (lowH2)"
         ],
         "table_options": {
             "germany2019": {
@@ -1153,7 +1211,12 @@
                 "read_until_col": true,
                 "read_until_row": true
             },
-            "NL2030": {}
+            "NL2030": {},
+            "extendedNL (lowH2)": {
+                "read_until_col": true,
+                "read_until_row": true
+            },
+            "Sheet2": {}
         },
         "table_types": {
             "germany2019": {
@@ -1492,8 +1555,7 @@
                 "5": "float",
                 "6": "float",
                 "7": "float",
-                "8": "float",
-                "9": "float"
+                "8": "float"
             },
             "NL2030": {
                 "0": "string",
@@ -1502,6 +1564,17 @@
                 "3": "string",
                 "4": "string",
                 "5": "string"
+            },
+            "extendedNL (lowH2)": {
+                "0": "string",
+                "1": "string",
+                "2": "string",
+                "3": "string",
+                "4": "string",
+                "5": "string",
+                "6": "string",
+                "7": "string",
+                "8": "string"
             }
         },
         "table_default_column_type": {},
