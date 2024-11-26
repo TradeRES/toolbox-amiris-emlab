@@ -511,13 +511,13 @@ def plot_installed_capacity(all_techs_capacity, path_to_plots, years_to_generate
 
     fig, (ax1, ax2) = plt.subplots(1, 2,  figsize=(8, 5))
     all_techs_capacity_nozeroes_copy = deepcopy(all_techs_capacity_nozeroes)
-    all_techs_capacity_nozeroes_copy.index = all_techs_capacity_nozeroes_copy.index - reps.start_simulation_year
+    all_techs_capacity_nozeroes_copy.index = all_techs_capacity_nozeroes_copy.index #- reps.start_simulation_year
     all_techs_capacity_nozeroes_copy.plot.area(ax = ax1, color=colors, legend=None, )
     ax1.set_xlabel('Years')
-    ax1.set_ylabel('Installed Capacity [MW]')
+    ax1.set_ylabel('Installed Capacity [GW]')
     all_techs_generation_nozeroes_copy = deepcopy(all_techs_generation_nozeroes)
     colors = [technology_colors[tech] for tech in all_techs_generation_nozeroes.columns.values]
-    all_techs_generation_nozeroes_copy.index = all_techs_generation_nozeroes_copy.index - reps.start_simulation_year
+    all_techs_generation_nozeroes_copy.index = all_techs_generation_nozeroes_copy.index #- reps.start_simulation_year
     all_techs_generation_nozeroes_copy.plot.area(ax = ax2, color=colors)
     # axs18.set_axisbelow(True)
     fig.tight_layout(w_pad=2)
@@ -694,13 +694,14 @@ def plot_shortages_and_ENS(shortages, load_shedded_per_group_MWh, capacity_marke
 
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
         fig, ax1 = plt.subplots()
-        ax1.plot(capacity_market_future_price.index, ENS_in_simulated_years_gwh.values, 'b-', label='Sine Wave')
-        ax1.set_xlabel('Simulation years')
+        ax1.plot(capacity_market_future_price.index + reps.start_simulation_year, ENS_in_simulated_years_gwh.values, 'b-', label='Sine Wave')
+        ax1.set_xlabel('Year')
         ax1.set_ylabel('ENS [GWh]', color='b')
         ax1.tick_params(axis='y', labelcolor='b')
         ax2 = ax1.twinx()
-        ax2.plot(capacity_market_future_price.index, capacity_market_future_price.values/1000, 'r--', label='Exponential')
+        ax2.plot(capacity_market_future_price.index + reps.start_simulation_year, capacity_market_future_price.values/1000, 'r--', label='Exponential')
         ax2.set_ylabel('CS expected price [Eur/KW-Y]', color='r')
+        ax2.set_ylim(bottom=0)
         ax2.tick_params(axis='y', labelcolor='r')
         plt.grid()
         fig.tight_layout()  # Adjust layout to prevent overlap
@@ -848,6 +849,7 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
     sorted_prices.plot(color=colors, ax=axs24[0], legend=None)
     axs24[0].legend(fontsize='small', loc='upper left', ncol=2 ,bbox_to_anchor=(1.1, 1.1))
     axs24[0].set_title('Price duration curve')
+    axs24[0].set_ylim([3600, 4000])
     axs24[0].set_xlim([0, 500])
     plt.grid()
     axs24[1] = sorted_prices.plot(color=colors, ax=axs24[1], legend=False)
@@ -866,11 +868,14 @@ def plot_price_duration_curve(electricity_prices, path_to_plots):
         '''
         When calculating the SR, we dont consider the variable costs
         '''
-        variable_costs = (operator.reservePriceSR  +
-                          reps.substances["hydrogen"].simulatedPrice[reps.start_simulation_year]/ reps.power_generating_technologies["hydrogen OCGT"].efficiency ) # Eur/mwh
-        rounded_prices = round(sorted_prices)
-        SR_prices  = (rounded_prices == round(variable_costs))
-        number_SR_prices = SR_prices.sum()
+        # variable_costs = (operator.reservePriceSR  +
+        #                   reps.substances["hydrogen"].simulatedPrice[reps.start_simulation_year]/ reps.power_generating_technologies["hydrogen OCGT"].efficiency ) # Eur/mwh
+        # rounded_prices = round(sorted_prices)
+        # SR_prices  = (rounded_prices == round(variable_costs))
+        # number_SR_prices = SR_prices.sum()
+        sorted_prices[(sorted_prices > 1500) & (sorted_prices < 4000)].count()
+        number_SR_prices = sorted_prices[(sorted_prices > 1500) & (sorted_prices < 4000)].count()
+
         # axs25 = number_SR_prices.plot(legend=None)
         # plt.xlabel('years', fontsize='medium')
         # plt.ylabel('SR activation hours', fontsize='medium')
@@ -1816,7 +1821,6 @@ def prepare_future_fuel_prices(reps):
 def prepare_screening_curves(reps, year):
     hours = np.array(list(range(1, reps.hours_in_year)))
     agent = reps.energy_producers[reps.agent]
-
     yearly_costs = pd.DataFrame(index=hours)
     marginal_costs_per_hour = pd.DataFrame()
     co2price = reps.substances["CO2"].simulatedPrice[year]
@@ -2696,8 +2700,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         "changing index to multiply with load shedded"
         weighted_average_VOLL= weighted_average_VOLL[:-1]
         weighted_average_VOLL.index = years_to_generate
-    costs_to_society["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* weighted_average_VOLL + \
-                                    total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL # load shedders 2 is the DSR
+    # costs_to_society["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* weighted_average_VOLL + \
+    #                                 total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL # load shedders 2 is the DSR
     costs_to_society4000 = costs_to_society.copy(deep=True)
     costs_to_society4000["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* 4000 + \
                               total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL
@@ -3284,7 +3288,7 @@ def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario
 
     write_titles = False
 
-    test_tick = 10
+    test_tick = 0
     # write None is no investment is expected,g
     test_tech = None  # None, 'Lithium_ion_battery'  # "hydrogen OCGT" #" #None #"WTG_offshore"   # "WTG_onshore" ##"CCGT"# "hydrogen_turbine"
 
@@ -3388,22 +3392,21 @@ if __name__ == '__main__':
     # SCENARIOS = ["transition-EOM_newpps", "transition-dynamicvolCM", "transition-fixvolCM", "transition-SR_emissionlimit_plantsinSR", "transition-CS" ]
     # SCENARIOS =  [ "finalHH-EOM_HH", "finalHH-CM_HH","finalHH-SR_HH", "finalHH-CS_HH"]
     # SCENARIOS =  [ "transitionCO2_300-EOM", "transitionCO2_300-CS", "transitionCO2_300-CM"]
-    SCENARIOS = ["transition3-CM_VRE_nolimit"] #"transition3-SR_fix" ,"transition3-SR_decreasing"
+   # SCENARIOS = ["transition3-EOM", "transition3-CM_decreasing" , "transition3-CS_decreasing", "transition3-SR_decreasing"] #"transition3-SR_fix" ,"transition3-SR_decreasing"
     # ,"transition3-SR_fix", "transition3-SR_decreasing", "transition3-CM_endogenous_fix",
-    # SCENARIOS =  [ "transition3-EOM",  "transition3-SR_fix" ,"transition3-CS_fix", "transition3-CM_fix", "transition3-CM_VRE_fix"]
+    # SCENARIOS =  [  "transition3-EOM"]
     #SCENARIOS =  [ "transition3-EOM",  "transition3-CM_nolimit" , "transition3-CM_fix", "transition3-CM_decreasing", "transition3-CM_VRE_nolimit",  "transition3-CM_VRE_fix", "transition3-CM_VRE_decreasing"]
     # SCENARIOS =  [ "transition3-EOM", "transition3-CS_nolimit",  "transition3-CS_fix" ,"transition3-CS_decreasing"]
-    # SCENARIOS =  [ "transition3-EOM"]
-
-    # SCENARIOS =  ["transition3-SR_fix", "transition3-SR_decreasing"]
-    results_excel = "test.xlsx"
+    # SCENARIOS =  ["transition3-EOM", "transition3variableactivation-SR_nolimit", "transition3variableactivation-SR_fix" ,"transition3variableactivation-SR_decreasing"]
+    SCENARIOS =  ["tesee-3"]
+    # SCENARIOS =  ["transition3-EOM", "transition3-CM_fix", "transition3-SR_fix", "transition3-CS_fix"]
+    results_excel = "transition3_ALL3.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
-    existing_scenario = True
+    existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
         raise Exception
-
     plotting(SCENARIOS, results_excel, sys.argv[1], sys.argv[2], existing_scenario)
     print('===== End Generating Plots =====')
 

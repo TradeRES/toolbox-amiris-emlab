@@ -196,15 +196,15 @@ class CapacityMarketClearing(MarketModule):
             print(capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1])
             targetVolume = capacity_market.yearlyTargetCapacity[capacity_market.forward_years_CM + self.reps.current_year - 1]
 
-        print("non_eligible_capacity")
+        print("non_eligible_capacity") # non eligible due to CO2 intensity. In some runs BESS and VRES dont participate
         print(non_eligible_capacity)
         targetVolume = targetVolume - non_eligible_capacity - non_participating_capacity
-
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity
         # uppertargetVolume -= effective_capacity_long_term_CM
         # Retrieve the sloping demand curve for the expected peak load volume
         sdc = capacity_market.get_sloping_demand_curve(targetVolume)
+        self.reps.dbrw.stage_real_target_capacity(targetVolume, capacity_market.name , capacity_market.forward_years_CM + self.reps.current_year)
 
         clearing_price = 0
         total_supply_volume = 0
@@ -375,7 +375,7 @@ class CapacityMarketClearing(MarketModule):
                     raise ValueError("Derating factor is more than 1")
             else:
                 pass
-        print(derating_factors)
+
         self.reps.dbrw.stage_derating_factor_yearly(derating_factors, self.reps.current_tick)
 
         path_original_demand = os.path.join(os.path.dirname(os.getcwd()), "data", self.reps.increasingLoad_representativeYear_Excel)

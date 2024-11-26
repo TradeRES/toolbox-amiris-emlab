@@ -200,6 +200,8 @@ class Investmentdecision(DefaultModule):
                     if candidatepowerplant.technology.type == 'ConventionalPlantOperator':
                         if candidatepowerplant.technology.fuel.co2_density/candidatepowerplant.technology.efficiency*1000 > CO2_emission_limit:
                             pass
+                        else:
+                            operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
                     else:
                         operatingProfit = operatingProfit + capacity_market_price * candidatepowerplant.capacity * candidatepowerplant.technology.deratingFactor
 

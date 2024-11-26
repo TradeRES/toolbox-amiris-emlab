@@ -282,6 +282,12 @@ class SpineDBReaderWriter:
         self.stage_object_parameter_values('CapacityMarkets', cm_name,
                                            [("yearlyTargetCapacity", Map([str(year)], [target_volume]))], "0")
 
+    def stage_real_target_capacity(self, target_volume, cm_name ,  year):
+        self.stage_object_class("CapacityMarkets")
+        self.stage_object_parameter('CapacityMarkets', "yearlyrealTargetCapacity")
+        self.stage_object('CapacityMarkets', cm_name)
+        self.stage_object_parameter_values('CapacityMarkets', cm_name,
+                                           [("yearlyrealTargetCapacity", Map([str(year)], [target_volume]))], "0")
     def stage_payment_co2_allowances(self, power_plant, cash, allowances, time):
         self.stage_co2_allowances(power_plant, allowances, time)
         self.stage_object_parameter_values('EnergyProducers', power_plant.owner.name, [('cash', cash)], time)
