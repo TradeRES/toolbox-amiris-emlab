@@ -625,7 +625,10 @@ class Investmentdecision(DefaultModule):
                     non_eligible_capacity = non_eligible_capacity + powerplant.capacity
                 else:
                     if self.reps.accept_VRES_BESS == False and powerplant.technology.type != 'ConventionalPlantOperator':
-                        non_participating_capacity += powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)
+                        if pd.isna(powerplant.technology.get_CM_derating_factor(self.reps)):
+                            pass
+                        else:
+                            non_participating_capacity += powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)
                     else:
                         candidates_and_existing.append(powerplant)
             else:

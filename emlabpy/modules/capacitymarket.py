@@ -201,9 +201,10 @@ class CapacityMarketClearing(MarketModule):
 
         print("non_eligible_capacity") # non eligible due to CO2 intensity. In some runs BESS and VRES dont participate
         print(non_eligible_capacity)
-        print("target volume after " + str(targetVolume))
+
         targetVolume = targetVolume - non_eligible_capacity - non_participating_capacity
         targetVolume -= effective_capacity_long_term_CM
+        print("target volume after " + str(targetVolume))
         # uppertargetVolume = capacity_market.UpperTargetCapacity
         # uppertargetVolume -= effective_capacity_long_term_CM
         # Retrieve the sloping demand curve for the expected peak load volume
