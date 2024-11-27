@@ -142,15 +142,17 @@ class PowerGeneratingTechnology(ImportObject):
         Later on, take the evolving DF
         """
         if reps.initialization_investment ==True or self.name in ["Lithium ion battery","Solar PV rooftop"]: # quick fix becuase cannot differentiate between battery of 4 hours and 2 hours
-            deratingFactor = self.deratingFactoryearly.loc[0]
+            deratingFactor = self.deratingFactoryearly.loc[-1]
         elif (reps.current_tick < reps.dynamic_derating_factor_window):
             years = range(0, reps.current_tick)
-            repeated_array = [self.deratingFactor]* (reps.dynamic_derating_factor_window - reps.current_tick)
+            repeated_array = [self.deratingFactoryearly.loc[-1]]* (reps.dynamic_derating_factor_window - reps.current_tick)
             new_series = repeated_array + self.deratingFactoryearly.loc[years].values.tolist()
             deratingFactor =  np.nanmean(new_series)
         else:
             years = range(reps.current_tick - reps.dynamic_derating_factor_window, reps.current_tick)
             deratingFactor = np.nanmean(self.deratingFactoryearly.loc[years])
+        if pd.isna(deratingFactor):
+            deratingFactor = 0
         return deratingFactor
 
     def getMaximumCapacityinCountry(self, futureInvestmentyear):
