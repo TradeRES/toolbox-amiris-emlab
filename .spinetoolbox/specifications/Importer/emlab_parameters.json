@@ -1521,7 +1521,7 @@
                             {
                                 "map_type": "ParameterValueIndex",
                                 "position": "hidden",
-                                "value": "0"
+                                "value": "-1"
                             },
                             {
                                 "map_type": "ExpandedValue",
@@ -2083,7 +2083,10 @@
             },
             "dynamicDF": {
                 "0": "string",
-                "1": "float"
+                "1": "float",
+                "2": "string",
+                "3": "string",
+                "4": "string"
             }
         },
         "table_default_column_type": {},
