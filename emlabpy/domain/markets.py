@@ -164,7 +164,7 @@ class CapacityMarket(Market):
         self.net_cone = 0
         self.InitialPrice = 0
         self.CO2_emission_intensity_limit = 0
-
+        self.yearlyrealTargetCapacity = None
 
     def add_parameter_value(self, reps, parameter_name: str, parameter_value, alternative: str):
         if parameter_name == 'forward_years_CM':
@@ -178,6 +178,11 @@ class CapacityMarket(Market):
             values = [float(i[1]) for i in array["data"]]
             index = [int(i[0]) for i in array["data"]]
             self.yearlyTargetCapacity = pd.Series(values, index=index) # calculated in capacity market
+        elif parameter_name == 'yearlyrealTargetCapacity':
+            array = parameter_value.to_dict()
+            values = [float(i[1]) for i in array["data"]]
+            index = [int(i[0]) for i in array["data"]]
+            self.yearlyrealTargetCapacity = pd.Series(values, index=index)
 
         elif parameter_name == 'CO2_emission_intensity_limit':
             array = parameter_value.to_dict()

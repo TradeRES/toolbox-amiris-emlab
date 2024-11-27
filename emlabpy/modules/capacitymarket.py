@@ -62,7 +62,10 @@ class CapacityMarketSubmitBids(MarketModule):
                     continue
             else:
                 if self.reps.accept_VRES_BESS == False and powerplant.technology.type != 'ConventionalPlantOperator':
-                    non_participating_capacity += powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)
+                    if pd.isna(powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)):
+                        pass
+                    else:
+                        non_participating_capacity += powerplant.capacity*powerplant.technology.get_CM_derating_factor(self.reps)
                 else:
                     power_plants.append(powerplant)
 
@@ -198,6 +201,7 @@ class CapacityMarketClearing(MarketModule):
 
         print("non_eligible_capacity") # non eligible due to CO2 intensity. In some runs BESS and VRES dont participate
         print(non_eligible_capacity)
+        print("target volume after " + str(targetVolume))
         targetVolume = targetVolume - non_eligible_capacity - non_participating_capacity
         targetVolume -= effective_capacity_long_term_CM
         # uppertargetVolume = capacity_market.UpperTargetCapacity

@@ -1313,7 +1313,7 @@ def plot_capacity_market_dynamic_target_demand(reps):
     :return:
     """
     capacity_market = reps.get_capacity_market_in_country(reps.country, False)
-    ax1 = capacity_market.yearlyTargetCapacity.plot()
+    ax1 = capacity_market.yearlyrealTargetCapacity.plot()
     plt.xlabel('year', fontsize='medium')
     plt.ylabel('Target demand [MW]', fontsize='medium')
     # plt.legend(fontsize='medium', loc='upper left', bbox_to_anchor=(1, 1.1))
@@ -3394,13 +3394,13 @@ if __name__ == '__main__':
     # SCENARIOS =  [ "transitionCO2_300-EOM", "transitionCO2_300-CS", "transitionCO2_300-CM"]
    # SCENARIOS = ["transition3-EOM", "transition3-CM_decreasing" , "transition3-CS_decreasing", "transition3-SR_decreasing"] #"transition3-SR_fix" ,"transition3-SR_decreasing"
     # ,"transition3-SR_fix", "transition3-SR_decreasing", "transition3-CM_endogenous_fix",
-    # SCENARIOS =  [  "transition3-EOM"]
+    SCENARIOS =  [  "test"]
     #SCENARIOS =  [ "transition3-EOM",  "transition3-CM_nolimit" , "transition3-CM_fix", "transition3-CM_decreasing", "transition3-CM_VRE_nolimit",  "transition3-CM_VRE_fix", "transition3-CM_VRE_decreasing"]
     # SCENARIOS =  [ "transition3-EOM", "transition3-CS_nolimit",  "transition3-CS_fix" ,"transition3-CS_decreasing"]
     # SCENARIOS =  ["transition3-EOM", "transition3variableactivation-SR_nolimit", "transition3variableactivation-SR_fix" ,"transition3variableactivation-SR_decreasing"]
-    SCENARIOS =  ["tesee-3"]
+
     # SCENARIOS =  ["transition3-EOM", "transition3-CM_fix", "transition3-SR_fix", "transition3-CS_fix"]
-    results_excel = "transition3_ALL3.xlsx"
+    results_excel = "transition3_EOM_H2price.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
     existing_scenario = False
     if isinstance(SCENARIOS, (list, tuple)):

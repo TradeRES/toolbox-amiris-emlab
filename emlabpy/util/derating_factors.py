@@ -25,14 +25,14 @@ energy_exchange_url_sql = "\\energy exchange.sqlite"
 # scenario_name = "NL-CSmarginal_2004"
 #  scenario_name = "NL-CM_target20GW"
 
-scenario_name = "finalHH-EOM"
+scenario_name = "finalHH-EOM_HH"
 emlab_url = first + scenario_name + emlab_sql
 amiris_url = first + scenario_name + emlab_sql
 spinedb_reader_writer = SpineDBReaderWriter("Amiris", emlab_url, amiris_url)
 reps = spinedb_reader_writer.read_db_and_create_repository("plotting")
 global years_to_generate
 years_to_generate = list(range(reps.start_simulation_year, reps.current_year + 1))  # control the current year
-
+years_to_generate = list(range(reps.start_simulation_year, reps.start_simulation_year + 1))
 LOLE = 4
 global unique_technologies
 unique_technologies = reps.get_unique_candidate_technologies_names()
