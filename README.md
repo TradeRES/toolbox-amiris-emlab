@@ -164,14 +164,3 @@ Contains miscellaneous scripts to prepare data
 ### `logs`
 
 The logging from all the workflow can be found in this folder
-
-## License and Terms of Use 
-
-The Spine Toolbox project example provided here can be used without any limitations. This does not apply to any data
-files contained within or any parts of the models EMLabpy and AMIRIS.
-
-The (Un)Licensing explicitly excludes:
-
-    * Anything under "amiris", for which license of https://gitlab.com/dlr-ve/esy/amiris/amiris applies
-    * Anything under "EMLABPY", for which MIT License applies
-    * Any data contained in this repository.
