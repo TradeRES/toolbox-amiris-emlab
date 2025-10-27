@@ -49,7 +49,14 @@ https://github.com/spine-tools/Spine-Toolbox
 
 Make a new anaconda environment called spinetoolbox. 
 
+
+
 ## 2. How to run it
+
+In the folder https://github.com/TradeRES/toolbox-amiris-emlab/tree/dev/amiris_workflow/amiris,
+add a jar file of AMIRIS, for example amiris-core_2.0.0-alpha.14-jar-with-dependencies.jar. 
+This can be requested from https://gitlab.com/dlr-ve/esy/amiris/amiris.
+
 In the toolbox-amiris-emlab folder activate the environment spinetoolbox.
 (Type spinetoolbox to start the tool in this environment)
 
