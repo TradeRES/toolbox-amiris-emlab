@@ -791,6 +791,7 @@ class Repository:
             share_wtp = []
             for i in self.cs_consumers.values():
                 if i.name == "DSR":
+                    raise Exception("DSR in the list")
                     i.max_subscribed_percentage = 0.11
                     i.WTP = self.get_sorted_load_shedders_by_name("2").VOLL
                 share_wtp.append(i.max_subscribed_percentage*i.WTP)
@@ -804,8 +805,8 @@ class Repository:
             peak_demand = self.get_realized_peak_demand()
             total_unsubscribed_volume = 0
             for i in self.cs_consumers.values():
-                print(i.name)
                 if i.name == "DSR":
+                    raise Exception("DSR in the list")
                     i.max_subscribed_percentage = 0.11
                     i.WTP = self.get_sorted_load_shedders_by_name("2").VOLL
                 max_subscribed_volume = i.max_subscribed_percentage*peak_demand

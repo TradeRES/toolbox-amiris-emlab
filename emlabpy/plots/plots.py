@@ -902,15 +902,15 @@ def plot_hourly_electricity_prices_boxplot(electricity_prices, path_to_plots):
 
     filtered_df = electricity_prices[(electricity_prices < 350)]
     plt.figure(figsize=(10,5))
-    sns.violinplot(data=filtered_df, color='white', inner='quartile', linewidth=0.8)  # Set the violins to white
+    sns.violinplot(data=filtered_df, color='white', density_norm="count", linewidth=0.8, inner=None)  # Set the violins to white
     for i, col in enumerate(electricity_prices.columns):
         mean = electricity_prices[col].mean()
         plt.plot([i - 0.2, i + 0.2], [mean, mean], color='red', linewidth=2)  # Adding red line for median
 
     import matplotlib.patches as mpatches
-    median_patch = mpatches.Patch(color='red', label='Mean')
+    mean_patch = mpatches.Patch(color='red', label='Mean')
     quartile_patch = mpatches.Patch(facecolor='none', edgecolor='black', linestyle='-', linewidth=1.5, label='Quartiles')
-    plt.legend(handles=[median_patch, quartile_patch], loc='upper left', title='', fontsize="large")
+    plt.legend(handles=[mean_patch], loc='upper left', title='', fontsize="large")
     plt.grid(True, which='major', axis='y')#, linestyle='--', linewidth=0.5, color='gray')
 
     # plt.title('Density and Distribution of Electricity Prices by Year')
@@ -2324,13 +2324,15 @@ def prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity):
                 tech.deratingFactoryearly.sort_index(inplace=True)
                 repeated_rows = pd.DataFrame([tech.deratingFactor] * reps.dynamic_derating_factor_window)
                 repeated_rows.index = list(range(-reps.dynamic_derating_factor_window,0))
+                if -1 in tech.deratingFactoryearly.index:
+                    tech.deratingFactoryearly.drop(-1, inplace=True)
                 yearlydf = pd.concat([repeated_rows, tech.deratingFactoryearly], ignore_index=False, axis=0)
                 derating_factor = pd.concat([derating_factor, yearlydf], ignore_index=False, axis=1)
         derating_factor.columns =names
         derating_factor.sort_index(inplace=True)
         derating_factor.dropna(axis=1, how='all', inplace=True)
-        derating_factor_mean = derating_factor.rolling(window= reps.dynamic_derating_factor_window, min_periods=1).mean()
         derating_factor.index = derating_factor.index + reps.start_simulation_year
+        derating_factor_mean = derating_factor.rolling(window= reps.dynamic_derating_factor_window, min_periods=1).mean()
         colors = [technology_colors[tech] for tech in derating_factor_mean.columns.values]
         if derating_factor_mean.size != 0:
             derating_factor_mean.plot(marker='*', ax = ax2, color = colors, label='applied', legend=False) # color=colors_unique_techs
@@ -2653,6 +2655,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
 
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
         weighted_average_VOLL = reps.get_weighted_VOLL_unsubscribed()
+        print("weighted_average_VOLL")
+        print(weighted_average_VOLL)
     else:
         weighted_average_VOLL = reps.get_weighted_VOLL()
 
@@ -2698,10 +2702,10 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
     costs_to_society.index = years_to_generate
     if reps.capacity_remuneration_mechanism == "capacity_subscription":
         "changing index to multiply with load shedded"
-        weighted_average_VOLL= weighted_average_VOLL[:-1]
+        weighted_average_VOLL= weighted_average_VOLL[:-1] # last was nan
         weighted_average_VOLL.index = years_to_generate
-    # costs_to_society["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* weighted_average_VOLL + \
-    #                                 total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL # load shedders 2 is the DSR
+    costs_to_society["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* weighted_average_VOLL + \
+                                    total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL # load shedders 2 is the DSR
     costs_to_society4000 = costs_to_society.copy(deep=True)
     costs_to_society4000["ENS"] = total_load_shedded_per_year.loc[["1"]].sum(axis=0)* 4000 + \
                               total_load_shedded_per_year.loc[["2"]].sum(axis=0)* reps.loadShedders["2"].VOLL
@@ -2798,7 +2802,8 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         else:
             plot_non_subscription_costs(CM_clearing_price,cost_non_subcription, load_per_group )
         if reps.capacity_remuneration_mechanism == "capacity_market":
-            plot_capacity_market_dynamic_target_demand(reps)
+            #plot_capacity_market_dynamic_target_demand(reps)
+            pass
     else:
         capacity_market_future_price = pd.DataFrame()
     derating_factor_mean, derating_factor = prepareCONE_and_derating_factors(years_to_generate, all_techs_capacity)
@@ -2937,11 +2942,11 @@ def generate_plots(reps, path_to_plots, electricity_prices, curtailed_res, Total
         if reps.dynamic_derating_factor == True and reps.capacity_remuneration_mechanism != "none":
             multi_index = pd.MultiIndex.from_product([[scenario_name], derating_factor_mean.columns], names=['scenario_name', "technology"])
             derating_factor_mean.columns = multi_index
-            derating_factor_mean_data = pd.concat([IRRS_yearly_data, derating_factor_mean],  axis=1)
+            derating_factor_mean_data = pd.concat([derating_factor_mean_data, derating_factor_mean],  axis=1)
 
             multi_index = pd.MultiIndex.from_product([[scenario_name], derating_factor.columns], names=['scenario_name', "technology"])
             derating_factor.columns = multi_index
-            derating_factor_data = pd.concat([IRRS_yearly_data, derating_factor],  axis=1)
+            derating_factor_data = pd.concat([derating_factor_data, derating_factor],  axis=1)
 
         multi_index = pd.MultiIndex.from_product([[scenario_name], profits_with_loans_all.columns], names=['scenario_name', "technology"])
         profits_with_loans_all.columns = multi_index
@@ -3266,7 +3271,7 @@ technology_names = {
 
 def  plotting(SCENARIOS, results_excel, emlab_url, amiris_url, existing_scenario):
     global save_excel
-    save_excel = False
+    save_excel = True
     global scenario_name
     global calculate_hourly_shedders_new
     global calculate_monthly_generation
@@ -3394,15 +3399,17 @@ if __name__ == '__main__':
     # SCENARIOS =  [ "transitionCO2_300-EOM", "transitionCO2_300-CS", "transitionCO2_300-CM"]
    # SCENARIOS = ["transition3-EOM", "transition3-CM_decreasing" , "transition3-CS_decreasing", "transition3-SR_decreasing"] #"transition3-SR_fix" ,"transition3-SR_decreasing"
     # ,"transition3-SR_fix", "transition3-SR_decreasing", "transition3-CM_endogenous_fix",
-    SCENARIOS =  [  "test"]
-    #SCENARIOS =  [ "transition3-EOM",  "transition3-CM_nolimit" , "transition3-CM_fix", "transition3-CM_decreasing", "transition3-CM_VRE_nolimit",  "transition3-CM_VRE_fix", "transition3-CM_VRE_decreasing"]
+    # SCENARIOS =  [ "transition3-EOM",  "transition3-SR_nolimit", "transition3-SR_fix","transition3-SR_decreasing"]
+    SCENARIOS =  [ "transition3-EOM", "transition3-EOM_lowH2"]
+    # SCENARIOS =  [ "transition3-EOM", "transition5-CM_fix", "transition3-SR_fix","transition3-CS_fix"]
+    # SCENARIOS =  [ "transition3-EOM",  "transition3-CM_nolimit" , "transition3-CM_fix", "transition3-CM_decreasing", "transition3-CM_VRE_nolimit",  "transition3-CM_VRE_fix", "transition3-CM_VRE_decreasing"]
     # SCENARIOS =  [ "transition3-EOM", "transition3-CS_nolimit",  "transition3-CS_fix" ,"transition3-CS_decreasing"]
     # SCENARIOS =  ["transition3-EOM", "transition3variableactivation-SR_nolimit", "transition3variableactivation-SR_fix" ,"transition3variableactivation-SR_decreasing"]
-
-    # SCENARIOS =  ["transition3-EOM", "transition3-CM_fix", "transition3-SR_fix", "transition3-CS_fix"]
-    results_excel = "transition3_EOM_H2price.xlsx"
+    # SCENARIOS = ["final3-EOM"]
+    # SCENARIOS =  [ "transition3-CS_fix"]
+    results_excel = "FinalTransitionEOM_Costs_society.xlsx"
     # results_excel = "comparisonCS9-noConsumersMemory.xlsx"
-    existing_scenario = False
+    existing_scenario = True
     if isinstance(SCENARIOS, (list, tuple)):
         pass
     else:
